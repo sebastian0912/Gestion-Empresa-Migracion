@@ -1,0 +1,88 @@
+<div class="app-layout">
+    <app-navbar-lateral></app-navbar-lateral>
+    <div class="contenedor">
+        <app-navbar-superior></app-navbar-superior>
+
+        <mat-card>
+            <mat-card-title>Reporte, llena los siguientes campos</mat-card-title>
+            <mat-card-content>
+                <form [formGroup]="reporteForm">
+                    <mat-form-field appearance="fill" class="example-full-width">
+                        <mat-label> Seleccione la sede </mat-label>
+                        <mat-select formControlName="sede">
+                            <mat-option *ngFor="let sede of sedes" [value]="sede">{{ sede }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill" class="example-full-width">
+                        <mat-label>¿Hubo contratos hoy?</mat-label>
+                        <mat-select formControlName="contratosHoy" (selectionChange)="onContratosHoyChange($event)">
+                            <mat-option value="si">Sí</mat-option>
+                            <mat-option value="no">No</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <div *ngIf="reporteForm.get('contratosHoy')?.value === 'si'" id="contratosDetalles">
+                        <div class="subida">
+                            <mat-checkbox (change)="onCheckboxChange($event, 'cedulasEscaneadas')">Cédulas Escaneadas</mat-checkbox>
+                            <mat-form-field appearance="fill" class="example-full-width">
+                                <input matInput [value]="cedulasEscaneadasFileName" placeholder="Ningún archivo seleccionado" readonly>
+                                <button mat-icon-button matSuffix (click)="fileInputCedulasEscaneadas.click()" [disabled]="!reporteForm.get('cedulasEscaneadas')?.value">
+                                    <mat-icon>folder_open</mat-icon>
+                                </button>
+                                <input #fileInputCedulasEscaneadas type="file" webkitdirectory directory multiple accept=".pdf" (change)="onFilesSelected($event, 'cedulasEscaneadas')" hidden>
+                            </mat-form-field>
+                        </div>
+                        <div class="subida">
+                            <mat-checkbox (change)="onCheckboxChange($event, 'cruceDiario')">Cruce diario Excel</mat-checkbox>
+                            <mat-form-field appearance="fill" class="example-full-width">
+                                <input matInput [value]="cruceDiarioFileName" placeholder="Ningún archivo seleccionado" readonly>
+                                <button mat-icon-button matSuffix (click)="fileInputCruceDiario.click()" [disabled]="!reporteForm.get('cruceDiario')?.value">
+                                    <mat-icon>folder_open</mat-icon>
+                                </button>
+                                <input #fileInputCruceDiario type="file" accept=".xls,.xlsx" (change)="onFileSelected($event, 'cruceDiario')" hidden>
+                            </mat-form-field>
+                        </div>
+                        <div class="subida">
+                            <mat-checkbox (change)="onCheckboxChange($event, 'induccionSSO')">Inducción Seguridad y Salud en el trabajo</mat-checkbox>
+                            <mat-form-field appearance="fill" class="example-full-width">
+                                <input matInput [value]="induccionSSOFileName" placeholder="Ningún archivo seleccionado" readonly>
+                                <button mat-icon-button matSuffix (click)="fileInputInduccionSSO.click()" [disabled]="!reporteForm.get('induccionSSO')?.value">
+                                    <mat-icon>folder_open</mat-icon>
+                                </button>
+                                <input #fileInputInduccionSSO type="file" accept=".pdf" (change)="onFileSelected($event, 'induccionSSO')" hidden>
+                            </mat-form-field>
+                        </div>
+                        <div class="subida">
+                            <mat-checkbox (change)="onCheckboxChange($event, 'traslados')">Traslados</mat-checkbox>
+                            <mat-form-field appearance="fill" class="example-full-width">
+                                <input matInput [value]="trasladosFileName" placeholder="Ningún archivo seleccionado" readonly>
+                                <button mat-icon-button matSuffix (click)="fileInputTraslados.click()" [disabled]="!reporteForm.get('traslados')?.value">
+                                    <mat-icon>folder_open</mat-icon>
+                                </button>
+                                <input #fileInputTraslados type="file" webkitdirectory directory multiple accept=".pdf" (change)="onFilesSelected($event, 'traslados')" hidden>
+                            </mat-form-field>
+                        </div>
+
+                        <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-label>Cantidad de Contratos Tu Alianza</mat-label>
+                            <input matInput type="number" formControlName="cantidadContratosTuAlianza">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-label>Cantidad de Contratos Apoyo Laboral</mat-label>
+                            <input matInput type="number" formControlName="cantidadContratosApoyoLaboral">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-label>Notas</mat-label>
+                            <textarea matInput formControlName="notas" rows="4"></textarea>
+                        </mat-form-field>
+                    </div>
+
+                    <button mat-raised-button color="primary" id="enviar" type="submit" (click)="onSubmit()">Enviar</button>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

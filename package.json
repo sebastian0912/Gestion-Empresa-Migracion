@@ -1,0 +1,87 @@
+{
+  "name": "gestion-empresa-migracion",
+  "version": "2.0.0",
+  "description": "Programa para gestionar los procesos de la empresa",
+  "author": "SebastianGuarnizoCampos",
+  "license": "Uso Interno en TuAlianza, Apoyo Laboral, Comercializadora, prohibida su distribucion",
+  "main": "app.js",
+  "publish": {
+    "provider": "github",
+    "owner": "sebastian0912",
+    "releaseType": "release",
+    "repo": "Turnero"
+  },
+  "keywords": [],
+  "build": {
+    "appId": "GestionEmpresa",
+    "productName": "Gestion-Empresa",
+    "win": {
+      "target": "nsis",
+      "icon": "./public/logo.ico"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng build --base-href ./ && electron .",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "start:electron": "concurrently \"ng serve\" \"wait-on http://localhost:4200 && electron .\"",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "dist": "electron-builder",
+    "serve:ssr:Gestion-Empresa-Migracion": "node dist/gestion-empresa-migracion/server/server.mjs"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^18.0.0",
+    "@angular/cdk": "^18.1.2",
+    "@angular/common": "^18.0.0",
+    "@angular/compiler": "^18.0.0",
+    "@angular/core": "^18.0.0",
+    "@angular/forms": "^18.0.0",
+    "@angular/material": "^18.1.2",
+    "@angular/platform-browser": "^18.0.0",
+    "@angular/platform-browser-dynamic": "^18.0.0",
+    "@angular/platform-server": "^18.0.0",
+    "@angular/router": "^18.0.0",
+    "@angular/ssr": "^18.0.4",
+    "@types/chart.js": "^2.9.41",
+    "chart.js": "^4.4.3",
+    "electron-updater": "^6.2.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "file-saver": "^2.0.5",
+    "moment": "^2.30.1",
+    "ng2-charts": "^6.0.1",
+    "rxjs": "~7.8.0",
+    "sweetalert2": "^11.12.3",
+    "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
+    "zone.js": "~0.14.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^18.0.4",
+    "@angular/cli": "^18.0.4",
+    "@angular/compiler-cli": "^18.0.0",
+    "@types/express": "^4.17.17",
+    "@types/file-saver": "^2.0.7",
+    "@types/jasmine": "~5.1.0",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^18.18.0",
+    "concurrently": "^8.2.2",
+    "electron": "^31.3.0",
+    "electron-builder": "^24.13.3",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.4.2",
+    "wait-on": "^7.2.0"
+  }
+}

@@ -1,0 +1,78 @@
+.graficos {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.titulo-grafico {
+    text-align: center;
+    font-size: 16pt;
+    font-weight: 600;
+}
+
+.titulo-Opciones {
+    padding: 0 20px 0 20px;
+    font-size: 12pt;
+    margin-top: 10px;
+}
+
+.barras {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: 0px 0px 12px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.seleccionar {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.seleccionar2 {
+    max-height: 300px;
+    width: 100%;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.barChart-container {
+    width: 100%;
+    max-height: auto;
+    /* Adjust height as needed */
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    /* Optional: for some space at the bottom */
+}
+
+.circular {
+    width: 30%;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.graficoEdiciones {
+    width: 100%;
+    max-height: 200px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+}
+
+.barras {
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}

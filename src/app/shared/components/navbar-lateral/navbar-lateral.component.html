@@ -1,0 +1,124 @@
+<div class="navbar-wrapper" style="position: relative; z-index: 1002;">
+    <div class="hamburger" (click)="toggleMenu()">&#9776;</div>
+</div>
+
+<div class="navbar-wrapper" style="position: relative; z-index: 1002;">
+    <div class="hamburger" (click)="toggleMenu()">&#9776;</div>
+</div>
+
+
+
+<div class="navbar">
+
+
+    <ul class="nav-links" [class.active]="isMenuVisible">
+
+        <div class="sidebar-header titulo-header">
+            <h3>Gestión Empresa</h3>
+        </div>
+
+        <div class="sidebar-header servicios-header">
+            <h3>Menu</h3>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home" response>
+            <img src="navbar/home-button.png" alt="Dashboard" class="icon">
+            <li> Home </li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/solicitar-turno'" routerLink="/solicitar-turno"
+            response>
+            <img src="navbar/mostrador-de-informacion.png" alt="Dashboard" class="icon">
+            <li>Solicitar turno</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/atender-turno'" routerLink="/atender-turno" response>
+            <img src="navbar/turno-nocturno.png" alt="Dashboard" class="icon">
+            <li>Atender turno</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/estadisticas-turnero'"
+            routerLink="/estadisticas-turnero" response>
+            <img src="navbar/estadisticas.png" alt="Dashboard" class="icon">
+            <li>Estadisticas turnero</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/visualizar-turnos'" routerLink="/visualizar-turnos"
+            response>
+            <img src="navbar/televisor.png" alt="Dashboard" class="icon">
+            <li>Visualizar turno</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/forma-pago'" routerLink="/forma-pago" response
+            style="background-color: red;">
+            <img src="navbar/tarjeta-de-dinero.png" alt="Dashboard" class="icon">
+            <li> Forma de pago </li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/desprendibles-pago'" routerLink="/desprendibles-pago"
+            response style="background-color: red;">
+            <img src="navbar/recibo.png" alt="Dashboard" class="icon">
+            <li> Desprendibles de pago </li>
+        </div>
+
+        <div class="blockLink" response (click)="selectFile('arl')" style="background-color: red;">
+            <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
+            <li> Arl </li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/ausentismos'" routerLink="/ausentismos" response
+            style="background-color: red;">
+            <img src="navbar/person.png" alt="Dashboard" class="icon">
+            <li>Ausentismos </li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/publicidad'" routerLink="/publicidad" response>
+            <img src="navbar/publicidad-digital.png" alt="Dashboard" class="icon">
+            <li>Publicidad</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/vacantes'" routerLink="/vacantes" response>
+            <img src="navbar/trabajos.png" alt="Dashboard" class="icon">
+            <li> Vacantes </li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/seleccion'" routerLink="/seleccion" response>
+            <img src="navbar/delegar.png" alt="Dashboard" class="icon">
+            <li>Selección</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/contratacion'" routerLink="/contratacion" response>
+            <img src="navbar/contratacion.png" alt="Dashboard" class="icon">
+            <li>Contratación</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/reporte-contratacion'"
+            routerLink="/reporte-contratacion" response style="background-color: red;">
+            <img src="navbar/informe-de-venta.png" alt="Dashboard" class="icon">
+            <li>Reporte de contratación</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria'"
+            routerLink="/seguimiento-auditoria" response style="background-color: red;">
+            <img src="navbar/archivos.png" alt="Dashboard" class="icon">
+            <li>Seguimiento HV</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/estadisticas-auditoria'"
+            routerLink="/estadisticas-auditoria" response>
+            <img src="navbar/reporte-de-negocios.png" alt="Dashboard" class="icon">
+            <li>Estadisticas HV</li>
+        </div>
+
+        <!-- Hidden file input to handle file selection -->
+        <input type="file" id="fileInput" style="display: none" (change)="onFileSelected($event)">
+
+
+        <div class="blockLink cerrar-sesion" routerLink="" (click)="cerrarSesion()">
+            <img src="navbar/cerrar-sesion.png" alt="Dashboard" class="icon">
+            <li>Cerrar Sesión</li>
+        </div>
+
+    </ul>
+
+</div>

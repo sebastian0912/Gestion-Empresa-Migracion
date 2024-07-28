@@ -1,0 +1,30 @@
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.example-full-width {
+    width: 100%;
+}
+
+.subida {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+.subida mat-checkbox{
+    width: 50%;
+}
+
+textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+button {
+    align-self: flex-start;
+}

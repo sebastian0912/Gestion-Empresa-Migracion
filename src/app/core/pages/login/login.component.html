@@ -1,0 +1,50 @@
+<div class="contenedor">
+    <div class="container" [ngClass]="{'right-panel-active': rightPanelActive}" id="container">
+      <div class="form-container sign-up-container">
+        <form [formGroup]="registerForm" (ngSubmit)="register()">
+          <h1>Crear Cuenta</h1>
+          <input type="text" placeholder="Primer Nombre" formControlName="firstName" required />
+          <input type="text" placeholder="Segundo Nombre" formControlName="secondName" />
+          <input type="text" placeholder="Primer Apellido" formControlName="firstLastName" required />
+          <input type="text" placeholder="Segundo Apellido" formControlName="secondLastName" />
+          <input type="text" placeholder="Número de Documento" formControlName="documentNumber" required />
+          <input type="email" placeholder="Correo" formControlName="email" required />
+          <div class="password-container">
+            <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password" required />
+            <mat-icon class="toggle-password" (click)="togglePasswordVisibility()">{{showPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </div>
+
+          <button type="submit" [disabled]="registerForm.invalid">Regístrate</button>
+        </form>
+      </div>
+      <div class="form-container sign-in-container">
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <h1>Inicio Sesión</h1>
+          <input type="email" placeholder="Correo" formControlName="email" required />
+          <div class="password-container">
+            <input [type]="showLoginPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password" required />
+            <mat-icon class="toggle-password" (click)="toggleLoginPasswordVisibility()">{{showLoginPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </div>
+          <div *ngIf="loginForm.invalid && loginForm.touched">
+            <small class="error">Verifica tus datos</small>
+          </div>
+          <button type="submit" [disabled]="loginForm.invalid">Inicia Sesión</button>
+        </form>
+      </div>
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Bienvenido!</h1>
+            <p>Si ya tienes una cuenta, inicia sesión con tu correo y contraseña</p>
+            <button class="ghost" (click)="togglePanel(false)">Inicia Sesión</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>Bienvenido!</h1>
+            <p>No te has registrado? Regístrate para validar los empleados</p>
+            <button class="ghost" (click)="togglePanel(true)">Regístrate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

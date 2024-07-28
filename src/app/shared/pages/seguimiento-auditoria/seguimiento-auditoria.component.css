@@ -1,0 +1,64 @@
+.title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.example-full-width {
+    width: 40%;
+}
+
+.buscar {
+    width: 100%;
+}
+
+input[readonly] {
+    border: none;
+    background: transparent;
+    text-align: center;
+    pointer-events: none;
+    width: 130px;
+}
+
+.especial{
+    width: 150px;
+    min-width: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.editado{
+    width: 50px;
+    min-width: 50px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+input[readonly]:focus {
+    outline: none;
+
+}
+
+input.editable {
+    border: 1px solid #ccc;
+    padding: 4px;
+    text-align: left;
+    width: 130px;
+    min-width: 130px;
+}
+
+.mat-cell .editable {
+    width: 130px;
+    min-width: 130px;
+    /* Ajusta este valor según sea necesario */
+}

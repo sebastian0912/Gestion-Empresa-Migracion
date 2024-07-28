@@ -1,0 +1,22 @@
+.title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.buscar {
+    width: 100%;
+}
+
+.example-full-width {
+    width: 40%;
+}
+

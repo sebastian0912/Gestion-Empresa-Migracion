@@ -1,0 +1,37 @@
+<div class="cajaHeader">
+    <div class="cajontitulo">
+        <h1 class="titulo">Bienvenido</h1>
+    </div>
+    <div class="perfil">
+        <div class="opciones">
+            <div class="informacion">
+                <h1 class="titulo">Hola, <span id="username">{{username}}</span></h1>
+                <h1 id="perfil" class="titulo">{{role}}</h1>
+            </div>
+    
+            <div class="botonConfig">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Configuración" class="icono">
+                    <mat-icon>settings</mat-icon>
+                </button>
+        
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item routerLink="/cambiar-contrasena">
+                        <mat-icon>vpn_key</mat-icon>
+                        <span class="spanAux">Cambiar Contraseña</span>
+                    </button>
+                    <button mat-menu-item [matMenuTriggerFor]="sedeMenu">
+                        <mat-icon>location_city</mat-icon>
+                        <span class="spanAux">Cambiar Sede</span>
+                    </button>
+                </mat-menu>
+                
+                <mat-menu #sedeMenu="matMenu">
+                    <button mat-menu-item *ngFor="let sede of sedes" (click)="onSedeSeleccionada(sede.nombre)">
+                        {{ sede.nombre }}
+                    </button>
+                </mat-menu>
+                
+            </div>
+        </div>
+    </div>
+</div>
