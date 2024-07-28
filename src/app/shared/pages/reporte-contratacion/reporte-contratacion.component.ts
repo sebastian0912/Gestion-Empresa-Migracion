@@ -51,7 +51,7 @@ export class ReporteContratacionComponent {
   constructor(
     private fb: FormBuilder,
     private jefeAreaService: ContratacionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.reporteForm = this.fb.group({
@@ -142,32 +142,44 @@ export class ReporteContratacionComponent {
   }
 
   async processContratacion(workbook: XLSX.WorkBook): Promise<void> {
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(sheet, {
-      header: 1,
-      range: 1,
-      raw: true, // Leer los valores originales
-      defval: ''
-    });
-  
-    const rows: string[][] = (data as any[][]).map((row: any[]) =>
-      row.map((cell, index) => {
-        if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
-          return this.excelSerialToJSDate2(cell);
-        }
-        return cell.toString();
-      })
-    );
-  
+
     let response: any;
-  
+
     try {
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+      // Omite la primera fila (encabezados)
+      json.shift();
+      // Convertir todos los valores a cadena de texto y manejar las fechas
+      const rows: string[][] = (json as any[][]).map((row: any[]) => {
+        // Asegurarse de que todas las filas tengan al menos 195 columnas
+        while (row.length < 195) {
+          row.push('-');
+        }
+        return row.slice(0, 195).map((cell, index) => {
+          if (cell == null || cell === '') {
+            return '-';
+          }
+          if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
+            return this.excelSerialToJSDate2(cell);
+          }
+          return cell ? cell.toString() : '-';
+        });
+      });
+
+      console.log(rows);
       response = await this.jefeAreaService.subirContratacion(rows);
       if (response.message !== 'success') {
         throw new Error('Error en la carga de contratación');
       } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'Los datos se han procesado correctamente.'
+        });
         this.generateErrorExcel(response.errores);
-        // cerrar aviso de carga despues de 2 segundos
+        // cerrar aviso de carga después de 2 segundos
         setTimeout(() => {
           Swal.close();
         }, 1000);
@@ -179,41 +191,41 @@ export class ReporteContratacionComponent {
         title: 'Error',
         text: 'Ocurrió un error al procesar el Cruce diario Excel, inténtelo de nuevo.'
       });
-  
+
       if (response && response.errores && response.errores.length > 0) {
         this.generateErrorExcel(response.errores);
       }
     }
   }
-  
+
   generateErrorExcel(errores: any[]): void {
     const worksheetData = [
       ['Registro', 'Campo', 'Error']
     ];
-  
+
     errores.forEach((error: any) => {
       worksheetData.push([error.registro, error.campo, error.error]);
     });
-  
+
     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(worksheetData);
     const workbook: XLSX.WorkBook = { Sheets: { 'Errores': worksheet }, SheetNames: ['Errores'] };
-  
+
     // Generar el archivo Excel
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
+
     // Guardar el archivo
     this.saveAsExcelFile(excelBuffer, 'Errores_Contratacion');
   }
-  
+
   saveAsExcelFile(buffer: any, fileName: string): void {
     const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
     const url: string = window.URL.createObjectURL(data);
-  
+
     const link: HTMLAnchorElement = document.createElement('a');
     link.href = url;
     link.download = `${fileName}.xlsx`;
     link.click();
-  
+
     window.URL.revokeObjectURL(url);
   }
 
