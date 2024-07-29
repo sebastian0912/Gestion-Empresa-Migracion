@@ -92,8 +92,6 @@ export class ContratacionService {
       jwt: token
     };
 
-    console.log(data);
-
     try {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
         catchError(this.handleError)

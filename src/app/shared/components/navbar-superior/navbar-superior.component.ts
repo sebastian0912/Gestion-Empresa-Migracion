@@ -23,7 +23,7 @@ import { AdminService } from '../../services/admin/admin.service';
   styleUrl: './navbar-superior.component.css'
 })
 
-export class NavbarSuperiorComponent {
+export class NavbarSuperiorComponent implements OnInit {
   role: string = '';
   username: string = '';
   sedes: any[] = [];
@@ -36,14 +36,6 @@ export class NavbarSuperiorComponent {
     const user = await this.getUser();
     this.username = `${user.primer_nombre} ${user.primer_apellido}`;
     this.role = user.rol;
-
-    (await this.adminService.traerSucursales()).subscribe((data: any) => {
-      // ordenar por nombre
-      data.sucursal.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
-      
-      this.sedes = data.sucursal;
-    });
-
   }
 
   public getUser(): any {
@@ -53,15 +45,21 @@ export class NavbarSuperiorComponent {
     return null;
   }
 
-  async onSedeSeleccionada(sede: string) {
+  async cargarSedes(): Promise<void> {
+    (await this.adminService.traerSucursales()).subscribe((data: any) => {
+      // ordenar por nombre
+      data.sucursal.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+      this.sedes = data.sucursal;
+    });
+  }
 
+  async onSedeSeleccionada(sede: string) {
     try {
       const response = await this.adminService.editarSede(this.getUser().numero_de_documento, sede);
       if (response.message === 'error') {
         Swal.fire('Error!', 'Hubo un problema al asignar la sede, vuelva a intentarlo.', 'error');
         return;
       } else if (response.message === 'success') {
-        // cambiar la sucursalde de user de localstorage que es un json
         const user = this.getUser();
         user.sucursal = sede;
         localStorage.setItem('user', JSON.stringify(user));
@@ -75,7 +73,5 @@ export class NavbarSuperiorComponent {
       console.error('Error:', error);
       Swal.fire('Error!', 'Hubo un problema al asignar la sede.', 'error');
     }
-
   }
-
 }

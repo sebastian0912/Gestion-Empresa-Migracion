@@ -601,6 +601,13 @@
                 </td>
               </ng-container>
 
+              <ng-container matColumnDef="diferencia_fecha_radicado_eps">
+                <th mat-header-cell *matHeaderCellDef> Diferencia Fecha Radicado EPS </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ calculateDateDifference(element.fecha_radicado_eps, element.fecha_de_ingreso) }}
+                </td>
+              </ng-container>
+
               <ng-container matColumnDef="nombre_y_cedula_eps">
                 <th mat-header-cell *matHeaderCellDef> Nombre y Cédula EPS </th>
                 <td mat-cell *matCellDef="let element">
@@ -621,6 +628,13 @@
                 <td mat-cell *matCellDef="let element">
                   <input matInput [(ngModel)]="element.fecha_radicado_caja" [readonly]="!element.editing"
                     class="editado">
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="diferencia_fecha_radicado_caja">
+                <th mat-header-cell *matHeaderCellDef> Diferencia Fecha Radicado Caja </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ calculateDateDifference(element.fecha_radicado_caja, element.fecha_de_ingreso) }}
                 </td>
               </ng-container>
 

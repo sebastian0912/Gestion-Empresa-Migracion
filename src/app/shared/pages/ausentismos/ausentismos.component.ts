@@ -177,10 +177,10 @@ export class AusentismosComponent implements OnInit {
   cargarExcel(event: any): void {
     this.toggleLoader(true);
     this.toggleOverlay(true);
-  
+
     const file = event.target.files[0];
     const reader = new FileReader();
-  
+
     reader.onload = (e: any) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
@@ -189,41 +189,47 @@ export class AusentismosComponent implements OnInit {
       const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
       // Omite la primera fila (encabezados)
       json.shift();
+
       // Convertir todos los valores a cadena de texto y manejar las fechas
       const rows: string[][] = (json as any[][]).map((row: any[]) => {
-        // Asegurarse de que todas las filas tengan al menos 195 columnas
-        while (row.length < 195) {
-          row.push('-');
-        }
-        return row.slice(0, 195).map((cell, index) => {
-          if (cell == null || cell === '') {
-            return '-';
+        // Asegurarse de que todas las filas tengan exactamente 195 columnas
+        const completeRow = new Array(195).fill('-');
+        row.forEach((cell, index) => {
+          if (index < 195) {
+            if (cell == null || cell === '') {
+              completeRow[index] = '-';
+            } else if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
+              completeRow[index] = this.excelSerialToJSDate2(cell);
+            } else if (index === 11 || index === 1) {
+              completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
+            } else {
+              completeRow[index] = cell.toString();
+            }
           }
-          if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
-            return this.excelSerialToJSDate2(cell);
-          }
-          return cell ? cell.toString() : '-';
         });
+        return completeRow;
       });
-  
-      console.log(rows);
+
+      console.log(rows);;
       this.contratacionService.subirContratacion(rows).then((response: any) => {
         console.log(response);
         if (response.message === 'success') {
+          this.playSound(true);
+          this.toggleLoader(false);
+          this.toggleOverlay(false);
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
             text: 'Los datos se han procesado correctamente.'
           });
           this.generateErrorExcel(response.errores);
-          this.toggleLoader(false);
-          this.toggleOverlay(false);
         } else {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'Ocurrió un error al procesar los datos, inténtelo de nuevo.'
           });
+          this.playSound(false);
           this.toggleLoader(false);
           this.toggleOverlay(false);
         }
@@ -233,13 +239,14 @@ export class AusentismosComponent implements OnInit {
           title: 'Error',
           text: `Ocurrió un error al procesar los datos: ${error.message}`
         });
+        this.playSound(false);
         this.toggleLoader(false);
         this.toggleOverlay(false);
       });
     };
-  
-    this.resetFileInput();
+
     reader.readAsArrayBuffer(file);
+    this.resetFileInput();
   }
 
   generateErrorExcel(errores: any[]): void {

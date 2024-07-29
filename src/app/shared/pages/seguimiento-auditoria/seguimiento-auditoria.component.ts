@@ -116,28 +116,13 @@ export class SeguimientoAuditoriaComponent implements OnInit {
     'fecha_cerRuaf15menor',
     'historia',
     'fecha_radicado_eps',
+    'diferencia_fecha_radicado_eps',
     'nombre_y_cedula_eps',
     'salario_eps',
     'fecha_radicado_caja',
+    'diferencia_fecha_radicado_caja',
     'nombre_y_cedula_caja',
     'salario_caja',
-    'nombre_y_cedula_seguridad',
-    'fecha_radicado_seguridad',
-    'codigo_hoja_de_vida',
-    'foto_hoja_de_vida',
-    'nombre_y_cedula_hoja_de_vida',
-    'correo_electronico_hoja_de_vida',
-    'direccion_hoja_de_vida',
-    'referencia_hoja_de_vida',
-    'firma_carnet_hoja_de_vida',
-    'firma_clausulas_add',
-    'sello_temporal_clausulas_add',
-    'firma_add_contrato',
-    'sello_temporal_add_contrato',
-    'autorizaciontratamientosDatosJDA',
-    'cartadescuentoflor',
-    'formato_timbre',
-    'cartaaurotiracioncorreo'
   ];
 
   dataSource = new MatTableDataSource<any>();
@@ -175,6 +160,20 @@ export class SeguimientoAuditoriaComponent implements OnInit {
         text: 'Ha ocurrido un error al obtener la información'
       });
     });
+  }
+
+  calculateDateDifference(fechaRadicado: string, fechaIngreso: string): string {
+    if (fechaIngreso === 'No encontrado' || !fechaRadicado) {
+      return 'No disponible';
+    }
+    const radicadoDate = new Date(fechaRadicado);
+    const ingresoDate = new Date(fechaIngreso);
+    if (isNaN(radicadoDate.getTime()) || isNaN(ingresoDate.getTime())) {
+      return 'Fecha inválida';
+    }
+    const diffTime = Math.abs(radicadoDate.getTime() - ingresoDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return `${diffDays} días`;
   }
 
   applyFilter(event: Event) {
@@ -227,55 +226,64 @@ export class SeguimientoAuditoriaComponent implements OnInit {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
 
-        // Convertir la hoja de trabajo en un arreglo de arreglos
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" }) as any[][];
 
-        // Procesar cada fila a partir de la tercera fila
         const modifiedRows = rows.slice(2).map((row: any[], rowIndex: number) => {
           let modifiedRow: { [key: string]: any } = {};
           row.forEach((cell: any, cellIndex: number) => {
             if (this.isDate(cell)) {
               cell = this.normalizeDate(cell);
             }
-            // Verificar si la celda está vacía y asignar '-' en ese caso
             modifiedRow[`${cellIndex + 1}`] = cell !== undefined && cell !== null && cell !== "" ? cell : '-';
           });
           return modifiedRow;
         });
 
-        // Si el primer elemento de la primera fila es AL, E1 o E2, se asume que el archivo es válido
-        if (rows[0][0] !== 'AL' && rows[0][0] !== 'E1' && rows[0][0] !== 'E2') {
+        // Filtrar filas con la primera columna que no sean AL, E1 o E2
+        const validRows = modifiedRows.filter((row: any) => {
+          return row['1'] != 'AL' && row['1'] != 'E1' && row['1'] != 'E2';
+        });
+
+        console.log(validRows);
+
+        if (validRows.length > 0) {
+          // Mostrar un mensaje de error si se encuentran filas no válidas
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'El archivo no tiene el formato correcto. Por favor, verifica que el archivo sea el correcto.'
+            text: 'Hay filas que no cumplen con el formato requerido en la primera columna. Por favor, verifique la información'
           });
-          this.resetFileInput();
           return;
         }
 
-        this.seguimientoHvService.cargarSeguimientoHv(modifiedRows).then((response: any) => {
-          if (response.status === 'success') {
-            Swal.fire({
-              icon: 'success',
-              title: 'Éxito',
-              text: 'La información ha sido cargada correctamente'
-            });
-            this.ngOnInit();
-          } else {
+
+        console.log(modifiedRows);
+
+        if (validRows.length === 0) {
+          this.seguimientoHvService.cargarSeguimientoHv(modifiedRows).then((response: any) => {
+            console.log(response);
+            if (response.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: 'La información ha sido cargada correctamente'
+              });
+              this.ngOnInit();
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ha ocurrido un error al cargar la información'
+              });
+            }
+          }).catch((error: any) => {
             Swal.fire({
               icon: 'error',
               title: 'Error',
               text: 'Ha ocurrido un error al cargar la información'
             });
-          }
-        }).catch((error: any) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al cargar la información'
           });
-        });
+        }
       };
       reader.readAsArrayBuffer(file);
     }

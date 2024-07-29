@@ -142,7 +142,6 @@ export class ReporteContratacionComponent {
   }
 
   async processContratacion(workbook: XLSX.WorkBook): Promise<void> {
-
     let response: any;
 
     try {
@@ -151,21 +150,27 @@ export class ReporteContratacionComponent {
       const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
       // Omite la primera fila (encabezados)
       json.shift();
+
       // Convertir todos los valores a cadena de texto y manejar las fechas
       const rows: string[][] = (json as any[][]).map((row: any[]) => {
-        // Asegurarse de que todas las filas tengan al menos 195 columnas
-        while (row.length < 195) {
-          row.push('-');
-        }
-        return row.slice(0, 195).map((cell, index) => {
-          if (cell == null || cell === '') {
-            return '-';
+        // Crear una fila completa de 195 columnas con valores predeterminados
+        const completeRow = new Array(195).fill('-');
+
+        row.forEach((cell, index) => {
+          if (index < 195) {
+            if (cell == null || cell === '') {
+              completeRow[index] = '-';
+            } else if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
+              completeRow[index] = this.excelSerialToJSDate2(cell);
+            } else if (index === 11 || index === 1) {
+              completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
+            } else {
+              completeRow[index] = cell.toString();
+            }
           }
-          if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
-            return this.excelSerialToJSDate2(cell);
-          }
-          return cell ? cell.toString() : '-';
         });
+
+        return completeRow;
       });
 
       console.log(rows);
@@ -197,6 +202,7 @@ export class ReporteContratacionComponent {
       }
     }
   }
+
 
   generateErrorExcel(errores: any[]): void {
     const worksheetData = [
@@ -307,6 +313,7 @@ export class ReporteContratacionComponent {
       } else {
         Swal.fire('Success', 'Form submitted successfully!', 'success');
       }
+
     } else {
       Swal.fire('Error', 'Please fill in all required fields.', 'error');
     }
