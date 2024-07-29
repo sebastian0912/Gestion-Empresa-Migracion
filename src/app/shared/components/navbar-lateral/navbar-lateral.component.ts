@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { catchError, filter } from 'rxjs/operators';
@@ -17,6 +17,7 @@ import FileSaver from 'file-saver';
 
 
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-navbar-lateral',
@@ -40,6 +41,15 @@ export class NavbarLateralComponent {
   loaderVisible = false;
   counterVisible = false;
 
+  currentRole: string = this.getUser()?.rol || 'user';
+
+  rolePermissions: any = {
+    admin: ['home', 'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria'],
+    user: ['home', 'solicitar-turno', 'visualizar-turnos'],
+    
+    // Agrega más roles y sus permisos según sea necesario
+  };
+
   empleadosProblemas: any[] = [];
   empleadosSinProblemas: any[] = [];
 
@@ -49,7 +59,8 @@ export class NavbarLateralComponent {
   constructor(
     private router: Router,
     public dialog: MatDialog,
-    private contratacionService: ContratacionService
+    private contratacionService: ContratacionService,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
@@ -62,6 +73,17 @@ export class NavbarLateralComponent {
 
   toggleMenu(): void {
     this.isMenuVisible = !this.isMenuVisible;
+  }
+
+  public getUser(): any {
+    if (isPlatformBrowser(this.platformId)) {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    }
+    return null;
+  }
+
+  hasPermission(option: string): boolean {
+    return this.rolePermissions[this.currentRole]?.includes(option) ?? false;
   }
 
   cerrarSesion(): void {
