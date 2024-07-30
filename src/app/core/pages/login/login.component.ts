@@ -85,7 +85,7 @@ export class LoginComponent {
     });
   }
 
-  login(): void {
+  async login(): Promise<void> {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -96,7 +96,7 @@ export class LoginComponent {
       password: this.loginForm.value.password
     };
 
-    this.authService.login(loginData.email, loginData.password).then(response => {
+    await this.authService.login(loginData.email, loginData.password).then(response => {
       if (response) {
         if (response.jwt === "Contraseña incorrecta") {
           Swal.fire({
@@ -105,28 +105,26 @@ export class LoginComponent {
             text: 'Por favor, verifique su contraseña e intente de nuevo'
           });
           return;
-        }
-        else if (response.jwt === "Usuario no encontrado") {
+        } else if (response.jwt === "Usuario no encontrado") {
           Swal.fire({
             icon: 'error',
             title: 'Usuario no encontrado',
             text: 'Por favor, verifique su correo electrónico e intente de nuevo'
           });
           return;
-        }
-        else {
+        } else {
           localStorage.setItem('token', response.jwt);
           this.authService.getUser().then(user => {
             localStorage.setItem('user', JSON.stringify(user));
+            this.router.navigate(['/home']);
           });
-          this.router.navigate(['/home']);
-
         }
       } else {
-        
+        // Manejo de respuesta nula
       }
     });
   }
+
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password')?.value;

@@ -15,39 +15,55 @@ import * as XLSX from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
 
-
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-navbar-lateral',
   standalone: true,
   imports: [
     RouterLink,
-    NavbarLateralComponent,
     InfoCardComponent,
     MatTableModule,
     MatInputModule,
     MatFormFieldModule,
     MatDialogModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    NgIf
   ],
   templateUrl: './navbar-lateral.component.html',
-  styleUrl: './navbar-lateral.component.css'
+  styleUrls: ['./navbar-lateral.component.css']
 })
-export class NavbarLateralComponent {
+export class NavbarLateralComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
 
-  currentRole: string = this.getUser()?.rol || 'user';
+  currentRole: string = '';
 
   rolePermissions: any = {
-    admin: ['home', 'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria'],
-    user: ['home', 'solicitar-turno', 'visualizar-turnos'],
-    
-    // Agrega más roles y sus permisos según sea necesario
+    GERENCIA: ['home', 'solicitar-turno', 'atender-turno', 'estadisticas-turnero',
+      'visualizar-turnos', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
+      'publicidad', 'vacantes', 'seleccion', 'contratacion', 'reporte-contratacion',
+      'seguimiento-auditoria', 'estadisticas-auditoria'],
+    RECEPCION: ['home', 'solicitar-turno', 'atender-turno',
+      'visualizar-turnos', 'forma-pago', 'desprendibles-pago', 'ausentismos',
+      'reporte-contratacion'],
+    COORDINADOR: ['home',
+      'forma-pago', 'desprendibles-pago', 'ausentismos',
+      'reporte-contratacion',
+      'seguimiento-auditoria'],
+    JEFE_DE_AREA: ['home', 'atender-turno',
+      'forma-pago', 'desprendibles-pago', 'ausentismos',
+      'seguimiento-auditoria'],
+    ADMIN: ['home', 'solicitar-turno', 'atender-turno', 'estadisticas-turnero',
+      'visualizar-turnos', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
+      'publicidad', 'vacantes', 'seleccion', 'contratacion', 'reporte-contratacion',
+      'seguimiento-auditoria'],
+    TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
+    CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
+      'seguimiento-auditoria'],
   };
 
   empleadosProblemas: any[] = [];
@@ -69,15 +85,27 @@ export class NavbarLateralComponent {
     });
   }
 
-  ngOnInit(): void { }
+  async ngOnInit(): Promise<void> {
+    const user = await this.getUser();
+    if (user && user.correo_electronico) {
+      if (user.correo_electronico === "tuafiliacion@tsservicios.co") {
+        this.currentRole = "CAROL";
+      } else {
+        this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
+      }
+    } else {
+      console.error('No user found in localStorage');
+    }
+  }
 
   toggleMenu(): void {
     this.isMenuVisible = !this.isMenuVisible;
   }
 
-  public getUser(): any {
+  async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
-      return JSON.parse(localStorage.getItem('user') || '{}');
+      const user = localStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
     }
     return null;
   }

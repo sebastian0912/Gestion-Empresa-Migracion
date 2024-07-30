@@ -31,9 +31,12 @@ export class SeguimientoHvService {
     throw error;
   }
 
-  public getUser(): any {
+  async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
-      return JSON.parse(localStorage.getItem('user') || '{}');
+      const user = localStorage.getItem('user');
+      if (user) {
+        return JSON.parse(user);
+      }
     }
     return null;
   }
@@ -41,6 +44,12 @@ export class SeguimientoHvService {
   // Buscar seguimiento hv por responsable
   public buscarSeguimientoHv(responsable: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
+    if (responsable === 'todos') {
+      return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_responsable/`, { headers }).pipe(
+        map((response: any) => response),
+        catchError(this.handleError)
+      );
+    }
     return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_responsable/${responsable}`, { headers }).pipe(
       map((response: any) => response),
       catchError(this.handleError)
@@ -99,7 +108,8 @@ export class SeguimientoHvService {
     if (!token) {
       throw new Error('No token found');
     }
-    const responsable = this.getUser().primer_nombre + ' ' + this.getUser().primer_apellido;
+    const user = await this.getUser();
+    const responsable = user.primer_nombre + ' ' + user.primer_apellido;
     const urlcompleta = `${this.apiUrl}/auditoria/tu_alianza/`;
 
     const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
@@ -110,8 +120,6 @@ export class SeguimientoHvService {
       mensaje: "muchos",
       jwt: token
     };
-
-    console.log(data);
 
     try {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(

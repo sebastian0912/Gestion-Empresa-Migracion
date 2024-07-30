@@ -37,6 +37,7 @@ import { SeguimientoHvService } from '../../services/seguimiento-hv/seguimiento-
   styleUrls: ['./seguimiento-auditoria.component.css']
 })
 export class SeguimientoAuditoriaComponent implements OnInit {
+
   displayedColumns: string[] = [
     'acciones',
     'tipo',
@@ -138,8 +139,8 @@ export class SeguimientoAuditoriaComponent implements OnInit {
     private seguimientoHvService: SeguimientoHvService
   ) { }
 
-  ngOnInit(): void {
-    const user = this.pagosService.getUser();
+  async ngOnInit(): Promise<void> {
+    const user = await this.pagosService.getUser();
     if (user) {
       this.correo = user.correo_electronico;
     } else {
@@ -150,31 +151,61 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       });
     }
 
-    this.seguimientoHvService.buscarSeguimientoHv(user.primer_nombre + ' ' + user.primer_apellido).subscribe((response: any) => {
-      this.dataSource.data = response;
-      this.originalData = response;
-    }, (error: any) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ha ocurrido un error al obtener la información'
+    if (user.correo_electronico === 'archivotualianza@gmail.com') {
+      this.seguimientoHvService.buscarSeguimientoHv("todos").subscribe((response: any) => {
+        // ordenar responsae por numero de contrato
+        response.sort((a: any, b: any) => {
+          if (a.codigo_contratacion < b.codigo_contratacion) {
+            return 1;
+          }
+          if (a.codigo_contratacion > b.codigo_contratacion) {
+            return -1;
+          }
+          return 0;
+        });
+        this.dataSource.data = response;
+        this.originalData = response;
+      }, (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al obtener la información'
+        });
       });
-    });
+    } else {
+      this.seguimientoHvService.buscarSeguimientoHv(user.primer_nombre + ' ' + user.primer_apellido).subscribe((response: any) => {
+        this.dataSource.data = response;
+        this.originalData = response;
+      }, (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al obtener la información'
+        });
+      });
+    }
   }
 
   calculateDateDifference(fechaRadicado: string, fechaIngreso: string): string {
     if (fechaIngreso === 'No encontrado' || !fechaRadicado) {
       return 'No disponible';
     }
-    const radicadoDate = new Date(fechaRadicado);
-    const ingresoDate = new Date(fechaIngreso);
+
+    // Convertir fechas al formato MM/DD/YYYY
+    const [dayRad, monthRad, yearRad] = fechaRadicado.split('/');
+    const [dayIng, monthIng, yearIng] = fechaIngreso.split('/');
+    const radicadoDate = new Date(`${monthRad}/${dayRad}/${yearRad}`);
+    const ingresoDate = new Date(`${monthIng}/${dayIng}/${yearIng}`);
+
     if (isNaN(radicadoDate.getTime()) || isNaN(ingresoDate.getTime())) {
       return 'Fecha inválida';
     }
+
     const diffTime = Math.abs(radicadoDate.getTime() - ingresoDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return `${diffDays} días`;
   }
+
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -244,8 +275,6 @@ export class SeguimientoAuditoriaComponent implements OnInit {
           return row['1'] != 'AL' && row['1'] != 'E1' && row['1'] != 'E2';
         });
 
-        console.log(validRows);
-
         if (validRows.length > 0) {
           // Mostrar un mensaje de error si se encuentran filas no válidas
           Swal.fire({
@@ -256,12 +285,8 @@ export class SeguimientoAuditoriaComponent implements OnInit {
           return;
         }
 
-
-        console.log(modifiedRows);
-
         if (validRows.length === 0) {
           this.seguimientoHvService.cargarSeguimientoHv(modifiedRows).then((response: any) => {
-            console.log(response);
             if (response.status === 'success') {
               Swal.fire({
                 icon: 'success',

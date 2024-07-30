@@ -20,13 +20,13 @@ import { AdminService } from '../../services/admin/admin.service';
     NgFor
   ],
   templateUrl: './navbar-superior.component.html',
-  styleUrl: './navbar-superior.component.css'
+  styleUrls: ['./navbar-superior.component.css']
 })
-
 export class NavbarSuperiorComponent implements OnInit {
   role: string = '';
   username: string = '';
   sedes: any[] = [];
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private adminService: AdminService
@@ -34,13 +34,19 @@ export class NavbarSuperiorComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const user = await this.getUser();
-    this.username = `${user.primer_nombre} ${user.primer_apellido}`;
-    this.role = user.rol;
+    if (user) {
+      this.username = `${user.primer_nombre} ${user.primer_apellido}`;
+      this.role = user.rol;
+      await this.cargarSedes();
+    }
   }
 
-  public getUser(): any {
+  async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
-      return JSON.parse(localStorage.getItem('user') || '{}');
+      const user = localStorage.getItem('user');
+      if (user) {
+        return JSON.parse(user);
+      }
     }
     return null;
   }
@@ -53,21 +59,22 @@ export class NavbarSuperiorComponent implements OnInit {
     });
   }
 
-  async onSedeSeleccionada(sede: string) {
+  async onSedeSeleccionada(sede: string): Promise<void> {
     try {
-      const response = await this.adminService.editarSede(this.getUser().numero_de_documento, sede);
-      if (response.message === 'error') {
-        Swal.fire('Error!', 'Hubo un problema al asignar la sede, vuelva a intentarlo.', 'error');
-        return;
-      } else if (response.message === 'success') {
-        const user = this.getUser();
-        user.sucursal = sede;
-        localStorage.setItem('user', JSON.stringify(user));
-
-        Swal.fire('Editado!', 'La sede ha sido asignada.', 'success')
-          .then(() => {
-            window.location.reload();
-          });
+      const user = await this.getUser();
+      if (user) {
+        const response = await this.adminService.editarSede(user.numero_de_documento, sede);
+        if (response.message === 'error') {
+          Swal.fire('Error!', 'Hubo un problema al asignar la sede, vuelva a intentarlo.', 'error');
+          return;
+        } else if (response.message === 'success') {
+          user.sucursal = sede;
+          localStorage.setItem('user', JSON.stringify(user));
+          Swal.fire('Editado!', 'La sede ha sido asignada.', 'success')
+            .then(() => {
+              window.location.reload();
+            });
+        }
       }
     } catch (error) {
       console.error('Error:', error);
