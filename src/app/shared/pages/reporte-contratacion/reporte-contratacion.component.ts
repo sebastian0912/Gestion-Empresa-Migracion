@@ -36,8 +36,8 @@ import moment from 'moment';
 export class ReporteContratacionComponent {
   reporteForm!: FormGroup;
   sedes: string[] = [
-    'Facatativa', 'Facatativa Centro', 'Facatativa PQ', 'Cartagenita', 'Rosal',
-    'Madrid', 'Funza', 'Fontibon', 'Soacha', 'Suba', 'Suba Gaitana', 'Tocancipa', 'Bosa'
+    'Facatativa', 'Facatativa PQ', 'Cartagenita', 'Rosal',
+    'Madrid', 'Funza', 'Fontibon', 'Soacha', 'Suba', 'Tocancipa', 'Bosa'
   ];
 
   cedulasEscaneadasFileName: string = '';

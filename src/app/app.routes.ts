@@ -16,6 +16,10 @@ import { SeleccionComponent } from './shared/pages/seleccion/seleccion.component
 import { SolicitarTurnoComponent } from './shared/pages/solicitar-turno/solicitar-turno.component';
 import { VacantesComponent } from './shared/pages/vacantes/vacantes.component';
 import { VisualizarTurnosComponent } from './shared/pages/visualizar-turnos/visualizar-turnos.component';
+import { CrearEstructuraDocumentalComponent } from './shared/pages/crear-estructura-documental/crear-estructura-documental.component';
+import { BuscarDocumentacionComponent } from './shared/pages/buscar-documentacion/buscar-documentacion.component';
+import { AuditoriaComponent } from './shared/pages/auditoria/auditoria.component';
+import { SubirDocumentacionComponent } from './shared/pages/subir-documentacion/subir-documentacion.component';
 
 
 
@@ -37,4 +41,8 @@ export const routes: Routes = [
     { path: 'solicitar-turno', component: SolicitarTurnoComponent },
     { path: 'vacantes', component: VacantesComponent },
     { path: 'visualizar-turnos', component: VisualizarTurnosComponent },
+    { path: 'crear-estructura-documental', component: CrearEstructuraDocumentalComponent },
+    { path: 'buscar-documentacion', component: BuscarDocumentacionComponent },
+    { path: 'auditoria', component: AuditoriaComponent },
+    { path: 'subir-documentacion', component: SubirDocumentacionComponent }
 ];
