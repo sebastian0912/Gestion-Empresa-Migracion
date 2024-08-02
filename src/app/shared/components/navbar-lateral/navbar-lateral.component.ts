@@ -133,13 +133,13 @@ export class NavbarLateralComponent implements OnInit {
 
 
       // Reset the file input value to allow uploading the same file again
-      (document.getElementById('fileInput') as HTMLInputElement).value = '';
+      (document.getElementById('fileInput2') as HTMLInputElement).value = '';
     };
     reader.readAsArrayBuffer(file);
   }
 
   selectFile(action: string): void {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    const fileInput = document.getElementById('fileInput2') as HTMLInputElement;
     fileInput.setAttribute('data-action', action);
     fileInput.click();
   }

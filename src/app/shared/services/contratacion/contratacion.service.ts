@@ -1,9 +1,10 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -103,11 +104,6 @@ export class ContratacionService {
     }
   }
 
-
-  // -------------------------------------------------------------------------------------
-  // ----------------------------------- Arl ---------------------------------------------
-  // -------------------------------------------------------------------------------------
-
   // Generar el excel de arl
   async generarExcelArl(
     datos: any
@@ -139,10 +135,56 @@ export class ContratacionService {
     }
   }
 
+  // Cargar una única cédula
+  async cargarCedula(dato: any): Promise<any> {
+    const token = this.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const urlcompleta = `${this.apiUrl}/traslados/cargar-cedula`;
+
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+
+    const data = {
+      dato: dato,
+      jwt: token
+    };
+
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      console.error('Error en la petición HTTP POST', error);
+      throw error;
+    }
+  }
 
 
+  // Enviar archivos de traslados
+  async enviarTraslado(data: any): Promise<any> {
+    const token = this.getToken();
 
+    if (!token) {
+      throw new Error('No token found');
+    }
+    
+    const urlcompleta = `${this.apiUrl}/traslados/formulario-solicitud`;
 
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
 
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      console.error('Error en la petición HTTP POST', error);
+      throw error;
+    }
+  }
 
 }

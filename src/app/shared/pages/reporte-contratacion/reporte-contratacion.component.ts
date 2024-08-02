@@ -12,8 +12,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
-import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import moment from 'moment';
+import { ContratacionService } from '../../services/contratacion/contratacion.service';
 
 @Component({
   selector: 'app-reporte-contratacion',
@@ -33,7 +33,7 @@ import moment from 'moment';
   templateUrl: './reporte-contratacion.component.html',
   styleUrls: ['./reporte-contratacion.component.css']
 })
-export class ReporteContratacionComponent {
+export class ReporteContratacionComponent implements OnInit {
   reporteForm!: FormGroup;
   sedes: string[] = [
     'Facatativa', 'Facatativa Centro', 'Facatativa PQ', 'Cartagenita', 'Rosal',
@@ -131,6 +131,118 @@ export class ReporteContratacionComponent {
     }
   }
 
+  convertToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async processCedulasEscaneadas(files: File[]) {
+    for (const file of files) {
+      const base64 = await this.convertToBase64(file);
+      const cedula = file.name.split(' - ')[0];
+      const data = {
+        numero_cedula: cedula,
+        cedula_escaneada_delante: base64
+      };
+      await this.jefeAreaService.cargarCedula(data);
+      await this.delay(500); // Espera de medio segundo
+    }
+  }
+
+  async processTraslados(files: File[]) {
+    for (const file of files) {
+      const [cedula, eps] = file.name.split(' - ');
+      const base64 = await this.convertToBase64(file);
+      const data = {
+        numero_cedula: cedula,
+        eps_a_trasladar: eps.replace('.pdf', ''),
+        solicitud_traslado: base64
+      };
+      await this.jefeAreaService.enviarTraslado(data);
+      await this.delay(500); // Espera de medio segundo
+    }
+  }
+
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async onSubmit() {
+    if (this.reporteForm.valid) {
+      this.processingErrors = [];
+      const processes = [
+        { key: 'cedulasEscaneadas', name: 'Cédulas Escaneadas', process: this.processCedulasEscaneadas.bind(this) },
+        { key: 'cruceDiario', name: 'Cruce diario Excel', process: this.processExcelFiles.bind(this) },
+        { key: 'induccionSSO', name: 'Inducción Seguridad y Salud en el trabajo', process: this.processFileList.bind(this) },
+        { key: 'traslados', name: 'Traslados', process: this.processTraslados.bind(this) }
+      ];
+
+      for (const { key, name, process } of processes) {
+        if (this.reporteForm.get(key)?.value) {
+          Swal.fire({
+            icon: 'info',
+            title: `Procesando ${name}`,
+            html: 'Por favor espera...',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+          const files = this.filesToUpload[key];
+          try {
+            await process(files);
+          } catch (error) {
+            this.processingErrors.push(name);
+          }
+        }
+        this.delay(1000); // Espera de medio segundo
+      }
+
+      if (this.processingErrors.length > 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Errores durante la carga',
+          html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`
+        });
+      } else {
+        Swal.fire('Success', 'Form submitted successfully!', 'success');
+      }
+    } else {
+      Swal.fire('Error', 'Please fill in all required fields.', 'error');
+    }
+  }
+
+  async processFileList(files: File[]) {
+    for (const file of files) {
+      await this.processFile(file);
+    }
+  }
+
+  async processFile(file: File) {
+    try {
+
+      const base64 = await this.convertToBase64(file);
+
+    } catch (error) {
+      this.processingErrors.push('archivo');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Ocurrió un error al procesar el archivo, inténtelo de nuevo.`
+      });
+    }
+  }
+
+  async processExcelFiles(files: File[]) {
+    for (const file of files) {
+      await this.processExcel(file);
+    }
+  }
+
   async processExcel(file: File) {
     const reader = new FileReader();
     reader.onload = async (e: any) => {
@@ -148,12 +260,9 @@ export class ReporteContratacionComponent {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
-      // Omite la primera fila (encabezados)
       json.shift();
 
-      // Convertir todos los valores a cadena de texto y manejar las fechas
       const rows: string[][] = (json as any[][]).map((row: any[]) => {
-        // Crear una fila completa de 195 columnas con valores predeterminados
         const completeRow = new Array(195).fill('-');
 
         row.forEach((cell, index) => {
@@ -173,36 +282,23 @@ export class ReporteContratacionComponent {
         return completeRow;
       });
 
-      console.log(rows);
       response = await this.jefeAreaService.subirContratacion(rows);
       if (response.message !== 'success') {
-        throw new Error('Error en la carga de contratación');
-      } else {
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: 'Los datos se han procesado correctamente.'
-        });
-        this.generateErrorExcel(response.errores);
-        // cerrar aviso de carga después de 2 segundos
-        setTimeout(() => {
-          Swal.close();
-        }, 1000);
+        this.processingErrors.push('Cruce diario Excel');
+        
       }
+      this.generateErrorExcel(response.errores);
+      
+
     } catch (error) {
       this.processingErrors.push('Cruce diario Excel');
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ocurrió un error al procesar el Cruce diario Excel, inténtelo de nuevo.'
-      });
+
 
       if (response && response.errores && response.errores.length > 0) {
         this.generateErrorExcel(response.errores);
       }
     }
   }
-
 
   generateErrorExcel(errores: any[]): void {
     const worksheetData = [
@@ -216,10 +312,8 @@ export class ReporteContratacionComponent {
     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(worksheetData);
     const workbook: XLSX.WorkBook = { Sheets: { 'Errores': worksheet }, SheetNames: ['Errores'] };
 
-    // Generar el archivo Excel
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-    // Guardar el archivo
     this.saveAsExcelFile(excelBuffer, 'Errores_Contratacion');
   }
 
@@ -250,72 +344,5 @@ export class ReporteContratacionComponent {
     const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
     const year = date.getUTCFullYear();
     return `${day}/${month}/${year}`;
-  }
-
-  convertToBase64(file: File, controlName: string) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      console.log(`${controlName} in Base64:`, base64);
-      this.reporteForm.get(controlName)?.setValue(base64);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  async processFile(file: File, controlName: string) {
-    try {
-      Swal.fire({
-        title: `Procesando ${controlName}`,
-        html: 'Por favor espera...',
-        allowOutsideClick: false,
-        willClose: () => {
-          Swal.hideLoading();
-        },
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-
-      if (controlName === 'cruceDiario') {
-        await this.processExcel(file);
-      } else {
-        this.convertToBase64(file, controlName);
-      }
-
-      Swal.close();
-    } catch (error) {
-      this.processingErrors.push(controlName);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: `Ocurrió un error al procesar ${controlName}, inténtelo de nuevo.`
-      });
-    }
-  }
-
-  async onSubmit() {
-    if (this.reporteForm.valid) {
-      this.processingErrors = [];
-      for (const key of Object.keys(this.filesToUpload)) {
-        if (this.reporteForm.get(key)?.value) {
-          const files = this.filesToUpload[key];
-          for (const file of files) {
-            await this.processFile(file, key);
-          }
-        }
-      }
-      if (this.processingErrors.length > 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Errores durante la carga',
-          html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`
-        });
-      } else {
-        Swal.fire('Success', 'Form submitted successfully!', 'success');
-      }
-
-    } else {
-      Swal.fire('Error', 'Please fill in all required fields.', 'error');
-    }
   }
 }
