@@ -14,7 +14,7 @@
   "keywords": [],
   "build": {
     "appId": "com.gestion.empresa",
-    "productName": "Gestion Empresa",
+    "productName": "Gestion-Empresa",
     "directories": {
       "output": "dist/electron"
     },
