@@ -36,8 +36,8 @@ import { ContratacionService } from '../../services/contratacion/contratacion.se
 export class ReporteContratacionComponent implements OnInit {
   reporteForm!: FormGroup;
   sedes: string[] = [
-    'Facatativa', 'Facatativa Centro', 'Facatativa PQ', 'Cartagenita', 'Rosal',
-    'Madrid', 'Funza', 'Fontibon', 'Soacha', 'Suba', 'Suba Gaitana', 'Tocancipa', 'Bosa'
+    'Facatativa', 'Facatativa PQ', 'Cartagenita', 'Rosal',
+    'Madrid', 'Funza', 'Fontibon', 'Soacha', 'Suba', 'Tocancipa', 'Bosa'
   ];
 
   cedulasEscaneadasFileName: string = '';
