@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
@@ -34,18 +34,28 @@ import { NgIf } from '@angular/common';
   templateUrl: './forma-pago.component.html',
   styleUrls: ['./forma-pago.component.css']
 })
-export class FormaPagoComponent {
+export class FormaPagoComponent implements OnInit {
   cedula: string = '';
   displayedColumns: string[] = ['contrato', 'cedula', 'nombre', 'centrodecosto', 'concepto', 'formadepago', 'valor', 'banco', 'fechadepago', 'acciones'];
   dataSource = new MatTableDataSource<any>();
   originalData: any[] = [];
-  correo = this.pagosService.getUser().correo_electronico;
+  user : any
+  correo : any
 
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
 
-  constructor(private pagosService: PagosService) {}
+  constructor(private pagosService: PagosService) {
+
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.user = await this.pagosService.getUser();
+    if (this.user) {
+      this.correo = this.user.correo_electronico;
+    }
+  }
 
   playSound(success: boolean): void {
     const audio = new Audio(success ? 'Sounds/positivo.mp3' : 'Sounds/negativo.mp3');
@@ -95,8 +105,8 @@ export class FormaPagoComponent {
   }
 
   toggleEdit(element: any): void {
-    if (this.pagosService.getUser().correo_electronico === "contaduria.rtc@gmail.com" ||
-      this.pagosService.getUser().correo_electronico === "ghumana.rtc@gmail.com") {
+    if (this.correo === "contaduria.rtc@gmail.com" ||
+      this.correo === "ghumana.rtc@gmail.com") {
 
       element.editing = !element.editing;
 
@@ -146,8 +156,8 @@ export class FormaPagoComponent {
   }
 
   eliminarFormaPago(element: any): void {
-    if (this.pagosService.getUser().correo_electronico === "contaduria.rtc@gmail.com" ||
-      this.pagosService.getUser().correo_electronico === "ghumana.rtc@gmail.com") {
+    if (this.correo === "contaduria.rtc@gmail.com" ||
+      this.correo === "ghumana.rtc@gmail.com") {
 
       Swal.fire({
         title: '¿Estás seguro de eliminar esta información?',

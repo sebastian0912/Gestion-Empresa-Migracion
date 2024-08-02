@@ -43,6 +43,7 @@ export class NavbarLateralComponent implements OnInit {
   currentRole: string = '';
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion',
   // 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion'
+  //'seguimiento-auditoria', 'reporte-contratacion'
   rolePermissions: any = {
     GERENCIA: ['home', , 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion',
@@ -52,16 +53,20 @@ export class NavbarLateralComponent implements OnInit {
     COORDINADOR: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
       'reporte-contratacion',
-      'seguimiento-auditoria'],
+      ],
     JEFE_DE_AREA: ['home', 
       'forma-pago', 'desprendibles-pago', 'ausentismos',
       'seguimiento-auditoria'],
     ADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion',
-      'seguimiento-auditoria', 'estadisticas-auditoria', ],
+      'seguimiento-auditoria', 'estadisticas-auditoria', 
+      'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion',
+      'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
+      'seguimiento-auditoria', 'reporte-contratacion',
+    ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      'seguimiento-auditoria', 'reporte-contratacion'],
+      ],
   };
 
   empleadosProblemas: any[] = [];
@@ -85,14 +90,12 @@ export class NavbarLateralComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const user = await this.getUser();
-    if (user && user.correo_electronico) {
+    if (user ) {
       if (user.correo_electronico === "tuafiliacion@tsservicios.co") {
         this.currentRole = "CAROL";
       } else {
         this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
       }
-    } else {
-      console.error('No user found in localStorage');
     }
   }
 

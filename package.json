@@ -13,15 +13,22 @@
   },
   "keywords": [],
   "build": {
-    "appId": "GestionEmpresa",
-    "productName": "Gestion-Empresa",
+    "appId": "com.gestion.empresa",
+    "productName": "Gestion Empresa",
+    "directories": {
+      "output": "dist/electron"
+    },
+    "files": [
+      "dist/gestion-empresa-migracion/**/*",
+      "app.js",
+      "preload.js"
+    ],
     "win": {
       "target": "nsis",
-      "icon": "./public/logo.ico"
+      "icon": "public/logo.ico"
     },
-    "directories": {
-      "output": "dist"
-    }
+    "asar": true
+
   },
   "scripts": {
     "ng": "ng",

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
@@ -34,7 +34,7 @@ import { NgIf } from '@angular/common';
   templateUrl: './desprendibles-pago.component.html',
   styleUrls: ['./desprendibles-pago.component.css']
 })
-export class DesprendiblesPagoComponent {
+export class DesprendiblesPagoComponent implements OnInit {
   cedula: string = '';
   displayedColumns: string[] = [
     'no', 'cedula', 'nombre', 'ingreso', 'retiro', 'finca', 'telefono',
@@ -43,7 +43,8 @@ export class DesprendiblesPagoComponent {
   ];
   dataSource = new MatTableDataSource<any>();
   originalData: any[] = [];
-  correo = this.pagosService.getUser().correo_electronico;
+  user: any
+  correo: any;
 
 
   overlayVisible = false;
@@ -56,7 +57,16 @@ export class DesprendiblesPagoComponent {
     "Carta_Cesantias", "Entrevista_Retiro", "Correo", "Confirmacion_Envio"
   ];
 
-  constructor(private pagosService: PagosService) { }
+  constructor(private pagosService: PagosService) {
+
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.user = await this.pagosService.getUser();
+    if (this.user) {
+      this.correo = this.user.correo_electronico;
+    }
+  }
 
   // Funciones para mostrar y ocultar el loader
   playSound(success: boolean): void {
@@ -171,7 +181,7 @@ export class DesprendiblesPagoComponent {
         this.toggleOverlay(false);
       });
     };
-    
+
     this.resetFileInput();
     reader.readAsArrayBuffer(file);
   }

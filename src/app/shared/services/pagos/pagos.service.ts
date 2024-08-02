@@ -31,7 +31,7 @@ export class PagosService {
     throw error;
   }
 
-  public getUser(): any {
+  async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
       return JSON.parse(localStorage.getItem('user') || '{}');
     }

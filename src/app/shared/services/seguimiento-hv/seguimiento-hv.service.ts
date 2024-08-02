@@ -109,6 +109,7 @@ export class SeguimientoHvService {
       throw new Error('No token found');
     }
     const user = await this.getUser();
+    
     const responsable = user.primer_nombre + ' ' + user.primer_apellido;
     const urlcompleta = `${this.apiUrl}/auditoria/tu_alianza/`;
 

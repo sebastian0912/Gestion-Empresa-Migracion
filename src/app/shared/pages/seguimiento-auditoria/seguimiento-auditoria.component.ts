@@ -140,51 +140,54 @@ export class SeguimientoAuditoriaComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    const user = await this.pagosService.getUser();
-    if (user) {
-      this.correo = user.correo_electronico;
-    } else {
+    try {
+      const user = await this.pagosService.getUser();
+      
+      if (user && user.correo_electronico) {
+        this.correo = user.correo_electronico;
+      } else {
+        throw new Error('Usuario no encontrado o correo electrónico no disponible.');
+      }
+  
+      if (this.correo === 'archivotualianza@gmail.com') {
+        this.seguimientoHvService.buscarSeguimientoHv("todos").subscribe(
+          (response: any) => {
+            response.sort((a: any, b: any) => b.codigo_contratacion - a.codigo_contratacion);
+            this.dataSource.data = response;
+            this.originalData = response;
+          },
+          (error: any) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ha ocurrido un error al obtener la información'
+            });
+          }
+        );
+      } else {
+        this.seguimientoHvService.buscarSeguimientoHv(`${user.primer_nombre} ${user.primer_apellido}`).subscribe(
+          (response: any) => {
+            this.dataSource.data = response;
+            this.originalData = response;
+          },
+          (error: any) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ha ocurrido un error al obtener la información'
+            });
+          }
+        );
+      }
+    } catch (error) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo obtener la información del usuario. Por favor, inicia sesión de nuevo.'
-      });
-    }
-
-    if (user.correo_electronico === 'archivotualianza@gmail.com') {
-      this.seguimientoHvService.buscarSeguimientoHv("todos").subscribe((response: any) => {
-        // ordenar responsae por numero de contrato
-        response.sort((a: any, b: any) => {
-          if (a.codigo_contratacion < b.codigo_contratacion) {
-            return 1;
-          }
-          if (a.codigo_contratacion > b.codigo_contratacion) {
-            return -1;
-          }
-          return 0;
-        });
-        this.dataSource.data = response;
-        this.originalData = response;
-      }, (error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al obtener la información'
-        });
-      });
-    } else {
-      this.seguimientoHvService.buscarSeguimientoHv(user.primer_nombre + ' ' + user.primer_apellido).subscribe((response: any) => {
-        this.dataSource.data = response;
-        this.originalData = response;
-      }, (error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al obtener la información'
-        });
+        text: "Ha ocurrido un error al obtener la información"
       });
     }
   }
+  
 
   calculateDateDifference(fechaRadicado: string, fechaIngreso: string): string {
     if (fechaIngreso === 'No encontrado' || !fechaRadicado) {

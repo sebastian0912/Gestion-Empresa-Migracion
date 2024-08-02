@@ -1,71 +1,71 @@
 <div class="app-layout">
     <app-navbar-lateral></app-navbar-lateral>
     <div class="contenedor">
-      <app-navbar-superior></app-navbar-superior>
-      <mat-card>
-        <mat-card-content>
-          <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas sobre los seguimientos de hojas de vida</h1>
+        <app-navbar-superior></app-navbar-superior>
+        <mat-card>
+            <mat-card-content>
+                <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas sobre los seguimientos de hojas de vida</h1>
   
-          <!-- Gráfico de barras por persona -->
-          <div class="barras">
-            <div class="seleccionar">
-              <h1 class="titulo-grafico">Selecciona los responsables</h1>
-              <div id="checkboxes-container"></div>
-              <button id="updateChartButton" class="btn">Actualizar Gráfico</button>
-            </div>
-            <div class="graficoBarras" style="width: 65%;">
-              <h1 class="titulo-grafico">Estadísticas de hojas de vida por persona</h1>
-              <div class="barChart-container">
-                <canvas id="barChart"></canvas>
-              </div>
-            </div>
-          </div>
+                <!-- Gráfico de barras por persona -->
+                <div class="barras">
+                    <div class="seleccionar">
+                        <h1 class="titulo-grafico">Selecciona los responsables</h1>
+                        <div id="checkboxes-container"></div>
+                        <button id="updateChartButton" class="btn">Actualizar Gráfico</button>
+                    </div>
+                    <div class="graficoBarras" style="width: 65%;">
+                        <h1 class="titulo-grafico">Estadísticas de hojas de vida por persona</h1>
+                        <div class="barChart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
   
-          <!-- Gráfico circular general -->
-          <h1 class="titulo-grafico">Estadísticas de hojas de vida General</h1>
-          <div class="circular">
-            <canvas id="pieChart"></canvas>
-          </div>
+                <!-- Gráfico circular general -->
+                <h1 class="titulo-grafico">Estadísticas de hojas de vida General</h1>
+                <div class="circular">
+                    <canvas id="pieChart"></canvas>
+                </div>
   
-          <!-- Gráfico de barras de ediciones por responsable -->
-          <div class="barras">
-            <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas de Ediciones por Responsable</h1>
-            <div class="seleccionar">
-              <h1 class="titulo-grafico">Selecciona los responsables que han editado</h1>
-              <div id="checkboxes-container-edits"></div>
-              <button id="updateEditChartButton" class="btn">Actualizar Gráfico</button>
-            </div>
-            <div class="graficoBarras">
-              <h1 class="titulo-grafico">Estadísticas de Ediciones por Responsable</h1>
-              <div class="barChart-container">
-                <canvas id="editBarChart"></canvas>
-              </div>
-            </div>
-          </div>
+                <!-- Gráfico de barras de ediciones por responsable -->
+                <div class="barras">
+                    <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas de Ediciones por Responsable</h1>
+                    <div class="seleccionar">
+                        <h1 class="titulo-grafico">Selecciona los responsables que han editado</h1>
+                        <div id="checkboxes-container-edits"></div>
+                        <button id="updateEditChartButton" class="btn">Actualizar Gráfico</button>
+                    </div>
+                    <div class="graficoBarras">
+                        <h1 class="titulo-grafico">Estadísticas de Ediciones por Responsable</h1>
+                        <div class="barChart-container">
+                            <canvas id="editBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
   
-          <!-- Gráfico de barras por grupo -->
-          <div class="barras">
-            <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas generales por paquete</h1>
-            <div class="seleccionar">
-              <h1 class="titulo-grafico">Selecciona los grupos</h1>
-              <div id="checkboxes-container-groups"></div>
-              <button id="updateGroupChartButton" class="btn">Actualizar Gráfico</button>
-            </div>
-            <div class="graficoBarras" style="width: 90%;">
-              <h1 class="titulo-grafico">Diagrama de barras</h1>
-              <div class="barChart-container">
-                <canvas id="groupBarChart"></canvas>
-              </div>
-            </div>
-          </div>
+                <!-- Gráfico de barras por grupo -->
+                <div class="barras">
+                    <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas generales por paquete</h1>
+                    <div class="seleccionar">
+                        <h1 class="titulo-grafico">Selecciona los grupos</h1>
+                        <div id="checkboxes-container-groups"></div>
+                        <button id="updateGroupChartButton" class="btn">Actualizar Gráfico</button>
+                    </div>
+                    <div class="graficoBarras" style="width: 90%;">
+                        <h1 class="titulo-grafico">Diagrama de barras</h1>
+                        <div class="barChart-container">
+                            <canvas id="groupBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
   
-          <!-- Gráfico circular de "Tu Alianza" y "Apoyo Laboral" -->
-          <h1 class="titulo-grafico">Estadísticas de "Tu Alianza" y "Apoyo Laboral"</h1>
-          <div class="circular">
-            <canvas id="typePieChart"></canvas>
-          </div>
-        </mat-card-content>
-      </mat-card>
+                <!-- Gráfico circular de "Tu Alianza" y "Apoyo Laboral" -->
+                <h1 class="titulo-grafico">Estadísticas de "Tu Alianza" y "Apoyo Laboral"</h1>
+                <div class="circular">
+                    <canvas id="typePieChart"></canvas>
+                </div>
+            </mat-card-content>
+        </mat-card>
     </div>
   </div>
   

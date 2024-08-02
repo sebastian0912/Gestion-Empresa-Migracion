@@ -65,17 +65,11 @@ export class AusentismosComponent implements OnInit {
     private contratacionService: ContratacionService
   ) { }
 
-  ngOnInit(): void {
-    const user = this.pagosService.getUser();
+  async ngOnInit(): Promise<void> {
+    const user = await this.pagosService.getUser();
     if (user) {
       this.correo = user.correo_electronico;
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo obtener la información del usuario. Por favor, inicia sesión de nuevo.'
-      });
-    }
+    } 
   }
 
   // Funciones para mostrar y ocultar el loader
