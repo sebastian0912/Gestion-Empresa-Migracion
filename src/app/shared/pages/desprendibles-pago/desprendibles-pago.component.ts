@@ -51,11 +51,12 @@ export class DesprendiblesPagoComponent implements OnInit {
   loaderVisible = false;
   counterVisible = false;
 
-  claves: any[] = [
-    "No", "Cedula", "Nombre", "Ingreso", "Retiro", "Finca", "Telefono",
-    "Concepto", "Desprendibles", "Certificaciones", "Cartas_Retiro",
-    "Carta_Cesantias", "Entrevista_Retiro", "Correo", "Confirmacion_Envio"
-  ];
+  claves = ["No", "Cedula", "Nombre", "Ingreso", 
+    "Retiro", "Finca", "Telefono", "CONCEPTO", 
+    "Desprendibles", "Certificaciones", "Cartas_Retiro", 
+    "Carta_Cesantias", "Entrevista_Retiro", "Correo", 
+    "Confirmacion_Envio"];
+
 
   constructor(private pagosService: PagosService) {
 
@@ -99,6 +100,7 @@ export class DesprendiblesPagoComponent implements OnInit {
 
     this.pagosService.buscarDesprendibles(cleanedCedula).subscribe(
       (response: any) => {
+        console.log(response);
         if (response.message == 'No se encontró el número de cédula') {
           Swal.fire({
             icon: 'info',
@@ -128,19 +130,20 @@ export class DesprendiblesPagoComponent implements OnInit {
   cargarExcel(event: any): void {
     this.toggleLoader(true, true);
     this.toggleOverlay(true);
-
+  
     const file = event.target.files[0];
     const reader = new FileReader();
-
+  
     reader.onload = (e: any) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
-
+  
       const modifiedRows = this.asignarClaves(rows);
-      //Validar que no tenga mas de 15 columnas y necesariamente las primeras 15
+  
+      // Validar que no tenga más de 15 columnas y necesariamente las primeras 15
       if (modifiedRows.length > 0 && Object.keys(modifiedRows[0]).length > 15
         || Object.keys(modifiedRows[0]).length < 15) {
         Swal.fire({
@@ -152,10 +155,13 @@ export class DesprendiblesPagoComponent implements OnInit {
         this.toggleOverlay(false);
         return;
       }
-
+  
+      // quitar la primera fila que son los títulos
+      modifiedRows.shift();
+  
       this.resetFileInput();
       // Aquí puedes hacer algo con modifiedRows, como almacenarlo o procesarlo
-      this.pagosService.subirExcelFormasPago(modifiedRows).then((response: any) => {
+      this.pagosService.subirExcelDesprendibles(modifiedRows).then((response: any) => {
         if (response.message == 'success') {
           Swal.fire({
             icon: 'success',
@@ -181,18 +187,16 @@ export class DesprendiblesPagoComponent implements OnInit {
         this.toggleOverlay(false);
       });
     };
-
+  
     this.resetFileInput();
     reader.readAsArrayBuffer(file);
   }
-
+  
   asignarClaves(data: any[]): any[] {
     return data.map((row: any) => {
       let modifiedRow: any = {};
-      row.forEach((cell: any, index: number) => {
-        if (index < this.claves.length) {
-          modifiedRow[this.claves[index]] = cell !== null ? cell : 'N/A';
-        }
+      this.claves.forEach((clave: string, index: number) => {
+        modifiedRow[clave] = row[index] !== undefined && row[index] !== null ? row[index] : '-';
       });
       return modifiedRow;
     });

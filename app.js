@@ -1,6 +1,6 @@
 // Para correrla y tener los cambios en vivo
-
-/*const { app, BrowserWindow, screen, ipcMain } = require('electron');
+/*/
+const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
@@ -65,8 +65,8 @@ app.on('window-all-closed', function () {
 
 app.on('activate', function () {
   if (mainWindow === null) createWindow();
-});
-*/
+});*/
+
 
 
 
@@ -96,6 +96,12 @@ function createWindow() {
     }
   });
 
+  mainWindow.setMenu(null)
+
+
+  // Check for updates after window is created
+  autoUpdater.checkForUpdates();
+
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, `dist/gestion-empresa-migracion/browser/index.html`),
     protocol: "file:",
@@ -109,8 +115,6 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // Check for updates after window is created
-  autoUpdater.checkForUpdates();
 }
 
 autoUpdater.on("update-available", async () => {
