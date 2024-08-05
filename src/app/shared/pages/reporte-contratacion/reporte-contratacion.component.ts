@@ -149,7 +149,7 @@ export class ReporteContratacionComponent implements OnInit {
         cedula_escaneada_delante: base64
       };
       await this.jefeAreaService.cargarCedula(data);
-      await this.delay(500); // Espera de medio segundo
+      await this.delay(100); // Espera de medio segundo
     }
   }
 
@@ -163,7 +163,7 @@ export class ReporteContratacionComponent implements OnInit {
         solicitud_traslado: base64
       };
       await this.jefeAreaService.enviarTraslado(data);
-      await this.delay(500); // Espera de medio segundo
+      await this.delay(100); // Espera de medio segundo
     }
   }
 

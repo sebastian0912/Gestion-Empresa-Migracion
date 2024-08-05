@@ -86,8 +86,6 @@ body {
 
 /* Estilos generales de tabla y inputs */
 
-/* Estilos generales de tabla y inputs */
-
 .app-layout {
     display: flex;
     height: 100vh;
@@ -120,7 +118,7 @@ body {
 }
 
 mat-card {
-    width: 78vw;
+    width: 75vw;
     padding: 20px;
 }
 

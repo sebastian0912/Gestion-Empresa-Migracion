@@ -27,7 +27,6 @@ export class SeguimientoHvService {
   }
 
   private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
     throw error;
   }
 
@@ -94,7 +93,6 @@ export class SeguimientoHvService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -128,7 +126,6 @@ export class SeguimientoHvService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   } 

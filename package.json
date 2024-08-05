@@ -1,17 +1,14 @@
 {
   "name": "gestion-empresa-migracion",
-  "version": "2.0.0",
+  "version": "1.0.20",
   "description": "Programa para gestionar los procesos de la empresa",
   "author": "SebastianGuarnizoCampos",
   "license": "Uso Interno en TuAlianza, Apoyo Laboral, Comercializadora, prohibida su distribucion",
   "main": "app.js",
-  "publish": {
-    "provider": "github",
-    "owner": "sebastian0912",
-    "releaseType": "release",
-    "repo": "Turnero"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebastian0912/Gestion-Empresa-Migracion.git"
   },
-  "keywords": [],
   "build": {
     "appId": "com.gestion.empresa",
     "productName": "Gestion-Empresa",
@@ -27,19 +24,26 @@
       "target": "nsis",
       "icon": "public/logo.ico"
     },
-    "asar": true
-
+    "asar": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "sebastian0912",
+        "repo": "Gestion-Empresa-Migracion",
+        "releaseType": "release"
+      }
+    ]
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng build --base-href ./ && electron .",
-    "build": "ng build",
+    "start": "concurrently \"ng serve\" \"wait-on http://localhost:4200 && cross-env NODE_ENV=development electron .\"",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "start:electron": "concurrently \"ng serve\" \"wait-on http://localhost:4200 && electron .\"",
+    "start:electron": "concurrently \"ng serve --host 0.0.0.0\" \"wait-on http://localhost:4200 && cross-env NODE_ENV=development electron .\"",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dist": "electron-builder",
+    "dist": "ng build --configuration production && electron-builder -p always",
     "serve:ssr:Gestion-Empresa-Migracion": "node dist/gestion-empresa-migracion/server/server.mjs"
   },
   "private": true,
@@ -58,6 +62,7 @@
     "@angular/ssr": "^18.0.4",
     "@types/chart.js": "^2.9.41",
     "chart.js": "^4.4.3",
+    "electron-log": "^5.1.7",
     "electron-updater": "^6.2.1",
     "exceljs": "^4.4.0",
     "express": "^4.18.2",
@@ -80,6 +85,7 @@
     "@types/moment": "^2.13.0",
     "@types/node": "^18.18.0",
     "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
     "electron": "^31.3.0",
     "electron-builder": "^24.13.3",
     "jasmine-core": "~5.1.0",

@@ -96,33 +96,52 @@ export class LoginComponent {
       password: this.loginForm.value.password
     };
 
-    await this.authService.login(loginData.email, loginData.password).then(response => {
-      if (response) {
-        if (response.jwt === "Contraseña incorrecta") {
-          Swal.fire({
-            icon: 'error',
-            title: 'Contraseña incorrecta',
-            text: 'Por favor, verifique su contraseña e intente de nuevo'
-          });
-          return;
-        } else if (response.jwt === "Usuario no encontrado") {
-          Swal.fire({
-            icon: 'error',
-            title: 'Usuario no encontrado',
-            text: 'Por favor, verifique su correo electrónico e intente de nuevo'
-          });
-          return;
+    try {
+      this.authService.login(loginData.email, loginData.password).then(response => {
+        if (response) {
+          if (response.jwt === "Contraseña incorrecta") {
+            Swal.fire({
+              icon: 'error',
+              title: 'Contraseña incorrecta',
+              text: 'Por favor, verifique su contraseña e intente de nuevo'
+            });
+            return;
+          } else if (response.jwt === "Usuario no encontrado") {
+            Swal.fire({
+              icon: 'error',
+              title: 'Usuario no encontrado',
+              text: 'Por favor, verifique su correo electrónico e intente de nuevo'
+            });
+            return;
+          } else {
+            localStorage.setItem('token', response.jwt);
+            this.authService.getUser().then(user => {
+              localStorage.setItem('user', JSON.stringify(user));
+              this.router.navigate(['/home']);
+            });
+          }
         } else {
-          localStorage.setItem('token', response.jwt);
-          this.authService.getUser().then(user => {
-            localStorage.setItem('user', JSON.stringify(user));
-            this.router.navigate(['/home']);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al iniciar sesión, por favor intente de nuevo, revise que la vpn esté activa'
           });
         }
-      } else {
-        // Manejo de respuesta nula
-      }
-    });
+      }).catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo establecer conexión con el servidor, por favor verifique su conexión a internet e intente de nuevo'
+        });
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error inesperado',
+        text: 'Ocurrió un error inesperado, por favor intente de nuevo más tarde'
+      });
+    }
+
   }
 
 

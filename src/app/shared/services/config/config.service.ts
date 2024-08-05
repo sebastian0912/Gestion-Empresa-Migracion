@@ -28,7 +28,6 @@ export class ConfigService {
   }
 
   private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
     throw error;
   }
 
@@ -54,16 +53,13 @@ export class ConfigService {
       token: token
     };
 
-    console.log('Request:', requestBody);
 
     try {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, requestBody, { headers }).pipe(
         catchError(this.handleError)
       ));
-      console.log('Response:', response);
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
 

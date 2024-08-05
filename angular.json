@@ -16,7 +16,7 @@
             "outputPath": "dist/gestion-empresa-migracion",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "baseHref": "/",
+            "baseHref": "./",
             "polyfills": [
               "zone.js"
             ],

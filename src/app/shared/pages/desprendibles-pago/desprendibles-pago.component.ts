@@ -51,11 +51,13 @@ export class DesprendiblesPagoComponent implements OnInit {
   loaderVisible = false;
   counterVisible = false;
 
-  claves: any[] = [
-    "No", "Cedula", "Nombre", "Ingreso", "Retiro", "Finca", "Telefono",
-    "Concepto", "Desprendibles", "Certificaciones", "Cartas_Retiro",
-    "Carta_Cesantias", "Entrevista_Retiro", "Correo", "Confirmacion_Envio"
-  ];
+  claves =
+    ["No", "Cedula", "Nombre", "Ingreso",
+      "Retiro", "Finca", "Telefono",
+      "CONCEPTO", "Desprendibles", "Certificaciones",
+      "Cartas_Retiro", "Carta_Cesantias", "Entrevista_Retiro",
+      "Correo", "Confirmacion_Envio"];
+
 
   constructor(private pagosService: PagosService) {
 
@@ -115,7 +117,11 @@ export class DesprendiblesPagoComponent implements OnInit {
         this.dataSource.data = desprendibles;
       },
       (error: any) => {
-        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al buscar la información'
+        });
       }
     );
   }
@@ -155,7 +161,7 @@ export class DesprendiblesPagoComponent implements OnInit {
 
       this.resetFileInput();
       // Aquí puedes hacer algo con modifiedRows, como almacenarlo o procesarlo
-      this.pagosService.subirExcelFormasPago(modifiedRows).then((response: any) => {
+      this.pagosService.subirExcelDesprendibles(modifiedRows).then((response: any) => {
         if (response.message == 'success') {
           Swal.fire({
             icon: 'success',

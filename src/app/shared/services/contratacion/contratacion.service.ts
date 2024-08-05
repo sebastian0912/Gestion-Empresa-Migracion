@@ -27,7 +27,6 @@ export class ContratacionService {
   }
 
   private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
     throw error;
   }
 
@@ -68,7 +67,6 @@ export class ContratacionService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -99,7 +97,6 @@ export class ContratacionService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -130,7 +127,6 @@ export class ContratacionService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -158,7 +154,6 @@ export class ContratacionService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -171,20 +166,28 @@ export class ContratacionService {
     if (!token) {
       throw new Error('No token found');
     }
-    
+
     const urlcompleta = `${this.apiUrl}/traslados/formulario-solicitud`;
 
-    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+    // Crear FormData y agregar los datos
+    const formData = new FormData();
+    formData.append('numero_cedula', data.numero_cedula);
+    formData.append('eps_a_trasladar', data.eps_a_trasladar);
+    formData.append('solicitud_traslado', data.solicitud_traslado);
 
     try {
-      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).pipe(
         catchError(this.handleError)
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
+
 
 }

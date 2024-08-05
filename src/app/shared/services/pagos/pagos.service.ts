@@ -27,7 +27,6 @@ export class PagosService {
   }
 
   private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
     throw error;
   }
 
@@ -85,10 +84,8 @@ export class PagosService {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
         catchError(this.handleError)
       ));
-      console.log('Response:', response);
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -111,7 +108,6 @@ export class PagosService {
       ));
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP DELETE', error);
       throw error;
     }
   }
@@ -141,10 +137,8 @@ export class PagosService {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
         catchError(this.handleError)
       ));
-      console.log('Response:', response);
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }
@@ -186,10 +180,8 @@ export class PagosService {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
         catchError(this.handleError)
       ));
-      console.log('Response:', response);
       return response;
     } catch (error) {
-      console.error('Error en la petición HTTP POST', error);
       throw error;
     }
   }

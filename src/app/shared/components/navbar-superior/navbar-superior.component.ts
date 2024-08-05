@@ -4,7 +4,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../services/admin/admin.service';
 
@@ -29,7 +29,8 @@ export class NavbarSuperiorComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private router: Router
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -68,16 +69,16 @@ export class NavbarSuperiorComponent implements OnInit {
           Swal.fire('Error!', 'Hubo un problema al asignar la sede, vuelva a intentarlo.', 'error');
           return;
         } else if (response.message === 'success') {
-          user.sucursal = sede;
+          user.sucursalde = sede;
           localStorage.setItem('user', JSON.stringify(user));
           Swal.fire('Editado!', 'La sede ha sido asignada.', 'success')
             .then(() => {
-              window.location.reload();
+              // que mire donde esta y lo redirija a la pagina donde esta
+              this.router.navigate([this.router.url]);
             });
         }
       }
     } catch (error) {
-      console.error('Error:', error);
       Swal.fire('Error!', 'Hubo un problema al asignar la sede.', 'error');
     }
   }

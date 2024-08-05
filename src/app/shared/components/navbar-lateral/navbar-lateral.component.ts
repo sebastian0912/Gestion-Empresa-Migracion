@@ -41,32 +41,28 @@ export class NavbarLateralComponent implements OnInit {
   counterVisible = false;
 
   currentRole: string = '';
-  //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion',
-  // 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion'
-  //'seguimiento-auditoria', 'reporte-contratacion'
+  //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
+  
   rolePermissions: any = {
     GERENCIA: ['home', , 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      'reporte-contratacion',
-      'seguimiento-auditoria', 'estadisticas-auditoria', ],
-    RECEPCION: ['home',  'forma-pago', 'desprendibles-pago', 'ausentismos',
+      'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
+    ],
+    RECEPCION: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos',
       'reporte-contratacion'],
     COORDINADOR: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
       'reporte-contratacion',
-      ],
-    JEFE_DE_AREA: ['home', 
+    ],
+    JEFE_DE_AREA: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
       'seguimiento-auditoria'],
     ADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      'reporte-contratacion',
-      'seguimiento-auditoria', 'estadisticas-auditoria', 
-      'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion',
-      'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
-      'seguimiento-auditoria', 'reporte-contratacion',
+      'reporte-contratacion', 'seguimiento-auditoria', 'reporte-contratacion', 'estadisticas-auditoria',
+
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      ],
+    ],
   };
 
   empleadosProblemas: any[] = [];
@@ -90,7 +86,7 @@ export class NavbarLateralComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const user = await this.getUser();
-    if (user ) {
+    if (user) {
       if (user.correo_electronico === "tuafiliacion@tsservicios.co") {
         this.currentRole = "CAROL";
       } else {
@@ -130,8 +126,6 @@ export class NavbarLateralComponent implements OnInit {
           this.processArl(workbook);
           break;
       }
-
-
 
       // Reset the file input value to allow uploading the same file again
       (document.getElementById('fileInput2') as HTMLInputElement).value = '';
@@ -189,7 +183,6 @@ export class NavbarLateralComponent implements OnInit {
 
       await this.contratacionService.generarExcelArl(formattedRows)
         .then((response: any) => {
-          console.log('Response:', response);
           // Exportar datos a Excel
           this.exportarDatosAExcel(response.resultados, response.cedulas_no_encontradas);
 
@@ -203,7 +196,6 @@ export class NavbarLateralComponent implements OnInit {
           });
         })
         .catch((error) => {
-          console.log(error)
           Swal.close();
           Swal.fire({
             icon: 'error',
@@ -214,7 +206,6 @@ export class NavbarLateralComponent implements OnInit {
         });
 
     } catch (error) {
-      console.log(error)
       Swal.close();
       Swal.fire({
         icon: 'error',

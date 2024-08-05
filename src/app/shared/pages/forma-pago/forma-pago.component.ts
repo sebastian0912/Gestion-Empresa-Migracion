@@ -94,7 +94,11 @@ export class FormaPagoComponent implements OnInit {
         this.dataSource.data = formasDePago;
       },
       (error: any) => {
-        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al buscar la información'
+        });
       }
     );
   }

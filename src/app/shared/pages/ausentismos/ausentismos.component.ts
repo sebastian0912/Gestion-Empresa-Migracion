@@ -204,9 +204,7 @@ export class AusentismosComponent implements OnInit {
         return completeRow;
       });
 
-      console.log(rows);;
       this.contratacionService.subirContratacion(rows).then((response: any) => {
-        console.log(response);
         if (response.message === 'success') {
           this.playSound(true);
           this.toggleLoader(false);
