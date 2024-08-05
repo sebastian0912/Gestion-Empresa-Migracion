@@ -125,14 +125,13 @@ export class PagosService {
 
     const urlcompleta = `${this.apiUrl}/FormasdePago/crearformasDePago`;
 
-    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+    const headers = this.createAuthorizationHeader();
 
     const data = {
       datos: datos,
       mensaje: "mcuhos",
       jwt: token
     };
-
     try {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
         catchError(this.handleError)

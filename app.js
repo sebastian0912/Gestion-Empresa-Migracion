@@ -3,11 +3,15 @@ const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
+
 let mainWindow;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 autoUpdater.autoDownload = false;
+
+
+
 
 function createWindow() {
   mainWindow = new BrowserWindow({
