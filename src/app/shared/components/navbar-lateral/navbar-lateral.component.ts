@@ -61,7 +61,7 @@ export class NavbarLateralComponent implements OnInit {
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
-    CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
+    CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion',
     ],
   };
 
