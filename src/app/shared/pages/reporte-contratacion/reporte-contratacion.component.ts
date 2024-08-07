@@ -143,29 +143,55 @@ export class ReporteContratacionComponent implements OnInit {
   async processCedulasEscaneadas(files: File[]) {
     for (const file of files) {
       const base64 = await this.convertToBase64(file);
-      const cedula = file.name.split(' - ')[0];
+      let cedula = '';
+
+      // Intentar dividir por ' - ' primero, luego por '-' si falla
+      if (file.name.includes(' - ')) {
+        cedula = file.name.split(' - ')[0];
+      } else if (file.name.includes('-')) {
+        cedula = file.name.split('-')[0];
+      } else {
+        console.error('Formato de nombre de archivo no reconocido:', file.name);
+        continue; // Salta este archivo si no cumple con el formato esperado
+      }
+
       const data = {
-        numero_cedula: cedula,
+        numero_cedula: cedula.trim(), // Eliminar espacios adicionales
         cedula_escaneada_delante: base64
       };
       await this.jefeAreaService.cargarCedula(data);
-      await this.delay(100); // Espera de medio segundo
+      await this.delay(100); // Espera de 100 ms
     }
   }
 
+
   async processTraslados(files: File[]) {
     for (const file of files) {
-      const [cedula, eps] = file.name.split(' - ');
+      let cedula = '';
+      let eps = '';
+
+      // Intentar dividir por ' - ' primero, luego por '-' si falla
+      if (file.name.includes(' - ')) {
+        [cedula, eps] = file.name.split(' - ');
+      } else if (file.name.includes('-')) {
+        [cedula, eps] = file.name.split('-');
+      } else {
+        console.error('Formato de nombre de archivo no reconocido:', file.name);
+        continue; // Salta este archivo si no cumple con el formato esperado
+      }
+
       const base64 = await this.convertToBase64(file);
       const data = {
-        numero_cedula: cedula,
-        eps_a_trasladar: eps.replace('.pdf', ''),
+        numero_cedula: cedula.trim(), // Eliminar espacios adicionales
+        eps_a_trasladar: eps.replace('.pdf', '').trim(), // Eliminar '.pdf' y espacios adicionales
         solicitud_traslado: base64
       };
+
       await this.jefeAreaService.enviarTraslado(data);
-      await this.delay(100); // Espera de medio segundo
+      await this.delay(100); // Espera de 100 ms
     }
   }
+
 
   delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -196,25 +222,47 @@ export class ReporteContratacionComponent implements OnInit {
           try {
             await process(files);
           } catch (error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: `Ocurrió un error al procesar ${name}, inténtelo de nuevo.`
+            });
+
             this.processingErrors.push(name);
+            return;
           }
         }
-        this.delay(1000); // Espera de medio segundo
+        await this.delay(1000); // Espera de un segundo
       }
 
       if (this.processingErrors.length > 0) {
         Swal.fire({
           icon: 'error',
           title: 'Errores durante la carga',
-          html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`
+          html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`,
+          confirmButtonText: 'Aceptar'
         });
       } else {
-        Swal.fire('Success', 'Form submitted successfully!', 'success');
+        Swal.close();
+        // Swal para dar ok
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'Formulario enviado exitosamente.',
+          confirmButtonText: 'Aceptar'
+        });
       }
     } else {
-      Swal.fire('Error', 'Please fill in all required fields.', 'error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, completa el formulario correctamente.',
+        confirmButtonText: 'Aceptar'
+      });
     }
   }
+
+
 
   async processFileList(files: File[]) {
     for (const file of files) {
@@ -285,10 +333,10 @@ export class ReporteContratacionComponent implements OnInit {
       response = await this.jefeAreaService.subirContratacion(rows);
       if (response.message !== 'success') {
         this.processingErrors.push('Cruce diario Excel');
-        
+
       }
       this.generateErrorExcel(response.errores);
-      
+
 
     } catch (error) {
       this.processingErrors.push('Cruce diario Excel');
