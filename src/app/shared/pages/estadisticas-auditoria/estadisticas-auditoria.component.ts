@@ -15,6 +15,8 @@ import { MatCardModule } from '@angular/material/card';
 import { NgIf } from '@angular/common';
 import { SeguimientoHvService } from '../../services/seguimiento-hv/seguimiento-hv.service';
 import Swal from 'sweetalert2';
+import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date-rang-dialog.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 interface GruposDefinidos {
   [key: string]: string[];
@@ -37,7 +39,9 @@ Chart.register(...registerables);
     MatIconModule,
     FormsModule,
     MatCardModule,
-    NgIf
+    NgIf,
+    DateRangeDialogComponent,
+    MatDialogModule
   ],
   templateUrl: './estadisticas-auditoria.component.html',
   styleUrls: ['./estadisticas-auditoria.component.css']
@@ -46,10 +50,12 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
   private dataSubscription: Subscription | undefined;
   private charts: { [key: string]: Chart } = {};
   private isBrowser: boolean;
+  private originalData: any[] = [];
 
   constructor(
     private seguimientoHvService: SeguimientoHvService,
-    @Inject(PLATFORM_ID) private platformId: any
+    @Inject(PLATFORM_ID) private platformId: any,
+    private dialog: MatDialog
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -75,6 +81,7 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
 
   async cargarYMostrarDatos(): Promise<void> {
     this.dataSubscription = this.seguimientoHvService.buscarSeguimientoHvGeneral().subscribe((response: any) => {
+      this.originalData = response;
       this.procesarDatos(response);
     }, (error: any) => {
       Swal.fire('Error', 'Ocurrió un error al cargar los datos', 'error');
@@ -82,11 +89,36 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
   }
 
   async procesarDatos(datos: any): Promise<void> {
-    const gruposDefinidos: GruposDefinidos = {
-      // tu definición de grupos aquí
-    };
 
-    const agrupadosPorResponsable = datos.reduce((acc: any, dato: any) => {
+    const agrupadosPorResponsable = this.agruparPorResponsable(datos);
+    const agrupadosPorGrupo = this.agruparPorGrupo(datos);
+    const total0s = this.contarTotal(datos, "0");
+    const total1s = this.contarTotal(datos, "1");
+    const typeCounts = this.contarTipos(datos);
+
+    await this.generarCheckboxes(Object.keys(agrupadosPorResponsable), 'checkboxes-container');
+    await this.generarCheckboxes(Object.keys(agrupadosPorGrupo), 'checkboxes-container-groups');
+
+    const initialLabels = Object.keys(agrupadosPorResponsable);
+    const initialTotal0Data = initialLabels.map(label => agrupadosPorResponsable[label].total0);
+    const initialTotal1Data = initialLabels.map(label => agrupadosPorResponsable[label].total1);
+    const initialEditsData = initialLabels.map(label => agrupadosPorResponsable[label].edits);
+
+    const groupLabels = Object.keys(agrupadosPorGrupo);
+    const groupTotal0Data = groupLabels.map(label => agrupadosPorGrupo[label].total0);
+    const groupTotal1Data = groupLabels.map(label => agrupadosPorGrupo[label].total1);
+
+    this.generarGraficoBarras('barChart', initialLabels, initialTotal0Data, initialTotal1Data);
+    this.generarGraficoCircular('pieChart', [total0s, total1s]);
+    this.generarGraficoBarras('editBarChart', initialLabels, initialEditsData, []);
+    this.generarGraficoBarras('groupBarChart', groupLabels, groupTotal0Data, groupTotal1Data);
+    this.generarGraficoCircular('typePieChart', [typeCounts.tuAlianza, typeCounts.apoyoLaboral]);
+
+    this.agregarEventListeners(agrupadosPorResponsable, agrupadosPorGrupo);
+  }
+
+  agruparPorResponsable(datos: any[]): any {
+    return datos.reduce((acc: any, dato: any) => {
       const responsable = dato.responsable || "Desconocido";
       if (!acc[responsable]) acc[responsable] = { total0: 0, total1: 0, edits: 0 };
 
@@ -105,8 +137,35 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
 
       return acc;
     }, {});
+  }
 
-    const agrupadosPorGrupo = Object.keys(gruposDefinidos).reduce((acc: any, grupo: string) => {
+  agruparPorGrupo(datos: any[]): any {
+    const gruposDefinidos: GruposDefinidos = {
+      "Hoja de Vida": ["codigo_hoja_de_vida", "foto_hoja_de_vida", "nombre_y_cedula_hoja_de_vida", "correo_electronico_hoja_de_vida", "direccion_hoja_de_vida", "referencia_hoja_de_vida", "firma_carnet_hoja_de_vida"],
+      "Ficha Técnica": ["foto", "infolaboral_FT", "firma_trabajador", "huella", "referencia", "firma_carnet_FT", "firma_loker_FT", "fecha_de_ingreso_FT", "empleador_FT"],
+      "Documento de identidad o Cédula": ["ampliada_al_150", "huellaCedula", "sello", "legible"],
+      "Antecedentes(inferior a 15 días)": ["procuraduria_vigente", "fecha_procuraduria", "contraloria_vigente", "fecha_contraloria", "ofac_lista_clinton", "fecha_ofac", "policivos_vigente", "fecha_policivos", "medidas_correstivas", "fecha_medidas_correstivas"],
+      "Adres": ["adres", "fecha_adres"],
+      "Sisben": ["sisben", "fecha_sisben"],
+      "Elite": ["formatoElite", "cargoElite"],
+      "Contrato": ["nombres_trabajador_contrato", "no_cedula_contrato", "direccion", "correo_electronico", "fecha_de_ingreso_contrato", "salario_contrato", "empresa_usuaria", "cargo_contrato", "descripcion_temporada", "firma_trabajador_contrato", "firma_testigos", "sello_temporal"],
+      "Entrega de Documentos": ["autorizacion_dscto_casino", "forma_de_pago", "autorizacion_funerario", "huellas_docs", "firma_cedula_docs", "fecha_de_recibido_docs"],
+      "Entrevista de Ingreso": ["entrevista_ingreso"],
+      "Arl": ["centro_de_costo_arl", "clase_de_riesgo", "cedula_arl", "nombre_trabajador_arl", "fecha_de_ingreso_arl"],
+      "Exámenes": ["temporal", "fecha_no_mayor_a_15_dias", "nombres_trabajador_examenes", "cargo", "cedula_examenes", "apto", "salud_ocupacional", "colinesterasa", "planilla_colinesterasa", "otros"],
+      "Afp": ["certificado_afp", "ruaf", "nombre_trabajador_ruaf", "cedula_ruaf", "fecha_cerRuaf15menor", "historia"],
+      "Eps": ["fecha_radicado_eps", "nombre_y_cedula_eps", "salario_eps"],
+      "Caja": ["fecha_radicado_caja", "nombre_y_cedula_caja", "salario_caja"],
+      "Seguridad": ["nombre_y_cedula_seguridad", "fecha_radicado_seguridad"],
+      "Otro si Clausulas adicionales JDA": ["firma_clausulas_add", "sello_temporal_clausulas_add"],
+      "Adición Contrato (otro si)": ["firma_add_contrato", "sello_temporal_add_contrato"],
+      "Autorización Tratamiento de Datos JDA": ["autorizaciontratamientosDatosJDA"],
+      "Carta de Descuento Flor": ["cartadescuentoflor"],
+      "Formato de timbre en hora de ingreso y salida": ["formato_timbre"],
+      "Carta autorización correo electrónico": ["cartaaurotiracioncorreo"]
+    };
+
+    return Object.keys(gruposDefinidos).reduce((acc: any, grupo: string) => {
       acc[grupo] = { total0: 0, total1: 0 };
       datos.forEach((dato: any) => {
         gruposDefinidos[grupo].forEach((campo: string) => {
@@ -116,12 +175,14 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
       });
       return acc;
     }, {});
+  }
 
-    const total0s = datos.reduce((acc: number, dato: any) => acc + Object.values(dato).filter(val => val === "0").length, 0);
-    const total1s = datos.reduce((acc: number, dato: any) => acc + Object.values(dato).filter(val => val === "1").length, 0);
+  contarTotal(datos: any[], valor: string): number {
+    return datos.reduce((acc: number, dato: any) => acc + Object.values(dato).filter(val => val === valor).length, 0);
+  }
 
-    // Agregando procesamiento de tipo de registro
-    const typeCounts = datos.reduce((acc: any, dato: any) => {
+  contarTipos(datos: any[]): any {
+    return datos.reduce((acc: any, dato: any) => {
       const tipo = dato.tipo || "Desconocido";
       if (tipo === "AL") {
         acc.apoyoLaboral++;
@@ -130,28 +191,6 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
       }
       return acc;
     }, { tuAlianza: 0, apoyoLaboral: 0 });
-
-    await this.generarCheckboxes(Object.keys(agrupadosPorResponsable), 'checkboxes-container');
-    await this.generarCheckboxes(Object.keys(agrupadosPorGrupo), 'checkboxes-container-groups');
-
-    const initialLabels = Object.keys(agrupadosPorResponsable);
-    const initialTotal0Data = initialLabels.map(label => agrupadosPorResponsable[label].total0);
-    const initialTotal1Data = initialLabels.map(label => agrupadosPorResponsable[label].total1);
-    const initialEditsData = initialLabels.map(label => agrupadosPorResponsable[label].edits);
-
-    const groupLabels = Object.keys(agrupadosPorGrupo);
-    const groupTotal0Data = groupLabels.map(label => agrupadosPorGrupo[label].total0);
-    const groupTotal1Data = groupLabels.map(label => agrupadosPorGrupo[label].total1);
-
-    this.generarGraficoBarras('barChart', initialLabels, initialTotal0Data, initialTotal1Data);
-    this.generarGraficoCircular('pieChart', [total0s, total1s]);
-    this.generarGraficoBarras('editBarChart', initialLabels, initialEditsData, []);
-    this.generarGraficoBarras('groupBarChart', groupLabels, groupTotal0Data, groupTotal1Data);
-
-    // Generar el nuevo gráfico circular de tipos de registro
-    this.generarGraficoCircular('typePieChart', [typeCounts.tuAlianza, typeCounts.apoyoLaboral]);
-
-    this.agregarEventListeners(agrupadosPorResponsable, agrupadosPorGrupo);
   }
 
   async generarCheckboxes(labels: string[], containerId: string): Promise<void> {
@@ -316,5 +355,71 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
         this.charts[chartId].destroy();
       }
     });
+  }
+
+  openDateRangeDialog(): void {
+    const dialogRef = this.dialog.open(DateRangeDialogComponent, { width: '550px' });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const filteredData = this.filterDataByDateRange(result.start, result.end);
+        this.updateCharts(filteredData);
+      }
+    });
+  }
+
+  filterDataByDateRange(startDate: string, endDate: string): any[] {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    return this.originalData.filter(item => {
+      return item.ultimas_actualizaciones.some((update: { fecha: string | number | Date; }) => {
+        const updateDate = new Date(update.fecha);
+        return updateDate >= start && updateDate <= end;
+      });
+    });
+  }
+
+  updateCharts(filteredData: any[]): void {
+    const agrupadosPorResponsable = this.agruparPorResponsable(filteredData);
+    const agrupadosPorGrupo = this.agruparPorGrupo(filteredData);
+    const total0s = this.contarTotal(filteredData, "0");
+    const total1s = this.contarTotal(filteredData, "1");
+    const typeCounts = this.contarTipos(filteredData);
+
+    const labels = Object.keys(agrupadosPorResponsable);
+    const total0Data = labels.map(label => agrupadosPorResponsable[label].total0);
+    const total1Data = labels.map(label => agrupadosPorResponsable[label].total1);
+    const editsData = labels.map(label => agrupadosPorResponsable[label].edits);
+
+    const groupLabels = Object.keys(agrupadosPorGrupo);
+    const groupTotal0Data = groupLabels.map(label => agrupadosPorGrupo[label].total0);
+    const groupTotal1Data = groupLabels.map(label => agrupadosPorGrupo[label].total1);
+
+    this.actualizarGrafico('barChart', labels, total0Data, total1Data);
+    this.actualizarGrafico('editBarChart', labels, editsData, []);
+    this.actualizarGrafico('groupBarChart', groupLabels, groupTotal0Data, groupTotal1Data);
+    this.actualizarGraficoCircular('pieChart', [total0s, total1s]);
+    this.actualizarGraficoCircular('typePieChart', [typeCounts.tuAlianza, typeCounts.apoyoLaboral]);
+  }
+
+  actualizarGrafico(chartId: string, labels: string[], data1: number[], data2: number[]): void {
+    const chart = this.charts[chartId];
+    if (chart) {
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = data1;
+      if (data2.length > 0) {
+        chart.data.datasets[1].data = data2;
+      }
+      chart.update();
+    }
+  }
+
+  actualizarGraficoCircular(chartId: string, data: number[]): void {
+    const chart = this.charts[chartId];
+    if (chart) {
+      chart.data.datasets[0].data = data;
+      chart.update();
+    }
   }
 }

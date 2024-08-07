@@ -51,7 +51,7 @@ export class NavbarLateralComponent implements OnInit {
       'reporte-contratacion'],
     COORDINADOR: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'reporte-contratacion',
+      'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
     ],
     JEFE_DE_AREA: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',

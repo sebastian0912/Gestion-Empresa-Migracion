@@ -4,8 +4,14 @@
         <app-navbar-superior></app-navbar-superior>
         <mat-card>
             <mat-card-content>
+                <div class="caja">
+
+                    <img src="comun/calendario.png" class="excel" style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;" (click)="openDateRangeDialog()">
+                    <h1 class="titulo-grafico">Seleccione un rango de fechas</h1>
+                </div>
+
                 <h1 class="titulo-grafico" style="flex: 1 1 100%;">Estadísticas sobre los seguimientos de hojas de vida</h1>
-  
+                
                 <!-- Gráfico de barras por persona -->
                 <div class="barras">
                     <div class="seleccionar">

@@ -39,7 +39,7 @@
     "start": "concurrently \"ng serve\" \"wait-on http://localhost:4200 && cross-env NODE_ENV=development electron .\"",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "start:electron": "concurrently \"ng serve --host 0.0.0.0\" \"wait-on http://localhost:4200 && cross-env NODE_ENV=development electron .\"",
+    "start:electron": "concurrently \"ng serve --host 0.0.0.0\" \"wait-on http://localhost:4200 && npx cross-env NODE_ENV=development electron .\"", 
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

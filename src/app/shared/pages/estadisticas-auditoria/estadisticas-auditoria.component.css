@@ -6,6 +6,13 @@
     gap: 40px;
 }
 
+.caja{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+}
+
 .titulo-grafico {
     text-align: center;
     font-size: 16pt;

@@ -29,6 +29,7 @@
             <mat-label>Filter</mat-label>
             <input matInput (keyup)="applyFilter($event)" placeholder="Filter" #input>
           </mat-form-field>
+          <img src="comun/excel.png" class="excel" style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;" (click)="openDateRangeDialog()">
           <div class="table-container">
             <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
               <ng-container matColumnDef="acciones">
@@ -44,6 +45,13 @@
                 <th mat-header-cell *matHeaderCellDef> Tipo </th>
                 <td mat-cell *matCellDef="let element"> {{element.tipo}} </td>
               </ng-container>
+
+              <ng-container matColumnDef="confirmacion_Hoja_de_vida">
+                <th mat-header-cell *matHeaderCellDef> Confirmar recepcion HV </th>
+                <td mat-cell *matCellDef="let element"> {{element.confirmacion_Hoja_de_vida}} </td>
+              </ng-container>
+
+              
 
               <ng-container matColumnDef="cedula">
                 <th mat-header-cell *matHeaderCellDef> Cédula </th>
