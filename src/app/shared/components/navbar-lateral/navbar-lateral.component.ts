@@ -46,18 +46,20 @@ export class NavbarLateralComponent implements OnInit {
   rolePermissions: any = {
     GERENCIA: ['home', , 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
+      'envio-paquete-documentacion', 'recibir-paquete-documentacion'
     ],
     RECEPCION: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos',
       'reporte-contratacion'],
     COORDINADOR: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
+      'reporte-contratacion', 
     ],
     JEFE_DE_AREA: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
       'seguimiento-auditoria'],
     ADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion', 'seguimiento-auditoria', 'reporte-contratacion', 'estadisticas-auditoria',
+      'envio-paquete-documentacion', 'recibir-paquete-documentacion',
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],

@@ -52,24 +52,24 @@
         </div>
 
         <div class="blockLink" [class.active]="currentRoute === '/forma-pago'" routerLink="/forma-pago"
-            *ngIf="hasPermission('forma-pago')" >
+            *ngIf="hasPermission('forma-pago')">
             <img src="navbar/tarjeta-de-dinero.png" alt="Dashboard" class="icon">
             <li> Forma de pago </li>
         </div>
 
         <div class="blockLink" [class.active]="currentRoute === '/desprendibles-pago'" routerLink="/desprendibles-pago"
-            *ngIf="hasPermission('desprendibles-pago')" >
+            *ngIf="hasPermission('desprendibles-pago')">
             <img src="navbar/recibo.png" alt="Dashboard" class="icon">
             <li> Desprendibles de pago </li>
         </div>
 
-        <div class="blockLink" *ngIf="hasPermission('arl')" (click)="selectFile('arl')" >
+        <div class="blockLink" *ngIf="hasPermission('arl')" (click)="selectFile('arl')">
             <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
             <li> Arl </li>
         </div>
 
         <div class="blockLink" [class.active]="currentRoute === '/ausentismos'" routerLink="/ausentismos"
-            *ngIf="hasPermission('ausentismos')" >
+            *ngIf="hasPermission('ausentismos')">
             <img src="navbar/person.png" alt="Dashboard" class="icon">
             <li>Ausentismos </li>
         </div>
@@ -99,22 +99,19 @@
         </div>
 
         <div class="blockLink" [class.active]="currentRoute === '/reporte-contratacion'"
-            routerLink="/reporte-contratacion" *ngIf="hasPermission('reporte-contratacion')"
-            >
+            routerLink="/reporte-contratacion" *ngIf="hasPermission('reporte-contratacion')">
             <img src="navbar/informe-de-venta.png" alt="Dashboard" class="icon">
             <li>Reporte de contratación</li>
         </div>
 
         <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria'"
-            routerLink="/seguimiento-auditoria" *ngIf="hasPermission('seguimiento-auditoria')"
-            >
+            routerLink="/seguimiento-auditoria" *ngIf="hasPermission('seguimiento-auditoria')">
             <img src="navbar/archivos.png" alt="Dashboard" class="icon">
             <li>Seguimiento HV</li>
         </div>
 
         <div class="blockLink" [class.active]="currentRoute === '/estadisticas-auditoria'"
-            routerLink="/estadisticas-auditoria" *ngIf="hasPermission('estadisticas-auditoria')"
-            >
+            routerLink="/estadisticas-auditoria" *ngIf="hasPermission('estadisticas-auditoria')">
             <img src="navbar/reporte-de-negocios.png" alt="Dashboard" class="icon">
             <li>Estadisticas HV</li>
         </div>
@@ -141,6 +138,18 @@
             *ngIf="hasPermission('auditoria')">
             <img src="navbar/documento.png" alt="Dashboard" class="icon">
             <li>Auditoria</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/envio-paquete-documentacion'"
+            routerLink="/envio-paquete-documentacion" *ngIf="hasPermission('envio-paquete-documentacion')">
+            <img src="navbar/material-de-oficina.png" alt="Dashboard" class="icon">
+            <li>Envio paquete de documentación</li>
+        </div>
+
+        <div class="blockLink" [class.active]="currentRoute === '/recibir-paquete-documentacion'"
+            routerLink="/recibir-paquete-documentacion" *ngIf="hasPermission('recibir-paquete-documentacion')">
+            <img src="navbar/recibir-documentacion.png" alt="Dashboard" class="icon">
+            <li>Recibir paquete de documentación</li>
         </div>
 
 

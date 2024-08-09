@@ -29,7 +29,7 @@
             <mat-label>Filter</mat-label>
             <input matInput (keyup)="applyFilter($event)" placeholder="Filter" #input>
           </mat-form-field>
-          <img src="comun/excel.png" class="excel" style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;" (click)="openDateRangeDialog()">
+          <img src="comun/calendario.png" class="excel" style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;" (click)="openDateRangeDialog()">
           <div class="table-container">
             <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
               <ng-container matColumnDef="acciones">

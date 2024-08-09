@@ -20,6 +20,8 @@ import { CrearEstructuraDocumentalComponent } from './shared/pages/crear-estruct
 import { BuscarDocumentacionComponent } from './shared/pages/buscar-documentacion/buscar-documentacion.component';
 import { AuditoriaComponent } from './shared/pages/auditoria/auditoria.component';
 import { SubirDocumentacionComponent } from './shared/pages/subir-documentacion/subir-documentacion.component';
+import { EnvioPaqueteDocumentacionComponent } from './shared/pages/envio-paquete-documentacion/envio-paquete-documentacion.component';
+import { RecibirPaqueteDocumentacionComponent } from './shared/pages/recibir-paquete-documentacion/recibir-paquete-documentacion.component';
 
 
 
@@ -44,5 +46,7 @@ export const routes: Routes = [
     { path: 'crear-estructura-documental', component: CrearEstructuraDocumentalComponent },
     { path: 'buscar-documentacion', component: BuscarDocumentacionComponent },
     { path: 'auditoria', component: AuditoriaComponent },
-    { path: 'subir-documentacion', component: SubirDocumentacionComponent }
+    { path: 'subir-documentacion', component: SubirDocumentacionComponent },
+    { path: 'envio-paquete-documentacion', component: EnvioPaqueteDocumentacionComponent },
+    { path: 'recibir-paquete-documentacion', component: RecibirPaqueteDocumentacionComponent },
 ];
