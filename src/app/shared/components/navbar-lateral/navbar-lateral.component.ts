@@ -42,7 +42,7 @@ export class NavbarLateralComponent implements OnInit {
 
   currentRole: string = '';
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
-  
+
   rolePermissions: any = {
     GERENCIA: ['home', , 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
@@ -52,18 +52,20 @@ export class NavbarLateralComponent implements OnInit {
       'reporte-contratacion'],
     COORDINADOR: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'reporte-contratacion', 
+      'reporte-contratacion',
     ],
     JEFE_DE_AREA: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
       'seguimiento-auditoria'],
     ADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      'reporte-contratacion', 'seguimiento-auditoria', 'reporte-contratacion', 'estadisticas-auditoria',
-      'envio-paquete-documentacion', 'recibir-paquete-documentacion',
+      'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
+      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'formulario-incapacicades', 'busqueda-incapacidades'
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion',
+    ],
+    INCAPACIDAD: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', , 'busqueda-incapacidades', 'formulario-incapacicades'
     ],
   };
 

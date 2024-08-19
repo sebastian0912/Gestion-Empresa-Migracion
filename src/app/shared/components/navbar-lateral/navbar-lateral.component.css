@@ -1,150 +1,150 @@
 .navbar {
-    width: 280px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 888;
-    background-color: #fff;
+  width: 280px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 888;
+  background-color: #fff;
 }
 
 .sidebar-header {
-    font-weight: 900;
-    width: 100%;
-    color: #414141;
-    text-align: left;
-    font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  width: 100%;
+  color: #414141;
+  text-align: left;
+  font-family: "Montserrat", sans-serif;
 }
 
 .titulo-header h3 {
-    font-size: 18pt;
-    width: 100%;
-    color: #56bb91;
-    font-style: italic !important;
-    font-weight: bold !important;
-    border-bottom: 2px solid #56bb91;
+  font-size: 18pt;
+  width: 100%;
+  color: #56bb91;
+  font-style: italic !important;
+  font-weight: bold !important;
+  border-bottom: 2px solid #56bb91;
 }
 
 .servicios-header {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .sidebar-header h3 {
-    font-size: 14pt;
+  font-size: 14pt;
 }
 
 .servicios-header h3 {
-    font-size: 14pt;
-    font-weight: 600;
+  font-size: 14pt;
+  font-weight: 600;
 }
 
 .nav-links {
-    width: 100%;
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 20px;
+  width: 100%;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 20px;
 }
 
 .nav-links li {
-    list-style: none;
-    margin: 0;
-    font-size: 12pt;
+  list-style: none;
+  margin: 0;
+  font-size: 12pt;
 }
 
 ul {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 li {
-    text-decoration: none;
-    color: #000;
-    font-family: "Montserrat", sans-serif;
+  text-decoration: none;
+  color: #000;
+  font-family: "Montserrat", sans-serif;
 }
 
 .blockLink {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .icon {
-    width: 30px;
-    margin-right: 10px;
+  width: 30px;
+  margin-right: 10px;
 }
 
 .blockLink,
 .cerrar-sesion {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px 20px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .cerrar-sesion {
-    margin-top: auto;
+  margin-top: auto;
 }
 
 .hamburger {
-    display: none;
-    cursor: pointer;
-    font-size: 28pt;
-    position: fixed;
-    z-index: 1050;
+  display: none;
+  cursor: pointer;
+  font-size: 28pt;
+  position: fixed;
+  z-index: 1050;
 }
 
 .blockLink.active {
-    background-color: #82d3af;
-    border-left: 4px solid #15503c;
+  background-color: #82d3af;
+  border-left: 4px solid #15503c;
 }
 
 /* Estilos para móviles */
 @media (max-width: 768px) {
-    .navbar {
-        width: 200px;
-        padding: 20px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1001;
-        box-shadow: none;
-        background-color: #fff;
-    }
+  .navbar {
+    width: 200px;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+    box-shadow: none;
+    background-color: #fff;
+  }
 
-    .hamburger {
-        display: block;
-        z-index: 1002;
-        position: fixed;
-        top: 0;
-        left: 0;
-        padding: 10px;
-        margin-left: 10px;
-    }
+  .hamburger {
+    display: block;
+    z-index: 1002;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    margin-left: 10px;
+  }
 
-    .nav-links {
-        display: none;
-        position: fixed;
-        padding: 50px;
-        top: 0;
-        left: 0;
-        width: 200px;
-        min-height: 100vh;
-        height: 100vh;
-        flex-direction: column;
-        background-color: #fff;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        overflow-y: auto;
-    }
+  .nav-links {
+    display: none;
+    position: fixed;
+    padding: 50px;
+    top: 0;
+    left: 0;
+    width: 200px;
+    min-height: 100vh;
+    height: 100vh;
+    flex-direction: column;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    overflow-y: auto;
+  }
 
-    .nav-links.active {
-        display: flex;
-    }
+  .nav-links.active {
+    display: flex;
+  }
 }
