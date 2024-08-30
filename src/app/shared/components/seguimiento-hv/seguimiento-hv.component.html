@@ -1,0 +1,632 @@
+<form [formGroup]="auditForm" (ngSubmit)="onSubmit()">
+  <h2 mat-dialog-title>Revisión de auditoría</h2>
+  <mat-dialog-content>
+    <div class="dialog-form-grid">
+
+      <h1 class="clasificacion">Encontro</h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Encontro - Contratos Sí</mat-label>
+        <input matInput formControlName="contratos_si" type="number">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Contratos No</mat-label>
+        <input matInput formControlName="contratos_no" type="number">
+      </mat-form-field>
+
+      <h1 class="clasificacion">Número de Contrato</h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Número de Contrato</mat-label>
+        <input matInput formControlName="numero_de_contrato" type="text">
+      </mat-form-field>
+
+      <h1 class="clasificacion">Ficha tecnica</h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Foto</mat-label>
+        <input matInput formControlName="foto" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha de Ingreso FT</mat-label>
+        <input matInput [matDatepicker]="picker3" formControlName="fecha_de_ingreso_FT">
+        <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+        <mat-datepicker #picker3></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Infolaboral FT</mat-label>
+        <input matInput formControlName="infolaboral_FT" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Firma del Trabajador</mat-label>
+        <input matInput formControlName="firma_trabajador" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Huella</mat-label>
+        <input matInput formControlName="huella" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Referencia</mat-label>
+        <input matInput formControlName="referencia" type="text">
+      </mat-form-field>
+
+
+
+      <!--preguntar si quitar-->
+      <mat-form-field class="example-full-width">
+        <mat-label>Empleador FT</mat-label>
+        <input matInput formControlName="empleador_FT" type="text">
+      </mat-form-field>
+
+
+      <h1 class="clasificacion">Documento de identidad o Cédula</h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Ampliada al 150%</mat-label>
+        <input matInput formControlName="ampliada_al_150" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Huella Cédula</mat-label>
+        <input matInput formControlName="huellaCedula" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Sello</mat-label>
+        <input matInput formControlName="sello" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Legible</mat-label>
+        <input matInput formControlName="legible" type="text">
+      </mat-form-field>
+
+      <h1 class="clasificacion">"Antecedentes(inferior a 15 días) " </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Procuraduría Vigente</mat-label>
+        <input matInput formControlName="procuraduria_vigente" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Procuraduría</mat-label>
+        <input matInput [matDatepicker]="picker4" formControlName="fecha_procuraduria">
+        <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+        <mat-datepicker #picker4></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Contraloría Vigente</mat-label>
+        <input matInput formControlName="contraloria_vigente" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Contraloría</mat-label>
+        <input matInput [matDatepicker]="picker5" formControlName="fecha_contraloria">
+        <mat-datepicker-toggle matSuffix [for]="picker5"></mat-datepicker-toggle>
+        <mat-datepicker #picker5></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>OFAC Lista Clinton</mat-label>
+        <input matInput formControlName="ofac_lista_clinton" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha OFAC</mat-label>
+        <input matInput [matDatepicker]="picker6" formControlName="fecha_ofac">
+        <mat-datepicker-toggle matSuffix [for]="picker6"></mat-datepicker-toggle>
+        <mat-datepicker #picker6></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Policivos Vigente</mat-label>
+        <input matInput formControlName="policivos_vigente" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Policivos</mat-label>
+        <input matInput [matDatepicker]="picker7" formControlName="fecha_policivos">
+        <mat-datepicker-toggle matSuffix [for]="picker7"></mat-datepicker-toggle>
+        <mat-datepicker #picker7></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Medidas Correctivas</mat-label>
+        <input matInput formControlName="medidas_correstivas" type="text">
+        <mat-checkbox (change)="toggleNoAplica('medidas_correstivas', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Medidas Correctivas</mat-label>
+        <input matInput [matDatepicker]="picker8" formControlName="fecha_medidas_correstivas">
+        <mat-datepicker-toggle matSuffix [for]="picker8"></mat-datepicker-toggle>
+        <mat-datepicker #picker8></mat-datepicker>
+        <mat-checkbox (change)="toggleNoAplica('fecha_medidas_correstivas', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+
+      <h1 class="clasificacion">"Adres </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>ADRES</mat-label>
+        <input matInput formControlName="adres" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha ADRES</mat-label>
+        <input matInput [matDatepicker]="picker9" formControlName="fecha_adres">
+        <mat-datepicker-toggle matSuffix [for]="picker9"></mat-datepicker-toggle>
+        <mat-datepicker #picker9></mat-datepicker>
+      </mat-form-field>
+
+      <h1 class="clasificacion">Sisben </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>SISBEN</mat-label>
+        <input matInput formControlName="sisben" type="text">
+      </mat-form-field>
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha SISBEN</mat-label>
+        <input matInput [matDatepicker]="picker10" formControlName="fecha_sisben">
+        <mat-datepicker-toggle matSuffix [for]="picker10"></mat-datepicker-toggle>
+        <mat-datepicker #picker10></mat-datepicker>
+      </mat-form-field>
+
+      <h1 class="clasificacion">Orden de ingreso </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Formato Elite</mat-label>
+        <input matInput formControlName="formatoElite" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Cargo Elite</mat-label>
+        <input matInput formControlName="cargoElite" type="text">
+      </mat-form-field>
+
+      <h1 class="clasificacion">Contrato </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombres Trabajador Contrato</mat-label>
+        <input matInput formControlName="nombres_trabajador_contrato" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>No Cédula Contrato</mat-label>
+        <input matInput formControlName="no_cedula_contrato" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Dirección</mat-label>
+        <input matInput formControlName="direccion" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Correo Electrónico</mat-label>
+        <input matInput formControlName="correo_electronico" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha de Ingreso Contrato</mat-label>
+        <input matInput [matDatepicker]="picker11" formControlName="fecha_de_ingreso_contrato">
+        <mat-datepicker-toggle matSuffix [for]="picker11"></mat-datepicker-toggle>
+        <mat-datepicker #picker11></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Salario Contrato</mat-label>
+        <mat-select formControlName="salario_contrato" (selectionChange)="onSalarioSelectChange('salario_contrato', $event)">
+          <mat-option value="1300000">1.300.000</mat-option>
+          <mat-option value="otro">Otro</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Empresa Usuaria</mat-label>
+        <input matInput formControlName="empresa_usuaria" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Cargo Contrato</mat-label>
+        <input matInput formControlName="cargo_contrato" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Descripción Temporada</mat-label>
+        <input matInput formControlName="descripcion_temporada" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Firma Trabajador Contrato</mat-label>
+        <input matInput formControlName="firma_trabajador_contrato" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Firma Testigos</mat-label>
+        <input matInput formControlName="firma_testigos" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Sello Temporal</mat-label>
+        <input matInput formControlName="sello_temporal" type="text">
+      </mat-form-field>
+
+      <h1 class="clasificacion">Entrega de documentos </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Autorización Descuento Casino</mat-label>
+        <input matInput formControlName="autorizacion_dscto_casino" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Forma de Pago</mat-label>
+        <input matInput formControlName="forma_de_pago" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Autorización Funerario</mat-label>
+        <input matInput formControlName="autorizacion_funerario" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Huellas Documentos</mat-label>
+        <input matInput formControlName="huellas_docs" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha de Recibido Documentos</mat-label>
+        <input matInput [matDatepicker]="picker12" formControlName="fecha_de_recibido_docs">
+        <mat-datepicker-toggle matSuffix [for]="picker12"></mat-datepicker-toggle>
+        <mat-datepicker #picker12></mat-datepicker>
+      </mat-form-field>
+
+      <h1 class="clasificacion">Pruebas </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Entrevista de Ingreso</mat-label>
+        <input matInput formControlName="entrevista_ingreso" type="text">
+        <mat-checkbox (change)="toggleNoAplica('entrevista_ingreso', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+
+      <h1 class="clasificacion">Arl </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Centro de Costo ARL</mat-label>
+        <input matInput formControlName="centro_de_costo_arl" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Clase de Riesgo</mat-label>
+        <input matInput formControlName="clase_de_riesgo" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Cédula ARL</mat-label>
+        <input matInput formControlName="cedula_arl" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombre Trabajador ARL</mat-label>
+        <input matInput formControlName="nombre_trabajador_arl" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha de Ingreso ARL</mat-label>
+        <input matInput [matDatepicker]="picker13" formControlName="fecha_de_ingreso_arl">
+        <mat-datepicker-toggle matSuffix [for]="picker13"></mat-datepicker-toggle>
+        <mat-datepicker #picker13></mat-datepicker>
+      </mat-form-field>
+
+      <h1 class="clasificacion">Examenes </h1>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Temporal</mat-label>
+        <input matInput formControlName="temporal" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha No Mayor a 15 Días</mat-label>
+        <input matInput [matDatepicker]="picker14" formControlName="fecha_no_mayor_a_15_dias">
+        <mat-datepicker-toggle matSuffix [for]="picker14"></mat-datepicker-toggle>
+        <mat-datepicker #picker14></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombres Trabajador Exámenes</mat-label>
+        <input matInput formControlName="nombres_trabajador_examenes" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Cargo</mat-label>
+        <input matInput formControlName="cargo" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Cedula Examenes</mat-label>
+        <input matInput formControlName="cedula_examenes" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Apto</mat-label>
+        <input matInput formControlName="apto" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Salud Ocupacional</mat-label>
+        <input matInput formControlName="salud_ocupacional" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Colinesterasa</mat-label>
+        <input matInput formControlName="colinesterasa" type="text">
+        <mat-checkbox (change)="toggleNoAplica('colinesterasa', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+      
+      <mat-form-field class="example-full-width">
+        <mat-label>Planilla Colinesterasa</mat-label>
+        <input matInput formControlName="planilla_colinesterasa" type="text">
+        <mat-checkbox (change)="toggleNoAplica('planilla_colinesterasa', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+      
+      <mat-form-field class="example-full-width">
+        <mat-label>Otros</mat-label>
+        <input matInput formControlName="otros" type="text">
+        <mat-checkbox (change)="toggleNoAplica('otros', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+
+      <h1 class="clasificacion">AFP </h1>
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Certificado AFP</mat-label>
+        <input matInput formControlName="certificado_afp" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Certificado Afp</mat-label>
+        <input matInput [matDatepicker]="picker24" formControlName="fecha_certificado_afp">
+        <mat-datepicker-toggle matSuffix [for]="picker24"></mat-datepicker-toggle>
+        <mat-datepicker #picker24></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>RUAF</mat-label>
+        <input matInput formControlName="ruaf" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombre Trabajador RUAF</mat-label>
+        <input matInput formControlName="nombre_trabajador_ruaf" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Cédula RUAF</mat-label>
+        <input matInput formControlName="cedula_ruaf" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Certificado RUAF Menor a 15 Días</mat-label>
+        <input matInput [matDatepicker]="picker15" formControlName="fecha_cerRuaf15menor">
+        <mat-datepicker-toggle matSuffix [for]="picker15"></mat-datepicker-toggle>
+        <mat-datepicker #picker15></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Historia</mat-label>
+        <input matInput formControlName="historia" type="text">
+        <mat-checkbox (change)="toggleNoAplica('historia', $event)">No Aplica</mat-checkbox>
+      </mat-form-field>
+
+      <h1 class="clasificacion">EPS </h1>
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Radicado EPS</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="fecha_radicado_eps">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha de ingreso EPS</mat-label>
+        <input matInput [matDatepicker]="picker20" formControlName="fecha_ingreso_eps">
+        <mat-datepicker-toggle matSuffix [for]="picker20"></mat-datepicker-toggle>
+        <mat-datepicker #picker20></mat-datepicker>
+      </mat-form-field>
+
+      <!--
+        <mat-form-field class="example-full-width">
+          <mat-label>Diferencia Fecha Radicado EPS</mat-label>
+          <input matInput formControlName="diferencia_fecha_radicado_eps" type="text">
+        </mat-form-field>
+        -->
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombre y Cédula EPS</mat-label>
+        <input matInput formControlName="nombre_y_cedula_eps" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Salario EPS</mat-label>
+        <mat-select formControlName="salario_eps" (selectionChange)="onSalarioSelectChange('salario_eps', $event)">
+          <mat-option value="1300000">1.300.000</mat-option>
+          <mat-option value="otro">Otro</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field *ngIf="isOtroSelected('salario_eps')" class="example-full-width">
+        <mat-label>Especificar Salario EPS</mat-label>
+        <input matInput formControlName="salario_eps_otro">
+      </mat-form-field>
+
+      <h1 class="clasificacion">CAJA</h1>
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Radicado Caja</mat-label>
+        <input matInput [matDatepicker]="picker2" formControlName="fecha_radicado_caja">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha de ingreso Caja</mat-label>
+        <input matInput [matDatepicker]="picker21" formControlName="fecha_ingreso_caja">
+        <mat-datepicker-toggle matSuffix [for]="picker21"></mat-datepicker-toggle>
+        <mat-datepicker #picker21></mat-datepicker>
+      </mat-form-field>
+
+      <!--
+        <mat-form-field class="example-full-width">
+          <mat-label>Diferencia Fecha Radicado Caja</mat-label>
+          <input matInput formControlName="diferencia_fecha_radicado_caja" type="text">
+        </mat-form-field>
+        -->
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombre y Cédula Caja</mat-label>
+        <input matInput formControlName="nombre_y_cedula_caja" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Salario Caja</mat-label>
+        <mat-select formControlName="salario_caja" (selectionChange)="onSalarioSelectChange('salario_caja', $event)">
+          <mat-option value="1300000">1.300.000</mat-option>
+          <mat-option value="otro">Otro</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field *ngIf="isOtroSelected('salario_caja')" class="example-full-width">
+        <mat-label>Especificar Salario Caja</mat-label>
+        <input matInput formControlName="salario_caja_otro">
+      </mat-form-field>
+
+
+      <h1 class="clasificacion">PAGO DE SEGURIDAD </h1>
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Nombre y cedula</mat-label>
+        <input matInput formControlName="nombre_y_cedula_seguridad" type="text">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Fecha Radicado </mat-label>
+        <input matInput [matDatepicker]="picker16" formControlName="fecha_radicado_seguridad">
+        <mat-datepicker-toggle matSuffix [for]="picker16"></mat-datepicker-toggle>
+        <mat-datepicker #picker16></mat-datepicker>
+      </mat-form-field>
+
+
+
+      <!-- Fields specific to FLORES DE LOS ANDES -->
+      <ng-container *ngIf="data.centro_de_costo === 'JARDINES DE LOS ANDES'">
+
+        <h1 class="clasificacion">Otro si Clausulas adicionales JDA </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Firma Cláusulas Adicionales</mat-label>
+          <input matInput formControlName="firma_clausulas_add" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Sello Temporal Cláusulas Adicionales</mat-label>
+          <input matInput formControlName="sello_temporal_clausulas_add" type="text">
+        </mat-form-field>
+
+        <h1 class="clasificacion">Adición Contrato (otro si) </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Firma Adición Contrato</mat-label>
+          <input matInput formControlName="firma_add_contrato" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Sello Temporal Adición Contrato</mat-label>
+          <input matInput formControlName="sello_temporal_add_contrato" type="text">
+        </mat-form-field>
+
+        <h1 class="clasificacion">Autorización Tratamiento de Datos JDA </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Autorización Tratamientos Datos JDA</mat-label>
+          <input matInput formControlName="autorizaciontratamientosDatosJDA" type="text">
+        </mat-form-field>
+
+        <h1 class="clasificacion">Carta descuento de flor </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Carta Descuento FLOR</mat-label>
+          <input matInput formControlName="cartadescuentoflor" type="text">
+        </mat-form-field>
+
+        <h1 class="clasificacion">Formato de timbre en hora de ingreso y salida </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Formato Timbre</mat-label>
+          <input matInput formControlName="formato_timbre" type="text">
+        </mat-form-field>
+
+        <h1 class="clasificacion">Carta autorización correo electrónico </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Carta Autorización Correo</mat-label>
+          <input matInput formControlName="cartaaurotiracioncorreo" type="text">
+        </mat-form-field>
+
+        <h1 class="clasificacion">Hoja de Vida </h1>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Código Hoja de Vida</mat-label>
+          <input matInput formControlName="codigo_hoja_de_vida" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Foto Hoja de Vida</mat-label>
+          <input matInput formControlName="foto_hoja_de_vida" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Nombre y Cédula Hoja de Vida</mat-label>
+          <input matInput formControlName="nombre_y_cedula_hoja_de_vida" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Correo Electrónico Hoja de Vida</mat-label>
+          <input matInput formControlName="correo_electronico_hoja_de_vida" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Dirección Hoja de Vida</mat-label>
+          <input matInput formControlName="direccion_hoja_de_vida" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Referencia Hoja de Vida</mat-label>
+          <input matInput formControlName="referencia_hoja_de_vida" type="text">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Firma Carnet Hoja de Vida</mat-label>
+          <input matInput formControlName="firma_carnet_hoja_de_vida" type="text">
+        </mat-form-field>
+      </ng-container>
+
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()" type="button">Cancelar</button>
+    <button mat-flat-button (click)="onSubmit()">Guardar</button>
+  </mat-dialog-actions>
+</form>

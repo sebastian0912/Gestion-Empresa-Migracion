@@ -49,20 +49,35 @@ export class SeguimientoHvService {
         catchError(this.handleError)
       );
     }
+    else if (responsable === '3') {
+      return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_ultimas_tres_semanas/`, { headers }).pipe(
+        map((response: any) => response),
+        catchError(this.handleError)
+      );
+    }
     return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_responsable/${responsable}`, { headers }).pipe(
       map((response: any) => response),
       catchError(this.handleError)
     );
   }
 
-    // Buscar seguimiento hv 
-    public buscarSeguimientoHvGeneral(): Observable<any> {
-      const headers = this.createAuthorizationHeader();
-      return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_responsable/`, { headers }).pipe(
-        map((response: any) => response),
-        catchError(this.handleError)
-      );
-    }
+  // Buscar seguimiento hv por id
+  public buscarById(id: number): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_id/${id}`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
+  // Buscar seguimiento hv 
+  public buscarSeguimientoHvGeneral(): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/auditoria/tu_alianza_responsable/`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
 
   // Editar seguimiento hv
   async editarSeguimientoHv(
@@ -107,7 +122,7 @@ export class SeguimientoHvService {
       throw new Error('No token found');
     }
     const user = await this.getUser();
-    
+
     const responsable = user.primer_nombre + ' ' + user.primer_apellido;
     const urlcompleta = `${this.apiUrl}/auditoria/tu_alianza/`;
 
@@ -128,6 +143,38 @@ export class SeguimientoHvService {
     } catch (error) {
       throw error;
     }
-  } 
+  }
+
+  // Actualizar un registro específico de TuAlianza usando Promises
+  async actualizarRegistroTuAlianzaAsync(id: number, updated_fields: any, editar: string): Promise<any> {
+    const token = this.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    if (editar !== 'true') {
+      // añador el campo responsable a los campos actualizados
+      updated_fields.responsable = await this.getUser().then((user) => user.primer_nombre + ' ' + user.primer_apellido);
+    }
+
+    const urlcompleta = `${this.apiUrl}/auditoria/tu_alianza_write/`;
+
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+
+    const data = {
+      id,
+      updated_fields
+    };
+
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 
 }

@@ -46,10 +46,16 @@ export class DateRangeDialogComponent {
   }
 
   onSave(): void {
+    const startDate = moment(this.range.value.start).format('YYYY-MM-DD');
+    const endDate = moment(this.range.value.end).add(1, 'days').format('YYYY-MM-DD');
+  
     const formattedRange = {
-      start: moment(this.range.value.start).format('YYYY-MM-DD'),
-      end: moment(this.range.value.end).format('YYYY-MM-DD')
+      start: startDate,
+      end: endDate
     };
+    
     this.dialogRef.close(formattedRange);
   }
+  
+
 }

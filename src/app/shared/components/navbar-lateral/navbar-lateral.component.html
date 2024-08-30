@@ -104,14 +104,21 @@
             <li>Reporte de contratación</li>
         </div>
 
+
         <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria'"
             routerLink="/seguimiento-auditoria" *ngIf="hasPermission('seguimiento-auditoria')">
             <img src="navbar/archivos.png" alt="Dashboard" class="icon">
             <li>Seguimiento HV</li>
         </div>
 
+        <div class="blockLink"  *ngIf="hasPermission('personal-activo')" (click)="selectFile('personalActivo')">
+            <img src="navbar/aprobado.png" alt="Dashboard" class="icon">
+            <li>Reporte del personal Activo</li>
+        </div>
+
         <div class="blockLink" [class.active]="currentRoute === '/estadisticas-auditoria'"
-            routerLink="/estadisticas-auditoria" *ngIf="hasPermission('estadisticas-auditoria')">
+            routerLink="/estadisticas-auditoria"
+            *ngIf="hasPermission('estadisticas-auditoria') && angelaVisible == true">
             <img src="navbar/reporte-de-negocios.png" alt="Dashboard" class="icon">
             <li>Estadisticas HV</li>
         </div>
