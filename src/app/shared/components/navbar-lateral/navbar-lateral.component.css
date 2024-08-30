@@ -103,14 +103,10 @@ li {
 
 .cerrar-sesion {
   margin-top: auto;
-  background-color: #ff4444;
   color: white;
   transition: background-color 0.3s ease;
 }
 
-.cerrar-sesion:hover {
-  background-color: #ff0000;
-}
 
 .hamburger {
   display: none;
@@ -129,7 +125,6 @@ li {
 @media (max-width: 768px) {
   .navbar {
     width: 250px;
-    /* Reduce el ancho en pantallas más pequeñas */
     padding: 20px;
     position: fixed;
     top: 0;
@@ -141,17 +136,14 @@ li {
 
   .nav-links li {
     font-size: 11pt;
-    /* Tamaño de fuente reducido para móviles */
   }
 
   .blockLink {
     padding: 10px 15px;
-    /* Ajusta el padding para optimizar el espacio */
   }
 
   .icon {
     width: 22px;
-    /* Tamaño de icono reducido en móviles */
     margin-right: 8px;
   }
 
@@ -164,12 +156,10 @@ li {
 @media (max-width: 480px) {
   .navbar {
     width: 220px;
-    /* Ancho más reducido en pantallas muy pequeñas */
   }
 
   .nav-links li {
     font-size: 10pt;
-    /* Fuente más pequeña para dispositivos muy pequeños */
   }
 
   .blockLink {
