@@ -59,13 +59,13 @@ export class NavbarLateralComponent implements OnInit {
       'seguimiento-auditoria'],
     ADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
-      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'formulario-incapacicades', 'busqueda-incapacidades'
+      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'formulario-incapacicades', 'subida-archivos-incapacidades', 'buscar-incapacicades','incapacidades-totales'
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion',
     ],
-    INCAPACIDAD: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', , 'busqueda-incapacidades', 'formulario-incapacicades'
+    INCAPACIDAD: ['home', 'incapacidades-totales', 'forma-pago', 'desprendibles-pago','subida-archivos-incapacidades', 'arl', 'ausentismos', 'reporte-contratacion', , 'buscar-incapacicades', 'formulario-incapacicades'
     ],
   };
 

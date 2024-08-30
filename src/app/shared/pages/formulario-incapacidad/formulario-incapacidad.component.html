@@ -1,0 +1,285 @@
+<audio id="successSound" src="Sounds/positivo.mp3"></audio>
+<audio id="errorSound" src="Sounds/negativo.mp3"></audio>
+<div id="loader" class="cajaloader" [style.display]="loaderVisible ? 'block' : 'none'">
+  <h1 id="cont" class="contador" [style.display]="counterVisible ? 'block' : 'none'"></h1>
+  <div class="custom-loader"></div>
+</div>
+<div class="app-layout">
+  <app-navbar-lateral></app-navbar-lateral>
+  <div class="contenedor">
+    <mat-card>
+      <mat-card-content>
+        <div class="search-container">
+          <div class="buscar">
+            <mat-card-title>Formulario ingreso incapacidades</mat-card-title>
+            <mat-form-field appearance="fill" class="example-full-width">
+
+              <mat-label>Ingrese la cédula a buscar</mat-label>
+              <input matInput [(ngModel)]="cedula">
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="buscarCedula(cedula)" class="boton">Buscar</button>
+          </div>
+        </div>
+
+        <form [formGroup]="incapacidadForm">
+
+          <!-- Módulo 1: Datos de la Oficina -->
+          <mat-card class="module-card">
+            <mat-card-title>Datos de la Oficina</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <div *ngFor="let field of ['Oficina', 'Centro de costo', 'Nombre de quien recibio']" class="form-field">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{ field }}</mat-label>
+                    <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Módulo 2: Información Personal -->
+          <mat-card class="module-card">
+            <mat-card-title>Información Personal</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <div
+                  *ngFor="let field of ['Tipo de documento', 'Numero de documento', 'Apellido','Fondo de pensiones', 'Nombre', 'Edad', 'Sexo', 'Empresa', 'Centro de costos']"
+                  class="form-field">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{ field }}</mat-label>
+
+                    <mat-select *ngIf="field === 'Sexo'" [formControlName]="fieldMap[field]">
+                      <mat-option *ngFor="let option of sexos" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
+
+                    <mat-select *ngIf="field === 'Tipo de documento'" [formControlName]="fieldMap[field]">
+                      <mat-option *ngFor="let option of tiposDocumento" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
+
+                    <input *ngIf="field !== 'Sexo' && field !== 'Tipo de documento'" matInput
+                      [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Módulo 3: Información de Contacto -->
+          <mat-card class="module-card">
+            <mat-card-title>Información de Contacto</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <div *ngFor="let field of ['Celular o telefono 01', 'Celular o telefono 02', 'Correo Electronico']"
+                  class="form-field">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{ field }}</mat-label>
+                    <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Módulo 4: Información del Contrato y Temporal -->
+          <mat-card class="module-card">
+            <mat-card-title>Información del Contrato y Temporal</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <div *ngFor="let field of ['Numero de contrato', 'Temporal', 'Fecha de ingreso temporal']"
+                  class="form-field">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{ field }}</mat-label>
+                    <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Módulo 5: Información de Incapacidad -->
+          <mat-card class="module-card">
+            <mat-card-title>Información de Incapacidad</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <!-- Tipo de Incapacidad -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Tipo incapacidad</mat-label>
+                  <mat-select [formControlName]="fieldMap['Tipo incapacidad']">
+                    <mat-option *ngFor="let option of tiposincapacidad" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- Fecha inicio incapacidad -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha inicio incapacidad</mat-label>
+                  <input matInput [matDatepicker]="inicioDatePicker"
+                    [formControlName]="fieldMap['Fecha inicio incapacidad']">
+                  <mat-datepicker-toggle matSuffix [for]="inicioDatePicker"></mat-datepicker-toggle>
+                  <mat-datepicker #inicioDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- Fecha fin incapacidad -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha fin incapacidad</mat-label>
+                  <input matInput [matDatepicker]="finDatePicker" [formControlName]="fieldMap['Fecha fin incapacidad']">
+                  <mat-datepicker-toggle matSuffix [for]="finDatePicker"></mat-datepicker-toggle>
+                  <mat-datepicker #finDatePicker></mat-datepicker>
+                </mat-form-field>
+                <!-- Select para Prorroga -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Prorroga</mat-label>
+                  <mat-select [formControlName]="fieldMap['Prorroga']">
+                    <mat-option *ngFor="let option of Prorroga" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+
+                <!-- Fecha de Envio Incapacidad Fisica -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha de Envio Incapacidad Fisica</mat-label>
+                  <input matInput [matDatepicker]="envioDatePicker"
+                    [formControlName]="fieldMap['Fecha de Envio Incapacidad Fisica']">
+                  <mat-datepicker-toggle matSuffix [for]="envioDatePicker"></mat-datepicker-toggle>
+                  <mat-datepicker #envioDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width">
+                  <mat-label>Codigo Diagnostico</mat-label>
+                  <input matInput [formControl]="codigoControl" [matAutocomplete]="auto">
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let option of filteredCodigos | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Incapacidad Transcrita</mat-label>
+                  <mat-select [formControlName]="fieldMap['Incapacidad Transcrita']">
+                    <mat-option *ngFor="let option of Prorroga" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- Otros campos de texto -->
+                <mat-form-field class="example-full-width" appearance="fill"
+                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad','Nombre eps', 'Observaciones',  'Dias de diferencia']">
+                  <mat-label>{{ field }}</mat-label>
+                  <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                </mat-form-field>
+                <mat-form-field class="example-full-width">
+                  <mat-label>IPS punto de atención (NIT)</mat-label>
+                  <input type="text" matInput [formControl]="ipsControlNit" [matAutocomplete]="autoNit">
+                  <mat-autocomplete #autoNit="matAutocomplete">
+                    <mat-option *ngFor="let nit of filteredIpsNit | async" [value]="nit">
+                      {{ nit }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width">
+                  <mat-label>Nombre de la IPS</mat-label>
+                  <input type="text" matInput [formControl]="ipsControlNombre" [matAutocomplete]="autoNombre">
+                  <mat-autocomplete #autoNombre="matAutocomplete">
+                    <mat-option *ngFor="let nombre of filteredIpsNombre | async" [value]="nombre">
+                      {{ nombre }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Estado incapacidad</mat-label>
+                  <mat-select [formControlName]="fieldMap['Estado incapacidad']">
+                    <mat-option *ngFor="let option of estadoincapacidad" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+
+
+          <!-- Módulo 6: Información del Doctor -->
+          <mat-card class="module-card">
+            <mat-card-title>Información del Doctor</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <div
+                  *ngFor="let field of ['Tipo de documento doctor atendido', 'Numero de documento doctor', 'Nombre doctor']"
+                  class="form-field">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{ field }}</mat-label>
+
+                    <mat-select *ngIf="field === 'Tipo de documento doctor atendido'"
+                      [formControlName]="fieldMap[field]">
+                      <mat-option *ngFor="let option of tiposDocumentoDoctor" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
+
+                    <input *ngIf="field !== 'Tipo de documento doctor atendido'" matInput
+                      [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="module-card">
+            <mat-card-title>Subida de archivos</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <div *ngFor="let field of ['Historial clinico', 'Archivo Incapacidad']" class="form-field">
+                  <!-- Botón que abre el diálogo de subida de archivos -->
+                  <button mat-raised-button class="aumentar" color="primary" (click)="onUploadClick(field)">
+                    Subir {{ field }}
+                  </button>
+
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <button mat-raised-button class="aumentar" color="primary" (click)="onSubmit()">Subir incapacidad</button>
+        </form>
+      </mat-card-content>
+      <!-- Botón flotante -->
+      <button mat-fab [matMenuTriggerFor]="menu" class="notification-button">
+        <mat-icon class="notification-icon">notifications</mat-icon>
+        <span *ngIf="validationErrors.length > 0" class="notification-badge">{{ validationErrors.length }}</span>
+      </button>
+
+      <!-- Menú desplegable -->
+      <mat-menu #menu="matMenu">
+        <ng-container *ngIf="validationErrors.length > 0; else noErrors">
+          <button mat-menu-item *ngFor="let error of validationErrors">
+            <mat-icon color="warn">error</mat-icon>
+            <span>{{ error }}</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="clearErrors()">
+            <mat-icon>clear</mat-icon>
+            <span>Clear Notifications</span>
+          </button>
+        </ng-container>
+        <ng-template #noErrors>
+          <button mat-menu-item disabled>
+            <span>No notifications</span>
+          </button>
+        </ng-template>
+      </mat-menu>
+
+    </mat-card>
+  </div>
+
+</div>

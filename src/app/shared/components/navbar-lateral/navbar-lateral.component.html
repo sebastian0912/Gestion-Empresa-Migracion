@@ -150,16 +150,33 @@
       <img src="navbar/recibir-documentacion.png" alt="Dashboard" class="icon">
       <li>Recibir paquete de documentación</li>
     </div>
-    <div class="blockLink" [class.active]="currentRoute === '/buscar-incapacicades'" routerLink="/buscar-incapacicades"
-      *ngIf="hasPermission('buscar-incapacicades')">
-      <img src="navbar/documentation.png" alt="Dashboard" class="icon">
-      <li>Busqueda de incapacidades</li>
-    </div>
 
-    <div class="blockLink" [class.active]="currentRoute === '/formulario-incapacicades'"
-      routerLink="/formulario-incapacicades" *ngIf="hasPermission('formulario-incapacicades')">
+    <!-- Dropdown para incapacidades -->
+    <div class="dropdown blockLink" >
       <img src="navbar/documentation.png" alt="Dashboard" class="icon">
-      <li>Subir incapacidades</li>
+      <li>Incapacidades</li>
+      <div class="dropdown-content">
+        <div class="blockLink" [class.active]="currentRoute === '/subida-archivos-incapacidades'"
+          routerLink="/subida-archivos-incapacidades" *ngIf="hasPermission('subida-archivos-incapacidades')">
+          <img src="navbar/documentation.png" alt="Subir Incapacidades" class="icon">
+          <li>Subida de archivos</li>
+        </div>
+        <div class="blockLink" [class.active]="currentRoute === '/busqueda-incapacidades'" routerLink="/busqueda-incapacidades"
+          *ngIf="hasPermission('buscar-incapacicades')">
+          <img src="navbar/documentation.png" alt="Buscar Incapacidades" class="icon">
+          <li>Buscar incapacidades</li>
+        </div>
+        <div class="blockLink" [class.active]="currentRoute === '/formulario-incapacicades'"
+          routerLink="/formulario-incapacicades" *ngIf="hasPermission('formulario-incapacicades')">
+          <img src="navbar/documentation.png" alt="Subir Incapacidades" class="icon">
+          <li>Subir incapacidades</li>
+        </div>
+        <div class="blockLink" [class.active]="currentRoute === '/incapacidades-totales'"
+          routerLink="/incapacidades-totales" *ngIf="hasPermission('incapacidades-totales')">
+          <img src="navbar/documentation.png" alt="Tabla Incapacidades" class="icon">
+          <li>Listar incapacidades</li>
+        </div>
+      </div>
     </div>
 
     <!-- Hidden file input to handle file selection -->

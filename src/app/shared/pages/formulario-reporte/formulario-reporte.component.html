@@ -1,0 +1,186 @@
+<audio id="successSound" src="Sounds/positivo.mp3"></audio>
+<audio id="errorSound" src="Sounds/negativo.mp3"></audio>
+
+<div id="loader" class="cajaloader" [style.display]="loaderVisible ? 'block' : 'none'">
+  <h1 id="cont" class="contador" [style.display]="counterVisible ? 'block' : 'none'"></h1>
+  <div class="custom-loader"></div>
+</div>
+
+<div class="app-layout">
+  <app-navbar-lateral></app-navbar-lateral>
+  <div class="contenedor">
+    <mat-card>
+      <mat-card-title>Datos de la Incapacidad</mat-card-title>
+      <mat-card-content>
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSourcetable1" class="mat-elevation-z8">
+            <ng-container *ngFor="let column of ColumnsTable1">
+              <ng-container [matColumnDef]="column">
+                <th mat-header-cell *matHeaderCellDef> {{ toTitleCase(column, columnTitlesTable1) }} </th>
+                <td mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+              </ng-container>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="ColumnsTable1"></tr>
+            <tr mat-row *matRowDef="let row; columns: ColumnsTable1;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="22">No hay datos</td>
+            </tr>
+          </table>
+        </div>
+
+        <form [formGroup]="reporteForm">
+          <!-- Módulo 1: Datos de la Incapacidad -->
+          <mat-card class="module-card">
+            <mat-card-title>Datos de la Incapacidad</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <!-- Campo: Fecha de confirmación de radicación -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha de confirmación de radicación</mat-label>
+                  <input matInput [matDatepicker]="confirmacion_fecha_de_radicacionPicker"
+                    formControlName="confirmacion_fecha_de_radicacion" placeholder="MM/DD/YYYY">
+                  <mat-datepicker-toggle matSuffix
+                    [for]="confirmacion_fecha_de_radicacionPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #confirmacion_fecha_de_radicacionPicker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- Campo: Fecha de recepción de la incapacidad -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha de recepción de la incapacidad</mat-label>
+                  <input matInput [matDatepicker]="fecha_de_recepcion_de_la_incapacidadPicker"
+                    formControlName="fecha_de_recepcion_de_la_incapacidad" placeholder="MM/DD/YYYY">
+                  <mat-datepicker-toggle matSuffix
+                    [for]="fecha_de_recepcion_de_la_incapacidadPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #fecha_de_recepcion_de_la_incapacidadPicker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha de confirmación de radicación</mat-label>
+                  <input matInput [matDatepicker]="confirmacionFechaPicker"
+                    formControlName="confirmacion_fecha_de_radicacion" placeholder="MM/DD/YYYY">
+                  <mat-datepicker-toggle matSuffix [for]="confirmacionFechaPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #confirmacionFechaPicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Estado del documento incapacidad</mat-label>
+                  <mat-select [formControlName]="fieldMap['Estado del documento de incapacidad']">
+                    <mat-option *ngFor="let option of estado_documento_incapacidadlista" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- Otros campos -->
+                <mat-form-field class="example-full-width" appearance="fill"
+                  *ngFor="let field of ['consecutivoSistema_id']">
+                  <mat-label>{{ getLabel(field) }}</mat-label>
+                  <input matInput [formControlName]="field" [type]="getFieldType(field)">
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Módulo 2: Información Pagos -->
+          <mat-card class="module-card">
+            <mat-card-title>Información EPS</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha de radicado eps</mat-label>
+                  <input matInput [matDatepicker]="fecha_de_radicado_epsPicker" formControlName="fecha_de_radicado_eps"
+                    placeholder="MM/DD/YYYY">
+                  <mat-datepicker-toggle matSuffix [for]="fecha_de_radicado_epsPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #fecha_de_radicado_epsPicker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Fecha de respuesta eps</mat-label>
+                  <input matInput [matDatepicker]="fecha_de_respuesta_epsPicker"
+                    formControlName="fecha_de_respuesta_eps" placeholder="MM/DD/YYYY">
+                  <mat-datepicker-toggle matSuffix [for]="fecha_de_respuesta_epsPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #fecha_de_respuesta_epsPicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>A dónde se radicó</mat-label>
+                  <mat-select [formControlName]="fieldMap['A dónde se radicó']">
+                    <mat-option *ngFor="let option of a_donde_se_radicolista" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Quién radicó</mat-label>
+                  <mat-select [formControlName]="fieldMap['Quién radicó']">
+                    <mat-option *ngFor="let option of quien_radico_lista" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- Otros campos -->
+                <mat-form-field class="example-full-width" appearance="fill"
+                  *ngFor="let field of ['numero_de_radicado',  'respuesta_de_la_eps', 'codigo_respuesta_eps', 'numero_de_incapacidad_eps']">
+                  <mat-label>{{ getLabel(field) }}</mat-label>
+                  <input matInput [formControlName]="field" [type]="getFieldType(field)">
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Módulo 3: Información de Pago -->
+          <mat-card class="module-card">
+            <mat-card-title>Información de Pago</mat-card-title>
+            <mat-card-content>
+              <div class="form-row">
+
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>A quién corresponde el pago</mat-label>
+                  <mat-select [formControlName]="fieldMap['A quién corresponde el pago']">
+                    <mat-option *ngFor="let option of quien_corresponde_pago" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill"
+                  *ngFor="let field of [ 'dias_pagos_incapacidad', 'valor_incapacidad', 'numero_transaccion_eps_arl', 'transaccion_empresa_usuaria', 'respuesta_final_incapacidad']">
+                  <mat-label>{{ getLabel(field) }}</mat-label>
+                  <input matInput [formControlName]="field" [type]="getFieldType(field)">
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Quién corresponde el pago final</mat-label>
+                  <mat-select [formControlName]="fieldMap['Quién corresponde el pago final']">
+                    <mat-option *ngFor="let option of quien_corresponde_el_pago_finallista" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <button mat-raised-button color="primary" class="aumentar" (click)="onSubmit()">Subir Reporte
+            Incapacidad</button>
+        </form>
+
+        <!-- Datos de quien ha modificado -->
+        <mat-card-content>
+          <mat-card-title>Datos de quien ha modificado</mat-card-title>
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSourcetable2" class="mat-elevation-z8">
+              <ng-container *ngFor="let column of logsColumnsTable1">
+                <ng-container [matColumnDef]="column">
+                  <th mat-header-cell *matHeaderCellDef> {{ toTitleCase(column, columnTitlesTable1) }} </th>
+                  <td mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+                </ng-container>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="logsColumnsTable1"></tr>
+              <tr mat-row *matRowDef="let row; columns: logsColumnsTable1;"></tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="22">No hay datos</td>
+              </tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
