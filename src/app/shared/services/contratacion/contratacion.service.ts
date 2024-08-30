@@ -39,6 +39,14 @@ export class ContratacionService {
     );
   }
 
+  public traerDatosEncontratacion(cedula: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/contratacion/datosIncapacidadContratacion/${cedula}`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
   // Editar en contratacion el correo y el telefono
   async editarContratacion_Cedula_Correo(
     id: string,

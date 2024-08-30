@@ -1,0 +1,39 @@
+<audio id="successSound" src="Sounds/positivo.mp3"></audio>
+<audio id="errorSound" src="Sounds/negativo.mp3"></audio>
+
+<!-- Overlay para loader -->
+<div id="overlay" class="loader-overlay" *ngIf="overlayVisible"></div>
+
+<!-- Loader -->
+<div id="loader" class="cajaloader" *ngIf="loaderVisible">
+  <h1 id="cont" class="contador" *ngIf="counterVisible"></h1>
+  <div class="custom-loader"></div>
+</div>
+
+<!-- Input oculto para carga de archivos -->
+<input id="fileInput" type="file" (change)="cargarExcel($event)" accept=".xlsx, .xls" multiple style="display: none;" />
+
+<div class="app-layout">
+  <app-navbar-lateral></app-navbar-lateral>
+  <div class="contenedor">
+
+    <app-navbar-superior></app-navbar-superior>
+    <mat-card>
+      <h3>Carga de archivos para incapacidades</h3>
+      <mat-card-content>
+        <!-- Botones para cargar archivos -->
+        <ng-container *ngFor="let file of fileList">
+          <!-- Botón para subir archivo -->
+          <app-info-card [title]="file.title" imageUrl="comun/excel.png" (click)="triggerFileInput()"
+            style="cursor: pointer;">
+          </app-info-card>
+
+          <!-- Botón para descargar archivo asociado -->
+<button mat-raised-button color="primary" (click)="downloadFile(file.filename)">
+  <mat-icon>download</mat-icon> Descargar {{ file.title }}
+</button>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

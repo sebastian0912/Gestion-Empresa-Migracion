@@ -10,7 +10,7 @@ describe('NavbarLateralComponent', () => {
     await TestBed.configureTestingModule({
       imports: [NavbarLateralComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(NavbarLateralComponent);
     component = fixture.componentInstance;

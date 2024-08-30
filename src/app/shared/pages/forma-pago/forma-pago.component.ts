@@ -211,11 +211,11 @@ export class FormaPagoComponent implements OnInit {
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
     fileInput.click();
   }
-  
+
   resetFileInput(event: any): void {
     event.target.value = '';
   }
-  
+
 
   cargarExcel(event: any): void {
     this.toggleLoader(true, true);
@@ -237,7 +237,7 @@ export class FormaPagoComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'El archivo no tiene el formato correcto, por favor verifique que tenga 10 columnas y que las primeras 10 sean las correctas'
+          text: 'El archivo no tiene el formato corresdfsffsddcto, por favor verifique que tenga 10 columnas y que las primeras 10 sean las correctas'
         });
         this.toggleLoader(false);
         this.toggleOverlay(false);
@@ -249,7 +249,7 @@ export class FormaPagoComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: 'Los datos han sido cargados correctamente'
+            text: 'Los datos han sidsfdsfdso cargados correctamente'
           });
         } else {
           Swal.fire({
@@ -277,7 +277,7 @@ export class FormaPagoComponent implements OnInit {
 
 
   claves = ["NroDes", "Contrato", "Cedula", "Nombre", "CentrodeCosto", "Concepto", "FormadePago", "Valor", "Banco", "FECHADEPAGO"];
-  
+
   asignarClaves(data: any[]): any[] {
 
     return data.map((row: any) => {

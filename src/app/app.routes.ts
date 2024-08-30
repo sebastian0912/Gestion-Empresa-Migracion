@@ -22,31 +22,40 @@ import { AuditoriaComponent } from './shared/pages/auditoria/auditoria.component
 import { SubirDocumentacionComponent } from './shared/pages/subir-documentacion/subir-documentacion.component';
 import { EnvioPaqueteDocumentacionComponent } from './shared/pages/envio-paquete-documentacion/envio-paquete-documentacion.component';
 import { RecibirPaqueteDocumentacionComponent } from './shared/pages/recibir-paquete-documentacion/recibir-paquete-documentacion.component';
-
-
+import { FormularioIncapacidadComponent } from './shared/pages/formulario-incapacidad/formulario-incapacidad.component';
+import { BuscarIncapacidadComponent } from './shared/pages/buscar-incapacidad/buscar-incapacidad.component';
+import { FormularioReporteComponent } from './shared/pages/formulario-reporte/formulario-reporte.component';
+import { VistaTotalIncapacidadesComponent } from './shared/pages/vista-total-incapacidades/vista-total-incapacidades.component';
+import { SubidaArchivosIncapacidadesComponent } from './shared/pages/subida-archivos-incapacidades/subida-archivos-incapacidades.component';
 
 export const routes: Routes = [
-    { path: '', component: LoginComponent },
-    { path: 'atender-turno', component: AtenderTurnoComponent },
-    { path: 'ausentismos', component: AusentismosComponent },
-    { path: 'cambiar-contrasena', component: CambiarContrasenaComponent },
-    { path: 'contratacion', component: ContratacionComponent },
-    { path: 'desprendibles-pago', component: DesprendiblesPagoComponent },
-    { path: 'estadisticas-auditoria', component: EstadisticasAuditoriaComponent },
-    { path: 'estadisticas-turnero', component: EstadisticasTurneroComponent },
-    { path: 'forma-pago', component: FormaPagoComponent },
-    { path: 'home', component: HomeComponent },
-    { path: 'publicidad', component: PublicidadComponent },
-    { path: 'reporte-contratacion', component: ReporteContratacionComponent },
-    { path: 'seguimiento-auditoria', component: SeguimientoAuditoriaComponent },
-    { path: 'seleccion', component: SeleccionComponent },
-    { path: 'solicitar-turno', component: SolicitarTurnoComponent },
-    { path: 'vacantes', component: VacantesComponent },
-    { path: 'visualizar-turnos', component: VisualizarTurnosComponent },
-    { path: 'crear-estructura-documental', component: CrearEstructuraDocumentalComponent },
-    { path: 'buscar-documentacion', component: BuscarDocumentacionComponent },
-    { path: 'auditoria', component: AuditoriaComponent },
-    { path: 'subir-documentacion', component: SubirDocumentacionComponent },
-    { path: 'envio-paquete-documentacion', component: EnvioPaqueteDocumentacionComponent },
-    { path: 'recibir-paquete-documentacion', component: RecibirPaqueteDocumentacionComponent },
+  { path: '', component: LoginComponent },
+  { path: 'atender-turno', component: AtenderTurnoComponent },
+  { path: 'ausentismos', component: AusentismosComponent },
+  { path: 'cambiar-contrasena', component: CambiarContrasenaComponent },
+  { path: 'contratacion', component: ContratacionComponent },
+  { path: 'desprendibles-pago', component: DesprendiblesPagoComponent },
+  { path: 'estadisticas-auditoria', component: EstadisticasAuditoriaComponent },
+  { path: 'estadisticas-turnero', component: EstadisticasTurneroComponent },
+  { path: 'forma-pago', component: FormaPagoComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'publicidad', component: PublicidadComponent },
+  { path: 'reporte-contratacion', component: ReporteContratacionComponent },
+  { path: 'seguimiento-auditoria', component: SeguimientoAuditoriaComponent },
+  { path: 'seleccion', component: SeleccionComponent },
+  { path: 'solicitar-turno', component: SolicitarTurnoComponent },
+  { path: 'vacantes', component: VacantesComponent },
+  { path: 'visualizar-turnos', component: VisualizarTurnosComponent },
+  { path: 'crear-estructura-documental', component: CrearEstructuraDocumentalComponent },
+  { path: 'buscar-documentacion', component: BuscarDocumentacionComponent },
+  { path: 'auditoria', component: AuditoriaComponent },
+  { path: 'subir-documentacion', component: SubirDocumentacionComponent },
+  { path: 'envio-paquete-documentacion', component: EnvioPaqueteDocumentacionComponent },
+  { path: 'recibir-paquete-documentacion', component: RecibirPaqueteDocumentacionComponent },
+  { path: 'subir-documentacion', component: SubirDocumentacionComponent },
+  { path: 'formulario-incapacicades', component: FormularioIncapacidadComponent },
+  { path: 'busqueda-incapacidades', component: BuscarIncapacidadComponent },
+  {path: 'incapacidades-totales', component: VistaTotalIncapacidadesComponent },
+  { path: 'formulario-reporte/:cedula', component: FormularioReporteComponent },
+  { path: 'subida-archivos-incapacidades', component: SubidaArchivosIncapacidadesComponent },
 ];
