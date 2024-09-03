@@ -8,16 +8,19 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
-import { NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { SeguimientoHvService } from '../../services/seguimiento-hv/seguimiento-hv.service';
 import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date-rang-dialog.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { SeguimientoHvComponent } from '../../components/seguimiento-hv/seguimiento-hv.component';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-seguimiento-auditoria',
@@ -34,167 +37,173 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     FormsModule,
     MatCardModule,
     NgIf,
+    NgFor,
+    NgClass,
     DateRangeDialogComponent,
-    MatDialogModule
+    MatDialogModule,
+    MatExpansionModule,
+    SeguimientoHvComponent
   ],
   templateUrl: './seguimiento-auditoria.component.html',
   styleUrls: ['./seguimiento-auditoria.component.css']
 })
 export class SeguimientoAuditoriaComponent implements OnInit {
-
-  displayedColumns: string[] = [
-    'acciones',
-    'confirmacion_Hoja_de_vida',
-    'tipo',
-    'cedula',
-    'apellidos_y_nombres',
-    'fecha_de_ingreso',
-    'centro_de_costo',
-    'codigo_contratacion',
-    'contratos_si',
-    'contratos_no',
-    'numero_de_contrato',
-    'foto',
-    'fecha_de_ingreso_FT',
-    'infolaboral_FT',
-    'firma_trabajador',
-    'huella',
-    'referencia',
-    'firma_carnet_FT',
-    'firma_loker_FT',
-    'empleador_FT',
-    'ampliada_al_150',
-    'huellaCedula',
-    'sello',
-    'legible',
-    'procuraduria_vigente',
-    'fecha_procuraduria',
-    'contraloria_vigente',
-    'fecha_contraloria',
-    'ofac_lista_clinton',
-    'fecha_ofac',
-    'policivos_vigente',
-    'fecha_policivos',
-    'medidas_correstivas',
-    'fecha_medidas_correstivas',
-    'adres',
-    'fecha_adres',
-    'sisben',
-    'fecha_sisben',
-    'formatoElite',
-    'cargoElite',
-    'nombres_trabajador_contrato',
-    'no_cedula_contrato',
-    'direccion',
-    'correo_electronico',
-    'fecha_de_ingreso_contrato',
-    'salario_contrato',
-    'empresa_usuaria',
-    'cargo_contrato',
-    'descripcion_temporada',
-    'firma_trabajador_contrato',
-    'firma_testigos',
-    'sello_temporal',
-    'autorizacion_dscto_casino',
-    'forma_de_pago',
-    'autorizacion_funerario',
-    'huellas_docs',
-    'fecha_de_recibido_docs',
-    'centro_de_costo_arl',
-    'clase_de_riesgo',
-    'cedula_arl',
-    'nombre_trabajador_arl',
-    'fecha_de_ingreso_arl',
-    'entrevista_ingreso',
-    'temporal',
-    'fecha_no_mayor_a_15_dias',
-    'nombres_trabajador_examenes',
-    'cargo',
-    'apto',
-    'salud_ocupacional',
-    'colinesterasa',
-    'planilla_colinesterasa',
-    'otros',
-    'certificado_afp',
-    'ruaf',
-    'nombre_trabajador_ruaf',
-    'cedula_ruaf',
-    'fecha_cerRuaf15menor',
-    'historia',
-    'fecha_radicado_eps',
-    'diferencia_fecha_radicado_eps',
-    'nombre_y_cedula_eps',
-    'salario_eps',
-    'fecha_radicado_caja',
-    'diferencia_fecha_radicado_caja',
-    'nombre_y_cedula_caja',
-    'salario_caja',
-  ];
-
-  dataSource = new MatTableDataSource<any>();
-  originalData: any[] = [];
   correo: string | null = null;
+  rol: string | null = null;
 
-  overlayVisible = false;
-  loaderVisible = false;
-  counterVisible = false;
+  groupedData: any = {};
+  filteredSIN_REVISAR: any[] = [];
+  filteredREVISADO: any[] = [];
+  filteredARCHIVOEDITADO: any[] = [];
+  filteredARCHIVOREVISADO: any[] = [];
+
+  dataSource = new MatTableDataSource<any>([]);
 
   constructor(
     private pagosService: PagosService,
     private seguimientoHvService: SeguimientoHvService,
     private dialog: MatDialog,
-
   ) { }
+
+  isLoading = true; // Add a loading state
 
   async ngOnInit(): Promise<void> {
     try {
+      this.isLoading = true;
       const user = await this.pagosService.getUser();
-
-      if (user && user.correo_electronico) {
-        this.correo = user.correo_electronico;
-      } else {
-        throw new Error('Usuario no encontrado o correo electrónico no disponible.');
-      }
-
-      if (this.correo === 'archivotualianza@gmail.com') {
-        this.seguimientoHvService.buscarSeguimientoHv("todos").subscribe(
-          (response: any) => {
-            response.sort((a: any, b: any) => b.codigo_contratacion - a.codigo_contratacion);
-            this.dataSource.data = response;
-
-            this.originalData = response;
-          },
-          (error: any) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ha ocurrido un error al obtener la información'
-            });
-          }
-        );
-      } else {
-        this.seguimientoHvService.buscarSeguimientoHv(`${user.primer_nombre} ${user.primer_apellido}`).subscribe(
-          (response: any) => {
-            this.dataSource.data = response;
-            this.originalData = response;
-          },
-          (error: any) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ha ocurrido un error al obtener la información'
-            });
-          }
-        );
-      }
+      this.correo = user?.correo_electronico;
+      this.rol = user?.rol;
+  
+      await this.loadData();
+  
+      this.applyAllFilters(); // Aplicar filtros después de cargar datos
+  
+      this.seguimientoHvService.buscarSeguimientoHv("todos").subscribe(
+        (response: any) => {
+          this.dataSource.data = response;
+          this.isLoading = false; // Loading complete
+        },
+        (error: any) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al obtener la información'
+          });
+          this.isLoading = false; // Loading failed
+        }
+      );
+  
     } catch (error) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: "Ha ocurrido un error al obtener la información"
       });
+      this.isLoading = false; // Loading failed
     }
   }
+  
+  async loadData(): Promise<void> {
+    
+    try {
+      const response = await lastValueFrom(this.seguimientoHvService.buscarSeguimientoHv("3"));
+      if (response.REVISADO) {
+        response.REVISADO.sort((a: any, b: any) => b.zero_count - a.zero_count);
+      }
+      this.groupedData = response;
+      this.applyAllFilters(); // Asegurarse de que los filtros se apliquen después de cargar datos
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al mostrar la información3'
+      });
+    }
+  }
+  
+  applyAllFilters(): void {
+    // Reaplicar los filtros a todas las propiedades filtradas
+    this.filteredSIN_REVISAR = this.groupedData.SIN_REVISAR?.filter((item: any) =>
+      this.filterCondition(item, (document.getElementById('globalInput') as HTMLInputElement)?.value?.toLowerCase() || '')
+    ) || [];
+  
+    this.filteredREVISADO = this.groupedData.REVISADO?.filter((item: any) =>
+      this.filterCondition(item, (document.getElementById('globalInput') as HTMLInputElement)?.value?.toLowerCase() || '')
+    ) || [];
+  
+    this.filteredARCHIVOEDITADO = this.groupedData.ARCHIVOEDITADO?.filter((item: any) =>
+      this.filterCondition(item, (document.getElementById('globalInput') as HTMLInputElement)?.value?.toLowerCase() || '')
+    ) || [];
+  
+    this.filteredARCHIVOREVISADO = this.groupedData.ARCHIVOREVISADO?.filter((item: any) =>
+      this.filterCondition(item, (document.getElementById('globalInput') as HTMLInputElement)?.value?.toLowerCase() || '')
+    ) || [];
+  }
+  
+
+  applyGroupFilter(event: Event, group: string) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+
+    switch (group) {
+      case 'SIN_REVISAR':
+        this.filteredSIN_REVISAR = this.groupedData.SIN_REVISAR.filter((item: any) =>
+          this.filterCondition(item, filterValue)
+        );
+        break;
+      case 'REVISADO':
+        this.filteredREVISADO = this.groupedData.REVISADO.filter((item: any) =>
+          this.filterCondition(item, filterValue)
+        );
+        break;
+      case 'ARCHIVOEDITADO':
+        this.filteredARCHIVOEDITADO = this.groupedData.ARCHIVOEDITADO.filter((item: any) =>
+          this.filterCondition(item, filterValue)
+        );
+        break;
+      case 'ARCHIVOREVISADO':
+        this.filteredARCHIVOREVISADO = this.groupedData.ARCHIVOREVISADO.filter((item: any) =>
+          this.filterCondition(item, filterValue)
+        );
+        break;
+    }
+  }
+
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+  
+    // Ensure groupedData and each group are defined before filtering
+    if (this.groupedData.SIN_REVISAR) {
+      this.filteredSIN_REVISAR = this.groupedData.SIN_REVISAR.filter((item: any) =>
+        this.filterCondition(item, filterValue)
+      );
+    }
+  
+    if (this.groupedData.REVISADO) {
+      this.filteredREVISADO = this.groupedData.REVISADO.filter((item: any) =>
+        this.filterCondition(item, filterValue)
+      );
+    }
+  
+    if (this.groupedData.ARCHIVOEDITADO) {
+      this.filteredARCHIVOEDITADO = this.groupedData.ARCHIVOEDITADO.filter((item: any) =>
+        this.filterCondition(item, filterValue)
+      );
+    }
+  
+    if (this.groupedData.ARCHIVOREVISADO) {
+      this.filteredARCHIVOREVISADO = this.groupedData.ARCHIVOREVISADO.filter((item: any) =>
+        this.filterCondition(item, filterValue)
+      );
+    }
+  }
+  
+
+  filterCondition(item: any, filterValue: string) {
+    return (
+      String(item.cedula).toLowerCase().includes(filterValue) ||
+      String(item.centro_de_costo).toLowerCase().includes(filterValue)
+    );
+  } 
 
 
   calculateDateDifference(fechaRadicado: string, fechaIngreso: string): string {
@@ -202,7 +211,6 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       return 'No disponible';
     }
 
-    // Convertir fechas al formato MM/DD/YYYY
     const [dayRad, monthRad, yearRad] = fechaRadicado.split('/');
     const [dayIng, monthIng, yearIng] = fechaIngreso.split('/');
     const radicadoDate = new Date(`${monthRad}/${dayRad}/${yearRad}`);
@@ -217,151 +225,90 @@ export class SeguimientoAuditoriaComponent implements OnInit {
     return `${diffDays} días`;
   }
 
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  toggleEdit(element: any): void {
-    element.editing = !element.editing;
-
-    if (!element.editing) {
-      const editedData = { ...element };
-      this.seguimientoHvService.editarSeguimientoHv(element.id, element.tipo, editedData).then((response: any) => {
-        if (response.status === 'success') {
-          Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: 'La información ha sido actualizada correctamente'
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al actualizar la información'
-          });
-        }
-      }).catch((error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al actualizar la información'
-        });
-      });
-    }
-  }
-
-  triggerFileInput(): void {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    fileInput.click();
-  }
-
-  cargarExcel(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const arrayBuffer = (event.target as FileReader).result;
-        const data = new Uint8Array(arrayBuffer as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" }) as any[][];
-
-        const modifiedRows = rows.slice(2).map((row: any[], rowIndex: number) => {
-          let modifiedRow: { [key: string]: any } = {};
-          row.forEach((cell: any, cellIndex: number) => {
-            if (this.isDate(cell)) {
-              cell = this.normalizeDate(cell);
-            }
-            modifiedRow[`${cellIndex + 1}`] = cell !== undefined && cell !== null && cell !== "" ? cell : '-';
-          });
-          return modifiedRow;
-        });
-
-        // Filtrar filas con la primera columna que no sean AL, E1 o E2
-        const validRows = modifiedRows.filter((row: any) => {
-          return row['1'] != 'AL' && row['1'] != 'E1' && row['1'] != 'E2';
-        });
-
-        if (validRows.length > 0) {
-          // Mostrar un mensaje de error si se encuentran filas no válidas
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Hay filas que no cumplen con el formato requerido en la primera columna. Por favor, verifique la información'
-          });
-          return;
-        }
-
-        if (validRows.length === 0) {
-          this.seguimientoHvService.cargarSeguimientoHv(modifiedRows).then((response: any) => {
-            if (response.status === 'success') {
-              Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'La información ha sido cargada correctamente'
-              });
-              this.ngOnInit();
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ha ocurrido un error al cargar la información'
-              });
-            }
-          }).catch((error: any) => {
+  
+  openAuditDialog(data: any): void {
+    const dialogRef = this.dialog.open(SeguimientoHvComponent, {
+      width: '80%',
+      minWidth: '80vw',
+      data: data 
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined && result !== null) {
+        this.seguimientoHvService.actualizarRegistroTuAlianzaAsync(data.id, result, "true").then(
+          (response: any) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Éxito',
+              text: 'Se ha actualizado la información correctamente'
+            });
+          },
+          (error: any) => {
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'Ha ocurrido un error al cargar la información'
+              text: 'Ha ocurrido un error al actualizar la información'
             });
+          }
+        ).finally(() => {
+          this.loadData(); // Reload the data after the dialog closes
+        });
+      } else {
+        this.loadData(); // Reload the data even if no changes were made
+      }
+    });
+  }
+  
+  
+
+  async openAuditEditDialog(data: any): Promise<void> {
+    this.seguimientoHvService.buscarById(data.id)
+      .subscribe(
+        (response: any) => {
+          const dialogRef = this.dialog.open(SeguimientoHvComponent, {
+            minWidth: '80vw',
+            data: response[0] // Pass the response data to the dialog
+          });
+  
+          dialogRef.afterClosed().subscribe(result => {
+            if (result !== undefined && result !== null) {
+              this.seguimientoHvService.actualizarRegistroTuAlianzaAsync(data.id, result, "false").then(
+                (response: any) => {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Se ha actualizado la información correctamente'
+                  });
+                },
+                (error: any) => {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ha ocurrido un error al actualizar la información'
+                  });
+                }
+              ).finally(() => {
+                this.loadData(); // Reload the data after the dialog closes
+              });
+            } else {
+              this.loadData(); // Reload the data even if no changes were made
+            }
+          });
+        },
+        (error: any) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al obtener la información'
           });
         }
-      };
-      reader.readAsArrayBuffer(file);
-    }
+      );
   }
+  
 
-  isDate(cell: any): boolean {
-    if (typeof cell === 'string') {
-      return /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/.test(cell);
-    } else if (typeof cell === 'number') {
-      const date = new Date((cell - (25567 + 1)) * 86400 * 1000);
-      return !isNaN(date.getTime());
-    }
-    return false;
-  }
 
-  normalizeDate(cell: any): string {
-    if (typeof cell === 'string') {
-      const dateParts = cell.split(/[\/\-]/);
-      if (dateParts.length === 3) {
-        const [day, month, year] = dateParts;
-        return `${this.pad(parseInt(day))}/${this.pad(parseInt(month))}/${year}`;
-      }
-    } else if (typeof cell === 'number') {
-      const date = new Date((cell - (25567 + 1)) * 86400 * 1000);
-      const day = date.getUTCDate();
-      const month = date.getUTCMonth() + 1;
-      const year = date.getUTCFullYear();
-      return `${this.pad(day)}/${this.pad(month)}/${year}`;
-    }
-    return cell.toString();
-  }
 
-  pad(number: number): string {
-    return number < 10 ? `0${number}` : number.toString();
-  }
 
-  resetFileInput(): void {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-  }
 
 
   // Ejemplo de llamada al método generateExcel después de filtrar los datos
@@ -381,12 +328,13 @@ export class SeguimientoAuditoriaComponent implements OnInit {
     const end = new Date(endDate);
 
     return this.dataSource.data.filter(item => {
-      return item.ultimas_actualizaciones.some((update: { fecha: string | number | Date; }) => {
+      return item.ultimas_actualizaciones.some((update: { fecha: string | number | Date; estado: string; }) => {
         const updateDate = new Date(update.fecha);
-        return updateDate >= start && updateDate <= end;
+        return updateDate >= start && updateDate <= end && update.estado === "SIN_REVISAR";
       });
     });
   }
+  
 
 
   generateExcel(filteredData: any[]): void {
@@ -398,22 +346,26 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       fecha_de_ingreso: item.fecha_de_ingreso,
       centro_de_costo: item.centro_de_costo,
       codigo_contratacion: item.codigo_contratacion,
+
       contratos_si: item.contratos_si,
       contratos_no: item.contratos_no,
       numero_de_contrato: item.numero_de_contrato,
+
       foto: item.foto,
-      fecha_de_ingreso_FT: item.fecha_de_ingreso_FT,
       infolaboral_FT: item.infolaboral_FT,
       firma_trabajador: item.firma_trabajador,
       huella: item.huella,
       referencia: item.referencia,
       firma_carnet_FT: item.firma_carnet_FT,
       firma_loker_FT: item.firma_loker_FT,
+      fecha_de_ingreso_FT: item.fecha_de_ingreso_FT,
       empleador_FT: item.empleador_FT,
+
       ampliada_al_150: item.ampliada_al_150,
       huellaCedula: item.huellaCedula,
       sello: item.sello,
       legible: item.legible,
+
       procuraduria_vigente: item.procuraduria_vigente,
       fecha_procuraduria: item.fecha_procuraduria,
       contraloria_vigente: item.contraloria_vigente,
@@ -424,12 +376,16 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       fecha_policivos: item.fecha_policivos,
       medidas_correstivas: item.medidas_correstivas,
       fecha_medidas_correstivas: item.fecha_medidas_correstivas,
+
       adres: item.adres,
       fecha_adres: item.fecha_adres,
+
       sisben: item.sisben,
       fecha_sisben: item.fecha_sisben,
+
       formatoElite: item.formatoElite,
       cargoElite: item.cargoElite,
+
       nombres_trabajador_contrato: item.nombres_trabajador_contrato,
       no_cedula_contrato: item.no_cedula_contrato,
       direccion: item.direccion,
@@ -442,38 +398,75 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       firma_trabajador_contrato: item.firma_trabajador_contrato,
       firma_testigos: item.firma_testigos,
       sello_temporal: item.sello_temporal,
+
       autorizacion_dscto_casino: item.autorizacion_dscto_casino,
       forma_de_pago: item.forma_de_pago,
       autorizacion_funerario: item.autorizacion_funerario,
       huellas_docs: item.huellas_docs,
       fecha_de_recibido_docs: item.fecha_de_recibido_docs,
+
+      entrevista_ingreso: item.entrevista_ingreso,
+
       centro_de_costo_arl: item.centro_de_costo_arl,
       clase_de_riesgo: item.clase_de_riesgo,
       cedula_arl: item.cedula_arl,
       nombre_trabajador_arl: item.nombre_trabajador_arl,
       fecha_de_ingreso_arl: item.fecha_de_ingreso_arl,
-      entrevista_ingreso: item.entrevista_ingreso,
+
       temporal: item.temporal,
       fecha_no_mayor_a_15_dias: item.fecha_no_mayor_a_15_dias,
       nombres_trabajador_examenes: item.nombres_trabajador_examenes,
       cargo: item.cargo,
+      cedula_examenes: item.cedula_examenes,
       apto: item.apto,
       salud_ocupacional: item.salud_ocupacional,
       colinesterasa: item.colinesterasa,
       planilla_colinesterasa: item.planilla_colinesterasa,
       otros: item.otros,
+
       certificado_afp: item.certificado_afp,
       ruaf: item.ruaf,
       nombre_trabajador_ruaf: item.nombre_trabajador_ruaf,
       cedula_ruaf: item.cedula_ruaf,
       fecha_cerRuaf15menor: item.fecha_cerRuaf15menor,
       historia: item.historia,
+      
       fecha_radicado_eps: item.fecha_radicado_eps,
+      fecha_ingreso_eps: item.fecha_ingreso_eps,
       nombre_y_cedula_eps: item.nombre_y_cedula_eps,
       salario_eps: item.salario_eps,
+      
       fecha_radicado_caja: item.fecha_radicado_caja,
+      fecha_ingreso_caja: item.fecha_ingreso_caja,
       nombre_y_cedula_caja: item.nombre_y_cedula_caja,
-      salario_caja: item.salario_caja
+      salario_caja: item.salario_caja,
+
+      nombre_y_cedula_seguridad : item.nombre_y_cedula_seguridad,
+      fecha_radicado_seguridad: item.fecha_radicado_seguridad,
+
+      codigo_hoja_de_vida: item.codigo_hoja_de_vida,
+      foto_hoja_de_vida: item.foto_hoja_de_vida,
+      nombre_y_cedula_hoja_de_vida: item.nombre_y_cedula_hoja_de_vida,
+      correo_electronico_hoja_de_vida: item.correo_electronico_hoja_de_vida,
+      direccion_hoja_de_vida: item.direccion_hoja_de_vida,
+      referencia_hoja_de_vida: item.referencia_hoja_de_vida,
+      firma_carnet_hoja_de_vida: item.firma_carnet_hoja_de_vida,
+
+      firma_clausulas_add: item.firma_clausulas_add,
+      sello_temporal_clausulas_add: item.sello_temporal_clausulas_add,
+
+      firma_add_contrato: item.firma_add_contrato,
+      sello_temporal_add_contrato: item.sello_temporal_add_contrato,
+
+      autorizaciontratamientosDatosJDA: item.autorizaciontratamientosDatosJDA,
+
+      cartadescuentoflor: item.cartadescuentoflor,
+
+      formato_timbre: item.formato_timbre,
+
+      cartaaurotiracioncorreo: item.cartaaurotiracioncorreo,
+
+      responsable: item.responsable,
     }));
 
     // Crear hoja de Excel

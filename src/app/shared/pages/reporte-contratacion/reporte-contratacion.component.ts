@@ -151,7 +151,6 @@ export class ReporteContratacionComponent implements OnInit {
       } else if (file.name.includes('-')) {
         cedula = file.name.split('-')[0];
       } else {
-        console.error('Formato de nombre de archivo no reconocido:', file.name);
         continue; // Salta este archivo si no cumple con el formato esperado
       }
 
@@ -176,7 +175,6 @@ export class ReporteContratacionComponent implements OnInit {
       } else if (file.name.includes('-')) {
         [cedula, eps] = file.name.split('-');
       } else {
-        console.error('Formato de nombre de archivo no reconocido:', file.name);
         continue; // Salta este archivo si no cumple con el formato esperado
       }
 
@@ -317,8 +315,28 @@ export class ReporteContratacionComponent implements OnInit {
           if (index < 195) {
             if (cell == null || cell === '') {
               completeRow[index] = '-';
-            } else if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
-              completeRow[index] = this.excelSerialToJSDate2(cell);
+            } else if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134)) {
+              let formattedDate;
+              if (typeof cell === 'number' && this.isExcelDate(cell)) {
+                // Convertir serial de Excel a fecha
+                formattedDate = this.excelSerialToJSDate2(cell);
+              } else if (typeof cell === 'string') {
+                // Asegurar que las fechas en formato "m/d/yy" se conviertan a "dd/mm/yyyy"
+                const dateParts = cell.split('/');
+                if (dateParts.length === 3) {
+                  const day = dateParts[1].padStart(2, '0');
+                  const month = dateParts[0].padStart(2, '0');
+                  const year = dateParts[2].length === 2 ? `20${dateParts[2]}` : dateParts[2];
+                  formattedDate = `${day}/${month}/${year}`;
+                } else {
+                  // Si no es una fecha reconocida, simplemente lo convertimos a string
+                  formattedDate = cell;
+                }
+              } else {
+                // Si no es una fecha, lo tratamos como string
+                formattedDate = cell.toString();
+              }
+              completeRow[index] = formattedDate;
             } else if (index === 11 || index === 1) {
               completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
             } else {

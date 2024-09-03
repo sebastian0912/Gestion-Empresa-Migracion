@@ -95,35 +95,47 @@ export class DesprendiblesPagoComponent implements OnInit {
 
 
   public buscarDesprendibles(cedula: string): void {
-    // Eliminar espacios en blanco, comas, puntos y guiones
-    const cleanedCedula = cedula.replace(/[^\d]/g, '');
+    // Mantener la primera letra (si existe) y limpiar el resto
+    let cleanedCedula: string;
+    
+    if (/^[A-Za-z]/.test(cedula)) {
+        cleanedCedula = cedula[0].toUpperCase() + cedula.slice(1).replace(/[^\d]/g, '');
+    } else {
+        cleanedCedula = cedula.replace(/[^\d]/g, '');
+    }
+
+    // Convertir todo en mayúsculas
+    cleanedCedula = cleanedCedula.toUpperCase();
+    console.log(cleanedCedula);
 
     this.pagosService.buscarDesprendibles(cleanedCedula).subscribe(
-      (response: any) => {
-        if (response.message == 'No se encontró el número de cédula') {
-          Swal.fire({
-            icon: 'info',
-            title: 'Información',
-            text: 'No se encontraron formas de pago para la cédula ingresada'
-          });
-          return;
+        (response: any) => {
+            console.log(response);
+            if (response.message == 'No se encontró el número de cédula') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Información',
+                    text: 'No se encontraron formas de pago para la cédula ingresada'
+                });
+                return;
+            }
+
+            const desprendibles = response.desprendibles
+                .sort((a: any, b: any) => b.id - a.id);
+
+            this.originalData = JSON.parse(JSON.stringify(desprendibles));
+            this.dataSource.data = desprendibles;
+        },
+        (error: any) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ha ocurrido un error al buscar la información'
+            });
         }
-
-        const desprendibles = response.desprendibles
-          .sort((a: any, b: any) => b.id - a.id)
-
-        this.originalData = JSON.parse(JSON.stringify(desprendibles));
-        this.dataSource.data = desprendibles;
-      },
-      (error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al buscar la información'
-        });
-      }
     );
-  }
+}
+
 
   triggerFileInput(): void {
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;

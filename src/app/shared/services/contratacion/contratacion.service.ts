@@ -79,7 +79,37 @@ export class ContratacionService {
     }
   }
 
-  // Subir archivo de formas de pago
+  //
+  async subirContratacionAuditoria(
+    datos: any
+  ): Promise<any> {
+    const token = this.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const urlcompleta = `${this.apiUrl}/contratacion/subidadeusuariosarchivoAuditoriaexcel`;
+
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+
+    const data = {
+      datos: datos,
+      mensaje: "mcuhos",
+      jwt: token
+    };
+
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Subir archivo de contratacion
   async subirContratacion(
     datos: any
   ): Promise<any> {

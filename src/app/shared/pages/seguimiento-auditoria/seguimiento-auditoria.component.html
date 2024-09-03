@@ -1,808 +1,191 @@
-<audio id="successSound" src="Sounds/positivo.mp3"></audio>
-<audio id="errorSound" src="Sounds/negativo.mp3"></audio>
-<div id="overlay" class="loader-overlay" [style.display]="overlayVisible ? 'block' : 'none'"></div>
-
-<div id="loader" class="cajaloader" [style.display]="loaderVisible ? 'block' : 'none'">
-  <h1 id="cont" class="contador" [style.display]="counterVisible ? 'block' : 'none'"></h1>
-  <div class="custom-loader"></div>
-</div>
-
-<input type="file" id="fileInput" (change)="cargarExcel($event)" accept=".xlsx, .xls" style="display: none;">
-
 <div class="app-layout">
   <app-navbar-lateral></app-navbar-lateral>
   <div class="contenedor">
     <app-navbar-superior></app-navbar-superior>
     <mat-card>
       <mat-card-content>
-        <div class="search-container">
-          <app-info-card title="Cargar Ausentismos" imageUrl="comun/excel.png" (click)="triggerFileInput()"
-            style="cursor: pointer;" *ngIf="correo == 'tuafiliacion@tsservicios.co' || 
-            correo == 'contaduria.rtc@gmail.com' || correo == 'programador.ts@gmail.com'" style="cursor: pointer;">
-          </app-info-card>
-        </div>
 
-
-        <div class="tabla">
+        <div class="caja">
           <h1 class="title">Seguimientos HV</h1>
-          <mat-form-field class="filtro">
-            <mat-label>Filter</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Filter" #input>
-          </mat-form-field>
-          <img src="comun/calendario.png" class="excel" style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;" (click)="openDateRangeDialog()">
-          <div class="table-container">
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-              <ng-container matColumnDef="acciones">
-                <th mat-header-cell *matHeaderCellDef> Acciones </th>
-                <td mat-cell *matCellDef="let element" class="acciones-cell">
-                  <button mat-icon-button color="primary" (click)="toggleEdit(element)">
-                    <mat-icon>{{element.editing ? 'save' : 'edit'}}</mat-icon>
-                  </button>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="tipo">
-                <th mat-header-cell *matHeaderCellDef> Tipo </th>
-                <td mat-cell *matCellDef="let element"> {{element.tipo}} </td>
-              </ng-container>
-
-              <ng-container matColumnDef="confirmacion_Hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Confirmar recepcion HV </th>
-                <td mat-cell *matCellDef="let element"> {{element.confirmacion_Hoja_de_vida}} </td>
-              </ng-container>
-
-              
-
-              <ng-container matColumnDef="cedula">
-                <th mat-header-cell *matHeaderCellDef> Cédula </th>
-                <td mat-cell *matCellDef="let element"> {{element.cedula}} </td>
-              </ng-container>
-
-              <ng-container matColumnDef="apellidos_y_nombres">
-                <th mat-header-cell *matHeaderCellDef> Apellidos y Nombres </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.apellidos_y_nombres" [readonly]="!element.editing"
-                    class="especial">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_de_ingreso">
-                <th mat-header-cell *matHeaderCellDef> Fecha de Ingreso </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_de_ingreso" [readonly]="!element.editing" class="especial">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="centro_de_costo">
-                <th mat-header-cell *matHeaderCellDef> Centro de Costo </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.centro_de_costo" [readonly]="!element.editing" class="especial">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="codigo_contratacion">
-                <th mat-header-cell *matHeaderCellDef> Código de Contratación </th>
-                <td mat-cell *matCellDef="let element"> {{element.codigo_contratacion}} </td>
-              </ng-container>
-
-              <ng-container matColumnDef="contratos_si">
-                <th mat-header-cell *matHeaderCellDef> Contratos Sí </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.contratos_si" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="contratos_no">
-                <th mat-header-cell *matHeaderCellDef> Contratos No </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.contratos_no" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="numero_de_contrato">
-                <th mat-header-cell *matHeaderCellDef> Número de Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.numero_de_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="foto">
-                <th mat-header-cell *matHeaderCellDef> Foto </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.foto" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_de_ingreso_FT">
-                <th mat-header-cell *matHeaderCellDef> Fecha de Ingreso FT </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_de_ingreso_FT" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="infolaboral_FT">
-                <th mat-header-cell *matHeaderCellDef> Info Laboral FT </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.infolaboral_FT" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_trabajador">
-                <th mat-header-cell *matHeaderCellDef> Firma Trabajador </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_trabajador" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="huella">
-                <th mat-header-cell *matHeaderCellDef> Huella </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.huella" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="referencia">
-                <th mat-header-cell *matHeaderCellDef> Referencia </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.referencia" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_carnet_FT">
-                <th mat-header-cell *matHeaderCellDef> Firma Carnet FT </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_carnet_FT" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_loker_FT">
-                <th mat-header-cell *matHeaderCellDef> Firma Loker FT </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_loker_FT" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="empleador_FT">
-                <th mat-header-cell *matHeaderCellDef> Empleador FT </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.empleador_FT" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="ampliada_al_150">
-                <th mat-header-cell *matHeaderCellDef> Ampliada al 150% </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.ampliada_al_150" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="huellaCedula">
-                <th mat-header-cell *matHeaderCellDef> Huella Cédula </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.huellaCedula" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="sello">
-                <th mat-header-cell *matHeaderCellDef> Sello </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.sello" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="legible">
-                <th mat-header-cell *matHeaderCellDef> Legible </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.legible" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="procuraduria_vigente">
-                <th mat-header-cell *matHeaderCellDef> Procuraduría Vigente </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.procuraduria_vigente" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_procuraduria">
-                <th mat-header-cell *matHeaderCellDef> Fecha Procuraduría </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_procuraduria" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="contraloria_vigente">
-                <th mat-header-cell *matHeaderCellDef> Contraloría Vigente </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.contraloria_vigente" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_contraloria">
-                <th mat-header-cell *matHeaderCellDef> Fecha Contraloría </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_contraloria" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="ofac_lista_clinton">
-                <th mat-header-cell *matHeaderCellDef> OFAC Lista Clinton </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.ofac_lista_clinton" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_ofac">
-                <th mat-header-cell *matHeaderCellDef> Fecha OFAC </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_ofac" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="policivos_vigente">
-                <th mat-header-cell *matHeaderCellDef> Policivos Vigente </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.policivos_vigente" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_policivos">
-                <th mat-header-cell *matHeaderCellDef> Fecha Policivos </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_policivos" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="medidas_correstivas">
-                <th mat-header-cell *matHeaderCellDef> Medidas Correctivas </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.medidas_correstivas" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_medidas_correstivas">
-                <th mat-header-cell *matHeaderCellDef> Fecha Medidas Correctivas </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_medidas_correstivas" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="adres">
-                <th mat-header-cell *matHeaderCellDef> ADRES </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.adres" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_adres">
-                <th mat-header-cell *matHeaderCellDef> Fecha ADRES </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_adres" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="sisben">
-                <th mat-header-cell *matHeaderCellDef> SISBEN </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.sisben" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_sisben">
-                <th mat-header-cell *matHeaderCellDef> Fecha SISBEN </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_sisben" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="formatoElite">
-                <th mat-header-cell *matHeaderCellDef> Formato Elite </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.formatoElite" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cargoElite">
-                <th mat-header-cell *matHeaderCellDef> Cargo Elite </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cargoElite" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombres_trabajador_contrato">
-                <th mat-header-cell *matHeaderCellDef> Nombres Trabajador Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombres_trabajador_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="no_cedula_contrato">
-                <th mat-header-cell *matHeaderCellDef> No Cédula Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.no_cedula_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="direccion">
-                <th mat-header-cell *matHeaderCellDef> Dirección </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.direccion" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="correo_electronico">
-                <th mat-header-cell *matHeaderCellDef> Correo Electrónico </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.correo_electronico" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_de_ingreso_contrato">
-                <th mat-header-cell *matHeaderCellDef> Fecha de Ingreso Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_de_ingreso_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="salario_contrato">
-                <th mat-header-cell *matHeaderCellDef> Salario Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.salario_contrato" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="empresa_usuaria">
-                <th mat-header-cell *matHeaderCellDef> Empresa Usuaria </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.empresa_usuaria" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cargo_contrato">
-                <th mat-header-cell *matHeaderCellDef> Cargo Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cargo_contrato" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="descripcion_temporada">
-                <th mat-header-cell *matHeaderCellDef> Descripción Temporada </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.descripcion_temporada" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_trabajador_contrato">
-                <th mat-header-cell *matHeaderCellDef> Firma Trabajador Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_trabajador_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_testigos">
-                <th mat-header-cell *matHeaderCellDef> Firma Testigos </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_testigos" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="sello_temporal">
-                <th mat-header-cell *matHeaderCellDef> Sello Temporal </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.sello_temporal" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="autorizacion_dscto_casino">
-                <th mat-header-cell *matHeaderCellDef> Autorización Dscto Casino </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.autorizacion_dscto_casino" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="forma_de_pago">
-                <th mat-header-cell *matHeaderCellDef> Forma de Pago </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.forma_de_pago" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="autorizacion_funerario">
-                <th mat-header-cell *matHeaderCellDef> Autorización Funerario </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.autorizacion_funerario" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="huellas_docs">
-                <th mat-header-cell *matHeaderCellDef> Huellas Docs </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.huellas_docs" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_de_recibido_docs">
-                <th mat-header-cell *matHeaderCellDef> Fecha de Recibido Docs </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_de_recibido_docs" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="centro_de_costo_arl">
-                <th mat-header-cell *matHeaderCellDef> Centro de Costo ARL </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.centro_de_costo_arl" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="clase_de_riesgo">
-                <th mat-header-cell *matHeaderCellDef> Clase de Riesgo </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.clase_de_riesgo" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cedula_arl">
-                <th mat-header-cell *matHeaderCellDef> Cédula ARL </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cedula_arl" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombre_trabajador_arl">
-                <th mat-header-cell *matHeaderCellDef> Nombre Trabajador ARL </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombre_trabajador_arl" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_de_ingreso_arl">
-                <th mat-header-cell *matHeaderCellDef> Fecha de Ingreso ARL </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_de_ingreso_arl" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="entrevista_ingreso">
-                <th mat-header-cell *matHeaderCellDef> Entrevista Ingreso </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.entrevista_ingreso" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="temporal">
-                <th mat-header-cell *matHeaderCellDef> Temporal </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.temporal" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_no_mayor_a_15_dias">
-                <th mat-header-cell *matHeaderCellDef> Fecha no Mayor a 15 Días </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_no_mayor_a_15_dias" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombres_trabajador_examenes">
-                <th mat-header-cell *matHeaderCellDef> Nombres Trabajador Exámenes </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombres_trabajador_examenes" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cargo">
-                <th mat-header-cell *matHeaderCellDef> Cargo </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cargo" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="apto">
-                <th mat-header-cell *matHeaderCellDef> Apto </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.apto" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="salud_ocupacional">
-                <th mat-header-cell *matHeaderCellDef> Salud Ocupacional </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.salud_ocupacional" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="colinesterasa">
-                <th mat-header-cell *matHeaderCellDef> Colinesterasa </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.colinesterasa" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="planilla_colinesterasa">
-                <th mat-header-cell *matHeaderCellDef> Planilla Colinesterasa </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.planilla_colinesterasa" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="otros">
-                <th mat-header-cell *matHeaderCellDef> Otros </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.otros" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="certificado_afp">
-                <th mat-header-cell *matHeaderCellDef> Certificado AFP </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.certificado_afp" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="ruaf">
-                <th mat-header-cell *matHeaderCellDef> RUAF </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.ruaf" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombre_trabajador_ruaf">
-                <th mat-header-cell *matHeaderCellDef> Nombre Trabajador RUAF </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombre_trabajador_ruaf" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cedula_ruaf">
-                <th mat-header-cell *matHeaderCellDef> Cédula RUAF </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cedula_ruaf" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_cerRuaf15menor">
-                <th mat-header-cell *matHeaderCellDef> Fecha Cer. RUAF < 15 Días </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_cerRuaf15menor" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="historia">
-                <th mat-header-cell *matHeaderCellDef> Historia </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.historia" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_radicado_eps">
-                <th mat-header-cell *matHeaderCellDef> Fecha Radicado EPS </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_radicado_eps" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="diferencia_fecha_radicado_eps">
-                <th mat-header-cell *matHeaderCellDef> Diferencia Fecha Radicado EPS </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ calculateDateDifference(element.fecha_radicado_eps, element.fecha_de_ingreso) }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombre_y_cedula_eps">
-                <th mat-header-cell *matHeaderCellDef> Nombre y Cédula EPS </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombre_y_cedula_eps" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="salario_eps">
-                <th mat-header-cell *matHeaderCellDef> Salario EPS </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.salario_eps" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_radicado_caja">
-                <th mat-header-cell *matHeaderCellDef> Fecha Radicado Caja </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_radicado_caja" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="diferencia_fecha_radicado_caja">
-                <th mat-header-cell *matHeaderCellDef> Diferencia Fecha Radicado Caja </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ calculateDateDifference(element.fecha_radicado_caja, element.fecha_de_ingreso) }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombre_y_cedula_caja">
-                <th mat-header-cell *matHeaderCellDef> Nombre y Cédula Caja </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombre_y_cedula_caja" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="salario_caja">
-                <th mat-header-cell *matHeaderCellDef> Salario Caja </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.salario_caja" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombre_y_cedula_seguridad">
-                <th mat-header-cell *matHeaderCellDef> Nombre y Cédula Seguridad </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombre_y_cedula_seguridad" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="fecha_radicado_seguridad">
-                <th mat-header-cell *matHeaderCellDef> Fecha Radicado Seguridad </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.fecha_radicado_seguridad" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="codigo_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Código Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.codigo_hoja_de_vida" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="foto_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Foto Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.foto_hoja_de_vida" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="nombre_y_cedula_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Nombre y Cédula Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.nombre_y_cedula_hoja_de_vida" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="correo_electronico_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Correo Electrónico Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.correo_electronico_hoja_de_vida" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="direccion_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Dirección Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.direccion_hoja_de_vida" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="referencia_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Referencia Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.referencia_hoja_de_vida" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_carnet_hoja_de_vida">
-                <th mat-header-cell *matHeaderCellDef> Firma Carnet Hoja de Vida </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_carnet_hoja_de_vida" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_clausulas_add">
-                <th mat-header-cell *matHeaderCellDef> Firma Cláusulas Add </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_clausulas_add" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="sello_temporal_clausulas_add">
-                <th mat-header-cell *matHeaderCellDef> Sello Temporal Cláusulas Add </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.sello_temporal_clausulas_add" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="firma_add_contrato">
-                <th mat-header-cell *matHeaderCellDef> Firma Add Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.firma_add_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="sello_temporal_add_contrato">
-                <th mat-header-cell *matHeaderCellDef> Sello Temporal Add Contrato </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.sello_temporal_add_contrato" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="autorizaciontratamientosDatosJDA">
-                <th mat-header-cell *matHeaderCellDef> Autorización Tratamientos Datos JDA </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.autorizaciontratamientosDatosJDA" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cartadescuentoflor">
-                <th mat-header-cell *matHeaderCellDef> Carta Descuento Flor </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cartadescuentoflor" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="formato_timbre">
-                <th mat-header-cell *matHeaderCellDef> Formato Timbre </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.formato_timbre" [readonly]="!element.editing" class="editado">
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cartaaurotiracioncorreo">
-                <th mat-header-cell *matHeaderCellDef> Carta Autorización Correo </th>
-                <td mat-cell *matCellDef="let element">
-                  <input matInput [(ngModel)]="element.cartaaurotiracioncorreo" [readonly]="!element.editing"
-                    class="editado">
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" colspan="15">No hay datos "{{input.value}}"</td>
-              </tr>
-            </table>
-          </div>
+          <img src="comun/calendario.png" class="excel"
+            style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;"
+            (click)="openDateRangeDialog()">
         </div>
+
+        <!-- Filtro Global -->
+        <mat-form-field class="filtro-global">
+          <mat-label>Global Filter</mat-label>
+          <input matInput (keyup)="applyGlobalFilter($event)" placeholder="Filter All" #globalInput>
+        </mat-form-field>
+
+        <ng-container *ngIf="groupedData">
+          <mat-accordion>
+            <!-- SIN_REVISAR -->
+            <mat-expansion-panel *ngIf="filteredSIN_REVISAR.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  SIN_REVISAR ({{filteredSIN_REVISAR.length}})
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para SIN_REVISAR -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'SIN_REVISAR')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredSIN_REVISAR" class="card-wrapper">
+                  <mat-card class="group-card">
+                    <div class="audit-icon" (click)="openAuditDialog(item)">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- REVISADO -->
+            <mat-expansion-panel *ngIf="filteredREVISADO.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  REVISADO ({{filteredREVISADO.length}})
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+            
+              <!-- Filtro específico para REVISADO -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'REVISADO')" placeholder="Filter" #input>
+              </mat-form-field>
+            
+              <div class="card-container">
+                <div *ngFor="let item of filteredREVISADO">
+                  <mat-card class="group-card"
+                    [ngClass]="{'highlight-red': item.zero_count > 0 || item.error_fechas?.length > 0 || item.error_salarios?.length > 0}">
+                    <div class="audit-icon" (click)="openAuditEditDialog(item)"
+                      *ngIf="correo === 'archivotualianza@gmail.com' || correo === 'programador.ts@gmail.com' || rol === 'GERENCIA'">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                      <p><strong>Número de 0:</strong> {{ item.zero_count }}</p>
+                      <p><strong>Responsable:</strong> {{ item.responsable }}</p>
+            
+                      <!-- Mini Accordion for Error Fechas -->
+                      <mat-accordion *ngIf="item.error_fechas?.length">
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>
+                              Errores de Fechas ({{ item.error_fechas.length }})
+                            </mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <ul>
+                            <li *ngFor="let error of item.error_fechas">{{ error }}</li>
+                          </ul>
+                        </mat-expansion-panel>
+                      </mat-accordion>
+            
+                      <!-- Mini Accordion for Error Salarios -->
+                      <mat-accordion *ngIf="item.error_salarios?.length">
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>
+                              Errores de Salarios ({{ item.error_salarios.length }})
+                            </mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <ul>
+                            <li *ngFor="let error of item.error_salarios">{{ error }}</li>
+                          </ul>
+                        </mat-expansion-panel>
+                      </mat-accordion>
+                      
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+            
+
+            <!-- ARCHIVOEDITADO -->
+            <mat-expansion-panel *ngIf="filteredARCHIVOEDITADO.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  ARCHIVOEDITADO ({{filteredARCHIVOEDITADO.length}})
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para ARCHIVOEDITADO -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'ARCHIVOEDITADO')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredARCHIVOEDITADO">
+                  <mat-card class="group-card">
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- ARCHIVOREVISADO -->
+            <mat-expansion-panel *ngIf="filteredARCHIVOREVISADO.length > 0 ">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  ARCHIVOREVISADO ({{filteredARCHIVOREVISADO.length}})
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para ARCHIVOREVISADO -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'ARCHIVOREVISADO')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredARCHIVOREVISADO">
+                  <mat-card class="group-card">
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+          </mat-accordion>
+        </ng-container>
+
       </mat-card-content>
     </mat-card>
   </div>

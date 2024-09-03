@@ -17,6 +17,7 @@ import FileSaver from 'file-saver';
 
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { isPlatformBrowser, NgIf } from '@angular/common';
+import moment from 'moment';
 
 @Component({
   selector: 'app-navbar-lateral',
@@ -39,33 +40,40 @@ export class NavbarLateralComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
-
+  angelaVisible = false;
   currentRole: string = '';
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
 
   rolePermissions: any = {
     GERENCIA: ['home', , 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
       'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
-      'envio-paquete-documentacion', 'recibir-paquete-documentacion'
+      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo'
     ],
     RECEPCION: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos',
       'reporte-contratacion'],
     COORDINADOR: ['home',
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'reporte-contratacion',
+      'reporte-contratacion', 'seguimiento-auditoria',
     ],
-    JEFE_DE_AREA: ['home',
-      'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'seguimiento-auditoria'],
-    ADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
-      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'formulario-incapacicades', 'subida-archivos-incapacidades', 'buscar-incapacicades','incapacidades-totales'
+    JEFE_DE_AREA: [
+      'home',         'forma-pago',             'desprendibles-pago', 
+      'ausentismos',  'seguimiento-auditoria',  'estadisticas-auditoria'
+    ],
+    ADMIN: [
+      'home',                           'forma-pago',                    'desprendibles-pago', 
+      'arl',                            'ausentismos',                   'reporte-contratacion', 
+      'seguimiento-auditoria',          'reporte-contratacion',          'estadisticas-auditoria',
+      'envio-paquete-documentacion',    'recibir-paquete-documentacion', 'personal-activo',
+      'reporte-contratacion',           'seguimiento-auditoria',         'envio-paquete-documentacion', 
+      'recibir-paquete-documentacion',  'formulario-incapacicades',      'subida-archivos-incapacidades', 
+      'buscar-incapacicades',           'incapacidades-totales',         'seleccion',
+      'contratacion'
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
-    CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion',
+    CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'personal-activo'
     ],
-    INCAPACIDAD: ['home', 'incapacidades-totales', 'forma-pago', 'desprendibles-pago','subida-archivos-incapacidades', 'arl', 'ausentismos', 'reporte-contratacion', , 'buscar-incapacicades', 'formulario-incapacicades'
+    INCAPACIDAD: ['home', 'incapacidades-totales', 'forma-pago', 'desprendibles-pago', 'subida-archivos-incapacidades', 'arl', 'ausentismos', 'reporte-contratacion', , 'buscar-incapacicades', 'formulario-incapacicades'
     ],
   };
 
@@ -79,6 +87,8 @@ export class NavbarLateralComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private contratacionService: ContratacionService,
+    private jefeAreaService: ContratacionService,
+
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.router.events.pipe(
@@ -89,12 +99,16 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+
     const user = await this.getUser();
     if (user) {
       if (user.correo_electronico === "tuafiliacion@tsservicios.co") {
         this.currentRole = "CAROL";
       } else {
         this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
+      }
+      if (user.correo_electronico === 'archivotualianza@gmail.com' || user.correo_electronico === 'programador.ts@gmail.com' || user.rol === 'Gerencia') {
+        this.angelaVisible = true;
       }
     }
   }
@@ -129,6 +143,9 @@ export class NavbarLateralComponent implements OnInit {
         case 'arl':
           this.processArl(workbook);
           break;
+        case 'personalActivo':
+          this.processPersonalActivo(workbook);
+          break;
       }
 
       // Reset the file input value to allow uploading the same file again
@@ -150,6 +167,148 @@ export class NavbarLateralComponent implements OnInit {
     if (file && action) {
       this.handleFile(file, action);
     }
+  }
+
+  async processPersonalActivo(workbook: XLSX.WorkBook): Promise<void> {
+    Swal.fire({
+      title: 'Cargando...',
+      icon: 'info',
+      text: 'Procesando archivo de reporte activos. Por favor, espere unos segundos.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    let response: any;
+
+    try {
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+      json.shift();
+
+      const rows: string[][] = (json as any[][]).map((row: any[]) => {
+        const completeRow = new Array(195).fill('-');
+
+        row.forEach((cell, index) => {
+          if (index < 195) {
+            if (cell == null || cell === '') {
+              completeRow[index] = '-';
+            } else if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134)) {
+              let formattedDate;
+              if (typeof cell === 'number' && this.isExcelDate(cell)) {
+                // Convertir serial de Excel a fecha
+                formattedDate = this.excelSerialToJSDate2(cell);
+              } else if (typeof cell === 'string') {
+                // Asegurar que las fechas en formato "m/d/yy" se conviertan a "dd/mm/yyyy"
+                const dateParts = cell.split('/');
+                if (dateParts.length === 3) {
+                  const day = dateParts[1].padStart(2, '0');
+                  const month = dateParts[0].padStart(2, '0');
+                  const year = dateParts[2].length === 2 ? `20${dateParts[2]}` : dateParts[2];
+                  formattedDate = `${day}/${month}/${year}`;
+                } else {
+                  // Si no es una fecha reconocida, simplemente lo convertimos a string
+                  formattedDate = cell;
+                }
+              } else {
+                // Si no es una fecha, lo tratamos como string
+                formattedDate = cell.toString();
+              }
+              completeRow[index] = formattedDate;
+            } else if (index === 11 || index === 1) {
+              completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
+            } else {
+              completeRow[index] = cell.toString();
+            }
+          }
+        });
+
+        return completeRow;
+      });
+
+      response = await this.contratacionService.subirContratacionAuditoria(rows);
+      if (response.message !== 'success') {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al procesar los datos. Por favor, inténtelo de nuevo.',
+          confirmButtonText: 'Aceptar'
+        });
+      } else {
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'Los empleados se han cargado correctamente en el sistema.',
+          confirmButtonText: 'Aceptar'
+        });
+        this.generateErrorExcel(response.errores);
+      }
+
+    } catch (error) {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al procesar los datos. Por favor, inténtelo de nuevo.',
+        confirmButtonText: 'Aceptar'
+      });
+      if (response && response.errores && response.errores.length > 0) {
+        this.generateErrorExcel(response.errores);
+      }
+    }
+  }
+
+  isValidDate(dateString: string): boolean {
+    return moment(dateString, 'DD/MM/YYYY', true).isValid();
+  }
+
+  isExcelDate(serial: number): boolean {
+    // Asegura que el valor esté dentro del rango típico de fechas de Excel
+    return serial > 25569 && serial < 2958465;
+  }
+
+  excelSerialToJSDate2(serial: number): string {
+    const utcDays = Math.floor(serial - 25569);
+    const date = new Date(utcDays * 86400 * 1000);
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+
+
+  generateErrorExcel(errores: any[]): void {
+    const worksheetData = [
+      ['Registro', 'Campo', 'Error']
+    ];
+
+    errores.forEach((error: any) => {
+      worksheetData.push([error.registro, error.campo, error.error]);
+    });
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Errores': worksheet }, SheetNames: ['Errores'] };
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    this.saveAsExcelFile(excelBuffer, 'Errores_Contratacion');
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url: string = window.URL.createObjectURL(data);
+
+    const link: HTMLAnchorElement = document.createElement('a');
+    link.href = url;
+    link.download = `${fileName}.xlsx`;
+    link.click();
+
+    window.URL.revokeObjectURL(url);
   }
 
   async processArl(workbook: XLSX.WorkBook): Promise<void> {

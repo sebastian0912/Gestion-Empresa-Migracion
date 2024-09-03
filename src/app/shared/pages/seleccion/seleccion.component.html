@@ -4,7 +4,25 @@
         <app-navbar-superior></app-navbar-superior>
         <mat-card>
             <mat-card-content>
-
+                <div class="valor">
+                    <div class="valoresEscribir">
+                        <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+                            Ingrese la cédula del usuario a buscar:
+                        </h1>
+                        <!-- Campo de texto para cédula -->
+                        <mat-form-field appearance="fill" style="width: 200px; margin-left: 0;">
+                            <mat-label>Cédula</mat-label>
+                            <input matInput type="text" id="cedulaB" placeholder="Cédula">
+                        </mat-form-field>
+                        <!-- Botón de búsqueda -->
+                        <button mat-raised-button color="primary" id="buscarCedula"
+                            style="width: 100%; margin-top: -5px;">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <!-- Imagen informativa -->
+                <img src="../../assets/list.png" alt="info" class="info" style="display: none;" id="info">
             </mat-card-content>
         </mat-card>
     </div>
