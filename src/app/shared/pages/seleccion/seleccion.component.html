@@ -1,29 +1,185 @@
 <div class="app-layout">
     <app-navbar-lateral></app-navbar-lateral>
     <div class="contenedor">
-        <app-navbar-superior></app-navbar-superior>
-        <mat-card>
-            <mat-card-content>
-                <div class="valor">
-                    <div class="valoresEscribir">
-                        <h1 class="titulo" style="margin-right: 10px; width: 100%;">
-                            Ingrese la cédula del usuario a buscar:
-                        </h1>
-                        <!-- Campo de texto para cédula -->
-                        <mat-form-field appearance="fill" style="width: 200px; margin-left: 0;">
-                            <mat-label>Cédula</mat-label>
-                            <input matInput type="text" id="cedulaB" placeholder="Cédula">
-                        </mat-form-field>
-                        <!-- Botón de búsqueda -->
-                        <button mat-raised-button color="primary" id="buscarCedula"
-                            style="width: 100%; margin-top: -5px;">
-                            Buscar
-                        </button>
-                    </div>
-                </div>
-                <!-- Imagen informativa -->
-                <img src="../../assets/list.png" alt="info" class="info" style="display: none;" id="info">
-            </mat-card-content>
-        </mat-card>
+      <app-navbar-superior></app-navbar-superior>
+      <mat-card>
+        <mat-card-content>
+          <div class="valor">
+            <div class="valoresEscribir">
+              <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+                Ingrese la cédula del usuario a buscar:
+              </h1>
+              <!-- Campo de texto para cédula -->
+              <mat-form-field appearance="fill" class="example-full-width" style="margin-left: 0;">
+                <mat-label>Cédula</mat-label>
+                <input matInput type="text" id="cedulaB" placeholder="Cédula">
+              </mat-form-field>
+              <!-- Botón de búsqueda -->
+              <button mat-raised-button color="primary" id="buscarCedula"
+                class="example-full-width" style="margin-top: -5px;">
+                Buscar
+              </button>
+            </div>
+          </div>
+          <!-- Imagen informativa -->
+          <img src="comun/image.png" alt="info" class="info" style="display: none;" id="info">
+          
+          <!-- Accordion Sections -->
+          <mat-accordion>
+            <!-- Verificaciones y Área de Aplicación -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Verificaciones y Área de Aplicación
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="seccion">
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>EPS</mat-label>
+                  <input matInput type="text" id="eps" placeholder="EPS">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>AFP</mat-label>
+                  <input matInput type="text" id="afp" placeholder="AFP">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Policivos</mat-label>
+                  <input matInput type="text" id="policivos" placeholder="POLICIVOS">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Procuraduría</mat-label>
+                  <input matInput type="text" id="procuraduria" placeholder="PROCURADURIA">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Contraloría</mat-label>
+                  <input matInput type="text" id="contraloria" placeholder="CONTRALORIA">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Rama Judicial</mat-label>
+                  <input matInput type="text" id="ramaJudicial" placeholder="RAMA JUDICIAL">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Medidas Correctivas</mat-label>
+                  <input matInput type="text" id="medidasCorrectivas" placeholder="MEDIDAS CORRECTIVAS">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Área para la que aplica</mat-label>
+                  <input matInput type="text" id="areaAplica" placeholder="Área para la que aplica">
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="example-full-width" id="botonParte1">Cargar</button>
+              </div>
+            </mat-expansion-panel>
+            
+            <!-- Entrevista o Prueba Técnica -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Entrevista o Prueba Técnica
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="seccion">
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Centro de Costo</mat-label>
+                  <input matInput type="text" id="centroCosto" placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Cargo</mat-label>
+                  <input matInput type="text" id="cargo" placeholder="CARGO">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Área en la que presentará la entrevista</mat-label>
+                  <input matInput type="text" id="areaEntrevista" placeholder="ÁREA EN LA QUE PRESENTARA LA ENTREVISTA">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Fecha de la Prueba o Entrevista</mat-label>
+                  <input matInput type="date" id="fechaPruebaEntrevista">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Hora de la Prueba o Entrevista</mat-label>
+                  <input matInput type="time" id="horaPruebaEntrevista">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Dirección o indicación para llegar a la empresa</mat-label>
+                  <input matInput type="text" id="direccionEmpresa" placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="example-full-width" id="botonParte2">Cargar</button>
+              </div>
+            </mat-expansion-panel>
+  
+            <!-- Examen de Salud Ocupacional -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Examen de Salud Ocupacional
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="seccion">
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Examen Salud Ocupacional</mat-label>
+                  <input matInput type="text" id="examenSaludOcupacional" placeholder="Examen Salud Ocupacional">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>IPS</mat-label>
+                  <input matInput type="text" id="ips" placeholder="IPS">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Laboratorios</mat-label>
+                  <input matInput type="text" id="laboratorios" placeholder="Laboratorios">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>IPSLAB</mat-label>
+                  <input matInput type="text" id="ipsLab" placeholder="IPSLAB">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Apto para el cargo (Sí/No)</mat-label>
+                  <input matInput type="text" id="aptoCargo" placeholder="APTO PARA EL CARGO SI/NO">
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="example-full-width" id="botonParte3">Cargar</button>
+              </div>
+            </mat-expansion-panel>
+  
+            <!-- Contratación -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Contratación
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="seccion">
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Empresa Usuaria</mat-label>
+                  <input matInput type="text" id="empresaUsuaria" placeholder="EMPRESA USUARIA">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Fecha de Ingreso</mat-label>
+                  <input matInput type="date" id="fechaIngreso">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Salario</mat-label>
+                  <input matInput type="text" id="salario" placeholder="SALARIO">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Auxilio de Transporte</mat-label>
+                  <input matInput type="text" id="auxTransporte" placeholder="AUXTRANSPORTE">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Rodamiento</mat-label>
+                  <input matInput type="text" id="rodamiento" placeholder="RODAMIENTO">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Auxilio de Movilidad</mat-label>
+                  <input matInput type="text" id="auxMovilidad" placeholder="AUX MOVILIDAD">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Bonificación</mat-label>
+                  <input matInput type="text" id="bonificacion" placeholder="BONIFICACION">
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="example-full-width" id="botonParte4">Cargar</button>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-card-content>
+      </mat-card>
     </div>
-</div>
+  </div>
+  

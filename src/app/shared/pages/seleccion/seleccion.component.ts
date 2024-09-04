@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { NgIf } from '@angular/common';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-seleccion',
@@ -29,7 +30,8 @@ import { NgIf } from '@angular/common';
     MatIconModule,
     FormsModule,
     MatCardModule,
-    NgIf
+    NgIf,
+    MatExpansionModule
   ],
   templateUrl: './seleccion.component.html',
   styleUrl: './seleccion.component.css'
