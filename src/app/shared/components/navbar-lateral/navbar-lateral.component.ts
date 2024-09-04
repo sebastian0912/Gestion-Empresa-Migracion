@@ -56,16 +56,16 @@ export class NavbarLateralComponent implements OnInit {
       'reporte-contratacion', 'seguimiento-auditoria',
     ],
     JEFE_DE_AREA: [
-      'home',         'forma-pago',             'desprendibles-pago', 
+      'home',         'forma-pago',             'desprendibles-pago',
       'ausentismos',  'seguimiento-auditoria',  'estadisticas-auditoria'
     ],
     ADMIN: [
-      'home',                           'forma-pago',                    'desprendibles-pago', 
-      'arl',                            'ausentismos',                   'reporte-contratacion', 
+      'home',                           'forma-pago',                    'desprendibles-pago',
+      'arl',                            'ausentismos',                   'reporte-contratacion',
       'seguimiento-auditoria',          'reporte-contratacion',          'estadisticas-auditoria',
       'envio-paquete-documentacion',    'recibir-paquete-documentacion', 'personal-activo',
-      'reporte-contratacion',           'seguimiento-auditoria',         'envio-paquete-documentacion', 
-      'recibir-paquete-documentacion',  'formulario-incapacicades',      'subida-archivos-incapacidades', 
+      'reporte-contratacion',           'seguimiento-auditoria',         'envio-paquete-documentacion',
+      'recibir-paquete-documentacion',  'formulario-incapacicades',      'subida-archivos-incapacidades',
       'buscar-incapacicades',           'incapacidades-totales',         'seleccion',
       'contratacion'
 
@@ -73,7 +73,9 @@ export class NavbarLateralComponent implements OnInit {
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'personal-activo'
     ],
-    INCAPACIDAD: ['home', 'incapacidades-totales', 'forma-pago', 'desprendibles-pago', 'subida-archivos-incapacidades', 'arl', 'ausentismos', 'reporte-contratacion', , 'buscar-incapacicades', 'formulario-incapacicades'
+    INCAPACIDADADMIN: ['home', 'incapacidades-totales', 'subida-archivos-incapacidades' , 'buscar-incapacicades', 'formulario-incapacicades'
+    ],
+    INCAPACIDADSUBIDA: ['home','formulario-incapacicades'
     ],
   };
 

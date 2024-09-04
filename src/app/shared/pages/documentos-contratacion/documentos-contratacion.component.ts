@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
+import { FingerprintReader, SampleFormat } from '@digitalpersona/devices';
 
 @Component({
   selector: 'app-documentos-contratacion',
