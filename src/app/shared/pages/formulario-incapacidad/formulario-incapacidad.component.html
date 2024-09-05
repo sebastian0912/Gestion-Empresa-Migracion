@@ -45,7 +45,7 @@
               <div class="form-row">
                 <div
                   *ngFor="let field of ['Tipo de documento', 'Numero de documento', 'Apellido','Fondo de pensiones', 'Nombre', 'Edad', 'Sexo', 'Empresa', 'Centro de costos']"
-                  class="form-field">
+                  class="form-field" >
                   <mat-form-field class="example-full-width">
                     <mat-label>{{ field }}</mat-label>
 
@@ -62,7 +62,7 @@
                     </mat-select>
 
                     <input *ngIf="field !== 'Sexo' && field !== 'Tipo de documento'" matInput
-                      [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                      [formControlName]="fieldMap[field]" [type]="getFieldType(field)" >
                   </mat-form-field>
                 </div>
               </div>

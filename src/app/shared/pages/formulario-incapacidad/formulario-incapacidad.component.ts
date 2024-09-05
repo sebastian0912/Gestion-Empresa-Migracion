@@ -23705,7 +23705,21 @@ export class FormularioIncapacidadComponent implements OnInit {
     }, {} as { [key: string]: any });
 
     this.incapacidadForm = this.fb.group(formGroupConfig);
-
+    this.incapacidadForm.get('genero')?.disable();
+    this.incapacidadForm.get('primer_apellido')?.disable();
+    this.incapacidadForm.get('primer_nombre')?.disable();
+    this.incapacidadForm.get('tipodedocumento')?.disable();
+    this.incapacidadForm.get('numerodeceduladepersona')?.disable();
+    this.incapacidadForm.get('temporal')?.disable();
+    this.incapacidadForm.get('numero_de_contrato')?.disable();
+    this.incapacidadForm.get('primercorreoelectronico')?.disable();
+    this.incapacidadForm.get('edad')?.disable();
+    this.incapacidadForm.get('empresa')?.disable();
+    this.incapacidadForm.get('Centro_de_costos')?.disable();
+    this.incapacidadForm.get('Centro_de_costo')?.disable();
+    this.incapacidadForm.get('celular')?.disable();
+    this.incapacidadForm.get('fecha_contratacion')?.disable();
+    this.incapacidadForm.get('fondo_de_pension')?.disable();
     this.incapacidadForm.get('fecha_fin_incapacidad')?.valueChanges.subscribe(() => {
       this.calcularDiasIncapacidad();
     });
