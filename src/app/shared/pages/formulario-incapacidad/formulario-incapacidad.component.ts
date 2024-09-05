@@ -23972,7 +23972,6 @@ export class FormularioIncapacidadComponent implements OnInit {
   onSubmit(): void {
     const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
     const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
-
     if (fechaInicioStr && fechaFinStr) {
       // Normalizar las fechas al formato 'dd-MM-yyyy'
       const normalizedStartDate = format(new Date(fechaInicioStr), 'dd-MM-yyyy');
@@ -23996,6 +23995,11 @@ export class FormularioIncapacidadComponent implements OnInit {
           nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
         } else {
           console.error('Fechas inválidas: No se puede calcular días de incapacidad');
+Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verfica que esten bien'
+          });
         }
       }
 
@@ -24015,13 +24019,19 @@ export class FormularioIncapacidadComponent implements OnInit {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: error.message || 'Ha ocurrido un error al crear la incapacidad'
+            text: 'Ha ocurrido un error al crear la incapacidad'
           });
         }
       );
+
       // Aquí puedes continuar con la lógica para enviar la nueva incapacidad, etc.
     } else {
       console.error('Fechas no disponibles: No se puede normalizar o calcular días de incapacidad');
+      Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verfica que esten bien'
+          });
     }
 
   }
@@ -24046,6 +24056,11 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.empresa = dataObject.sitio_contratacion;
     } else {
       console.log('No se encontraron datos en localStorage');
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text:  'Ha ocurrido un error al buscar tus datos, cierra la sesion y vuelve a ingresar'
+        });
     }
     this.contratacionService.traerDatosEncontratacion(cedula).subscribe(
       response => {
@@ -24055,10 +24070,6 @@ export class FormularioIncapacidadComponent implements OnInit {
         const contratacion = response.contratacion || {};
         const datosBasicos = response.datos_basicos || {};
         const afp= response.afp
- 
-        console.log(afp)
-        console.log(contratacion)
-        console.log(datosBasicos)
 
 
         // Iterar sobre el fieldMap y asignar los valores en los controles del formulario
@@ -24119,7 +24130,11 @@ export class FormularioIncapacidadComponent implements OnInit {
       },
       error => {
         this.toggleLoader(false);
-        console.error('Error al buscar la incapacidad', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text:  'Ha ocurrido un error al buscar la cédula'
+        });
       }
     );
   }

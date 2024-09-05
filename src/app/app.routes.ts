@@ -27,7 +27,7 @@ import { BuscarIncapacidadComponent } from './shared/pages/buscar-incapacidad/bu
 import { FormularioReporteComponent } from './shared/pages/formulario-reporte/formulario-reporte.component';
 import { VistaTotalIncapacidadesComponent } from './shared/pages/vista-total-incapacidades/vista-total-incapacidades.component';
 import { SubidaArchivosIncapacidadesComponent } from './shared/pages/subida-archivos-incapacidades/subida-archivos-incapacidades.component';
-
+import { DocumentosContratacionComponent } from './shared/pages/documentos-contratacion/documentos-contratacion.component';
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'atender-turno', component: AtenderTurnoComponent },
@@ -58,4 +58,5 @@ export const routes: Routes = [
   {path: 'incapacidades-totales', component: VistaTotalIncapacidadesComponent },
   { path: 'formulario-reporte/:cedula', component: FormularioReporteComponent },
   { path: 'subida-archivos-incapacidades', component: SubidaArchivosIncapacidadesComponent },
+  { path: 'archivos-contratacion', component: DocumentosContratacionComponent },
 ];
