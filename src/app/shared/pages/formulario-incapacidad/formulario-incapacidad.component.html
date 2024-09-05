@@ -31,8 +31,14 @@
                 <div *ngFor="let field of ['Oficina', 'Centro de costo', 'Nombre de quien recibio']" class="form-field">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{ field }}</mat-label>
-                    <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                    <mat-select *ngIf="field === 'Oficina'" [formControlName]="fieldMap[field]">
+                      <mat-option *ngFor="let option of centrodecosto" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
+                    <input *ngIf="field !== 'Oficina' "  matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
                   </mat-form-field>
+
                 </div>
               </div>
             </mat-card-content>
@@ -172,9 +178,17 @@
                 </mat-form-field>
                 <!-- Otros campos de texto -->
                 <mat-form-field class="example-full-width" appearance="fill"
-                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad','Nombre eps', 'Observaciones',  'Dias de diferencia']">
+                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad', 'Observaciones',  'Dias de diferencia']">
                   <mat-label>{{ field }}</mat-label>
                   <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Nombre eps</mat-label>
+                  <mat-select [formControlName]="fieldMap['Nombre eps']">
+                    <mat-option *ngFor="let option of epsnombres" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
                 </mat-form-field>
                 <mat-form-field class="example-full-width">
                   <mat-label>IPS punto de atención (NIT)</mat-label>
@@ -195,6 +209,8 @@
                     </mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
+
+
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>Estado incapacidad</mat-label>
                   <mat-select [formControlName]="fieldMap['Estado incapacidad']">

@@ -23712,12 +23712,9 @@ export class FormularioIncapacidadComponent implements OnInit {
     this.incapacidadForm.get('numerodeceduladepersona')?.disable();
     this.incapacidadForm.get('temporal')?.disable();
     this.incapacidadForm.get('numero_de_contrato')?.disable();
-    this.incapacidadForm.get('primercorreoelectronico')?.disable();
     this.incapacidadForm.get('edad')?.disable();
     this.incapacidadForm.get('empresa')?.disable();
-    this.incapacidadForm.get('Centro_de_costos')?.disable();
     this.incapacidadForm.get('Centro_de_costo')?.disable();
-    this.incapacidadForm.get('celular')?.disable();
     this.incapacidadForm.get('fecha_contratacion')?.disable();
     this.incapacidadForm.get('fondo_de_pension')?.disable();
     this.incapacidadForm.get('fecha_fin_incapacidad')?.valueChanges.subscribe(() => {
@@ -24115,7 +24112,7 @@ Swal.fire({
             datosBasicos.genero = 'Femenino';
           }
           this.incapacidadForm.patchValue({
-            'Centro_de_costos': contratacion.centro_de_costos,
+            'Centro_de_costos': contratacion.centro_costo_carnet,
             'Centro_de_costo': contratacion.centro_de_costos,
             'nombre_eps': contratacion.eps,
             'fecha_contratacion': contratacion.fecha_contratacion,
@@ -24124,7 +24121,7 @@ Swal.fire({
             'numero_de_contrato': contratacion.codigo_contrato,
             'Oficina': this.sucursalde,
             'nombre_de_quien_recibio': this.nombredequienrecibio,
-            'empresa': contratacion.centro_costo_carnet,
+            'empresa': contratacion.centro_de_costos,
             // Continúa mapeando los campos según tu fieldMap
             'celular': datosBasicos.celular,
             'tipodedocumento': datosBasicos.tipodedocumento,
@@ -24197,6 +24194,45 @@ Swal.fire({
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
   estadoincapacidad: string[] = ['Original', 'Copia', 'Falsa'];
+  centrodecosto: string[] = ['Andes',
+    'Cartagenita',
+    'Facatativa Principal',
+    'Facatativa Primera',
+    'Fontibon',
+    'Funza',
+    'Ipanema',
+    'Madrid',
+    'MonteVerde',
+    'Rosal',
+    'Soacha',
+    'Suba',
+    'Tocancipa',
+    'Bosa']
+
+    epsnombres: string[] = [
+      'ARL SURA',
+'CAPITAL SALUD',
+'COMPARTA',
+'COMPENSAR',
+'ASMED SALUD',
+'EPS SURA',
+'FAMISANAR',
+'DUSAKAWY',
+'NUEVA EPS',
+'SALUD TOTAL',
+'SANITAS',
+'ALIANSALUD',
+'CAJACOPI',
+'CAPRESOCA',
+'SAVIA SALUD',
+'MATUAL SER',
+'FAMILIAR DE COLOMBIA',
+'SALUD BOLIVAR',
+'CONFAORIENTE',
+'PIJAO SALUD',
+'COOSALUD',
+'ANAS WUAYUU'
+    ]
   getOptions(field: string): string[] {
     switch (field) {
       case 'Sexo':
