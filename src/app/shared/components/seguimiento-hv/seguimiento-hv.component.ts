@@ -321,7 +321,12 @@ export class SeguimientoHvComponent {
     if (this.auditForm.get('salario_caja')?.value === 'otro') {
       formattedData.salario_caja = this.auditForm.get('salario_caja_otro')?.value;
     }
-  
+    console.log(formattedData);
+    // quitar salario_caja_otro, salario_contrato_otro,  salario_eps_otro
+    delete formattedData.salario_caja_otro;
+    delete formattedData.salario_contrato_otro;
+    delete formattedData.salario_eps_otro;
+    
     this.dialogRef.close(formattedData);
   }
   

@@ -99,6 +99,7 @@ export class LoginComponent {
     try {
       this.authService.login(loginData.email, loginData.password).then(response => {
         if (response) {
+          console.log(response);
           if (response.jwt === "Contraseña incorrecta") {
             Swal.fire({
               icon: 'error',

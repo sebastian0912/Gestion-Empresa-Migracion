@@ -73,9 +73,9 @@ export class NavbarLateralComponent implements OnInit {
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'personal-activo'
     ],
-    INCAPACIDADADMIN: ['home', 'incapacidades-totales', 'subida-archivos-incapacidades' , 'buscar-incapacicades', 'formulario-incapacicades'
+    INCAPACIDADADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'incapacidades-totales', 'subida-archivos-incapacidades' , 'buscar-incapacicades', 'formulario-incapacicades'
     ],
-    INCAPACIDADSUBIDA: ['home','formulario-incapacicades'
+    INCAPACIDADSUBIDA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'formulario-incapacicades'
     ],
   };
 

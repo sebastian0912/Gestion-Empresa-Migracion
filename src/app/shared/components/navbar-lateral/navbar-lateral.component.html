@@ -103,6 +103,11 @@
       <li>Reporte de contratación</li>
     </div>
 
+    <div class="blockLink" *ngIf="hasPermission('personal-activo')" (click)="selectFile('personalActivo')">
+      <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
+      <li> Personal activo </li>
+    </div>
+
     <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria'"
       routerLink="/seguimiento-auditoria" *ngIf="hasPermission('seguimiento-auditoria')">
       <img src="navbar/archivos.png" alt="Dashboard" class="icon">
