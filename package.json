@@ -1,6 +1,6 @@
 {
   "name": "gestion-empresa-migracion",
-  "version": "1.0.34",
+  "version": "1.0.37",
   "description": "Programa para gestionar los procesos de la empresa",
   "author": "SebastianGuarnizoCampos",
   "license": "Uso Interno en TuAlianza, Apoyo Laboral, Comercializadora, prohibida su distribucion",
@@ -55,6 +55,7 @@
     "@angular/core": "^18.0.0",
     "@angular/forms": "^18.0.0",
     "@angular/material": "^18.1.2",
+    "@angular/material-moment-adapter": "^18.2.3",
     "@angular/platform-browser": "^18.0.0",
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/platform-server": "^18.0.0",
@@ -69,6 +70,7 @@
     "exceljs": "^4.4.0",
     "express": "^4.18.2",
     "file-saver": "^2.0.5",
+    "gestion-empresa-migracion": "file:",
     "moment": "^2.30.1",
     "ng2-charts": "^6.0.1",
     "ngx-mat-select-search": "^7.0.6",

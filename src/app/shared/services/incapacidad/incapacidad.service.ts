@@ -79,6 +79,13 @@ export class IncapacidadService {
       catchError(this.handleError)
     );
   }
+  public traerDatosListas(): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/Incapacidades/traerTodaslistas`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
 
   public traerTodosDatosIncapacidad(): Observable<any> {
     const headers = this.createAuthorizationHeader();
