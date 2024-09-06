@@ -1,1 +1,19 @@
-<p>documentos-contratacion works!</p>
+<audio id="successSound" src="Sounds/positivo.mp3"></audio>
+<audio id="errorSound" src="Sounds/negativo.mp3"></audio>
+<div id="loader" class="cajaloader" [style.display]="loaderVisible ? 'block' : 'none'">
+  <h1 id="cont" class="contador" [style.display]="counterVisible ? 'block' : 'none'"></h1>
+  <div class="custom-loader"></div>
+</div>
+<div class="app-layout">
+  <app-navbar-lateral></app-navbar-lateral>
+  <div class="contenedor">
+    <mat-card>
+      <div class="ficha-container">
+        <mat-card>
+
+        </mat-card>
+      </div>
+    </mat-card>
+  </div>
+
+</div>

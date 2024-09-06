@@ -23705,7 +23705,18 @@ export class FormularioIncapacidadComponent implements OnInit {
     }, {} as { [key: string]: any });
 
     this.incapacidadForm = this.fb.group(formGroupConfig);
-
+    this.incapacidadForm.get('genero')?.disable();
+    this.incapacidadForm.get('primer_apellido')?.disable();
+    this.incapacidadForm.get('primer_nombre')?.disable();
+    this.incapacidadForm.get('tipodedocumento')?.disable();
+    this.incapacidadForm.get('numerodeceduladepersona')?.disable();
+    this.incapacidadForm.get('temporal')?.disable();
+    this.incapacidadForm.get('numero_de_contrato')?.disable();
+    this.incapacidadForm.get('edad')?.disable();
+    this.incapacidadForm.get('empresa')?.disable();
+    this.incapacidadForm.get('Centro_de_costo')?.disable();
+    this.incapacidadForm.get('fecha_contratacion')?.disable();
+    this.incapacidadForm.get('fondo_de_pension')?.disable();
     this.incapacidadForm.get('fecha_fin_incapacidad')?.valueChanges.subscribe(() => {
       this.calcularDiasIncapacidad();
     });
@@ -23972,7 +23983,6 @@ export class FormularioIncapacidadComponent implements OnInit {
   onSubmit(): void {
     const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
     const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
-
     if (fechaInicioStr && fechaFinStr) {
       // Normalizar las fechas al formato 'dd-MM-yyyy'
       const normalizedStartDate = format(new Date(fechaInicioStr), 'dd-MM-yyyy');
@@ -23996,6 +24006,11 @@ export class FormularioIncapacidadComponent implements OnInit {
           nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
         } else {
           console.error('Fechas inválidas: No se puede calcular días de incapacidad');
+Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verfica que esten bien'
+          });
         }
       }
 
@@ -24015,13 +24030,19 @@ export class FormularioIncapacidadComponent implements OnInit {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: error.message || 'Ha ocurrido un error al crear la incapacidad'
+            text: 'Ha ocurrido un error al crear la incapacidad'
           });
         }
       );
+
       // Aquí puedes continuar con la lógica para enviar la nueva incapacidad, etc.
     } else {
       console.error('Fechas no disponibles: No se puede normalizar o calcular días de incapacidad');
+      Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verfica que esten bien'
+          });
     }
 
   }
@@ -24046,6 +24067,11 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.empresa = dataObject.sitio_contratacion;
     } else {
       console.log('No se encontraron datos en localStorage');
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text:  'Ha ocurrido un error al buscar tus datos, cierra la sesion y vuelve a ingresar'
+        });
     }
     this.contratacionService.traerDatosEncontratacion(cedula).subscribe(
       response => {
@@ -24055,10 +24081,6 @@ export class FormularioIncapacidadComponent implements OnInit {
         const contratacion = response.contratacion || {};
         const datosBasicos = response.datos_basicos || {};
         const afp= response.afp
- 
-        console.log(afp)
-        console.log(contratacion)
-        console.log(datosBasicos)
 
 
         // Iterar sobre el fieldMap y asignar los valores en los controles del formulario
@@ -24090,7 +24112,7 @@ export class FormularioIncapacidadComponent implements OnInit {
             datosBasicos.genero = 'Femenino';
           }
           this.incapacidadForm.patchValue({
-            'Centro_de_costos': contratacion.centro_de_costos,
+            'Centro_de_costos': contratacion.centro_costo_carnet,
             'Centro_de_costo': contratacion.centro_de_costos,
             'nombre_eps': contratacion.eps,
             'fecha_contratacion': contratacion.fecha_contratacion,
@@ -24099,7 +24121,7 @@ export class FormularioIncapacidadComponent implements OnInit {
             'numero_de_contrato': contratacion.codigo_contrato,
             'Oficina': this.sucursalde,
             'nombre_de_quien_recibio': this.nombredequienrecibio,
-            'empresa': contratacion.centro_costo_carnet,
+            'empresa': contratacion.centro_de_costos,
             // Continúa mapeando los campos según tu fieldMap
             'celular': datosBasicos.celular,
             'tipodedocumento': datosBasicos.tipodedocumento,
@@ -24119,7 +24141,11 @@ export class FormularioIncapacidadComponent implements OnInit {
       },
       error => {
         this.toggleLoader(false);
-        console.error('Error al buscar la incapacidad', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text:  'Ha ocurrido un error al buscar la cédula'
+        });
       }
     );
   }
@@ -24168,6 +24194,45 @@ export class FormularioIncapacidadComponent implements OnInit {
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
   estadoincapacidad: string[] = ['Original', 'Copia', 'Falsa'];
+  centrodecosto: string[] = ['Andes',
+    'Cartagenita',
+    'Facatativa Principal',
+    'Facatativa Primera',
+    'Fontibon',
+    'Funza',
+    'Ipanema',
+    'Madrid',
+    'MonteVerde',
+    'Rosal',
+    'Soacha',
+    'Suba',
+    'Tocancipa',
+    'Bosa']
+
+    epsnombres: string[] = [
+      'ARL SURA',
+'CAPITAL SALUD',
+'COMPARTA',
+'COMPENSAR',
+'ASMED SALUD',
+'EPS SURA',
+'FAMISANAR',
+'DUSAKAWY',
+'NUEVA EPS',
+'SALUD TOTAL',
+'SANITAS',
+'ALIANSALUD',
+'CAJACOPI',
+'CAPRESOCA',
+'SAVIA SALUD',
+'MATUAL SER',
+'FAMILIAR DE COLOMBIA',
+'SALUD BOLIVAR',
+'CONFAORIENTE',
+'PIJAO SALUD',
+'COOSALUD',
+'ANAS WUAYUU'
+    ]
   getOptions(field: string): string[] {
     switch (field) {
       case 'Sexo':
