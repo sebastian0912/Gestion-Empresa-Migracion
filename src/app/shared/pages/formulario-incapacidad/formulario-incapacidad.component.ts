@@ -730,10 +730,11 @@ export class FormularioIncapacidadComponent implements OnInit {
           if (datosBasicos.genero == 'F') {
             datosBasicos.genero = 'Femenino';
           }
+          this.incapacidadForm.get('nombre_eps')?.setValue(afp.eps);
           this.incapacidadForm.patchValue({
             'Centro_de_costos': contratacion.centro_costo_carnet,
             'Centro_de_costo': contratacion.centro_de_costos,
-            'nombre_eps': contratacion.eps,
+            'nombre_eps': afp.eps,
             'fecha_contratacion': contratacion.fecha_contratacion,
             'fondo_de_pension': afp.afc,
             'temporal': contratacion.temporal,
@@ -741,7 +742,6 @@ export class FormularioIncapacidadComponent implements OnInit {
             'Oficina': this.sucursalde,
             'nombre_de_quien_recibio': this.nombredequienrecibio,
             'empresa': contratacion.centro_de_costos,
-            // Continúa mapeando los campos según tu fieldMap
             'celular': datosBasicos.celular,
             'tipodedocumento': datosBasicos.tipodedocumento,
 
