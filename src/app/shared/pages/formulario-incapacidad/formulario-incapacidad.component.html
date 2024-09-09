@@ -152,7 +152,7 @@
                 <!-- Fecha de Envio Incapacidad Fisica -->
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>Fecha de Envio Incapacidad Fisica</mat-label>
-                  <input matInput [matDatepicker]="envioDatePicker" formControlName="fieldMap['Fecha de Envio Incapacidad Fisica']">
+                  <input matInput [matDatepicker]="envioDatePicker" [formControlName]="fieldMap['Fecha de Envio Incapacidad Fisica']">
                   <mat-datepicker-toggle matSuffix [for]="envioDatePicker"></mat-datepicker-toggle>
                   <mat-datepicker #envioDatePicker></mat-datepicker>
                 </mat-form-field>
@@ -184,7 +184,7 @@
 
                 <mat-form-field class="example-full-width">
                   <mat-label>Nombre eps</mat-label>
-                  <input type="text" matInput [formControl]="epsControlForm" [matAutocomplete]="autoEps">
+                  <input type="text" matInput [formControl]="epsControlForm"  [formControlName]="fieldMap['Nombre eps']" [matAutocomplete]="autoEps">
                   <mat-autocomplete #autoEps="matAutocomplete">
                     <mat-option *ngFor="let nombre of filteredEps | async" [value]="nombre">
                       {{ nombre }}
