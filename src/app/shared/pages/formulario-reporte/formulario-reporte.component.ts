@@ -362,7 +362,7 @@ export class FormularioReporteComponent implements OnInit {
 
   handleError(error: any): void {
     this.toggleLoader(false);
-    console.error('Error:', error);
+    //console.error('Error:', error);
   }
 
   toggleLoader(visible: boolean, showCounter: boolean = false): void {
@@ -395,7 +395,11 @@ export class FormularioReporteComponent implements OnInit {
         this.router.navigate(['/busqueda-incapacidades']);
       },
       error => {
-        console.error('Error al crear la incapacidad', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al actualizar el reporte',
+          text: 'Ocurrió un error al actualizar el reporte, por favor intenta de nuevo.',
+        });
       }
     );
 

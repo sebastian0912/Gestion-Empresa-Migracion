@@ -191,7 +191,11 @@ export class FormularioIncapacidadComponent implements OnInit {
         this.setupCodigoFilters();
       },
       error => {
-        console.error('Error al traer los datos de las listas', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cargar la información necesaria para el formulario'
+        });
       }
     );
 
@@ -621,7 +625,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24));
           nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
         } else {
-          console.error('Fechas inválidas: No se puede calcular días de incapacidad');
+          //console.error('Fechas inválidas: No se puede calcular días de incapacidad');
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -642,7 +646,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.router.navigate(['/busqueda-incapacidades']);
         },
         error => {
-          console.error('Error al crear la incapacidad', error);
+          //console.error('Error al crear la incapacidad', error);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -653,7 +657,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
       // Aquí puedes continuar con la lógica para enviar la nueva incapacidad, etc.
     } else {
-      console.error('Fechas no disponibles: No se puede normalizar o calcular días de incapacidad');
+      //console.error('Fechas no disponibles: No se puede normalizar o calcular días de incapacidad');
       Swal.fire({
         icon: 'error',
         title: 'Error',

@@ -291,7 +291,12 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
         this.dataSourceTable4.data = reporte
       })
       .catch(error => {
-        console.error('Error al cargar los datos:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar los datos',
+          text: 'Ocurrió un error al cargar los datos, por favor intenta de nuevo.',
+          confirmButtonText: 'Aceptar'
+        });
         this.toggleLoader(false);
       });
   }

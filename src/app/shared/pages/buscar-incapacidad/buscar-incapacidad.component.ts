@@ -577,7 +577,11 @@ export class BuscarIncapacidadComponent implements OnInit {
 
         },
         error => {
-          console.error('Error al buscar datos:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al realizar la búsqueda'
+          });
           // Handle error as needed
         }
       );

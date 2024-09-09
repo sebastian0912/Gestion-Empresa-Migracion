@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date-rang-dialog.component';
+import Swal from 'sweetalert2';
 DateRangeDialogComponent
 @Component({
   selector: 'app-ver-reporte',
@@ -65,7 +66,11 @@ export class VerReporteComponent implements OnInit {
         this.consolidadoDataSource.data = this.generateConsolidatedData(this.reportes); // Consolidated table data
       },
       (error) => {
-        console.error('Error al obtener los reportes:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al obtener los reportes',
+          text: 'Ocurrió un error al obtener los reportes, por favor intenta de nuevo.'
+        });
       }
     );
   }
@@ -184,7 +189,11 @@ export class VerReporteComponent implements OnInit {
             this.consolidadoDataSource.data = this.generateConsolidatedData(this.reportes); // Consolidated table data
           },
           (error) => {
-            console.error('Error al obtener los reportes:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al obtener los reportes',
+              text: 'Ocurrió un error al obtener los reportes, por favor intenta de nuevo.'
+            });
           }
         );
       }

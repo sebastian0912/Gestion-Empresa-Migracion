@@ -7,6 +7,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
@@ -174,7 +175,11 @@ export class IncapacidadService {
       }),
       catchError(error => {
         // Manejar errores aquí
-        console.error('Error al cargar los archivos:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir los archivos',
+          text: 'Ocurrió un error al subir los archivos, por favor intenta de nuevo.'
+        });
         return error;
       })
     );
