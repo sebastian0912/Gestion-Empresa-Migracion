@@ -38,9 +38,9 @@ export class NavbarSuperiorComponent implements OnInit {
     if (user) {
       this.username = `${user.primer_nombre} ${user.primer_apellido}`;
       this.role = user.rol;
-      await this.cargarSedes();
     }
   }
+  
 
   async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {

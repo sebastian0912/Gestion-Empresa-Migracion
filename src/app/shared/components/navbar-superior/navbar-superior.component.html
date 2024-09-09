@@ -24,13 +24,14 @@
               <span class="spanAux">Cambiar Sede</span>
             </button>
           </mat-menu>
-          
+        
           <mat-menu #sedeMenu="matMenu">
             <button mat-menu-item *ngFor="let sede of sedes" (click)="onSedeSeleccionada(sede.nombre)">
               {{ sede.nombre }}
             </button>
           </mat-menu>
         </div>
+        
       </div>
     </div>
   </div>

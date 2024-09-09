@@ -68,7 +68,7 @@ export class NavbarLateralComponent implements OnInit {
       'recibir-paquete-documentacion',  'formulario-incapacicades',      'subida-archivos-incapacidades',
       'buscar-incapacicades',           'incapacidades-totales',         'seleccion',
       'contratacion',
-      'archivos-contratacion'
+      'archivos-contratacion',           'ver-reporte'
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],

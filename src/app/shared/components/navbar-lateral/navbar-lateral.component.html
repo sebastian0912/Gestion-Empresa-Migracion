@@ -103,6 +103,13 @@
       <li>Reporte de contratación</li>
     </div>
 
+
+    <div class="blockLink" [class.active]="currentRoute === '/ver-reporte'" routerLink="/ver-reporte"
+      *ngIf="hasPermission('ver-reporte')">
+      <img src="navbar/reporte.png" alt="Dashboard" class="icon">
+      <li>Ver reporte contratacion</li>
+    </div>
+
     <div class="blockLink" *ngIf="hasPermission('personal-activo')" (click)="selectFile('personalActivo')">
       <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
       <li> Personal activo </li>
@@ -137,8 +144,8 @@
       <img src="navbar/buscar.png" alt="Dashboard" class="icon">
       <li>Buscar documentación</li>
     </div>
-    <div class="blockLink" [class.active]="currentRoute === '/archivos-contratacion'" routerLink="/archivos-contratacion"
-      *ngIf="hasPermission('archivos-contratacion')">
+    <div class="blockLink" [class.active]="currentRoute === '/archivos-contratacion'"
+      routerLink="/archivos-contratacion" *ngIf="hasPermission('archivos-contratacion')">
       <img src="navbar/buscar.png" alt="Dashboard" class="icon">
       <li>Contratacion Archivos</li>
     </div>
@@ -162,7 +169,7 @@
     </div>
 
     <!-- Dropdown para incapacidades -->
-    <div class="dropdown blockLink" >
+    <div class="dropdown blockLink">
       <img src="navbar/documentation.png" alt="Dashboard" class="icon">
       <li>Incapacidades</li>
       <div class="dropdown-content">
@@ -171,8 +178,8 @@
           <img src="navbar/documentation.png" alt="Subir Incapacidades" class="icon">
           <li>Subida de archivos</li>
         </div>
-        <div class="blockLink" [class.active]="currentRoute === '/busqueda-incapacidades'" routerLink="/busqueda-incapacidades"
-          *ngIf="hasPermission('buscar-incapacicades')">
+        <div class="blockLink" [class.active]="currentRoute === '/busqueda-incapacidades'"
+          routerLink="/busqueda-incapacidades" *ngIf="hasPermission('buscar-incapacicades')">
           <img src="navbar/documentation.png" alt="Buscar Incapacidades" class="icon">
           <li>Buscar incapacidades</li>
         </div>

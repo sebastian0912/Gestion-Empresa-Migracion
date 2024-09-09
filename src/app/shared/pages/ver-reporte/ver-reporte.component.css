@@ -1,0 +1,58 @@
+/* Estilo para los enlaces de PDF */
+a.pdf-link {
+  color: #4240d6;
+  /* Color rojo característico para PDF */
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.pdf-link:hover {
+  text-decoration: underline;
+  /* Subrayar el enlace cuando se pase el mouse */
+}
+
+/* Estilo para los enlaces de Excel */
+a.excel-link {
+  color: #388e3c;
+  /* Color verde característico para Excel */
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.excel-link:hover {
+  text-decoration: underline;
+  /* Subrayar el enlace cuando se pase el mouse */
+}
+
+button:hover {
+  background-color: #b1b1ca
+}
+
+
+span {
+  font-size: 11pt;
+  font-weight: bold;
+  color: #4240d6;
+}
+
+.ver{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+
+.title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 20pt;
+  font-weight: bold;
+}
+
+.filter-container {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

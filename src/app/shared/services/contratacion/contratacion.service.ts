@@ -139,6 +139,44 @@ export class ContratacionService {
     }
   }
 
+    // Subir archivo de contratacion para validar
+    async subirContratacionValidar(
+      datos: any
+    ): Promise<any> {
+      const token = this.getToken();
+  
+      if (!token) {
+        throw new Error('No token found');
+      }
+  
+      const urlcompleta = `${this.apiUrl}/contratacion/validarExcelContratacion`;
+  
+      const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+  
+      const data = {
+        datos: datos,
+        mensaje: "mcuhos",
+        jwt: token
+      };
+
+  
+      try {
+        const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+          catchError(this.handleError)
+        ));
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+  async getUser(): Promise<any> {
+    if (isPlatformBrowser(this.platformId)) {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    }
+    return null;
+  }
+
   // Generar el excel de arl
   async generarExcelArl(
     datos: any
@@ -227,5 +265,91 @@ export class ContratacionService {
     }
   }
 
+  // --------------------------------------------------------------------------------------------
+  // ------------------------- Métodos para el módulo de reportes --------------------------------
 
+  // Subir reporte completo
+  async cargarReporte(datos: any): Promise<any> {
+    const token = this.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const urlcompleta = `${this.apiUrl}/reportes/cargarReporte`;
+
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+
+    const data = {
+      ...datos, // Todos los campos que envías, como cedulas, traslados, etc.
+      jwt: token
+    };
+
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+
+  public obtenerTodosLosReportes(page: number = 1): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/reportes/obtenerReportes`, { headers }).pipe(
+      map((response: any) => response),  // Mapea la respuesta
+      catchError(this.handleError)       // Manejo de errores
+    );
+  }
+
+  public obtenerReportesPorFechas(start: string, end: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    const params = { start, end };  // Parámetros para enviar el rango de fechas
+    
+    return this.http.get(`${this.apiUrl}/reportes/obtenerReportesFechas`, { headers, params }).pipe(
+      map((response: any) => response),  // Mapea la respuesta
+      catchError(this.handleError)       // Manejo de errores
+    );
+  }
+  
+  //--------------------------------------------------------------------------------------------
+  // ------------------------- Métodos para el módulo de reportes de errores --------------------------------
+  // --------------------------------------------------------------------------------------------
+
+  async enviarErroresValidacion(
+    errores: any[]
+  ): Promise<any> {
+    const token = this.getToken();
+  
+    if (!token) {
+      throw new Error('No token found');
+    }
+  
+    const urlcompleta = `${this.apiUrl}/contratacion/guardarErroresValidacion`;  // Asegúrate de que este sea el endpoint correcto
+  
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+    
+    const responsable = await this.getUser();  // Obtén el responsable de la validación
+
+    const data = {
+      errores: errores,   // Aquí envías el array de errores tal cual lo recibes
+      responsable: responsable.primer_nombre + ' ' + responsable.primer_apellido,  // Nombre del responsable
+      jwt: token          // Token de autenticación
+    };
+  
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+
+  
 }
