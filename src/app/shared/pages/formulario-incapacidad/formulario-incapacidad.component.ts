@@ -16,8 +16,8 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith, debounceTime } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, startWith, debounceTime, first } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { NgIf, NgFor, NgSwitch } from '@angular/common';
@@ -34,6 +34,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { format } from 'date-fns';
 import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter'; // Importar el adaptador de Moment
+import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -85,17 +87,17 @@ export class FormularioIncapacidadComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
-  incapacidadForm: FormGroup;
+  incapacidadForm: FormGroup = this.fb.group({});
   cedula: string = '';
   fields: string[] = [
-    'Oficina', 'Nombre de quien recibio', 'Tipo de documento', 'Numero de documento', 'Temporal',
+    'Oficina', 'Nombre de quien recibio', 'Tipo de documento', 'Numero de documento', 'Temporal del contrato',
     'Numero de contrato', 'Apellido', 'Nombre', 'Edad', 'Sexo', 'Empresa', 'Centro de costo', 'Celular o telefono 01',
     'Celular o telefono 02', 'Correo Electronico', 'Fecha de ingreso temporal', 'Fecha inicio incapacidad', 'Fecha fin incapacidad', 'Tipo incapacidad', 'Codigo diagnostico',
     'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps', 'Nombre eps',
     'Fondo de pensiones', 'Estado incapacidad', 'Prorroga', 'Incapacidad Transcrita', 'Numero de incapacidad',
     'Nit de la IPS', 'IPS punto de atencion', 'Observaciones', 'Tipo de documento doctor atendido', 'Numero de documento doctor',
     'Nombre doctor', 'Estado robot doctor', 'Archivo Incapacidad', 'Historial clinico', 'Dias de diferencia',
-    'Fecha de Envio Incapacidad Fisica', 'Centro de costos'
+    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente'
   ];
 
   fieldMap: { [key: string]: string } = {
@@ -103,7 +105,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Nombre de quien recibio': 'nombre_de_quien_recibio',
     'Tipo de documento': 'tipodedocumento',
     'Numero de documento': 'numerodeceduladepersona',
-    'Temporal': 'temporal',
+    'Temporal del contrato': 'temporal_contrato',
     'Numero de contrato': 'numero_de_contrato',
     'Apellido': 'primer_apellido',
     'Nombre': 'primer_nombre',
@@ -138,6 +140,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Nombre doctor': 'nombre_doctor',
     'Estado robot doctor': 'estado_robot_doctor',
     'Archivo Incapacidad': 'archivo_incapacidad',
+    'Vigente': 'vigente',
     'Historial clinico': 'historial_clinico',
     'Dias de diferencia': 'dias_de_diferencia',
     'Fecha de Envio Incapacidad Fisica': 'Fecha_de_Envio_Incapacidad_Fisica',
@@ -145,129 +148,159 @@ export class FormularioIncapacidadComponent implements OnInit {
   codigoDiagnosticoControl = new FormControl();
   epsControlForm = new FormControl();
   IpsControlForm = new FormControl();
-  filteredCodigos: Observable<string[]>;
-  filteredEps: Observable<string[]>;
+  filteredCodigos: Observable<string[]> = of([]);
+  filteredEps: Observable<string[]> = of([]);
   allIps: { nit: string, nombre: string }[] = [];
   allCodigosDiagnostico: { codigo: string, descripcion: string }[] = [];
   epsnombres: { nombre: string }[] = []
   isSubmitButtonDisabled = false;
   ipsControlNit = new FormControl();
   ipsControlNombre = new FormControl();
-  filteredIpsNit: Observable<string[]>;
-  filteredIpsNombre: Observable<string[]>;
-
+  filteredIpsNit: Observable<string[]> = of([]);
+  filteredIpsNombre: Observable<string[]> = of([]);
+  private unsubscribe$ = new Subject<void>();
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private incapacidadService: IncapacidadService, private contratacionService: ContratacionService) {
-    const formGroupConfig: { [key: string]: any } = this.fields.reduce((acc, field) => {
+    // Inicializar el formulario
+
+    this.initializeForm();
+
+    // Cargar datos de listas desde el servicio
+    this.loadDataForForm();
+
+    // Configurar filtros y validaciones para el formulario
+    this.setupFormFilters();
+    this.setupFormValidations();
+  }
+  private initializeForm(): void {
+    // Configuración del formulario utilizando los campos y el mapeo
+    const formGroupConfig = this.fields.reduce((acc, field) => {
       const formControlName = this.fieldMap[field];
-
-      // Hacer que "Celular o telefono 02" no sea obligatorio
-      if (formControlName === 'celular_o_telefono_02') {
-        acc[formControlName] = ['']; // No se agrega Validators.required
-      } else {
-        acc[formControlName] = ['', Validators.required]; // Todos los demás campos son obligatorios
-      }
-
+      acc[formControlName] = formControlName === 'whatsapp' || formControlName === 'observaciones' ? [''] : ['', Validators.required];
       return acc;
     }, {} as { [key: string]: any });
 
+    this.incapacidadForm = this.fb.group(formGroupConfig);
+
+    // Deshabilitar los campos iniciales
+    this.disableInitialFields();
+  }
+
+  private disableInitialFields(): void {
+    const fieldsToDisable = [
+      'genero', 'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
+      'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
+      'fecha_contratacion', 'fondo_de_pension'
+    ];
+
+    fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.disable());
+  }
+
+  private loadDataForForm(): void {
     this.incapacidadService.traerDatosListas().subscribe(
       response => {
-        // Transformar 'ips' para usar 'nombreips' en lugar de 'nombre'
+        // Transformar los datos y asignar a los arreglos
         this.allIps = response.IPSNames.map((item: { nit: string, nombreips: string }) => ({
           nit: item.nit,
           nombre: item.nombreips
         }));
-        // Asignar directamente 'codigosDiagnostico' y 'epsnombres'
         this.allCodigosDiagnostico = response.codigos.map((item: { codigo: string, descripcion: string }) => ({
           codigo: item.codigo,
           descripcion: item.descripcion
         }));
         this.epsnombres = response.eps.map((item: { nombreeps: string }) => ({
-
           nombre: item.nombreeps
         }));
-        console.log(this.epsnombres)
         this.setupIPSFilters();
         this.setupCodigoFilters();
       },
-      error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo cargar la información necesaria para el formulario'
-        });
-      }
+      error => this.handleServiceError('No se pudo cargar la información necesaria para el formulario')
     );
+  }
 
-    this.incapacidadForm = this.fb.group(formGroupConfig);
-    this.incapacidadForm.get('genero')?.disable();
-    this.incapacidadForm.get('primer_apellido')?.disable();
-    this.incapacidadForm.get('primer_nombre')?.disable();
-    this.incapacidadForm.get('tipodedocumento')?.disable();
-    this.incapacidadForm.get('numerodeceduladepersona')?.disable();
-    this.incapacidadForm.get('temporal')?.disable();
-    this.incapacidadForm.get('numero_de_contrato')?.disable();
-    this.incapacidadForm.get('edad')?.disable();
-    this.incapacidadForm.get('empresa')?.disable();
-    this.incapacidadForm.get('Centro_de_costo')?.disable();
-    this.incapacidadForm.get('fecha_contratacion')?.disable();
-    this.incapacidadForm.get('fondo_de_pension')?.disable();
-    this.incapacidadForm.get('fecha_fin_incapacidad')?.valueChanges.subscribe(() => {
-      this.calcularDiasIncapacidad();
+  private handleServiceError(message: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: message
     });
-    this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.valueChanges.subscribe(() => {
-      this.calcularDiferenciaDias();
-    });
-    this.incapacidadForm.get('prorroga')?.valueChanges.subscribe(() => {
-      this.calcularprorroga();
-    });
-    this.incapacidadForm.get('estado_incapacidad')?.valueChanges.subscribe(() => {
-      if (this.incapacidadForm.get('estado_incapacidad')?.value == 'Falsa') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se puede crear una incapacidad falsa'
-        });
-      }
-    });
+  }
+
+  private setupFormFilters(): void {
+    // Configuración de los filtros para los campos del formulario
     this.filteredEps = this.epsControlForm.valueChanges.pipe(
       startWith(''),
-      map(value => this._filterEps(value
-      ))
+      map(value => this._filterEps(value))
     );
 
     this.filteredCodigos = this.codigoDiagnosticoControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value))
     );
+
     this.filteredIpsNombre = this.ipsControlNombre.valueChanges.pipe(
       startWith(''),
       map(value => this._filterNombre(value || ''))
     );
-    this.filteredIpsNit = this.ipsControlNombre.valueChanges.pipe(
+
+    this.filteredIpsNit = this.ipsControlNit.valueChanges.pipe(
       startWith(''),
       map(value => this._filterNit(value || ''))
     );
+  }
 
-    // Suscribirse a los cambios en los campos del formulario
-    this.incapacidadForm.valueChanges.subscribe((formData) => {
-      // Verificar si la sección está activa y si hay algo escrito en los campos relevantes
+  private setupFormValidations(): void {
+    // Suscripciones a los cambios de valores de los campos del formulario
+    this.incapacidadForm.get('fecha_inicio_incapacidad')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      this.calcularDiasIncapacidad();
+      this.calcularprorroga();
+    });
+
+    this.incapacidadForm.get('fecha_fin_incapacidad')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      this.calcularDiasIncapacidad();
+      this.calcularprorroga();
+    });
+
+    this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      this.calcularDiferenciaDias();
+    });
+
+    this.incapacidadForm.get('prorroga')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      this.calcularprorroga();
+    });
+
+    this.incapacidadForm.get('estado_incapacidad')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      if (this.incapacidadForm.get('estado_incapacidad')?.value === 'Falsa') {
+        this.handleServiceError('No se puede crear una incapacidad falsa');
+      }
+    });
+
+    // Suscripción a los cambios en el formulario completo
+    this.incapacidadForm.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe((formData) => {
       if (this.isIncapacidadSectionActive(formData)) {
-        // Realizar la validación utilizando el validador
         this.validationErrors = IncapacidadValidator.validateConditions(formData);
-
-        // Verificar si hay errores de validación
-        if (this.validationErrors.length > 0) {
-          // Verificar si el error específico está presente
-
-        } else {
-          this.isSubmitButtonDisabled = false; // Habilitar el botón si no hay errores
-        }
+        this.isSubmitButtonDisabled = this.validationErrors.length > 0;
       } else {
         this.isSubmitButtonDisabled = false; // Habilitar el botón si la sección no está activa
       }
     });
-
   }
   private setupIPSFilters() {
     this.filteredIpsNit = this.ipsControlNit.valueChanges.pipe(
@@ -420,6 +453,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad);
       this.incapacidadForm.get('Dias_temporal')?.setValue(0);
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
+      console.log(this.incapacidadForm.get('dias_eps')?.value)
     }
     if (this.incapacidadForm.get('prorroga')?.value == 'NO') {
       this.calcularDiasIncapacidad()
@@ -600,71 +634,100 @@ export class FormularioIncapacidadComponent implements OnInit {
     this.loaderVisible = visible;
     this.counterVisible = showCounter;
   }
+
   onSubmit(): void {
+    // Evitar múltiples envíos
+    this.unsubscribe$.next();
+
+    // Asegúrate de habilitar todos los controles antes de enviar
+    Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
+      this.incapacidadForm.get(controlName)?.enable();
+    });
     const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
     const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
+    const fechaEnvioStr = this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.value;
+
     if (fechaInicioStr && fechaFinStr) {
       // Normalizar las fechas al formato 'dd-MM-yyyy'
       const normalizedStartDate = format(new Date(fechaInicioStr), 'dd-MM-yyyy');
       const normalizedEndDate = format(new Date(fechaFinStr), 'dd-MM-yyyy');
+      const normalizedFechaEnvio = format(new Date(fechaEnvioStr), 'dd-MM-yyyy');
 
       // Actualizar las fechas normalizadas en el formulario
-      this.incapacidadForm.get('fecha_inicio_incapacidad')?.setValue(normalizedStartDate);
-      this.incapacidadForm.get('fecha_fin_incapacidad')?.setValue(normalizedEndDate);
+      this.incapacidadForm.patchValue({
+        fecha_inicio_incapacidad: normalizedStartDate,
+        fecha_fin_incapacidad: normalizedEndDate,
+        Fecha_de_Envio_Incapacidad_Fisica: normalizedFechaEnvio,
+      });
 
       const nuevaIncapacidad: Incapacidad = this.incapacidadForm.value;
 
-      // Verificar si dias_incapacidad es NaN o indefinido y calcular si es necesario
       if (isNaN(nuevaIncapacidad.dias_incapacidad) || nuevaIncapacidad.dias_incapacidad === undefined) {
         const fechaInicio = new Date(fechaInicioStr);
         const fechaFin = new Date(fechaFinStr);
 
-        // Asegurarse de que ambas fechas sean válidas
         if (!isNaN(fechaInicio.getTime()) && !isNaN(fechaFin.getTime())) {
           const diferenciaEnTiempo = fechaFin.getTime() - fechaInicio.getTime();
-          const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24));
+          const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24)) + 1; // Incluye ambos días
           nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
         } else {
-          //console.error('Fechas inválidas: No se puede calcular días de incapacidad');
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verfica que esten bien'
+            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
           });
+          this.isSubmitButtonDisabled = false;
+          return;
         }
       }
 
-      this.incapacidadService.createIncapacidad(nuevaIncapacidad).subscribe(
+
+      // Envía la incapacidad al servicio
+      this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
         response => {
-          console.log('Incapacidad creada', response);
           Swal.fire({
             icon: 'success',
             title: 'Incapacidad creada',
             text: 'La incapacidad ha sido creada exitosamente'
           });
           this.incapacidadForm.reset();
-          this.router.navigate(['/busqueda-incapacidades']);
+          this.router.navigate(['/formulario-incapacidades']);
         },
         error => {
-          //console.error('Error al crear la incapacidad', error);
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'Ha ocurrido un error al crear la incapacidad'
           });
+          this.disableCertainFields();
         }
       );
-
-      // Aquí puedes continuar con la lógica para enviar la nueva incapacidad, etc.
+      
     } else {
-      //console.error('Fechas no disponibles: No se puede normalizar o calcular días de incapacidad');
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verfica que esten bien'
+        text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
       });
+      this.disableCertainFields();
     }
+  }
 
+  // Método auxiliar para deshabilitar campos específicos
+  disableCertainFields(): void {
+    this.incapacidadForm.get('genero')?.disable();
+    this.incapacidadForm.get('primer_apellido')?.disable();
+    this.incapacidadForm.get('primer_nombre')?.disable();
+    this.incapacidadForm.get('tipodedocumento')?.disable();
+    this.incapacidadForm.get('numerodeceduladepersona')?.disable();
+    this.incapacidadForm.get('temporal_contrato')?.disable();
+    this.incapacidadForm.get('numero_de_contrato')?.disable();
+    this.incapacidadForm.get('edad')?.disable();
+    this.incapacidadForm.get('empresa')?.disable();
+    this.incapacidadForm.get('Centro_de_costo')?.disable();
+    this.incapacidadForm.get('fecha_contratacion')?.disable();
+    this.incapacidadForm.get('fondo_de_pension')?.disable();
+    this.isSubmitButtonDisabled = false; // Rehabilitar el botón
   }
   [key: string]: any;
   sucursalde = ''
@@ -731,31 +794,26 @@ export class FormularioIncapacidadComponent implements OnInit {
             datosBasicos.genero = 'Femenino';
           }
           this.incapacidadForm.get('nombre_eps')?.setValue(afp.eps);
-          this.incapacidadForm.patchValue({
-            'Centro_de_costos': contratacion.centro_costo_carnet,
-            'Centro_de_costo': contratacion.centro_de_costos,
-            'nombre_eps': afp.eps,
-            'fecha_contratacion': contratacion.fecha_contratacion,
-            'fondo_de_pension': afp.afc,
-            'temporal': contratacion.temporal,
-            'numero_de_contrato': contratacion.codigo_contrato,
-            'Oficina': this.sucursalde,
-            'nombre_de_quien_recibio': this.nombredequienrecibio,
-            'empresa': contratacion.centro_de_costos,
-            'celular': datosBasicos.celular,
-            'tipodedocumento': datosBasicos.tipodedocumento,
+          this.incapacidadForm.get('temporal_contrato')?.setValue(contratacion.temporal);
+          this.incapacidadForm.get('numero_de_contrato')?.setValue(contratacion.codigo_contrato);
+          this.incapacidadForm.get('Oficina')?.setValue(this.convertToTitleCaseAndRemoveAccents(this.sucursalde));
+          this.incapacidadForm.get('nombre_de_quien_recibio')?.setValue(this.nombredequienrecibio);
+          this.incapacidadForm.get('empresa')?.setValue(contratacion.centro_de_costos);
+          this.incapacidadForm.get('celular')?.setValue(datosBasicos.celular);
+          this.incapacidadForm.get('tipodedocumento')?.setValue(datosBasicos.tipodedocumento);
+          this.incapacidadForm.get('numerodeceduladepersona')?.setValue(cedula);
 
+          console.log(this.incapacidadForm.get('numerodeceduladepersona')?.value)
+          this.incapacidadForm.get('primer_nombre')?.setValue(datosBasicos.primer_nombre + ' ' + datosBasicos.segundo_nombre);
+          this.incapacidadForm.get('primer_apellido')?.setValue(datosBasicos.primer_apellido + ' ' + datosBasicos.segundo_apellido);
+          this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
+          this.incapacidadForm.get('primercorreoelectronico')?.setValue(datosBasicos.primercorreoelectronico);
+          this.incapacidadForm.get('genero')?.setValue(datosBasicos.genero);
+          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_costo_carnet);
+          this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_de_costos);
+          this.incapacidadForm.get('fecha_contratacion')?.setValue(contratacion.fecha_contratacion);
+          this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
 
-            'numerodeceduladepersona': datosBasicos.numerodeceduladepersona,
-            'primer_nombre': datosBasicos.primer_nombre,
-            'primer_apellido': datosBasicos.primer_apellido,
-            'edad': datosBasicos.edadTrabajador,
-            'primercorreoelectronico': datosBasicos.primercorreoelectronico,
-            'genero': datosBasicos.genero,
-
-
-            // y así sucesivamente para todos los campos...
-          });
         }
       },
       error => {
@@ -781,6 +839,7 @@ export class FormularioIncapacidadComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = () => {
           const base64 = reader.result as string;
+
           this.incapacidadForm.get(this.fieldMap[field])?.setValue(base64);
         };
         reader.readAsDataURL(file);
@@ -813,7 +872,8 @@ export class FormularioIncapacidadComponent implements OnInit {
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
   estadoincapacidad: string[] = ['Original', 'Copia', 'Falsa'];
-  centrodecosto: string[] = ['Andes',
+  centrodecosto: string[] = [
+    'Andes',
     'Cartagenita',
     'Facatativa Principal',
     'Facatativa Primera',
@@ -826,7 +886,31 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Soacha',
     'Suba',
     'Tocancipa',
-    'Bosa']
+    'Bosa',
+    'Bogota']
+    vigentelist: string[] = ['Si','No']
+  convertToTitleCaseAndRemoveAccents(value: string): string {
+    if (value === null || value === undefined) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No hay oficina afiliada a tu cuenta, por favor contacta a tu administrador'
+      });
+      return '';
+    }else{
+      if (value === 'FACA_PRINCIPAL') {
+        value = 'FACATATIVA PRINCIPAL'
+      } if (value === 'FACA_CENTRO'){
+        value = 'FACATATIVA CENTRO'
+      }
+      const valueWithoutAccents = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+
+      const valueWithSpaces = valueWithoutAccents.replace(/_/g, ' ');
+
+      return valueWithSpaces.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+  }
 
 
   getOptions(field: string): string[] {
