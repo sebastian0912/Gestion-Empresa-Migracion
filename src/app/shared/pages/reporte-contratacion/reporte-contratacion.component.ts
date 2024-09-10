@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidatorFn } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidatorFn, FormsModule, FormControl } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +20,8 @@ import { MatTableModule } from '@angular/material/table';
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { MatTableDataSource } from '@angular/material/table';
+import { AdminService } from '../../services/admin/admin.service';
+
 
 @Component({
   selector: 'app-reporte-contratacion',
@@ -37,17 +39,15 @@ import { MatTableDataSource } from '@angular/material/table';
     MatIconModule,
     MatDatepickerModule,
     MatTableModule,
-    
+    FormsModule
+
   ],
   templateUrl: './reporte-contratacion.component.html',
   styleUrls: ['./reporte-contratacion.component.css']
 })
 export class ReporteContratacionComponent implements OnInit {
   reporteForm!: FormGroup;
-  sedes: string[] = [
-    'Facatativa', 'Facatativa PQ', 'Cartagenita', 'Rosal',
-    'Madrid', 'Funza', 'Fontibon', 'Soacha', 'Suba', 'Tocancipa', 'Bosa'
-  ];
+  sedes: any[] = [];
 
   cedulasEscaneadasFileName: string = '';
   cruceDiarioFileName: string = '';
@@ -71,10 +71,11 @@ export class ReporteContratacionComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private jefeAreaService: ContratacionService
+    private jefeAreaService: ContratacionService,
+    private adminService: AdminService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.reporteForm = this.fb.group({
       sede: [null, Validators.required],
       esDeHoy: [false, Validators.requiredTrue],
@@ -90,17 +91,81 @@ export class ReporteContratacionComponent implements OnInit {
       notas: ['']
     });
 
+    /*
+    // Observamos los cambios de cada checkbox para añadir o remover validaciones
+    this.reporteForm.get('cedulasEscaneadas')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.reporteForm.addControl('cedulasEscaneadasFile', new FormControl(null, Validators.required));
+      } else {
+        this.reporteForm.removeControl('cedulasEscaneadasFile');
+      }
+      this.reporteForm.updateValueAndValidity(); // Forzar la actualización de la validez
+    });
+
+    this.reporteForm.get('cruceDiario')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.reporteForm.addControl('cruceDiarioFile', new FormControl(null, Validators.required));
+      } else {
+        this.reporteForm.removeControl('cruceDiarioFile');
+      }
+      this.reporteForm.updateValueAndValidity(); // Forzar la actualización de la validez
+    });
+
+    this.reporteForm.get('arl')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.reporteForm.addControl('arlFile', new FormControl(null, Validators.required));
+      } else {
+        this.reporteForm.removeControl('arlFile');
+      }
+      this.reporteForm.updateValueAndValidity(); // Forzar la actualización de la validez
+    });*/
+
+    // Observamos cambios en contratosHoy para activar o desactivar validaciones
+    this.reporteForm.get('contratosHoy')?.valueChanges.subscribe((value) => {
+      if (value === 'si') {
+        // Hacer Cédulas Escaneadas y ARL obligatorios
+        this.reporteForm.get('cedulasEscaneadas')?.setValidators(Validators.required);
+        this.reporteForm.get('arl')?.setValidators(Validators.required);
+        this.reporteForm.get('cruceDiario')?.setValidators(Validators.required);
+      } else {
+        // Quitar la obligatoriedad de Cédulas Escaneadas, ARL y Cruce
+        this.reporteForm.get('cedulasEscaneadas')?.clearValidators();
+        this.reporteForm.get('arl')?.clearValidators();
+        this.reporteForm.get('cruceDiario')?.clearValidators();
+      }
+
+      // Refrescar las validaciones
+      this.reporteForm.get('cedulasEscaneadas')?.updateValueAndValidity();
+      this.reporteForm.get('arl')?.updateValueAndValidity();
+      this.reporteForm.get('cruceDiario')?.updateValueAndValidity();
+    });
+
     // Validar la fecha solo si "esDeHoy" es falso
     this.reporteForm.get('esDeHoy')?.valueChanges.subscribe(value => {
       if (value) {
         this.reporteForm.get('fecha')?.clearValidators();
-        this.reporteForm.get('fecha')?.updateValueAndValidity();
       } else {
         this.reporteForm.get('fecha')?.setValidators([Validators.required]);
-        this.reporteForm.get('fecha')?.updateValueAndValidity();
+      }
+      this.reporteForm.get('fecha')?.updateValueAndValidity();
+    });
+
+    const sucursalesObservable = await this.adminService.traerSucursales();
+    sucursalesObservable.subscribe((data: any) => {
+      if (data && Array.isArray(data.sucursal)) {
+        // Eliminar duplicados por el campo 'nombre'
+        const sucursalesUnicas = data.sucursal.filter((item: any, index: number, self: any[]) =>
+          index === self.findIndex((t) => t.nombre === item.nombre)
+        );
+
+        // Ordenar por 'nombre' y asignar a 'this.sedes'
+        this.sedes = sucursalesUnicas.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+      } else {
+        Swal.fire('Error', 'No se pudieron cargar las sedes', 'error');
       }
     });
   }
+
 
   onContratosHoyChange(event: any) {
     if (event.value === 'si') {
@@ -150,11 +215,6 @@ export class ReporteContratacionComponent implements OnInit {
       // No procesamos el archivo ARL aquí, el procesamiento se hará en onSubmit
     }
   }
-
-
-
-
-
 
   updateFileName(files: File[], controlName: string) {
     const fileNames = files.map(file => file.name).join(', ');
@@ -268,14 +328,256 @@ export class ReporteContratacionComponent implements OnInit {
     return fecha; // Retornar la fecha sin cambios si no coincide con el patrón
   }
 
+  removeSpecialCharacters = (text: string): string => {
+    // Expresión regular ampliada para eliminar cualquier emoji, pictogramas y símbolos especiales
+    const emojiPattern = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F7E0}-\u{1F7EF}]/gu;
+
+    return text.replace(emojiPattern, '');
+  };
+
+  private async extraerCedulasDelArchivo(file: File): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const bstr: string = e.target.result;
+        const workbook = XLSX.read(bstr, { type: 'binary' });
+
+        try {
+          const sheetName = workbook.SheetNames[0]; // Asumiendo que quieres la primera hoja
+          const sheet = workbook.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+          json.shift(); // Eliminar el encabezado, si lo tiene
+
+          // Obtener todas las cédulas de la columna 1 (índice 0)
+          const cedulas: string[] = (json as any[]).map((row: any[]) => {
+            const cedula = row[1]; // Columna de índice 0
+            return cedula ? this.removeSpecialCharacters(cedula.toString().replace(/\s/g, '')) : '';
+          }).filter(cedula => cedula !== ''); // Filtrar cédulas vacías
+
+          resolve(cedulas);
+
+        } catch (error) {
+          console.error('Error al procesar el archivo:', error);
+          reject(error);
+        }
+      };
+
+      reader.readAsBinaryString(file);
+    });
+  }
+
+  private extraerCedulasDeArchivos(files: File[]): string[] {
+    const cedulas: string[] = [];
+
+    files.forEach((file) => {
+      let cedula = '';
+
+      // Intentar dividir por ' - ' primero, luego por '-'
+      if (file.name.includes(' - ')) {
+        cedula = file.name.split(' - ')[0];
+      } else if (file.name.includes('-')) {
+        cedula = file.name.split('-')[0];
+      }
+
+      if (cedula) {
+        cedulas.push(cedula.trim()); // Agregar cédula a la lista, eliminando espacios
+      }
+    });
+
+    return cedulas;
+  }
+
+  async ObtenerCedulasEscaneadas(files: File[]) {
+    const cedulas = this.extraerCedulasDeArchivos(files);
+
+    // Aquí puedes hacer lo que necesites con las cédulas extraídas
+    return cedulas;
+  }
+
+  async ObtenerCedulasTraslados(files: File[]) {
+    const cedulas = this.extraerCedulasDeArchivos(files);
+
+    // Aquí puedes hacer lo que necesites con las cédulas extraídas
+    return cedulas;
+  }
+
+  async validarTodo() {
+
+    this.isCruceValidado = true;
+    // Mostrar el modal de carga
+    const loadingSwal = Swal.fire({
+      icon: 'info',
+      title: 'Cargando...',
+      text: 'Extrayendo cédulas del archivo',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    try {
+      // Verificar si se ha subido un archivo para el cruce diario
+      const files = this.filesToUpload['cruceDiario'];
+      if (!files || files.length === 0) {
+        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
+        await Swal.fire('Error', 'Debe cargar un archivo de cruce diario antes de validar', 'error');
+        return;
+      }
+      const file = files[0]; // Archivo de cruce diario
+
+      // Validar que ARL esté cargado
+      const arlFiles = this.filesToUpload['arl'];
+      if (!arlFiles || arlFiles.length === 0) {
+        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
+        await Swal.fire('Error', 'Debe cargar un archivo de ARL antes de validar', 'error');
+        return;
+      }
+
+      // Verificar si se han subido cédulas escaneadas
+      const cedulasEscaneadas = this.filesToUpload['cedulasEscaneadas'];
+      if (!cedulasEscaneadas || cedulasEscaneadas.length === 0) {
+        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
+        await Swal.fire('Error', 'Debe cargar archivos de cédulas escaneadas antes de validar', 'error');
+        return;
+      }
+      const cedulas = this.extraerCedulasDeArchivos(cedulasEscaneadas);
+
+      // Si el checkbox de traslados está marcado, procesar las cédulas de traslados
+      let cedulasTrasladosExtraidas: string[] = [];
+      if (this.reporteForm.get('traslados')?.value) {
+        const cedulasTraslados = this.filesToUpload['traslados'];
+        if (!cedulasTraslados || cedulasTraslados.length === 0) {
+          Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
+          await Swal.fire('Error', 'Debe cargar archivos de traslados si seleccionó esa opción', 'error');
+          return;
+        }
+        cedulasTrasladosExtraidas = this.extraerCedulasDeArchivos(cedulasTraslados);
+      }
+
+      // Extraer cédulas del archivo Excel de cruce diario
+      const cedulasExcel = await this.extraerCedulasDelArchivo(file);
+
+      let mensaje = "";
+      let consoleOutput = "";
+      const erroresFormateados: { registro: string; errores: any[]; tipo: string }[] = []; // Para acumular todos los errores
+
+      // Validación 1: Las cédulas escaneadas deben estar en el Excel (cédulas en escaneadas pero no en Excel)
+      const cedulasFaltantesEnExcel = cedulas.filter(c => !cedulasExcel.includes(c));
+      if (cedulasFaltantesEnExcel.length > 0) {
+        mensaje += `Faltan en el cruce diario las siguientes cédulas escaneadas: ${cedulasFaltantesEnExcel.join(', ')}.\n`;
+        consoleOutput += `Cédulas escaneadas faltantes en el Excel: ${cedulasFaltantesEnExcel.join(', ')}.\n`;
+
+        // Formatear los errores de cruce diario
+        cedulasFaltantesEnExcel.forEach(cedula => {
+          erroresFormateados.push({
+            registro: "0",
+            errores: ['Cédula no encontrada en el Excel la cedula es la: ' + cedula],
+            tipo: 'Cedula escaneada'
+          });
+        });
+      }
+
+      // Validación 2: Las cédulas del Excel que no están en las cédulas escaneadas (cédulas en Excel pero no en escaneadas)
+      const cedulasExtrasEnExcel = cedulasExcel.filter(c => !cedulas.includes(c));
+      if (cedulasExtrasEnExcel.length > 0) {
+        mensaje += `El cruce diario contiene las siguientes cédulas adicionales que no fueron escaneadas: ${cedulasExtrasEnExcel.join(', ')}.\n`;
+        consoleOutput += `Cédulas adicionales en el Excel: ${cedulasExtrasEnExcel.join(', ')}.\n`;
+
+        // Formatear los errores de cruce diario
+        cedulasExtrasEnExcel.forEach(cedula => {
+          erroresFormateados.push({
+            registro: "0",
+            errores: ['Cédula en el Excel pero no escaneada la cedula es la: ' + cedula],
+            tipo: 'Cedula escaneada'
+          });
+        });
+      }
+
+      // Validación 3: Las cédulas de traslados deben estar en el Excel (solo si se seleccionó traslados)
+      if (cedulasTrasladosExtraidas.length > 0) {
+        const cedulasTrasladosNoEnExcel = cedulasTrasladosExtraidas.filter(c => !cedulasExcel.includes(c));
+        if (cedulasTrasladosNoEnExcel.length > 0) {
+          mensaje += `Las cédulas de los traslados que no están en el cruce diario: ${cedulasTrasladosNoEnExcel.join(', ')}.\n`;
+          consoleOutput += `Cédulas de los traslados faltantes en el Excel: ${cedulasTrasladosNoEnExcel.join(', ')}.\n`;
+
+          // Formatear los errores de traslados
+          cedulasTrasladosNoEnExcel.forEach(cedula => {
+            erroresFormateados.push({
+              registro: "0",
+              errores: ['Cédula de traslado no encontrada en el Excel la cedula es la :' + cedula],
+              tipo: 'Traslado'
+            });
+          });
+        }
+      }
+
+      // Validación 4: La cantidad de cédulas escaneadas debe coincidir con las del Excel
+      if (cedulas.length !== cedulasExcel.length) {
+        mensaje += `El número de cédulas escaneadas (${cedulas.length}) no coincide con las cédulas del Excel (${cedulasExcel.length}).\n`;
+        consoleOutput += `Diferencia en número de cédulas: Número de cédulas escaneadas (${cedulas.length}) vs número de cédulas en el Excel (${cedulasExcel.length}).\n`;
+      }
+
+      // Si hay errores, almacenarlos en this.erroresValidacion.data y luego enviarlos
+      if (erroresFormateados.length > 0) {
+        Swal.close();  // Asegurarse de cerrar el Swal de carga antes de mostrar el resultado
+
+        // Guardar los errores en this.erroresValidacion.data
+        this.erroresValidacion.data = erroresFormateados;
+
+        // Identificar el tipo de errores para enviar
+        const tipoErrores = this.reporteForm.get('traslados')?.value ? 'Traslado' : 'Cruce Diario';
+
+        let payload = {
+          errores: this.erroresValidacion.data, // Aquí los errores ya almacenados
+          responsable: 'Nombre del Responsable', // Cambia esto dinámicamente si es necesario
+          tipo: tipoErrores // Se envía el tipo de error correcto
+        };
+
+        Swal.update({ text: 'Enviando todos los errores para guardar...' });
+
+        // Enviar los errores almacenados
+        await this.jefeAreaService.enviarErroresValidacion(payload).then(
+          () => {
+            Swal.close();
+            Swal.fire('Error', 'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.', 'error');
+          },
+          (error) => {
+            console.error('Error al guardar los errores:', error);
+            Swal.close();
+            Swal.fire('Error', 'Error al guardar los errores.', 'error');
+          }
+        );
+
+      } else {
+        Swal.close();
+        this.isCruceValidado = true;
+        this.validarCruce();
+        await Swal.fire({
+          icon: 'success',
+          title: 'Validación exitosa',
+          text: 'Todas las cédulas coinciden con el cruce diario',
+          heightAuto: false
+        });
+      }
+
+    } catch (error) {
+      Swal.close();  // Asegurarse de cerrar el Swal de carga antes de mostrar el error
+      console.error('Error al extraer cédulas:', error);
+      await Swal.fire('Error', 'Error al procesar el archivo. Inténtelo de nuevo.', 'error');
+    }
+  }
+
+
   async validarCruce() {
+    Swal.close();
     const files = this.filesToUpload['cruceDiario'];
-  
+
     if (!files || files.length === 0) {
       Swal.fire('Error', 'Debe cargar un archivo antes de validar', 'error');
       return;
     }
-  
+
     Swal.fire({
       icon: 'info',
       title: 'Cargando...',
@@ -284,25 +586,25 @@ export class ReporteContratacionComponent implements OnInit {
         Swal.showLoading();
       }
     });
-  
+
     const file = files[0];
     const reader = new FileReader();
     reader.onload = async (e: any) => {
       const bstr: string = e.target.result;
       const workbook = XLSX.read(bstr, { type: 'binary' });
-  
+
       try {
         Swal.update({ text: 'Leyendo el archivo Excel...' });
-  
+
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
         json.shift();
-  
+
         const formatDate = (date: string): string => {
           const regex_ddmmyyyy = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
           const regex_mmddyy = /^\d{1,2}\/\d{1,2}\/\d{2}$/;
-  
+
           if (regex_ddmmyyyy.test(date)) {
             return date;
           } else if (regex_mmddyy.test(date)) {
@@ -312,44 +614,51 @@ export class ReporteContratacionComponent implements OnInit {
           }
           return date;
         };
-  
+
         const indicesFechas = [0, 8, 16, 24, 44, 134];
-  
+
         const rows: string[][] = (json as any[][]).map((row: any[]) => {
           const completeRow = new Array(195).fill('-');
-  
+
           row.forEach((cell, index) => {
             if (index < 195) {
-              if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
+              if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
                 completeRow[index] = '-';
               } else if (index === 11 || index === 1) {
-                completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
+                completeRow[index] = this.removeSpecialCharacters(
+                  cell.toString()
+                    .replace(/,/g, '')      // Elimina comas
+                    .replace(/\./g, '')     // Elimina puntos
+                    .replace(/\s/g, '')     // Elimina espacios
+                    .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
+                );
+
               } else if (indicesFechas.includes(index)) {
-                completeRow[index] = formatDate(cell.toString());
+                completeRow[index] = formatDate(this.removeSpecialCharacters(cell.toString()));
               } else {
-                completeRow[index] = cell.toString();
+                completeRow[index] = this.removeSpecialCharacters(cell.toString());
               }
             }
           });
-  
+
           return completeRow;
         });
-  
+
+
         Swal.update({ text: 'Dividiendo los datos en lotes...' });
-  
-        const batchSize = 700;
+
+        const batchSize = 1500;
         const totalBatches = Math.ceil(rows.length / batchSize);
-        const allErrors: any[] = [];
-  
+        let allErrors: any[] = [];
+
         for (let i = 0; i < totalBatches; i++) {
           const batch = rows.slice(i * batchSize, (i + 1) * batchSize);
-  
+
           Swal.update({ text: `Enviando el lote ${i + 1} de ${totalBatches} para validación...` });
-  
+
           await this.jefeAreaService.subirContratacionValidar(batch).then(
             (response) => {
               if (response.status === 'error') {
-                console.log(response.errores);
                 allErrors.push(...response.errores);
               }
             }
@@ -357,35 +666,59 @@ export class ReporteContratacionComponent implements OnInit {
         }
 
         this.erroresValidacion.data = allErrors;
-  
+
         if (allErrors.length > 0) {
+          // Crear un array de errores con el formato adecuado para el backend
+          const erroresFormateados = [];
+
+          for (const [registro, errorObj] of Object.entries(allErrors)) {
+            // Formatear el objeto con 'registro' y 'errores'
+            erroresFormateados.push({
+              registro: registro,
+              errores: errorObj.errores || []
+            });
+          }
+
+          let payload = {
+            errores: erroresFormateados,
+            responsable: 'Nombre del Responsable', // Puedes obtener esto dinámicamente
+            tipo: 'Documento de Contratación'
+          };
+
           Swal.update({ text: 'Enviando todos los errores para guardar...' });
-          await this.jefeAreaService.enviarErroresValidacion(allErrors).then(
+
+          await this.jefeAreaService.enviarErroresValidacion(payload).then(
             () => {
-              Swal.update({ text: 'Errores guardados exitosamente.' });
+              Swal.close();
+              // Error corriga el excel subidp
+              Swal.fire('Error', 'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.', 'error');
+            },
+            (error) => {
+              Swal.close();
+              Swal.fire('Error', 'Error al guardar los errores.', 'error');
             }
           );
         }
-  
-        Swal.fire('Completado', 'Proceso de validación finalizado correctamente.', 'success');
-  
+        else {
+          this.isCruceValidado = true;
+
+          Swal.fire('Completado', 'Proceso de validación finalizado correctamente.', 'success');
+        }
+
       } catch (error) {
+        console.error('Error al procesar el archivo:', error);
         Swal.fire('Error', 'Error procesando el archivo. Verifique el formato e intente de nuevo.', 'error');
       }
     };
-  
+
     reader.readAsBinaryString(file);
   }
-  
 
 
   applyFilter(column: string, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.erroresValidacion.filter = filterValue.trim().toLowerCase();
   }
-  
-
-
 
 
   async processArl(workbook: XLSX.WorkBook): Promise<void> {
@@ -621,7 +954,7 @@ export class ReporteContratacionComponent implements OnInit {
         "¿Cuál es su motivación?",
         "OBSERVACIONES"
       ];
-      
+
 
 
       // Procesar los datos del cruce
@@ -753,10 +1086,6 @@ export class ReporteContratacionComponent implements OnInit {
     }
   }
 
-
-
-
-
   excelSerialToJSDate(serial: number): string {
     const utc_days = Math.floor(serial - 25569);
     const date = new Date(utc_days * 86400 * 1000);
@@ -771,6 +1100,7 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async onSubmit() {
+    Swal.close();
     const user = await this.jefeAreaService.getUser();
 
     // Verificar si el cruce ha sido validado
@@ -796,7 +1126,6 @@ export class ReporteContratacionComponent implements OnInit {
       return;
     }
 
-
     // Validar si el formulario completo es válido
     if (this.reporteForm.valid) {
       this.processingErrors = [];
@@ -808,6 +1137,7 @@ export class ReporteContratacionComponent implements OnInit {
         { key: 'traslados', name: 'Traslados', process: this.processTraslados.bind(this) },
       ];
 
+      // Procesar los elementos secuencialmente
       for (const { key, name, process } of processes) {
         if (this.reporteForm.get(key)?.value) {
           Swal.fire({
@@ -821,6 +1151,7 @@ export class ReporteContratacionComponent implements OnInit {
           });
           const files = this.filesToUpload[key];
           try {
+            // Esperar a que se complete el procesamiento
             await process(files);
           } catch (error) {
             Swal.fire({
@@ -828,14 +1159,15 @@ export class ReporteContratacionComponent implements OnInit {
               title: 'Error',
               text: `Ocurrió un error al procesar ${name}, inténtelo de nuevo.`
             });
-
             this.processingErrors.push(name);
-            return;
+            // Registrar error pero continuar con otros procesos
+            continue;
           }
         }
         await this.delay(1000); // Espera de un segundo
       }
 
+      // Si hay errores, mostrarlos
       if (this.processingErrors.length > 0) {
         Swal.fire({
           icon: 'error',
@@ -852,29 +1184,38 @@ export class ReporteContratacionComponent implements OnInit {
           confirmButtonText: 'Aceptar'
         });
 
+        // Preparar datos para el reporte
         const reporteData = {
-          sede: this.reporteForm.get('sede')?.value,
+          sede: this.reporteForm.get('sede')?.value.nombre,
           contratosHoy: this.reporteForm.get('contratosHoy')?.value,
           cantidadContratosTuAlianza: this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
           cantidadContratosApoyoLaboral: this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
           nota: this.reporteForm.get('notas')?.value,
-          cedulas: this.cedulasBase64.length > 0 ? this.cedulasBase64 : 'No se han cargado cédulas',  // Validación de cédulas
-          traslados: this.trasladosBase64.length > 0 ? this.trasladosBase64 : 'No se han cargado traslados',  // Validación de traslados
-          cruce: this.cruceBase64 !== '' ? this.cruceBase64 : 'No se ha cargado cruce',  // Validación de cruce
-          sst: this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',  // Validación de SST
-          nombre: user.primer_nombre + ' ' + user.primer_apellido,  // Accede a las propiedades del usuario
-          arl: this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',  // Validación de ARL
+          cedulas: this.cedulasBase64.length > 0 ? this.cedulasBase64 : 'No se han cargado cédulas',
+          traslados: this.trasladosBase64.length > 0 ? this.trasladosBase64 : 'No se han cargado traslados',
+          cruce: this.cruceBase64 !== '' ? this.cruceBase64 : 'No se ha cargado cruce',
+          sst: this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
+          nombre: user.primer_nombre + ' ' + user.primer_apellido,
+          arl: this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
         };
 
-        console.log(reporteData);  // Solo para revisar lo que se enviará al backend
-
-        this.jefeAreaService.cargarReporte(reporteData).then(
-          (response) => {
-          },
-          (error) => {
-          }
-        );
-
+        // Enviar reporte
+        try {
+          await this.jefeAreaService.cargarReporte(reporteData);
+          Swal.fire({
+            icon: 'success',
+            title: 'Reporte enviado',
+            text: 'El reporte ha sido enviado correctamente.',
+            confirmButtonText: 'Aceptar'
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
+            confirmButtonText: 'Aceptar'
+          });
+        }
       }
 
     } else {
@@ -886,6 +1227,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
     }
   }
+
 
   async processFileList(files: File[]) {
     for (const file of files) {
@@ -910,7 +1252,7 @@ export class ReporteContratacionComponent implements OnInit {
 
   async processExcelFiles(files: File[]) {
     for (const file of files) {
-      await this.processExcel(file);
+      await this.processExcel(file); // Asegurarse de que cada archivo se procese completamente antes de pasar al siguiente
     }
   }
 
@@ -921,13 +1263,23 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async processExcel(file: File) {
-    const reader = new FileReader();
-    reader.onload = async (e: any) => {
-      const bstr: string = e.target.result;
-      const workbook = XLSX.read(bstr, { type: 'binary' });
-      await this.processContratacion(workbook);
-    };
-    reader.readAsBinaryString(file);
+    const bstr: string = await this.readFileAsBinaryString(file); // Esperar hasta que se lea el archivo como cadena binaria
+    const workbook = XLSX.read(bstr, { type: 'binary' });
+    await this.processContratacion(workbook); // Esperar hasta que termine el procesamiento del archivo
+  }
+
+  // Convertir FileReader en promesa para poder utilizar await
+  readFileAsBinaryString(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        resolve(e.target.result);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      reader.readAsBinaryString(file);
+    });
   }
 
   async processExcelFileaRL(file: File) {
@@ -942,67 +1294,82 @@ export class ReporteContratacionComponent implements OnInit {
 
   async processContratacion(workbook: XLSX.WorkBook): Promise<void> {
     let response: any;
-    // copiar el excel en base64
+  
+    // Copiar el Excel en base64
     this.cruceBase64 = await this.convertToBase64(this.filesToUpload['cruceDiario'][0]);
-
+  
     try {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
-      json.shift();
-
+      json.shift(); // Eliminar la fila de encabezados si es necesario
+  
       const formatDate = (date: string): string => {
-        // Detectar si está en el formato mm/dd/yy o dd/mm/yyyy
         const regex_ddmmyyyy = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
         const regex_mmddyy = /^\d{1,2}\/\d{1,2}\/\d{2}$/;
-
+  
         if (regex_ddmmyyyy.test(date)) {
-          return date; // Ya está en el formato correcto
+          return date;
         } else if (regex_mmddyy.test(date)) {
-          // Convertir mm/dd/yy a dd/mm/yyyy
           const [month, day, year] = date.split('/');
-          const fullYear = (parseInt(year, 10) < 50) ? `20${year}` : `19${year}`; // Para distinguir siglos
+          const fullYear = (parseInt(year, 10) < 50) ? `20${year}` : `19${year}`;
           return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${fullYear}`;
         }
-        return date; // Si no cumple ningún formato, se deja como está
+        return date;
       };
-
+  
       const indicesFechas = [0, 8, 16, 24, 44, 134];
-
+  
       const rows: string[][] = (json as any[][]).map((row: any[]) => {
-        const completeRow = new Array(195).fill('-');
-
+        const completeRow = new Array(195).fill('-'); // Inicializar la fila con un array vacío de 195 elementos
+  
         row.forEach((cell, index) => {
           if (index < 195) {
-            if (cell == null || cell === '') {
+            if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
               completeRow[index] = '-';
             } else if (index === 11 || index === 1) {
-              completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
-            } else if (indicesFechas.includes(index)) {
-              completeRow[index] = formatDate(cell.toString());
+              completeRow[index] = this.removeSpecialCharacters(
+                cell.toString()
+                  .replace(/,/g, '')      // Elimina comas
+                  .replace(/\./g, '')     // Elimina puntos
+                  .replace(/\s/g, '')     // Elimina espacios
+                  .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
+              );
+            } 
+            else if (index === 4) {
+              completeRow[index] = this.removeSpecialCharacters(
+                cell.toString()
+                  .replace(/,/g, '')      // Elimina comas
+                  .replace(/\./g, '')     // Elimina puntos
+                  .replace(/\s/g, '')     // Elimina espacios
+              );
+            }
+
+            else if (indicesFechas.includes(index)) {
+              completeRow[index] = formatDate(this.removeSpecialCharacters(cell.toString()));
             } else {
-              completeRow[index] = cell.toString();
+              completeRow[index] = this.removeSpecialCharacters(cell.toString());
             }
           }
         });
-
+  
         return completeRow;
       });
-
-      this.datoscruced = rows;
-      console.log(rows);
-      /* 
+  
+      this.datoscruced = rows; // Guardar los datos procesados
+  
+      // Esperar a la respuesta de la subida del archivo
       response = await this.jefeAreaService.subirContratacion(rows);
-       if (response.message !== 'success') {
-         this.processingErrors.push('Cruce diario Excel');
- 
-       }
-       await this.generateErrorExcel(response.errores);
- 
-       */
+      console.log(response);
+  
+      // Manejar respuesta
+      if (response.message !== 'success') {
+        this.processingErrors.push('Cruce diario Excel');
+      }
+      
     } catch (error) {
+      console.error('Error procesando el archivo Excel:', error);
       this.processingErrors.push('Cruce diario Excel');
-
     }
   }
 

@@ -13,7 +13,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date-rang-dialog.component';
 import Swal from 'sweetalert2';
-DateRangeDialogComponent
+import { AdminService } from '../../services/admin/admin.service';
+
+
 @Component({
   selector: 'app-ver-reporte',
   standalone: true,
@@ -50,7 +52,8 @@ export class VerReporteComponent implements OnInit {
 
   constructor(
     private contratacionService: ContratacionService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private adminService: AdminService
   ) { }
 
   ngOnInit(): void {
@@ -59,11 +62,14 @@ export class VerReporteComponent implements OnInit {
   }
 
   async obtenerReportes(): Promise<void> {
-    await this.contratacionService.obtenerTodosLosReportes().subscribe(
-      (response) => {
+    this.contratacionService.obtenerTodosLosReportes().subscribe(
+      async (response) => {
         this.reportes = response.reportes;
-        this.dataSource.data = this.reportes; // First table's data
-        this.consolidadoDataSource.data = this.generateConsolidatedData(this.reportes); // Consolidated table data
+        this.dataSource.data = this.reportes; // Actualiza la tabla principal
+  
+        // Espera a que los datos consolidados estén listos
+        const consolidado = await this.generateConsolidatedData(this.reportes);
+        this.consolidadoDataSource.data = consolidado; // Actualiza la tabla consolidada
       },
       (error) => {
         Swal.fire({
@@ -74,6 +80,7 @@ export class VerReporteComponent implements OnInit {
       }
     );
   }
+  
 
   // Apply filter only for the first table
   applyFilter(filterKey: string, event: Event): void {
@@ -132,35 +139,48 @@ export class VerReporteComponent implements OnInit {
   }
 
   // Function to generate consolidated data for second table
-  generateConsolidatedData(reportes: any[]): any[] {
+  async generateConsolidatedData(reportes: any[]): Promise<any[]> {
     const consolidado: any[] = [];
-    const groupedBySede = this.groupBy(reportes, 'sede');
     
-    Object.keys(groupedBySede).forEach(sede => {
-      const reportsForSede = groupedBySede[sede];
-      const totalContratosTuAlianza = reportsForSede.reduce((sum: any, report: { cantidadContratosTuAlianza: any; }) => sum + (report.cantidadContratosTuAlianza || 0), 0);
-      const totalContratosApoyoLaboral = reportsForSede.reduce((sum: any, report: { cantidadContratosApoyoLaboral: any; }) => sum + (report.cantidadContratosApoyoLaboral || 0), 0);
-      const totalCedulas = reportsForSede.reduce((sum: any, report: { cedulas: string | any[]; }) => sum + (report.cedulas?.length || 0), 0);
-      const totalTraslados = reportsForSede.reduce((sum: any, report: { traslados: string | any[]; }) => sum + (report.traslados?.length || 0), 0);
-      const sstOk = reportsForSede.some((report: { sst: string | null; }) => report.sst !== null && report.sst !== 'No se ha cargado SST');
-      const notas = reportsForSede.map((report: { nota: any; }) => report.nota).filter((nota: any) => nota).join(', ');
-
-      consolidado.push({
-        fecha: reportsForSede[0].fecha,
-        sede,
-        cantidadContratosTuAlianza: totalContratosTuAlianza,
-        cantidadContratosApoyoLaboral: totalContratosApoyoLaboral,
-        totalIngresos: totalContratosTuAlianza + totalContratosApoyoLaboral,
-        cedulas: totalCedulas,
-        traslados: totalTraslados,
-        sst: sstOk,
-        notas
+    // Traer las sucursales y generar el consolidado
+    const sucursalesObservable = await this.adminService.traerSucursales();
+    
+    return new Promise((resolve, reject) => {
+      sucursalesObservable.subscribe((data: any) => {
+        // Ordenar por nombre las sucursales
+        const sucursalesOrdenadas = data.sucursal.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+        
+        // Recorrer las sucursales para generar el consolidado
+        sucursalesOrdenadas.forEach((sucursal: any) => {
+          const reportsForSede = reportes.filter(report => report.sede === sucursal.nombre);
+          const totalContratosTuAlianza = reportsForSede.reduce((sum: any, report: { cantidadContratosTuAlianza: any; }) => sum + (report.cantidadContratosTuAlianza || 0), 0);
+          const totalContratosApoyoLaboral = reportsForSede.reduce((sum: any, report: { cantidadContratosApoyoLaboral: any; }) => sum + (report.cantidadContratosApoyoLaboral || 0), 0);
+          const totalCedulas = reportsForSede.reduce((sum: any, report: { cedulas: string | any[]; }) => sum + (report.cedulas?.length || 0), 0);
+          const totalTraslados = reportsForSede.reduce((sum: any, report: { traslados: string | any[]; }) => sum + (report.traslados?.length || 0), 0);
+          const sstOk = reportsForSede.some((report: { sst: string | null; }) => report.sst !== null && report.sst !== 'No se ha cargado SST');
+          const notas = reportsForSede.map((report: { nota: any; }) => report.nota).filter((nota: any) => nota).join(', ');
+  
+          consolidado.push({
+            fecha: reportsForSede.length > 0 ? reportsForSede[0].fecha : null,
+            sede: sucursal.nombre,
+            cantidadContratosTuAlianza: totalContratosTuAlianza,
+            cantidadContratosApoyoLaboral: totalContratosApoyoLaboral,
+            totalIngresos: totalContratosTuAlianza + totalContratosApoyoLaboral,
+            cedulas: totalCedulas,
+            traslados: totalTraslados,
+            sst: sstOk,
+            notas
+          });
+        });
+  
+        resolve(consolidado);
+      }, error => {
+        reject(error);
       });
     });
-
-    return consolidado;
   }
-
+  
+  
   // Helper function to group by sede
   groupBy(array: any[], key: string): any {
     return array.reduce((result, currentValue) => {
@@ -175,18 +195,20 @@ export class VerReporteComponent implements OnInit {
 
 
   openDateRangeDialog(): void {
-
     const dialogRef = this.dialog.open(DateRangeDialogComponent, { width: '550px' });
-
-    dialogRef.afterClosed().subscribe(result => {
+  
+    dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         console.log('Fecha de inicio:', result);
         this.contratacionService.obtenerReportesPorFechas(result.start, result.end).subscribe(
-          (response) => {
+          async (response) => {
             console.log('Reportes por fechas:', response);
             this.reportes = response.reportes;
-            this.dataSource.data = this.reportes; // First table's data
-            this.consolidadoDataSource.data = this.generateConsolidatedData(this.reportes); // Consolidated table data
+            this.dataSource.data = this.reportes; // Actualiza la tabla principal
+  
+            // Espera a que los datos consolidados estén listos
+            const consolidado = await this.generateConsolidatedData(this.reportes);
+            this.consolidadoDataSource.data = consolidado; // Actualiza la tabla consolidada
           },
           (error) => {
             Swal.fire({
@@ -198,8 +220,8 @@ export class VerReporteComponent implements OnInit {
         );
       }
     });
-
   }
+  
 
 
 }

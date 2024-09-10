@@ -37,13 +37,13 @@ export class AdminService {
     throw error;
   }
 
-    // Traer sucursales
-    async traerSucursales(): Promise<Observable<any>> {
-      const headers = this.createAuthorizationHeader();
-      return this.http.get(`${this.apiUrl}/Sucursal/sucursal`, { headers })
-        .pipe(catchError(this.handleError));
-    }
-  
+  // Traer sucursales
+  async traerSucursales(): Promise<Observable<any>> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/Sucursal/sucursal`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   // Editar sede 
   async editarSede(
     ceduladelapersona: string,

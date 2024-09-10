@@ -56,25 +56,25 @@ export class NavbarLateralComponent implements OnInit {
       'reporte-contratacion', 'seguimiento-auditoria',
     ],
     JEFE_DE_AREA: [
-      'home',         'forma-pago',             'desprendibles-pago',
-      'ausentismos',  'seguimiento-auditoria',  'estadisticas-auditoria'
+      'home', 'forma-pago', 'desprendibles-pago',
+      'ausentismos', 'seguimiento-auditoria', 'estadisticas-auditoria'
     ],
     ADMIN: [
-      'home',                           'forma-pago',                    'desprendibles-pago',
-      'arl',                            'ausentismos',                   'reporte-contratacion',
-      'seguimiento-auditoria',          'reporte-contratacion',          'estadisticas-auditoria',
-      'envio-paquete-documentacion',    'recibir-paquete-documentacion', 'personal-activo',
-      'reporte-contratacion',           'seguimiento-auditoria',         'envio-paquete-documentacion',
-      'recibir-paquete-documentacion',  'formulario-incapacicades',      'subida-archivos-incapacidades',
-      'buscar-incapacicades',           'incapacidades-totales',         'seleccion',
+      'home', 'forma-pago', 'desprendibles-pago',
+      'arl', 'ausentismos', 'reporte-contratacion',
+      'seguimiento-auditoria', 'reporte-contratacion', 'estadisticas-auditoria',
+      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo',
+      'reporte-contratacion', 'seguimiento-auditoria', 'envio-paquete-documentacion',
+      'recibir-paquete-documentacion', 'formulario-incapacicades', 'subida-archivos-incapacidades',
+      'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
       'contratacion',
-      'archivos-contratacion',           'ver-reporte'
+      'archivos-contratacion', 'ver-reporte'
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
     CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'personal-activo'
     ],
-    INCAPACIDADADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'incapacidades-totales', 'subida-archivos-incapacidades' , 'buscar-incapacicades', 'formulario-incapacicades'
+    INCAPACIDADADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades', 'formulario-incapacicades'
     ],
     INCAPACIDADSUBIDA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'formulario-incapacicades'
     ],
@@ -362,6 +362,7 @@ export class NavbarLateralComponent implements OnInit {
           });
         })
         .catch((error) => {
+          console.error(error);
           Swal.close();
           Swal.fire({
             icon: 'error',
@@ -372,6 +373,7 @@ export class NavbarLateralComponent implements OnInit {
         });
 
     } catch (error) {
+      console.error(error);
       Swal.close();
       Swal.fire({
         icon: 'error',
@@ -383,6 +385,7 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   exportarDatosAExcel(datos: any[], cedulasNoEncontradas: any[]): void {
+    console.log(datos);
     const titulos = [
       "ARL", "ARL Fecha", "ARL_FECHA_INGRESO", "Fecha de ingreso Comparada", "Fecha de firma de contrato", "N° CC", "TEM", "Código", "Empresa Usuaria y Centro de Costo",
       "Tipo de Documento de Identidad", "Ingreso,(ing) No Ingres , Sin Confirmar, Cambio de contrato",
@@ -444,6 +447,17 @@ export class NavbarLateralComponent implements OnInit {
 
     // Crear un array de objetos con los datos mapeados
     const datosMapeados = datos.map((dato: any) => {
+      
+      if (!dato.proceso_contratacion) {
+        console.log("Proceso de contratación no está definido para la cédula: " + dato.datos_generales.numerodeceduladepersona);
+      } else if (dato.proceso_contratacion.fechaIngreso === null || 
+                 dato.proceso_contratacion.fechaIngreso === undefined || 
+                 dato.proceso_contratacion.fechaIngreso === '' || 
+                 dato.proceso_contratacion.fechaIngreso === '-') {
+        dato.proceso_contratacion.fechaIngreso = '';
+        console.log(dato.datos_generales.numerodeceduladepersona + "----" + dato.proceso_contratacion.fechaIngreso + "" + " " + dato.proceso_contratacion.fecha_contratacion);
+      }
+
       const mapeado: any = {
         "ARL": dato.ARL ?? "",
         "ARL Fecha": dato.ARL_FECHA ?? "",

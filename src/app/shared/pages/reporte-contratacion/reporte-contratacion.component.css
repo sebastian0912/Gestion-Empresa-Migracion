@@ -4,6 +4,25 @@ form {
     gap: 15px;
 }
 
+.primeras {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between; /* Para distribuir los inputs de forma más uniforme */
+    align-items: center;
+}
+
+.example-full-width2 {
+    width: 30%;
+    min-width: 300px; /* Establece un ancho mínimo para pantallas más pequeñas */
+    margin-left: 10px;
+}
+
+.form-field-container {
+    flex: 1 1 10%; /* Permite que cada campo ocupe un 30% del contenedor */
+}
+
+
 .example-full-width {
     width: 100%;
 }

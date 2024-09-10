@@ -2,7 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -139,36 +139,36 @@ export class ContratacionService {
     }
   }
 
-    // Subir archivo de contratacion para validar
-    async subirContratacionValidar(
-      datos: any
-    ): Promise<any> {
-      const token = this.getToken();
-  
-      if (!token) {
-        throw new Error('No token found');
-      }
-  
-      const urlcompleta = `${this.apiUrl}/contratacion/validarExcelContratacion`;
-  
-      const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
-  
-      const data = {
-        datos: datos,
-        mensaje: "mcuhos",
-        jwt: token
-      };
+  // Subir archivo de contratacion para validar
+  async subirContratacionValidar(
+    datos: any
+  ): Promise<any> {
+    const token = this.getToken();
 
-  
-      try {
-        const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
-          catchError(this.handleError)
-        ));
-        return response;
-      } catch (error) {
-        throw error;
-      }
+    if (!token) {
+      throw new Error('No token found');
     }
+
+    const urlcompleta = `${this.apiUrl}/contratacion/validarExcelContratacion`;
+
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+
+    const data = {
+      datos: datos,
+      mensaje: "mcuhos",
+      jwt: token
+    };
+
+
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
@@ -308,48 +308,61 @@ export class ContratacionService {
   public obtenerReportesPorFechas(start: string, end: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
     const params = { start, end };  // Parámetros para enviar el rango de fechas
-    
+
     return this.http.get(`${this.apiUrl}/reportes/obtenerReportesFechas`, { headers, params }).pipe(
       map((response: any) => response),  // Mapea la respuesta
       catchError(this.handleError)       // Manejo de errores
     );
   }
-  
+
   //--------------------------------------------------------------------------------------------
   // ------------------------- Métodos para el módulo de reportes de errores --------------------------------
   // --------------------------------------------------------------------------------------------
 
   async enviarErroresValidacion(
-    errores: any[]
+    payload: {
+      errores: {
+        registro: string; errores: any[];
+      }[];
+      responsable: string;
+      tipo: string;
+    },
+    
   ): Promise<any> {
     const token = this.getToken();
-  
+
     if (!token) {
       throw new Error('No token found');
     }
-  
+
     const urlcompleta = `${this.apiUrl}/contratacion/guardarErroresValidacion`;  // Asegúrate de que este sea el endpoint correcto
-  
+
     const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
-    
-    const responsable = await this.getUser();  // Obtén el responsable de la validación
 
     const data = {
-      errores: errores,   // Aquí envías el array de errores tal cual lo recibes
-      responsable: responsable.primer_nombre + ' ' + responsable.primer_apellido,  // Nombre del responsable
-      jwt: token          // Token de autenticación
+      errores: payload.errores,
+      responsable: payload.responsable,
+      tipo: payload.tipo,
+      jwt: token // Token de autenticación
     };
-  
+
     try {
-      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data, { headers }).pipe(
-        catchError(this.handleError)
-      ));
+      const response = await firstValueFrom(
+        this.http.post<string>(urlcompleta, data, { headers }).pipe(
+          catchError((error) => {
+            console.error('Error en la solicitud:', error);
+            return throwError(() => new Error('Error en la solicitud al guardar errores de validación'));
+          })
+        )
+      );
       return response;
     } catch (error) {
+      console.error('Error al procesar la solicitud:', error);
       throw error;
     }
   }
-  
 
-  
+
+
+
 }
