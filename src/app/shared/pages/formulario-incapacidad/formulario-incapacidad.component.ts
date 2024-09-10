@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IncapacidadService } from '../../services/incapacidad/incapacidad.service';
 import { Incapacidad } from '../../../models/incapacidad.model';
@@ -20,7 +20,7 @@ import { Observable, of } from 'rxjs';
 import { map, startWith, debounceTime, first } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { NgIf, NgFor, NgSwitch } from '@angular/common';
+import { NgIf, NgFor, NgSwitch, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
@@ -86,6 +86,7 @@ export const MY_DATE_FORMATS = {
 export class FormularioIncapacidadComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
+  currentRole: string = '';
   counterVisible = false;
   incapacidadForm: FormGroup = this.fb.group({});
   cedula: string = '';
@@ -159,7 +160,9 @@ export class FormularioIncapacidadComponent implements OnInit {
   filteredIpsNit: Observable<string[]> = of([]);
   filteredIpsNombre: Observable<string[]> = of([]);
   private unsubscribe$ = new Subject<void>();
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private incapacidadService: IncapacidadService, private contratacionService: ContratacionService) {
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private incapacidadService: IncapacidadService, private contratacionService: ContratacionService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
     // Inicializar el formulario
 
     this.initializeForm();
@@ -175,7 +178,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     // Configuración del formulario utilizando los campos y el mapeo
     const formGroupConfig = this.fields.reduce((acc, field) => {
       const formControlName = this.fieldMap[field];
-      acc[formControlName] = formControlName === 'whatsapp' || formControlName === 'observaciones' ? [''] : ['', Validators.required];
+      acc[formControlName] = formControlName === 'whatsapp' || formControlName === 'vigente' || formControlName === 'observaciones' ? [''] : ['', Validators.required];
       return acc;
     }, {} as { [key: string]: any });
 
@@ -184,17 +187,33 @@ export class FormularioIncapacidadComponent implements OnInit {
     // Deshabilitar los campos iniciales
     this.disableInitialFields();
   }
-
+  async getUser(): Promise<any> {
+    if (isPlatformBrowser(this.platformId)) {
+      const user = localStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
+  }
   private disableInitialFields(): void {
     const fieldsToDisable = [
-      'genero', 'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
+      'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
       'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
-      'fecha_contratacion', 'fondo_de_pension'
+      'fecha_contratacion', 'fondo_de_pension', 'dias_eps','dias_incapacidad',
+      'Dias_temporal', 'descripcion_diagnostico',
     ];
 
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.disable());
   }
 
+  private undisableInitialFields(): void {
+    const fieldsToDisable = [
+      'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
+      'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
+      'fecha_contratacion', 'fondo_de_pension',
+    ];
+
+    fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.enable());
+  }
   private loadDataForForm(): void {
     this.incapacidadService.traerDatosListas().subscribe(
       response => {
@@ -453,11 +472,18 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad);
       this.incapacidadForm.get('Dias_temporal')?.setValue(0);
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
-      console.log(this.incapacidadForm.get('dias_eps')?.value)
     }
     if (this.incapacidadForm.get('prorroga')?.value == 'NO') {
       this.calcularDiasIncapacidad()
+    } if (this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ACCIDENTE DE TRABAJO') {
+      const diasincapacidad = this.incapacidadForm.get('dias_incapacidad')?.value
+
+      this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad - 1);
+      this.incapacidadForm.get('Dias_temporal')?.setValue(1);
+      this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
+      this.incapacidadForm.get('nombre_eps')?.setValue('ARL');
     }
+
 
   }
   calcularDiasIncapacidad() {
@@ -506,7 +532,13 @@ export class FormularioIncapacidadComponent implements OnInit {
   descripcionControl = new FormControl({ value: '', disabled: true });
   nombreControl = new FormControl({ value: '', disabled: true });
   validationErrors: string[] = [];
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+
+    const user = await this.getUser();
+    this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
+    if (this.currentRole === 'INCAPACIDADADMIN'){
+      this.undisableInitialFields();
+    }
     this.allIps.forEach(item => {
       this.ipsMapByNit.set(item.nit, item.nombre);
       this.ipsMapByNombre.set(item.nombre, item.nit);
@@ -691,7 +723,10 @@ export class FormularioIncapacidadComponent implements OnInit {
             text: 'La incapacidad ha sido creada exitosamente'
           });
           this.incapacidadForm.reset();
-          this.router.navigate(['/formulario-incapacidades']);
+          for (const key in this.fieldMap) {
+            this.incapacidadForm.get(key)?.setValue('');
+          }
+          this.router.navigate(['/formulario-incapacicades']);
         },
         error => {
           Swal.fire({
@@ -702,7 +737,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.disableCertainFields();
         }
       );
-      
+
     } else {
       Swal.fire({
         icon: 'error',
@@ -798,7 +833,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('numero_de_contrato')?.setValue(contratacion.codigo_contrato);
           this.incapacidadForm.get('Oficina')?.setValue(this.convertToTitleCaseAndRemoveAccents(this.sucursalde));
           this.incapacidadForm.get('nombre_de_quien_recibio')?.setValue(this.nombredequienrecibio);
-          this.incapacidadForm.get('empresa')?.setValue(contratacion.centro_de_costos);
+          this.incapacidadForm.get('empresa')?.setValue(contratacion.centro_costo_carnet);
           this.incapacidadForm.get('celular')?.setValue(datosBasicos.celular);
           this.incapacidadForm.get('tipodedocumento')?.setValue(datosBasicos.tipodedocumento);
           this.incapacidadForm.get('numerodeceduladepersona')?.setValue(cedula);
@@ -809,7 +844,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
           this.incapacidadForm.get('primercorreoelectronico')?.setValue(datosBasicos.primercorreoelectronico);
           this.incapacidadForm.get('genero')?.setValue(datosBasicos.genero);
-          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_costo_carnet);
+          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_de_costos);
           this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_de_costos);
           this.incapacidadForm.get('fecha_contratacion')?.setValue(contratacion.fecha_contratacion);
           this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);

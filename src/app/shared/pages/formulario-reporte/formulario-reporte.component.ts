@@ -410,7 +410,7 @@ export class FormularioReporteComponent implements OnInit {
   respuesta_final_incapacidadlista = ['Pendiente','Finalizada'];
   quien_corresponde_el_pago_finallista = ['PAGADA', 'NEGADA', 'EMPLEADOR','NO ASUME EMPLEADOR'];
   quien_corresponde_pago = ['Empleador','EPS', 'ARL', 'No Pagar', 'NO CUMPLE CON EL TIEMPO'];
-  estado_documento_incapacidadlista = ['TRASLAPADA',
+  estado_documento_incapacidadlista = ['TRASLADADA',
     'OK',
     'FALSA',
     'SIN EPICRISIS',
