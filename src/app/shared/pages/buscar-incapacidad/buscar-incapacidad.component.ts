@@ -594,16 +594,26 @@ export class BuscarIncapacidadComponent implements OnInit {
 
 
   applyFilter() {
+    // Función auxiliar para verificar coincidencias de cadenas
+    const stringMatch = (itemValue: string, filterValue: string): boolean => {
+      // Devuelve true si el filtro está vacío o si el valor contiene el filtro (ignorando mayúsculas/minúsculas y espacios)
+      return !filterValue || (itemValue?.toLowerCase().trim().includes(filterValue.toLowerCase().trim()));
+    };
+
+    // Aplicación del filtro
     this.filteredData = this.resultsincapacidades.filter(item => {
-      return (
-        (this.filterCriteria.tipodeincapacidad ? item.tipodeincapacidad.includes(this.filterCriteria.tipodeincapacidad) : true) &&
-        (this.filterCriteria.centrodecosto ? item.centrodecosto.includes(this.filterCriteria.centrodecosto) : true) &&
-        (this.filterCriteria.empresa ? item.empresa.includes(this.filterCriteria.empresa) : true) &&
-        (this.filterCriteria.estadorobot ? item.estadorobot.includes(this.filterCriteria.estadorobot) : true) &&
-        (this.filterCriteria.temporal ? item.temporal.includes(this.filterCriteria.temporal) : true)
-      );
+      const tipodeincapacidadMatch = stringMatch(item.tipodeincapacidad, this.filterCriteria.tipodeincapacidad);
+      const centrodecostoMatch = stringMatch(item.centrodecosto, this.filterCriteria.centrodecosto);
+      const empresaMatch = stringMatch(item.empresa, this.filterCriteria.empresa);
+      const estadorobotMatch = stringMatch(item.estadorobot, this.filterCriteria.estadorobot);
+      const temporalMatch = stringMatch(item.temporal, this.filterCriteria.temporal);
+
+      return tipodeincapacidadMatch && centrodecostoMatch && empresaMatch && estadorobotMatch && temporalMatch;
     });
+
+    console.log('Datos filtrados:', this.filteredData); // Depuración de datos filtrados
   }
+
   resetFileInput(event: any): void {
     event.target.value = '';
   }

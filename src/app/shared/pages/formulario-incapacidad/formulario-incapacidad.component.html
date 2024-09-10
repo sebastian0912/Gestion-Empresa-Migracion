@@ -67,8 +67,7 @@
                       </mat-option>
                     </mat-select>
 
-                    <input *ngIf="field !== 'Sexo' && field !== 'Tipo de documento'" matInput
-                      [formControlName]="fieldMap[field]" [type]="getFieldType(field)" >
+                    <input *ngIf="field !== 'Sexo' && field !== 'Tipo de documento'" matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)" >
                   </mat-form-field>
                 </div>
               </div>
@@ -86,6 +85,7 @@
                     <mat-label>{{ field }}</mat-label>
                     <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
                   </mat-form-field>
+
                 </div>
               </div>
             </mat-card-content>
@@ -96,7 +96,7 @@
             <mat-card-title>Información del Contrato y Temporal</mat-card-title>
             <mat-card-content>
               <div class="form-row">
-                <div *ngFor="let field of ['Numero de contrato', 'Temporal', 'Fecha de ingreso temporal']"
+                <div *ngFor="let field of ['Numero de contrato', 'Temporal del contrato', 'Fecha de ingreso temporal']"
                   class="form-field">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{ field }}</mat-label>
@@ -233,7 +233,7 @@
             <mat-card-content>
               <div class="form-row">
                 <div
-                  *ngFor="let field of ['Tipo de documento doctor atendido', 'Numero de documento doctor', 'Nombre doctor']"
+                  *ngFor="let field of ['Tipo de documento doctor atendido', 'Numero de documento doctor', 'Nombre doctor','Vigente']"
                   class="form-field">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{ field }}</mat-label>
@@ -244,8 +244,13 @@
                         {{ option }}
                       </mat-option>
                     </mat-select>
+                    <mat-select *ngIf="field === 'Vigente'" [formControlName]="fieldMap[field]">
+                      <mat-option *ngFor="let option of vigentelist" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
 
-                    <input *ngIf="field !== 'Tipo de documento doctor atendido'" matInput
+                    <input *ngIf="field !== 'Tipo de documento doctor atendido'&& field !== 'Vigente'" matInput
                       [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
                   </mat-form-field>
                 </div>
@@ -268,8 +273,9 @@
             </mat-card-content>
           </mat-card>
 
-          <button mat-raised-button class="aumentar" color="primary" (click)="onSubmit()">Subir incapacidad</button>
+
         </form>
+        <button mat-raised-button class="aumentar" color="primary"(click)="onSubmit()">Subir incapacidad</button>
       </mat-card-content>
       <!-- Botón flotante -->
       <button mat-fab [matMenuTriggerFor]="menu" class="notification-button">

@@ -88,9 +88,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'estado_robot_doctor',
     'fecha_de_ingreso_temporal',
     'fondo_de_pensiones',
-    'historial_clinico',
     'ips_punto_de_atencion',
-    'link_incapacidad',
     'marcaTemporal',
     'nit_de_la_IPS',
     'nombre',
@@ -134,9 +132,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'estado_robot_doctor': 'Estado Robot Doctor',
     'fecha_de_ingreso_temporal': 'Fecha de Ingreso Temporal',
     'fondo_de_pensiones': 'Fondo de Pensiones',
-    'historial_clinico': 'Historial Clínico',
     'ips_punto_de_atencion': 'IPS Punto de Atención',
-    'link_incapacidad': 'Link Incapacidad',
     'marcaTemporal': 'Marca Temporal',
     'nit_de_la_IPS': 'NIT de la IPS',
     'nombre': 'Nombre',
@@ -325,17 +321,65 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   applyFilter() {
-    // Filtra los datos basados en los criterios seleccionados
+    console.log('Criterios de filtro:', this.filterCriteria); // Debug inicial
+    console.log('Datos originales de la tabla:', this.dataSourceTable1.data); // Debug inicial
+
+    // Función auxiliar para verificar coincidencias de cadenas
+    const stringMatch = (value: string, filterValue: string): boolean => {
+      return value?.toLowerCase().trim().includes(filterValue?.toLowerCase().trim());
+    };
+
+    // Función auxiliar para verificar coincidencias exactas de cadenas
+    const exactStringMatch = (value: string, filterValue: string): boolean => {
+      return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
+    };
+
+    // Filtrar los datos basados en los criterios seleccionados
     const filteredData = this.dataSourceTable1.data.filter(item => {
-      return (
-        (this.filterCriteria.numeroDeDocumento ? item.numero_de_documento.includes(this.filterCriteria.numeroDeDocumento) : true) &&
-        (this.filterCriteria.fechaInicio ? item.f_inicio === this.filterCriteria.fechaInicio : true) &&
-        (this.filterCriteria.empresa ? item.empresa.includes(this.filterCriteria.empresa) : true) &&
-        (this.filterCriteria.tipoIncapacidad ? item.tipo_incapacidad === this.filterCriteria.tipoIncapacidad : true)
-      );
+
+
+      // Verifica específicamente si el campo existe y normaliza la comparación
+      const numeroDeDocumentoMatch = this.filterCriteria.numeroDeDocumento
+        ? exactStringMatch(item.Numero_de_documento?.toString(), this.filterCriteria.numeroDeDocumento)
+        : true;
+
+      const fechaInicioMatch = this.filterCriteria.fechaInicio
+        ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
+        : true;
+
+      const empresaMatch = this.filterCriteria.empresa
+        ? stringMatch(item.empresa, this.filterCriteria.empresa)
+        : true;
+
+      const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
+        ? exactStringMatch(item.tipo_incapacidad, this.filterCriteria.tipoIncapacidad)
+        : true;
+
+      return numeroDeDocumentoMatch && fechaInicioMatch && empresaMatch && tipoIncapacidadMatch;
+    });
+    const filteredData2 = this.dataSourceTable4.data.filter(item => {
+
+      // Verifica específicamente si el campo existe y normaliza la comparación
+      const numeroDeDocumentoMatch = this.filterCriteria.numeroDeDocumento
+        ? exactStringMatch(item.Numero_de_documento?.toString(), this.filterCriteria.numeroDeDocumento)
+        : true;
+
+      const fechaInicioMatch = this.filterCriteria.fechaInicio
+        ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
+        : true;
+
+      const empresaMatch = this.filterCriteria.empresa
+        ? stringMatch(item.empresa, this.filterCriteria.empresa)
+        : true;
+
+      const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
+        ? exactStringMatch(item.tipo_incapacidad, this.filterCriteria.tipoIncapacidad)
+        : true;
+
+      return numeroDeDocumentoMatch && fechaInicioMatch && empresaMatch && tipoIncapacidadMatch;
     });
 
-    // Si no se encuentran datos, muestra un mensaje con Swal
+
     if (filteredData.length === 0) {
       Swal.fire({
         icon: 'info',
@@ -343,12 +387,24 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
         text: 'No se encontraron datos con los criterios seleccionados.',
         confirmButtonText: 'Aceptar'
       });
-      this.filterCriteria = {};
 
+      // Limpia los criterios de filtro
+      this.filterCriteria = {
+        numeroDeDocumento: '',
+        fechaInicio: '',
+        empresa: '',
+        tipoIncapacidad: ''
+      };
     }
 
     // Actualiza el dataSource con los datos filtrados
+    this.dataSourceTable1.data = filteredData;
+    this.dataSourceTable1._updateChangeSubscription(); // Asegura que la tabla se actualice
+    this.dataSourceTable4.data = filteredData2;
+    this.dataSourceTable4._updateChangeSubscription(); // Asegura que la tabla se actualice
   }
+
+
 
   resetFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
