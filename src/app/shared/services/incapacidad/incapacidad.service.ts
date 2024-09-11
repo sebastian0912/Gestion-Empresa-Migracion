@@ -57,7 +57,11 @@ export class IncapacidadService {
   buscar(query: string): Observable<any> {
     const urlcompleta = `${this.apiUrl}/Incapacidades/busqueda`;
     const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
-    return this.http.post<any>(urlcompleta, query, { headers });
+
+    // Asegúrate de enviar la consulta como un objeto JSON
+    const body = { query }; // Correcto: enviamos un objeto JSON con la clave 'query'
+
+    return this.http.post<any>(urlcompleta, body, { headers });
   }
   public traerDatosReporte(cedula: string): Observable<any> {
     const headers = this.createAuthorizationHeader();

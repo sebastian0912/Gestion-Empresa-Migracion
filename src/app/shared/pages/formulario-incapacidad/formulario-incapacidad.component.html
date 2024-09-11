@@ -36,7 +36,8 @@
                         {{ option }}
                       </mat-option>
                     </mat-select>
-                    <input *ngIf="field !== 'Oficina' "  matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
+                    <input *ngIf="field !== 'Oficina' " matInput [formControlName]="fieldMap[field]"
+                      [type]="getFieldType(field)">
                   </mat-form-field>
 
                 </div>
@@ -51,7 +52,7 @@
               <div class="form-row">
                 <div
                   *ngFor="let field of ['Tipo de documento', 'Numero de documento', 'Apellido','Fondo de pensiones', 'Nombre', 'Edad', 'Sexo', 'Empresa', 'Centro de costos']"
-                  class="form-field" >
+                  class="form-field">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{ field }}</mat-label>
 
@@ -67,7 +68,8 @@
                       </mat-option>
                     </mat-select>
 
-                    <input *ngIf="field !== 'Sexo' && field !== 'Tipo de documento'" matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)" >
+                    <input *ngIf="field !== 'Sexo' && field !== 'Tipo de documento'" matInput
+                      [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
                   </mat-form-field>
                 </div>
               </div>
@@ -152,7 +154,8 @@
                 <!-- Fecha de Envio Incapacidad Fisica -->
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>Fecha de Envio Incapacidad Fisica</mat-label>
-                  <input matInput [matDatepicker]="envioDatePicker" [formControlName]="fieldMap['Fecha de Envio Incapacidad Fisica']">
+                  <input matInput [matDatepicker]="envioDatePicker"
+                    [formControlName]="fieldMap['Fecha de Envio Incapacidad Fisica']">
                   <mat-datepicker-toggle matSuffix [for]="envioDatePicker"></mat-datepicker-toggle>
                   <mat-datepicker #envioDatePicker></mat-datepicker>
                 </mat-form-field>
@@ -184,7 +187,8 @@
 
                 <mat-form-field class="example-full-width">
                   <mat-label>Nombre eps</mat-label>
-                  <input type="text" matInput [formControl]="epsControlForm"  [formControlName]="fieldMap['Nombre eps']" [matAutocomplete]="autoEps">
+                  <input type="text" matInput [formControl]="epsControlForm" [formControlName]="fieldMap['Nombre eps']"
+                    [matAutocomplete]="autoEps">
                   <mat-autocomplete #autoEps="matAutocomplete">
                     <mat-option *ngFor="let nombre of filteredEps | async" [value]="nombre">
                       {{ nombre }}
@@ -268,6 +272,26 @@
                     Subir {{ field }}
                   </button>
 
+                  <!-- Lista de archivos subidos -->
+                  <div class="file-list">
+                    <!-- Lista de archivos subidos -->
+                    <mat-list>
+                      <mat-list-item *ngFor="let file of getFiles(field)" class="file-item">
+                        <!-- Nombre del archivo -->
+                        <span mat-line>Archivo de {{ field }}  </span>
+                        <span mat-line>{{ file.name }}</span>
+
+                        <!-- Botón para eliminar el archivo -->
+                        <button mat-icon-button (click)="removeFile(field, file)" color="warn"
+                          matTooltip="Eliminar archivo">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+
+                        <!-- Separador entre archivos -->
+                        <mat-divider></mat-divider>
+                      </mat-list-item>
+                    </mat-list>
+                  </div>
                 </div>
               </div>
             </mat-card-content>
@@ -275,7 +299,7 @@
 
 
         </form>
-        <button mat-raised-button class="aumentar" color="primary"(click)="onSubmit()">Subir incapacidad</button>
+        <button mat-raised-button class="aumentar" color="primary" (click)="onSubmit()">Subir incapacidad</button>
       </mat-card-content>
       <!-- Botón flotante -->
       <button mat-fab [matMenuTriggerFor]="menu" class="notification-button">

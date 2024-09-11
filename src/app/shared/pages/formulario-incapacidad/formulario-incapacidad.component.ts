@@ -36,7 +36,7 @@ import { format } from 'date-fns';
 import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter'; // Importar el adaptador de Moment
 import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-
+import { MatListModule } from '@angular/material/list';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY', // Formato de entrada del usuario
@@ -62,6 +62,7 @@ export const MY_DATE_FORMATS = {
     MatMomentDateModule,
     MatFormFieldModule,
     MatInputModule,
+    MatListModule,
     MatSelectModule,
     MatAutocompleteModule,
     CommonModule,
@@ -100,7 +101,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Nombre doctor', 'Estado robot doctor', 'Archivo Incapacidad', 'Historial clinico', 'Dias de diferencia',
     'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente'
   ];
-
+  nombreepspersona: string = '';
   fieldMap: { [key: string]: string } = {
     'Oficina': 'Oficina',
     'Nombre de quien recibio': 'nombre_de_quien_recibio',
@@ -146,6 +147,10 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Dias de diferencia': 'dias_de_diferencia',
     'Fecha de Envio Incapacidad Fisica': 'Fecha_de_Envio_Incapacidad_Fisica',
   };
+  files: Record<string, File[]> = {
+    'Historial clinico': [],
+    'Archivo Incapacidad': []
+  };
   codigoDiagnosticoControl = new FormControl();
   epsControlForm = new FormControl();
   IpsControlForm = new FormControl();
@@ -160,6 +165,7 @@ export class FormularioIncapacidadComponent implements OnInit {
   filteredIpsNit: Observable<string[]> = of([]);
   filteredIpsNombre: Observable<string[]> = of([]);
   private unsubscribe$ = new Subject<void>();
+  nombredelarchvio = ''
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private incapacidadService: IncapacidadService, private contratacionService: ContratacionService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
@@ -199,7 +205,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
       'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
       'fecha_contratacion', 'fondo_de_pension', 'dias_eps','dias_incapacidad',
-      'Dias_temporal', 'descripcion_diagnostico',
+      'Dias_temporal', 'descripcion_diagnostico','dias_de_diferencia'
     ];
 
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.disable());
@@ -215,6 +221,8 @@ export class FormularioIncapacidadComponent implements OnInit {
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.enable());
   }
   private loadDataForForm(): void {
+    this.toggleLoader(true, true);
+    this.toggleOverlay(true);
     this.incapacidadService.traerDatosListas().subscribe(
       response => {
         // Transformar los datos y asignar a los arreglos
@@ -231,6 +239,8 @@ export class FormularioIncapacidadComponent implements OnInit {
         }));
         this.setupIPSFilters();
         this.setupCodigoFilters();
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
       },
       error => this.handleServiceError('No se pudo cargar la información necesaria para el formulario')
     );
@@ -274,6 +284,11 @@ export class FormularioIncapacidadComponent implements OnInit {
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.calcularDiasIncapacidad();
+      this.calcularprorroga();
+    });
+    this.incapacidadForm.get('tipo_incapacidad')?.valueChanges.pipe(distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
       this.calcularprorroga();
     });
 
@@ -477,11 +492,21 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.calcularDiasIncapacidad()
     } if (this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ACCIDENTE DE TRABAJO') {
       const diasincapacidad = this.incapacidadForm.get('dias_incapacidad')?.value
-
       this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad - 1);
       this.incapacidadForm.get('Dias_temporal')?.setValue(1);
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
       this.incapacidadForm.get('nombre_eps')?.setValue('ARL');
+    }
+    if(this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL'){
+      this.calcularDiasIncapacidad();
+      this.incapacidadForm.get('nombre_eps')?.setValue(this.nombreepspersona);
+    }
+    if (this.incapacidadForm.get('prorroga')?.value == 'SI' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL') {
+      const diasincapacidad = this.incapacidadForm.get('dias_incapacidad')?.value
+      this.incapacidadForm.get('nombre_eps')?.setValue(this.nombreepspersona);
+      this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad);
+      this.incapacidadForm.get('Dias_temporal')?.setValue(0);
+      this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
     }
 
 
@@ -670,6 +695,9 @@ export class FormularioIncapacidadComponent implements OnInit {
   onSubmit(): void {
     // Evitar múltiples envíos
     this.unsubscribe$.next();
+    this.toggleLoader(true, true);
+    this.toggleOverlay(true);
+
 
     // Asegúrate de habilitar todos los controles antes de enviar
     Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
@@ -708,7 +736,8 @@ export class FormularioIncapacidadComponent implements OnInit {
             title: 'Error',
             text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
           });
-          this.isSubmitButtonDisabled = false;
+          this.toggleLoader(false, false);
+          this.toggleOverlay(false);
           return;
         }
       }
@@ -717,16 +746,28 @@ export class FormularioIncapacidadComponent implements OnInit {
       // Envía la incapacidad al servicio
       this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
         response => {
+          this.toggleLoader(false, false);
+          this.toggleOverlay(false);
           Swal.fire({
             icon: 'success',
             title: 'Incapacidad creada',
             text: 'La incapacidad ha sido creada exitosamente'
+            
+          }).then(() => {
+            
+            this.incapacidadForm.reset();
+            for (const key in this.fieldMap) {
+              this.incapacidadForm.get(key)?.setValue('');
+            }
+            this.files = {
+              'Historial clinico': [],
+              'Archivo Incapacidad': []
+            };
+            this.validationErrors = [];
+            this.isSubmitButtonDisabled = false;
+            this.resetPage();
           });
-          this.incapacidadForm.reset();
-          for (const key in this.fieldMap) {
-            this.incapacidadForm.get(key)?.setValue('');
-          }
-          this.router.navigate(['/formulario-incapacicades']);
+          
         },
         error => {
           Swal.fire({
@@ -734,7 +775,10 @@ export class FormularioIncapacidadComponent implements OnInit {
             title: 'Error',
             text: 'Ha ocurrido un error al crear la incapacidad'
           });
+          this.loaderVisible = false;
           this.disableCertainFields();
+          this.toggleLoader(false, false);
+          this.toggleOverlay(false);
         }
       );
 
@@ -744,10 +788,15 @@ export class FormularioIncapacidadComponent implements OnInit {
         title: 'Error',
         text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
       });
+      this.loaderVisible = false;
       this.disableCertainFields();
+      this.toggleLoader(false, false);
+      this.toggleOverlay(false);
     }
   }
-
+  resetPage(): void {
+    window.location.reload();
+  }
   // Método auxiliar para deshabilitar campos específicos
   disableCertainFields(): void {
     this.incapacidadForm.get('genero')?.disable();
@@ -837,8 +886,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('celular')?.setValue(datosBasicos.celular);
           this.incapacidadForm.get('tipodedocumento')?.setValue(datosBasicos.tipodedocumento);
           this.incapacidadForm.get('numerodeceduladepersona')?.setValue(cedula);
-
-          console.log(this.incapacidadForm.get('numerodeceduladepersona')?.value)
+          this.nombreepspersona = afp.eps;
           this.incapacidadForm.get('primer_nombre')?.setValue(datosBasicos.primer_nombre + ' ' + datosBasicos.segundo_nombre);
           this.incapacidadForm.get('primer_apellido')?.setValue(datosBasicos.primer_apellido + ' ' + datosBasicos.segundo_apellido);
           this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
@@ -867,14 +915,18 @@ export class FormularioIncapacidadComponent implements OnInit {
     fileInput.type = 'file';
     fileInput.style.display = 'none';
 
+
+
     // Agregar evento para manejar la selección de archivo
     fileInput.onchange = (event: any) => {
       const file: File = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = reader.result as string;
 
+        reader.onload = () => {
+          this.addFile(field, file);
+          const base64 = reader.result as string;
+          this.nombredelarchvio = file.name;
           this.incapacidadForm.get(this.fieldMap[field])?.setValue(base64);
         };
         reader.readAsDataURL(file);
@@ -883,6 +935,20 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     // Simular clic para abrir el diálogo de archivos
     fileInput.click();
+  }
+
+  removeFile(field: string, file: File): void {
+    const index = this.files[field].indexOf(file);
+    if (index >= 0) {
+      this.files[field].splice(index, 1); // Eliminar el archivo de la lista si se encuentra
+    }
+  }
+
+  addFile(field: string, file: File): void {
+    if (!this.files[field]) {
+      this.files[field] = [];  // Si el campo no existe, inicializar como un array vacío
+    }
+    this.files[field].push(file); // Añadir el archivo al campo especificado
   }
 
   getFieldType(field: string): string {
@@ -992,6 +1058,9 @@ export class FormularioIncapacidadComponent implements OnInit {
     }
 
     return isValid;
+  }
+  getFiles(field: string): File[] {
+    return this.files[field] || [];
   }
   clearErrors() {
     this.validationErrors = [];
