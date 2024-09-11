@@ -76,11 +76,12 @@ export class ReporteContratacionComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    // Inicialización del formulario reactivo
     this.reporteForm = this.fb.group({
       sede: [null, Validators.required],
-      esDeHoy: [false, Validators.requiredTrue],
-      fecha: [null],
-      contratosHoy: [null, Validators.required],
+      esDeHoy: ['false'],  // Inicializamos la lista desplegable con "false" (No)
+      fecha: [null],  // La validación se aplica condicionalmente
+      contratosHoy: ['', Validators.required],
       cedulasEscaneadas: [false],
       cruceDiario: [false],
       arl: [false],
@@ -91,80 +92,74 @@ export class ReporteContratacionComponent implements OnInit {
       notas: ['']
     });
 
-    /*
-    // Observamos los cambios de cada checkbox para añadir o remover validaciones
-    this.reporteForm.get('cedulasEscaneadas')?.valueChanges.subscribe((value) => {
-      if (value) {
-        this.reporteForm.addControl('cedulasEscaneadasFile', new FormControl(null, Validators.required));
-      } else {
-        this.reporteForm.removeControl('cedulasEscaneadasFile');
-      }
-      this.reporteForm.updateValueAndValidity(); // Forzar la actualización de la validez
+
+    // Validación inicial del campo 'fecha' según el valor de 'esDeHoy'
+    await this.manageFechaValidation();
+
+    // Observador para 'esDeHoy' para actualizar la validación de 'fecha'
+    this.reporteForm.get('esDeHoy')?.valueChanges.subscribe(async () => {
+      await this.manageFechaValidation();  // Actualiza la validación cuando cambia el estado del checkbox
     });
 
-    this.reporteForm.get('cruceDiario')?.valueChanges.subscribe((value) => {
-      if (value) {
-        this.reporteForm.addControl('cruceDiarioFile', new FormControl(null, Validators.required));
-      } else {
-        this.reporteForm.removeControl('cruceDiarioFile');
-      }
-      this.reporteForm.updateValueAndValidity(); // Forzar la actualización de la validez
-    });
-
-    this.reporteForm.get('arl')?.valueChanges.subscribe((value) => {
-      if (value) {
-        this.reporteForm.addControl('arlFile', new FormControl(null, Validators.required));
-      } else {
-        this.reporteForm.removeControl('arlFile');
-      }
-      this.reporteForm.updateValueAndValidity(); // Forzar la actualización de la validez
-    });*/
-
-    // Observamos cambios en contratosHoy para activar o desactivar validaciones
+    // Observador para el campo 'contratosHoy' para activar o desactivar validaciones
     this.reporteForm.get('contratosHoy')?.valueChanges.subscribe((value) => {
       if (value === 'si') {
-        // Hacer Cédulas Escaneadas y ARL obligatorios
         this.reporteForm.get('cedulasEscaneadas')?.setValidators(Validators.required);
         this.reporteForm.get('arl')?.setValidators(Validators.required);
         this.reporteForm.get('cruceDiario')?.setValidators(Validators.required);
       } else {
-        // Quitar la obligatoriedad de Cédulas Escaneadas, ARL y Cruce
         this.reporteForm.get('cedulasEscaneadas')?.clearValidators();
         this.reporteForm.get('arl')?.clearValidators();
         this.reporteForm.get('cruceDiario')?.clearValidators();
       }
-
-      // Refrescar las validaciones
       this.reporteForm.get('cedulasEscaneadas')?.updateValueAndValidity();
       this.reporteForm.get('arl')?.updateValueAndValidity();
       this.reporteForm.get('cruceDiario')?.updateValueAndValidity();
     });
 
-    // Validar la fecha solo si "esDeHoy" es falso
-    this.reporteForm.get('esDeHoy')?.valueChanges.subscribe(value => {
-      if (value) {
-        this.reporteForm.get('fecha')?.clearValidators();
-      } else {
-        this.reporteForm.get('fecha')?.setValidators([Validators.required]);
-      }
-      this.reporteForm.get('fecha')?.updateValueAndValidity();
-    });
-
+    // Cargar sucursales
     const sucursalesObservable = await this.adminService.traerSucursales();
     sucursalesObservable.subscribe((data: any) => {
       if (data && Array.isArray(data.sucursal)) {
-        // Eliminar duplicados por el campo 'nombre'
         const sucursalesUnicas = data.sucursal.filter((item: any, index: number, self: any[]) =>
           index === self.findIndex((t) => t.nombre === item.nombre)
         );
-
-        // Ordenar por 'nombre' y asignar a 'this.sedes'
         this.sedes = sucursalesUnicas.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
       } else {
         Swal.fire('Error', 'No se pudieron cargar las sedes', 'error');
       }
     });
+
   }
+
+  // Gestión dinámica de la validación de 'fecha'
+  async manageFechaValidation() {
+    const esDeHoy = this.reporteForm.get('esDeHoy')?.value;
+
+    if (esDeHoy === 'true') {
+      // Si es "Sí", quitamos la validación de fecha
+      this.reporteForm.get('fecha')?.clearValidators();
+      this.reporteForm.get('fecha')?.setValue(null); // Reiniciamos el valor si es necesario
+    } else {
+      // Si es "No", la fecha es obligatoria
+      this.reporteForm.get('fecha')?.setValidators(Validators.required);
+    }
+
+    // Actualizamos la validación del campo fecha
+    this.reporteForm.get('fecha')?.updateValueAndValidity();
+    this.reporteForm.updateValueAndValidity();  // Aseguramos que el formulario se revalide completamente
+
+  }
+
+
+
+
+
+
+
+
+
+
 
 
   onContratosHoyChange(event: any) {
@@ -404,7 +399,6 @@ export class ReporteContratacionComponent implements OnInit {
 
   async validarTodo() {
 
-    this.isCruceValidado = true;
     // Mostrar el modal de carga
     const loadingSwal = Swal.fire({
       icon: 'info',
@@ -1099,134 +1093,7 @@ export class ReporteContratacionComponent implements OnInit {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async onSubmit() {
-    Swal.close();
-    const user = await this.jefeAreaService.getUser();
 
-    // Verificar si el cruce ha sido validado
-    if (this.reporteForm.get('cruceDiario')?.value && !this.isCruceValidado) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Debe validar el cruce diario antes de enviar.',
-        confirmButtonText: 'Aceptar'
-      });
-      return;
-    }
-
-    // Verificar si "¿Es de hoy?" está desmarcado y si la fecha es obligatoria
-    const fechaValida = this.reporteForm.get('fecha')?.value;
-    if (!this.reporteForm.get('esDeHoy')?.value && !fechaValida) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Debe ingresar una fecha si no es de hoy.',
-        confirmButtonText: 'Aceptar'
-      });
-      return;
-    }
-
-    // Validar si el formulario completo es válido
-    if (this.reporteForm.valid) {
-      this.processingErrors = [];
-      const processes = [
-        { key: 'cedulasEscaneadas', name: 'Cédulas Escaneadas', process: this.processCedulasEscaneadas.bind(this) },
-        { key: 'cruceDiario', name: 'Cruce diario Excel', process: this.processExcelFiles.bind(this) },
-        { key: 'arl', name: 'Archivo ARL', process: this.proccssArl.bind(this) },
-        { key: 'induccionSSO', name: 'Inducción Seguridad y Salud en el trabajo', process: this.processFileList.bind(this) },
-        { key: 'traslados', name: 'Traslados', process: this.processTraslados.bind(this) },
-      ];
-
-      // Procesar los elementos secuencialmente
-      for (const { key, name, process } of processes) {
-        if (this.reporteForm.get(key)?.value) {
-          Swal.fire({
-            icon: 'info',
-            title: `Procesando ${name}`,
-            html: 'Por favor espera...',
-            allowOutsideClick: false,
-            didOpen: () => {
-              Swal.showLoading();
-            }
-          });
-          const files = this.filesToUpload[key];
-          try {
-            // Esperar a que se complete el procesamiento
-            await process(files);
-          } catch (error) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: `Ocurrió un error al procesar ${name}, inténtelo de nuevo.`
-            });
-            this.processingErrors.push(name);
-            // Registrar error pero continuar con otros procesos
-            continue;
-          }
-        }
-        await this.delay(1000); // Espera de un segundo
-      }
-
-      // Si hay errores, mostrarlos
-      if (this.processingErrors.length > 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Errores durante la carga',
-          html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`,
-          confirmButtonText: 'Aceptar'
-        });
-      } else {
-        Swal.close();
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'Formulario enviado exitosamente.',
-          confirmButtonText: 'Aceptar'
-        });
-
-        // Preparar datos para el reporte
-        const reporteData = {
-          sede: this.reporteForm.get('sede')?.value.nombre,
-          contratosHoy: this.reporteForm.get('contratosHoy')?.value,
-          cantidadContratosTuAlianza: this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
-          cantidadContratosApoyoLaboral: this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
-          nota: this.reporteForm.get('notas')?.value,
-          cedulas: this.cedulasBase64.length > 0 ? this.cedulasBase64 : 'No se han cargado cédulas',
-          traslados: this.trasladosBase64.length > 0 ? this.trasladosBase64 : 'No se han cargado traslados',
-          cruce: this.cruceBase64 !== '' ? this.cruceBase64 : 'No se ha cargado cruce',
-          sst: this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
-          nombre: user.primer_nombre + ' ' + user.primer_apellido,
-          arl: this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
-        };
-
-        // Enviar reporte
-        try {
-          await this.jefeAreaService.cargarReporte(reporteData);
-          Swal.fire({
-            icon: 'success',
-            title: 'Reporte enviado',
-            text: 'El reporte ha sido enviado correctamente.',
-            confirmButtonText: 'Aceptar'
-          });
-        } catch (error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
-            confirmButtonText: 'Aceptar'
-          });
-        }
-      }
-
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Por favor, completa el formulario correctamente.',
-        confirmButtonText: 'Aceptar'
-      });
-    }
-  }
 
 
   async processFileList(files: File[]) {
@@ -1294,20 +1161,20 @@ export class ReporteContratacionComponent implements OnInit {
 
   async processContratacion(workbook: XLSX.WorkBook): Promise<void> {
     let response: any;
-  
+
     // Copiar el Excel en base64
     this.cruceBase64 = await this.convertToBase64(this.filesToUpload['cruceDiario'][0]);
-  
+
     try {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
       json.shift(); // Eliminar la fila de encabezados si es necesario
-  
+
       const formatDate = (date: string): string => {
         const regex_ddmmyyyy = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
         const regex_mmddyy = /^\d{1,2}\/\d{1,2}\/\d{2}$/;
-  
+
         if (regex_ddmmyyyy.test(date)) {
           return date;
         } else if (regex_mmddyy.test(date)) {
@@ -1317,12 +1184,12 @@ export class ReporteContratacionComponent implements OnInit {
         }
         return date;
       };
-  
+
       const indicesFechas = [0, 8, 16, 24, 44, 134];
-  
+
       const rows: string[][] = (json as any[][]).map((row: any[]) => {
         const completeRow = new Array(195).fill('-'); // Inicializar la fila con un array vacío de 195 elementos
-  
+
         row.forEach((cell, index) => {
           if (index < 195) {
             if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
@@ -1335,7 +1202,7 @@ export class ReporteContratacionComponent implements OnInit {
                   .replace(/\s/g, '')     // Elimina espacios
                   .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
               );
-            } 
+            }
             else if (index === 4) {
               completeRow[index] = this.removeSpecialCharacters(
                 cell.toString()
@@ -1352,21 +1219,20 @@ export class ReporteContratacionComponent implements OnInit {
             }
           }
         });
-  
+
         return completeRow;
       });
-  
+
       this.datoscruced = rows; // Guardar los datos procesados
-  
+
       // Esperar a la respuesta de la subida del archivo
       response = await this.jefeAreaService.subirContratacion(rows);
-      console.log(response);
-  
+
       // Manejar respuesta
       if (response.message !== 'success') {
         this.processingErrors.push('Cruce diario Excel');
       }
-      
+
     } catch (error) {
       console.error('Error procesando el archivo Excel:', error);
       this.processingErrors.push('Cruce diario Excel');
@@ -1416,8 +1282,173 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
 
+  async onSubmit() {
+    Swal.close();
+    const user = await this.jefeAreaService.getUser();
 
-  // arl
+    // Verificar si el cruce ha sido validado
+    if (this.reporteForm.get('cruceDiario')?.value && !this.isCruceValidado) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debe validar el cruce diario antes de enviar.',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
+    // Validar si el formulario completo es válido
+    if (this.reporteForm.valid) {
+
+      // si contratos es si
+      if (this.reporteForm.get('contratosHoy')?.value === 'Si') {
+
+        this.processingErrors = [];
+        const processes = [
+          { key: 'cedulasEscaneadas', name: 'Cédulas Escaneadas', process: this.processCedulasEscaneadas.bind(this) },
+          { key: 'cruceDiario', name: 'Cruce diario Excel', process: this.processExcelFiles.bind(this) },
+          { key: 'arl', name: 'Archivo ARL', process: this.proccssArl.bind(this) },
+          { key: 'induccionSSO', name: 'Inducción Seguridad y Salud en el trabajo', process: this.processFileList.bind(this) },
+          { key: 'traslados', name: 'Traslados', process: this.processTraslados.bind(this) },
+        ];
+
+        // Procesar los elementos secuencialmente
+        for (const { key, name, process } of processes) {
+          if (this.reporteForm.get(key)?.value) {
+            Swal.fire({
+              icon: 'info',
+              title: `Procesando ${name}`,
+              html: 'Por favor espera...',
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+            const files = this.filesToUpload[key];
+            try {
+              // Esperar a que se complete el procesamiento
+              await process(files);
+            } catch (error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `Ocurrió un error al procesar ${name}, inténtelo de nuevo.`
+              });
+              this.processingErrors.push(name);
+              // Registrar error pero continuar con otros procesos
+              continue;
+            }
+          }
+          await this.delay(1000); // Espera de un segundo
+        }
+
+        // Si hay errores, mostrarlos
+        if (this.processingErrors.length > 0) {
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Errores durante la carga',
+            html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`,
+            confirmButtonText: 'Aceptar'
+          });
+
+        } else {
+          Swal.close();
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Formulario enviado exitosamente.',
+            confirmButtonText: 'Aceptar'
+          });
+
+          // Preparar datos para el reporte
+          const reporteData = {
+            sede: this.reporteForm.get('sede')?.value.nombre,
+            contratosHoy: this.reporteForm.get('contratosHoy')?.value,
+            cantidadContratosTuAlianza: this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
+            cantidadContratosApoyoLaboral: this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
+            nota: this.reporteForm.get('notas')?.value,
+            cedulas: this.cedulasBase64.length > 0 ? this.cedulasBase64 : 'No se han cargado cédulas',
+            traslados: this.trasladosBase64.length > 0 ? this.trasladosBase64 : 'No se han cargado traslados',
+            cruce: this.cruceBase64 !== '' ? this.cruceBase64 : 'No se ha cargado cruce',
+            sst: this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
+            nombre: user.primer_nombre + ' ' + user.primer_apellido,
+            arl: this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
+          };
+
+          // Enviar reporte
+          try {
+            await this.jefeAreaService.cargarReporte(reporteData);
+            Swal.fire({
+              icon: 'success',
+              title: 'Reporte enviado',
+              text: 'El reporte ha sido enviado correctamente.',
+              confirmButtonText: 'Aceptar'
+            });
+          } catch (error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
+              confirmButtonText: 'Aceptar'
+            });
+          }
+        }
+      }
+      else {
+        this.isCruceValidado = true;
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'Formulario enviado exitosamente.',
+          confirmButtonText: 'Aceptar'
+        });
+
+        // Preparar datos para el reporte
+        const reporteData = {
+          sede: this.reporteForm.get('sede')?.value.nombre,
+          contratosHoy: this.reporteForm.get('contratosHoy')?.value,
+          cantidadContratosTuAlianza: this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
+          cantidadContratosApoyoLaboral: this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
+          nota: this.reporteForm.get('notas')?.value,
+          cedulas: this.cedulasBase64.length > 0 ? this.cedulasBase64 : 'No se han cargado cédulas',
+          traslados: this.trasladosBase64.length > 0 ? this.trasladosBase64 : 'No se han cargado traslados',
+          cruce: this.cruceBase64 !== '' ? this.cruceBase64 : 'No se ha cargado cruce',
+          sst: this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
+          nombre: user.primer_nombre + ' ' + user.primer_apellido,
+          arl: this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
+        };
+
+        // Enviar reporte
+        try {
+          await this.jefeAreaService.cargarReporte(reporteData);
+          Swal.fire({
+            icon: 'success',
+            title: 'Reporte enviado',
+            text: 'El reporte ha sido enviado correctamente.',
+            confirmButtonText: 'Aceptar'
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
+            confirmButtonText: 'Aceptar'
+          });
+        }
+
+      }
+
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, completa el formulario correctamente.',
+        confirmButtonText: 'Aceptar'
+      });
+    }
+  }
 
 
 }

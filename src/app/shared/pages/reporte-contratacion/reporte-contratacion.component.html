@@ -9,18 +9,25 @@
                 <form [formGroup]="reporteForm">
 
                     <!-- Checkbox de "Es de hoy" -->
-                    <mat-checkbox formControlName="esDeHoy" required>¿Es de hoy?</mat-checkbox>
-                    <div class="primeras">
+                    <div class="form-field-container">
+                        <mat-form-field appearance="fill" class="example-full-width2">
+                          <mat-label>¿Es de hoy?</mat-label>
+                          <mat-select formControlName="esDeHoy">
+                            <mat-option value="true">Sí</mat-option>
+                            <mat-option value="false">No</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>                    <div class="primeras">
 
                         <!-- Campo de fecha que se muestra solo si el checkbox "Es de hoy" no está seleccionado -->
-                        <div *ngIf="!reporteForm.get('esDeHoy')?.value" class="form-field-container">
+                        <div *ngIf="reporteForm.get('esDeHoy')?.value === 'false'" class="form-field-container">
                             <mat-form-field appearance="fill" class="example-full-width2">
-                                <mat-label>Fecha</mat-label>
-                                <input matInput [matDatepicker]="picker" formControlName="fecha" required>
-                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                <mat-datepicker #picker></mat-datepicker>
+                              <mat-label>Fecha</mat-label>
+                              <input matInput [matDatepicker]="picker" formControlName="fecha" required>
+                              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                              <mat-datepicker #picker></mat-datepicker>
                             </mat-form-field>
-                        </div>
+                          </div>
 
                         <!-- Selección de Sede -->
                         <div class="form-field-container">
@@ -153,7 +160,8 @@
                     </div>
 
                     <!-- Botón de Validar -->
-                    <button mat-flat-button (click)="validarTodo()">Validar </button>
+                    <button mat-flat-button (click)="validarTodo()" *ngIf="reporteForm.get('contratosHoy')?.value === 'si'"
+                    >Validar </button>
 
                     <!-- Botón de Enviar -->
                     <button mat-flat-button color="primary" id="enviar" type="submit" [disabled]="!reporteForm.valid"
@@ -161,6 +169,7 @@
 
                 </form>
             </mat-card-content>
+            
         </mat-card>
 
         <!-- Tabla de errores de validación -->

@@ -62,8 +62,23 @@ export class VerReporteComponent implements OnInit {
   }
 
   async obtenerReportes(): Promise<void> {
+    // Mostrar el swal de cargando
+    Swal.fire({
+      icon: 'info',
+      title: 'Cargando...',
+      html: 'Por favor espera mientras se cargan los reportes.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+  
+    // Llamar al servicio para obtener los reportes
     this.contratacionService.obtenerTodosLosReportes().subscribe(
       async (response) => {
+        // Ocultar el Swal de cargando
+        Swal.close();
+  
         this.reportes = response.reportes;
         this.dataSource.data = this.reportes; // Actualiza la tabla principal
   
@@ -72,6 +87,10 @@ export class VerReporteComponent implements OnInit {
         this.consolidadoDataSource.data = consolidado; // Actualiza la tabla consolidada
       },
       (error) => {
+        // Ocultar el Swal de cargando
+        Swal.close();
+  
+        // Mostrar alerta de error
         Swal.fire({
           icon: 'error',
           title: 'Error al obtener los reportes',
@@ -80,6 +99,7 @@ export class VerReporteComponent implements OnInit {
       }
     );
   }
+  
   
 
   // Apply filter only for the first table
@@ -200,8 +220,23 @@ export class VerReporteComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         console.log('Fecha de inicio:', result);
+  
+        // Mostrar el swal de cargando
+        Swal.fire({
+          icon: 'info',
+          title: 'Cargando...',
+          html: 'Por favor espera mientras se cargan los reportes.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+  
         this.contratacionService.obtenerReportesPorFechas(result.start, result.end).subscribe(
           async (response) => {
+            // Ocultar el Swal de cargando
+            Swal.close();
+  
             console.log('Reportes por fechas:', response);
             this.reportes = response.reportes;
             this.dataSource.data = this.reportes; // Actualiza la tabla principal
@@ -211,6 +246,10 @@ export class VerReporteComponent implements OnInit {
             this.consolidadoDataSource.data = consolidado; // Actualiza la tabla consolidada
           },
           (error) => {
+            // Ocultar el Swal de cargando
+            Swal.close();
+  
+            // Mostrar alerta de error
             Swal.fire({
               icon: 'error',
               title: 'Error al obtener los reportes',
@@ -221,6 +260,7 @@ export class VerReporteComponent implements OnInit {
       }
     });
   }
+  
   
 
 
