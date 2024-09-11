@@ -99,7 +99,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Fondo de pensiones', 'Estado incapacidad', 'Prorroga', 'Incapacidad Transcrita', 'Numero de incapacidad',
     'Nit de la IPS', 'IPS punto de atencion', 'Observaciones', 'Tipo de documento doctor atendido', 'Numero de documento doctor',
     'Nombre doctor', 'Estado robot doctor', 'Archivo Incapacidad', 'Historial clinico', 'Dias de diferencia',
-    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente'
+    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente','Correspondeelpago'
   ];
   nombreepspersona: string = '';
   fieldMap: { [key: string]: string } = {
@@ -146,6 +146,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Historial clinico': 'historial_clinico',
     'Dias de diferencia': 'dias_de_diferencia',
     'Fecha de Envio Incapacidad Fisica': 'Fecha_de_Envio_Incapacidad_Fisica',
+    'Correspondeelpago': 'correspondeelpago'
   };
   files: Record<string, File[]> = {
     'Historial clinico': [],
@@ -276,20 +277,30 @@ export class FormularioIncapacidadComponent implements OnInit {
       map(value => this._filterNit(value || ''))
     );
   }
+  observaciones: string = '';
+  quienpaga: string = '';
 
   private setupFormValidations(): void {
     // Suscripciones a los cambios de valores de los campos del formulario
+    this.incapacidadForm.get('fecha_contratacion')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      this.applyValidation()
+    });
     this.incapacidadForm.get('fecha_inicio_incapacidad')?.valueChanges.pipe(
       distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.calcularDiasIncapacidad();
       this.calcularprorroga();
+      this.applyValidation()
     });
     this.incapacidadForm.get('tipo_incapacidad')?.valueChanges.pipe(distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.calcularprorroga();
+      this.applyValidation();
     });
 
     this.incapacidadForm.get('fecha_fin_incapacidad')?.valueChanges.pipe(
@@ -312,29 +323,20 @@ export class FormularioIncapacidadComponent implements OnInit {
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.calcularprorroga();
+      this.applyValidation();
     });
 
     this.incapacidadForm.get('estado_incapacidad')?.valueChanges.pipe(
       distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
+      this.applyValidation();
       if (this.incapacidadForm.get('estado_incapacidad')?.value === 'Falsa') {
         this.handleServiceError('No se puede crear una incapacidad falsa');
       }
     });
 
-    // Suscripción a los cambios en el formulario completo
-    this.incapacidadForm.valueChanges.pipe(
-      distinctUntilChanged(),
-      takeUntil(this.unsubscribe$)
-    ).subscribe((formData) => {
-      if (this.isIncapacidadSectionActive(formData)) {
-        this.validationErrors = IncapacidadValidator.validateConditions(formData);
-        this.isSubmitButtonDisabled = this.validationErrors.length > 0;
-      } else {
-        this.isSubmitButtonDisabled = false; // Habilitar el botón si la sección no está activa
-      }
-    });
+    
   }
   private setupIPSFilters() {
     this.filteredIpsNit = this.ipsControlNit.valueChanges.pipe(
@@ -368,6 +370,29 @@ export class FormularioIncapacidadComponent implements OnInit {
         this.incapacidadForm.get('nit_de_la_IPS')?.setValue(selected.nit);
       }
     });
+  }
+  applyValidation() {
+    const formData = this.incapacidadForm.getRawValue(); // Obtener todos los valores actuales del formulario
+
+    if (this.isIncapacidadSectionActive(formData)) {
+      // Desestructuración del objeto devuelto por validateConditions
+      const { errors, observaciones, quienpaga } = IncapacidadValidator.validateConditions(formData);
+
+      this.validationErrors = errors;
+      this.observaciones = observaciones;
+      this.quienpaga = quienpaga;
+
+      // Actualizar el campo de "observaciones" en el formulario
+      this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
+      this.incapacidadForm.get('correspondeelpago')?.setValue(quienpaga, { emitEvent: false });
+
+      // Deshabilitar el botón de envío si hay errores de validación
+      this.isSubmitButtonDisabled = this.validationErrors.length > 0;
+
+      
+    } else {
+      this.isSubmitButtonDisabled = false; // Habilitar el botón si la sección no está activa
+    }
   }
 
   private setupCodigoFilters() {
@@ -795,7 +820,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     }
   }
   resetPage(): void {
-    window.location.reload();
+    this.router.navigate(['/formulario-incapacicades']);
   }
   // Método auxiliar para deshabilitar campos específicos
   disableCertainFields(): void {
@@ -972,7 +997,22 @@ export class FormularioIncapacidadComponent implements OnInit {
   tiposDocumento: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte'];
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
-  estadoincapacidad: string[] = ['Original', 'Copia', 'Falsa'];
+  estadoincapacidad: string[] = [
+    'TRASLAPADA',
+'PRESCRITA',
+'OK',
+'FALSA',
+'SIN EPICRISIS',
+'SIN INCAPACIDAD',
+'MEDICINA PREPAGADA',
+'ILEGIBLE',
+'INCONSISTENTE -, MAS DE 180 DIAS',
+'MAS DE 540 DIAS',
+'FECHAS INCONSISTENTES',
+'FALTA ORIGINAL',
+'FALTA FURAT',
+'FALTA SOAT'
+  ];
   centrodecosto: string[] = [
     'Andes',
     'Cartagenita',

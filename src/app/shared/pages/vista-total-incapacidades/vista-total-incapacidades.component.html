@@ -10,13 +10,43 @@
     <app-navbar-superior></app-navbar-superior>
     <mat-card>
       <mat-card-content>
-        <!-- Botón para desplegar el filtro -->
-        <button mat-raised-button (click)="toggleFilter()">
-          Filtros
-        </button>
-        <app-info-card title="Descargar Reporte" imageUrl="comun/excel.png" (click)="downloadExcel()"
-          style="cursor: pointer;">
-        </app-info-card>
+        <!-- Contenedor para los botones y fechas -->
+        <div class="filter-header" style="display: flex; align-items: center; gap: 10px;">
+
+          <!-- Botón para desplegar el filtro -->
+          <button mat-raised-button (click)="toggleFilter()">
+            Filtros
+          </button>
+
+          <!-- Botón para descargar el reporte -->
+          <app-info-card title="Descargar Reporte" imageUrl="comun/excel.png" (click)="downloadExcel()"
+            style="cursor: pointer;">
+          </app-info-card>
+
+          <!-- Campos de Fecha de Inicio y Fin -->
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Fecha de inicio de reporte</mat-label>
+            <input matInput [matDatepicker]="fecha_de_inicio_de_reporte"
+              formControlName="confirmacion_fecha_de_radicacion" placeholder="MM/DD/YYYY">
+            <mat-datepicker-toggle matSuffix [for]="fecha_de_inicio_de_reporte"></mat-datepicker-toggle>
+            <mat-datepicker #fecha_de_inicio_de_reporte></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Fecha de fin de reporte</mat-label>
+            <input matInput [matDatepicker]="fecha_de_fin_de_reporte" formControlName="confirmacion_fecha_de_radicacion"
+              placeholder="MM/DD/YYYY">
+            <mat-datepicker-toggle matSuffix [for]="fecha_de_fin_de_reporte"></mat-datepicker-toggle>
+            <mat-datepicker #fecha_de_fin_de_reporte></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Botón para filtrar por fechas -->
+          <button mat-raised-button color="primary" (click)="applyDateFilter()">
+            Filtrar Fechas
+          </button>
+
+        </div>
+
         <!-- Contenedor del filtro que se despliega y colapsa -->
         <div class="filter-container" [ngClass]="{ 'collapsed': isFilterCollapsed, 'expanded': !isFilterCollapsed }">
           <h3>Filtros de Incapacidades</h3>
@@ -105,7 +135,6 @@
         </div>
       </mat-card-content>
     </mat-card>
-
-
   </div>
 </div>
+

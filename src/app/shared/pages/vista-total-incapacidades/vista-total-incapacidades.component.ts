@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { IncapacidadService } from '../../services/incapacidad/incapacidad.service';
 import { Router } from '@angular/router';
@@ -21,6 +21,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { saveAs } from 'file-saver';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+
 interface ColumnTitle {
   [key: string]: string;
 }
@@ -48,6 +50,8 @@ interface FileData {
     MatOptionModule ,
     MatSelectModule,
     MatButtonModule,
+    MatDatepickerModule,
+    ReactiveFormsModule,
     MatIconModule,
     FormsModule,
     MatCardModule,
@@ -295,6 +299,28 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
         });
         this.toggleLoader(false);
       });
+  }
+  applyDateFilter() {
+    const startDate = this.filterCriteria.fechaInicio;
+    const endDate = this.filterCriteria.fechaFin;
+
+    if (startDate && endDate) {
+      // Asegura que las fechas son válidas y filtra los datos según el rango de fechas
+      const filteredData = this.dataSourceTable1.data.filter(item => {
+        const itemDate = new Date(item.f_inicio); // Suponiendo que 'f_inicio' es la propiedad de la fecha
+        return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+      });
+
+      this.dataSourceTable1.data = filteredData;
+      this.dataSourceTable1._updateChangeSubscription(); // Asegura que la tabla se actualice
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'Por favor, selecciona ambas fechas para filtrar.',
+        confirmButtonText: 'Aceptar'
+      });
+    }
   }
 
 
