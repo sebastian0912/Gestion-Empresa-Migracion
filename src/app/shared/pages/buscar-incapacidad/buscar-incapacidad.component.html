@@ -67,6 +67,7 @@
               </mat-form-field>
 
               <button mat-button (click)="applyFilter()">Aplicar Filtro</button>
+              <button mat-button (click)="clearFilter()">Limpiar Filtro</button>
             </div>
           <div class="table-container">
             <table mat-table [dataSource]="dataSourcetable1" class="mat-elevation-z8">
@@ -74,8 +75,8 @@
               <ng-container *ngFor="let column of ColumnsTable1">
                 <ng-container [matColumnDef]="column">
                   <th mat-header-cell *matHeaderCellDef>
-                    {{ toTitleCase(column,columnTitlesTable1) }}
-
+                    {{ toTitleCase(column, columnTitlesTable1) }}
+            
                     <!-- Filtros dinámicos basados en el contenido de la columna -->
                     <mat-form-field *ngIf="columnFilters[column]" appearance="outline">
                       <mat-select (selectionChange)="applyFilterColumn(column, $event.value)" placeholder="Filtrar">
@@ -86,23 +87,33 @@
                     </mat-form-field>
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    <!-- Campo de entrada editable para columnas específicas -->
-                    <div *ngIf="isEditable(column); else readOnly">
-                      <input matInput [value]="element[column]" (input)="updateValue(element, column, $event)">
-                    </div>
-                    <ng-template #readOnly>
-                      {{ element[column] }}
+                    <!-- Verificar si la columna requiere un enlace de descarga -->
+                    <ng-container *ngIf="isDownloadableColumn(column); else defaultColumn">
+                      <a *ngIf="element[column + '_link']" [href]="element[column + '_link']" download="{{ column }}.pdf">
+                        Descargar {{ toTitleCase(column, columnTitlesTable1) }}
+                      </a>
+                    </ng-container>
+                    <!-- Contenido por defecto para columnas no descargables -->
+                    <ng-template #defaultColumn>
+                      <!-- Campo de entrada editable para columnas específicas -->
+                      <div *ngIf="isEditable(column); else readOnly">
+                        <input matInput [value]="element[column]" (input)="updateValue(element, column, $event)">
+                      </div>
+                      <ng-template #readOnly>
+                        {{ element[column] }}
+                      </ng-template>
                     </ng-template>
                   </td>
                 </ng-container>
               </ng-container>
-
+            
               <tr mat-header-row *matHeaderRowDef="ColumnsTable1"></tr>
               <tr mat-row *matRowDef="let row; columns: ColumnsTable1;"></tr>
               <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" colspan="22">No hay datos</td>
               </tr>
             </table>
+            
             <div *ngIf="editingRow" class="action-buttons">
               <button mat-raised-button color="primary" (click)="saveChanges()">Guardar</button>
               <button mat-raised-button color="warn" (click)="cancelEditing()">Cancelar</button>

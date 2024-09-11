@@ -87,22 +87,28 @@ export class FormularioReporteComponent implements OnInit {
     return Object.keys(this.fieldMap).find(key => this.fieldMap[key] === field) || field;
   }
 
-  ColumnsTable1 = ['Dias_temporal',
-    'F_inicio',
-    'Fecha_de_Envio_Incapacidad_Fisica',
-    'Incapacidad_transcrita',
-    'Numero_de_documento',
-    'Oficina',
-    'Temporal',
+  ColumnsTable1 = [
     'Tipo_de_documento',
+    'Numero_de_documento',
+    'consecutivoSistema',
+    'numero_de_contrato',
+    'nombre',
     'apellido',
+    'Oficina',
     'celular_o_telefono_01',
     'celular_o_telefono_02',
-    'centrodecosto',
-    'codigo_diagnostico',
-    'consecutivoSistema',
     'correoElectronico',
+    'Temporal',
+    'Dias_temporal',
+    'tipo_incapacidad',
+    'codigo_diagnostico',
     'descripcion_diagnostico',
+    'F_inicio',
+    'F_final',
+    'Fecha_de_Envio_Incapacidad_Fisica',
+    'Incapacidad_transcrita',
+    'centrodecosto',
+
     'dias_de_diferencia',
     'dias_eps',
     'dias_incapacidad',
@@ -117,11 +123,11 @@ export class FormularioReporteComponent implements OnInit {
     'link_incapacidad',
     'marcaTemporal',
     'nit_de_la_IPS',
-    'nombre',
+
     'nombre_de_quien_recibio',
     'nombre_doctor',
     'nombre_eps',
-    'numero_de_contrato',
+
     'numero_de_documento_doctor',
     'numero_de_incapacidad',
     'observaciones',
@@ -129,7 +135,6 @@ export class FormularioReporteComponent implements OnInit {
     'responsable_de_envio',
     'sexo',
     'tipo_de_documento_doctor_atendido',
-    'tipo_incapacidad'
   ];
 
   columnTitlesTable1 = {
@@ -218,11 +223,15 @@ export class FormularioReporteComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.query = this.route.snapshot.paramMap.get('cedula') || '';
 
+    this.query = this.route.snapshot.paramMap.get('cedula') || '';
     if (this.query) {
+      this.toggleLoader(true, true);
+      this.toggleOverlay(true);
       this.loadData();
     } else {
+      this.toggleLoader(true, true);
+      this.toggleOverlay(true);
       this.loadFromSessionStorage();
     }
 
@@ -230,8 +239,10 @@ export class FormularioReporteComponent implements OnInit {
   }
 
   generateFormGroupConfig(): { [key: string]: any } {
+    
     const formGroupConfig: { [key: string]: any } = {};
-
+    this.toggleLoader(true, true);
+    this.toggleOverlay(true);
     // Itera sobre las claves de fieldMap para configurar cada control de formulario
     Object.keys(this.fieldMap).forEach(label => {
       const formControlName = this.fieldMap[label];
@@ -240,39 +251,48 @@ export class FormularioReporteComponent implements OnInit {
 
     return formGroupConfig;
   }
+  toggleOverlay(visible: boolean): void {
+    this.overlayVisible = visible;
+  }
 
+ 
   loadData(): void {
     this.incapacidadService.traerDatosReporte(this.query).subscribe(
       response => {
 
-        console.log(response);
-        this.toggleLoader(false);
         this.patchForm(response.data?.[0] || {});
         this.saveToSessionStorage();
+        
       },
       error => {
         this.handleError(error);
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
       }
     );
 
     this.incapacidadService.traerDatosIncapacidad(this.query).subscribe(
       response => {
-        this.toggleLoader(false);
         this.dataSourcetable1.data = response.data || [];
         this.saveToSessionStorage();
       },
       error => {
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
         this.handleError(error);
       }
     );
 
     this.incapacidadService.traerDatosLogs(this.query).subscribe(
       response => {
-        this.toggleLoader(false);
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
         this.dataSourcetable2.data = response.data || [];
         this.saveToSessionStorage();
       },
       error => {
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
         this.handleError(error);
       }
     );
@@ -358,6 +378,8 @@ export class FormularioReporteComponent implements OnInit {
       this.dataSourcetable1.data = parsedData.dataTable1;
       this.dataSourcetable2.data = parsedData.dataTable2;
     }
+    this.toggleLoader(false, false);
+    this.toggleOverlay(false);
   }
 
   handleError(error: any): void {

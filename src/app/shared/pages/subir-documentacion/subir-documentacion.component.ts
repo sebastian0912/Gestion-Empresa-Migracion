@@ -34,6 +34,12 @@ import { NgIf } from '@angular/common';
   templateUrl: './subir-documentacion.component.html',
   styleUrl: './subir-documentacion.component.css'
 })
-export class SubirDocumentacionComponent {
+export class SubirDocumentacionComponent implements OnInit {
+  constructor() { }
+
+
+  ngOnInit() {
+  }
+
 
 }

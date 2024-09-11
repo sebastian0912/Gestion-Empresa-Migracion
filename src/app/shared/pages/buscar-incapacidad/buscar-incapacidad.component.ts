@@ -52,23 +52,27 @@ export class BuscarIncapacidadComponent implements OnInit {
   columnFilters: { [key: string]: string[] } = {};
 
   ColumnsTable1 = [
+    'Tipo_de_documento',
+    'Numero_de_documento',
+    'consecutivoSistema',
+    'numero_de_contrato',
+    'nombre',
+    'apellido',
+    'Oficina',
+    'celular_o_telefono_01',
+    'celular_o_telefono_02',
+    'correoElectronico',
+    'Temporal',
     'Dias_temporal',
+    'tipo_incapacidad',
+    'codigo_diagnostico',
+    'descripcion_diagnostico',
     'F_inicio',
     'F_final',
     'Fecha_de_Envio_Incapacidad_Fisica',
     'Incapacidad_transcrita',
-    'Numero_de_documento',
-    'Oficina',
-    'Temporal',
-    'Tipo_de_documento',
-    'apellido',
-    'celular_o_telefono_01',
-    'celular_o_telefono_02',
     'centrodecosto',
-    'codigo_diagnostico',
-    'consecutivoSistema',
-    'correoElectronico',
-    'descripcion_diagnostico',
+    
     'dias_de_diferencia',
     'dias_eps',
     'dias_incapacidad',
@@ -83,11 +87,11 @@ export class BuscarIncapacidadComponent implements OnInit {
     'link_incapacidad',
     'marcaTemporal',
     'nit_de_la_IPS',
-    'nombre',
+    
     'nombre_de_quien_recibio',
     'nombre_doctor',
     'nombre_eps',
-    'numero_de_contrato',
+    
     'numero_de_documento_doctor',
     'numero_de_incapacidad',
     'observaciones',
@@ -95,18 +99,19 @@ export class BuscarIncapacidadComponent implements OnInit {
     'responsable_de_envio',
     'sexo',
     'tipo_de_documento_doctor_atendido',
-    'tipo_incapacidad'
+    
   ];
 
   columnTitlesTable1 = {
+    'tipo_de_documento': 'Tipo de Documento',
+    'numero_de_documento': 'Número de Documento',
     'dias_temporal': 'Días Temporal',
     'f_inicio': 'Fecha de Inicio',
     'fecha_de_envio_incapacidad_fisica': 'Fecha de Envío Incapacidad Física',
     'Incapacidad_transcrita': 'Incapacidad Transcrita',
-    'numero_de_documento': 'Número de Documento',
     'oficina': 'Oficina',
     'temporal': 'Temporal',
-    'tipo_de_documento': 'Tipo de Documento',
+  
     'apellido': 'Apellido',
     'celular_o_telefono_01': 'Celular o Teléfono 01',
     'celular_o_telefono_02': 'Celular o Teléfono 02',
@@ -126,7 +131,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'fondo_de_pensiones': 'Fondo de Pensiones',
     'historial_clinico': 'Historial Clínico',
     'ips_punto_de_atencion': 'IPS Punto de Atención',
-    'link_incapacidad': 'Link Incapacidad',
+    'link_incapacidad': 'Archivo Incapacidad',
     'marcaTemporal': 'Marca Temporal',
     'nit_de_la_IPS': 'NIT de la IPS',
     'nombre': 'Nombre',
@@ -213,11 +218,13 @@ export class BuscarIncapacidadComponent implements OnInit {
 
   displayedColumnsTable4 = [
     'Numero_de_documento',
+    'consecutivoSistema_id',
+    'valor_incapacidad',
     'a_donde_se_radico',
     'aquien_corresponde_el_pago',
     'codigo_respuesta_eps',
     'confirmacion_fecha_de_radicacion',
-    'consecutivoSistema_id',
+    
     'dias_pagos_incapacidad',
     'estado_del_documento_incapacidad',
     'fecha_de_recepcion_de_la_incapacidad',
@@ -232,7 +239,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'respuesta_de_la_eps',
     'respuesta_final_incapacidad',
     'transaccion_empresa_usuaria',
-    'valor_incapacidad'
+    
   ];
   columnTitlesTable4 = {
     'consecutivoSistema_id': 'Número de consecutivo del sistema',
@@ -484,7 +491,9 @@ export class BuscarIncapacidadComponent implements OnInit {
 
 
   dataSourcetable1 = new MatTableDataSource<any>();
-
+  copiadataSourcetable1 = new MatTableDataSource<any>();
+  overlayVisible = false;
+  loaderVisible = false;
 
   resultsincapacidades: any[] = [];
   resultsarl: any[] = [];
@@ -494,8 +503,7 @@ export class BuscarIncapacidadComponent implements OnInit {
   correo: any
   filteredData: any[] = [];
   isSearchded = false;
-  overlayVisible = false;
-  loaderVisible = false;
+
   counterVisible = false;
   columnConfigs: ColumnConfig[] = [
     { key: 'numero_de_documento', label: 'Número de Documento', filterable: true },
@@ -548,10 +556,17 @@ export class BuscarIncapacidadComponent implements OnInit {
     this.loaderVisible = visible;
     this.counterVisible = showCounter;
   }
+  isDownloadableColumn(column: string): boolean {
+    // Verifica si la columna es 'historial_clinico' o 'link_incapacidad'
+    return column === 'historial_clinico' || column === 'link_incapacidad';
+  }
   onSearch(): void {
+    this.toggleLoader(true, true);
+    this.toggleOverlay(true);
     if (this.query.trim()) { // Verifica que el input no esté vacío
       this.incapacidadService.buscar(this.query).subscribe(
         response => {
+          
 
           // Assuming response contains incapacidades and reporte arrays
           const incapacidades = response.incapacidades || [];
@@ -561,22 +576,35 @@ export class BuscarIncapacidadComponent implements OnInit {
           const incapacidadespagas = response.incapacidadespagas || [];
           // Combinar los datos
           const combinedData = incapacidades.map((incapacidad: any, index: number) => {
-            // Puedes combinar los datos aquí si hay una relación entre ellos
-            // En este ejemplo, solo se concatenan, pero puedes personalizar la lógica según tus necesidades
-            return {
+            const result = {
               ...incapacidad,
-              ...reporte[index],  // Asumiendo que hay una correspondencia uno a uno
+              ...reporte[index], // Asumiendo que hay una correspondencia uno a uno
               ...movimiento[index],
               ...facturaelite[index],
               ...incapacidadespagas[index]
             };
+
+            if (result['historial_clinico'] && typeof result['historial_clinico'] === 'string') {
+              result['historial_clinico_link'] = this.convertBase64ToPDF(result['historial_clinico']);
+            }
+
+            if (result['link_incapacidad'] && typeof result['link_incapacidad'] === 'string') {
+              result['link_incapacidad_link'] = this.convertBase64ToPDF(result['link_incapacidad']);
+            }
+
+            return result;
           });
           // Asignar los datos al DataSource
+          this.toggleLoader(false, false);
+          this.toggleOverlay(false);
           this.dataSourcetable1.data = combinedData;
+          this.copiadataSourcetable1.data = combinedData;
           this.isSearchded = true;
 
         },
         error => {
+          this.toggleLoader(false, false);
+          this.toggleOverlay(false);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -586,32 +614,123 @@ export class BuscarIncapacidadComponent implements OnInit {
         }
       );
     } else {
+      this.toggleLoader(false, false);
       // Clear the tables if the query is empty
       this.dataSourcetable1.data = [];
 
+    }
+  }
+  convertBase64ToPDF(base64String: string): string | null {
+    // Verificar si la cadena base64 es válida
+    if (!base64String || typeof base64String !== 'string') {
+      console.error('Invalid base64 string');
+      return null;
+    }
+
+    // Limpiar prefijos como 'data:application/pdf;base64,'
+    const base64Pattern = /^data:application\/pdf;base64,/;
+    if (base64Pattern.test(base64String)) {
+      base64String = base64String.replace(base64Pattern, '');
+    }
+
+    try {
+      // Decodificar la cadena Base64
+      const binaryString = atob(base64String);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      // Crear un Blob a partir del Uint8Array
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+
+      // Crear una URL para el Blob
+      return window.URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Failed to convert Base64 to PDF:', error);
+      return null;
     }
   }
 
 
   applyFilter() {
     // Función auxiliar para verificar coincidencias de cadenas
-    const stringMatch = (itemValue: string, filterValue: string): boolean => {
-      // Devuelve true si el filtro está vacío o si el valor contiene el filtro (ignorando mayúsculas/minúsculas y espacios)
-      return !filterValue || (itemValue?.toLowerCase().trim().includes(filterValue.toLowerCase().trim()));
+    console.log('Criterios de filtro:', this.filterCriteria); // Debug inicial
+    console.log('Datos originales de la tabla:', this.dataSourcetable1); // Debug inicial
+
+    // Función auxiliar para verificar coincidencias de cadenas
+    const stringMatch = (value: string, filterValue: string): boolean => {
+      return value?.toLowerCase().trim().includes(filterValue?.toLowerCase().trim());
     };
 
-    // Aplicación del filtro
-    this.filteredData = this.resultsincapacidades.filter(item => {
-      const tipodeincapacidadMatch = stringMatch(item.tipodeincapacidad, this.filterCriteria.tipodeincapacidad);
-      const centrodecostoMatch = stringMatch(item.centrodecosto, this.filterCriteria.centrodecosto);
-      const empresaMatch = stringMatch(item.empresa, this.filterCriteria.empresa);
-      const estadorobotMatch = stringMatch(item.estadorobot, this.filterCriteria.estadorobot);
-      const temporalMatch = stringMatch(item.temporal, this.filterCriteria.temporal);
+    // Función auxiliar para verificar coincidencias exactas de cadenas
+    const exactStringMatch = (value: string, filterValue: string): boolean => {
+      return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
+    };
 
-      return tipodeincapacidadMatch && centrodecostoMatch && empresaMatch && estadorobotMatch && temporalMatch;
+    // Filtrar los datos para dataSourceTable1 basados en los criterios seleccionados
+    const filteredData = this.dataSourcetable1.data.filter(item => {
+      const numeroDeDocumentoMatch = this.filterCriteria.numeroDeDocumento
+        ? exactStringMatch(item.Numero_de_documento?.toString(), this.filterCriteria.numeroDeDocumento)
+        : true;
+
+      const fechaInicioMatch = this.filterCriteria.fechaInicio
+        ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
+        : true;
+
+      const empresaMatch = this.filterCriteria.empresa
+        ? stringMatch(item.empresa, this.filterCriteria.empresa)
+        : true; 
+
+      const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
+        ? exactStringMatch(item.tipo_incapacidad, this.filterCriteria.tipoIncapacidad)
+        : true;
+
+      const estadorobotMatch = this.filterCriteria.estadorobot
+        ? stringMatch(item.estadorobot, this.filterCriteria.estadorobot)
+        : true;
+
+      const temporalMatch = this.filterCriteria.temporal
+        ? stringMatch(item.temporal, this.filterCriteria.temporal)
+        : true;
+
+      return numeroDeDocumentoMatch && fechaInicioMatch && empresaMatch && tipoIncapacidadMatch && estadorobotMatch && temporalMatch;
     });
+    if (filteredData.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No se encontraron datos',
+        text: 'No se encontraron datos con los criterios seleccionados.',
+        confirmButtonText: 'Aceptar'
+      });
 
-    console.log('Datos filtrados:', this.filteredData); // Depuración de datos filtrados
+      // Limpia los criterios de filtro
+      this.filterCriteria = {
+        numeroDeDocumento: '',
+        fechaInicio: '',
+        empresa: '',
+        tipoIncapacidad: '',
+        estadorobot: '',
+        temporal: ''
+      };
+      this.dataSourcetable1.data = this.copiadataSourcetable1.data;
+    }else{
+      this.dataSourcetable1.data = filteredData;
+      this.dataSourcetable1._updateChangeSubscription(); // Asegura que la tabla se actualice
+    }
+    
+    
+  }
+  clearFilter(): void {
+    this.filterCriteria = {
+      tipodeincapacidad: '',
+      centrodecosto: '',
+      empresa: '',
+      estadorobot: '',
+      temporal: ''
+    };
+    this.dataSourcetable1.data = this.copiadataSourcetable1.data;
   }
 
   resetFileInput(event: any): void {
@@ -664,85 +783,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     fileInput.click();
   }
 
-  cargarExcel(event: any): void {
-    this.toggleLoader(true, true);
-    this.toggleOverlay(true);
-
-    const files = event.target.files;
-
-    if (files.length !== 2) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Por favor seleccione dos archivos Excel'
-      });
-      this.toggleLoader(false);
-      this.toggleOverlay(false);
-      return;
-    }
-
-    const fileNames: { [key: string]: string } = {};
-    const fileData: { [key: string]: any[] } = {};
-    let filesProcessed = 0;
-
-    // Función para procesar cada archivo de Excel
-    const processExcelFile = (file: File, key: string) => {
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
-
-        // No hay verificación de columnas aquí
-        const modifiedRows = this.asignarClaves(rows);
-
-        fileNames[key] = file.name;
-        fileData[key] = modifiedRows;
-        filesProcessed++;
-
-        // Cuando ambos archivos hayan sido procesados
-        if (filesProcessed === 2) {
-          this.incapacidadService.uploadFiles(fileData, fileNames).subscribe(
-            (response: any) => {
-              if (response.message === 'success') {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Éxito',
-                  text: 'Los archivos han sido cargados correctamente'
-                });
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Ocurrió un error al cargar los archivos'
-                });
-              }
-              this.toggleLoader(false);
-              this.toggleOverlay(false);
-            },
-            (error: any) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ha ocurrido un error al cargar los archivos'
-              });
-              this.toggleLoader(false);
-              this.toggleOverlay(false);
-            }
-          );
-        }
-      };
-
-      reader.readAsArrayBuffer(file);
-    };
-
-    // Procesar ambos archivos Excel
-    processExcelFile(files[0], 'arl');
-    processExcelFile(files[1], 'sst');
-  }
+  
   displayedColumnsWithEdit: string[] = [...this.displayedColumnsTable4, 'edit'];
 
   openEditDialog(element: any): void {
