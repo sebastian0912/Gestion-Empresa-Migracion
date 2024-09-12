@@ -72,7 +72,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'Fecha_de_Envio_Incapacidad_Fisica',
     'Incapacidad_transcrita',
     'centrodecosto',
-    
+
     'dias_de_diferencia',
     'dias_eps',
     'dias_incapacidad',
@@ -87,11 +87,11 @@ export class BuscarIncapacidadComponent implements OnInit {
     'link_incapacidad',
     'marcaTemporal',
     'nit_de_la_IPS',
-    
+
     'nombre_de_quien_recibio',
     'nombre_doctor',
     'nombre_eps',
-    
+
     'numero_de_documento_doctor',
     'numero_de_incapacidad',
     'observaciones',
@@ -99,7 +99,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'responsable_de_envio',
     'sexo',
     'tipo_de_documento_doctor_atendido',
-    
+
   ];
 
   columnTitlesTable1 = {
@@ -111,7 +111,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'Incapacidad_transcrita': 'Incapacidad Transcrita',
     'oficina': 'Oficina',
     'temporal': 'Temporal',
-  
+
     'apellido': 'Apellido',
     'celular_o_telefono_01': 'Celular o Teléfono 01',
     'celular_o_telefono_02': 'Celular o Teléfono 02',
@@ -224,7 +224,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'aquien_corresponde_el_pago',
     'codigo_respuesta_eps',
     'confirmacion_fecha_de_radicacion',
-    
+
     'dias_pagos_incapacidad',
     'estado_del_documento_incapacidad',
     'fecha_de_recepcion_de_la_incapacidad',
@@ -239,7 +239,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     'respuesta_de_la_eps',
     'respuesta_final_incapacidad',
     'transaccion_empresa_usuaria',
-    
+
   ];
   columnTitlesTable4 = {
     'consecutivoSistema_id': 'Número de consecutivo del sistema',
@@ -694,6 +694,11 @@ export class BuscarIncapacidadComponent implements OnInit {
     'SOAT / ACCIDENTE DE TRANCITO',
     'ENFERMEDAD LABORAL'
   ];
+  temporales:string [] = [
+    'Tu Alianza',
+    'Apoyo Laboral'
+
+  ]
   constructor(private incapacidadService: IncapacidadService, private router: Router) {
   }
   async ngOnInit(): Promise<void> {
@@ -738,7 +743,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     if (this.query.trim()) { // Verifica que el input no esté vacío
       this.incapacidadService.buscar(this.query).subscribe(
         response => {
-          
+
 
           // Assuming response contains incapacidades and reporte arrays
           const incapacidades = response.incapacidades || [];
@@ -840,6 +845,11 @@ export class BuscarIncapacidadComponent implements OnInit {
     const exactStringMatch = (value: string, filterValue: string): boolean => {
       return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
     };
+    if(this.filterCriteria.temporal === 'Tu Alianza'){
+      this.filterCriteria.temporal = 'TA';
+    }else if(this.filterCriteria.temporal === 'Apoyo Laboral'){
+      this.filterCriteria.temporal = 'AL';
+    }
 
     // Filtrar los datos para dataSourceTable1 basados en los criterios seleccionados
     const filteredData = this.dataSourcetable1.data.filter(item => {
@@ -851,9 +861,9 @@ export class BuscarIncapacidadComponent implements OnInit {
         ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
         : true;
 
-      const empresaMatch = this.filterCriteria.empresa
-        ? stringMatch(item.empresa, this.filterCriteria.empresa)
-        : true; 
+      const empresaMatch = this.filterCriteria.temporal
+        ? stringMatch(item.Temporal, this.filterCriteria.temporal)
+        : true;
 
       const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
         ? exactStringMatch(item.tipo_incapacidad, this.filterCriteria.tipoIncapacidad)
@@ -891,8 +901,8 @@ export class BuscarIncapacidadComponent implements OnInit {
       this.dataSourcetable1.data = filteredData;
       this.dataSourcetable1._updateChangeSubscription(); // Asegura que la tabla se actualice
     }
-    
-    
+
+
   }
   clearFilter(): void {
     this.filterCriteria = {
@@ -955,7 +965,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     fileInput.click();
   }
 
-  
+
   displayedColumnsWithEdit: string[] = [...this.displayedColumnsTable4, 'edit'];
 
   openEditDialog(element: any): void {
@@ -1039,7 +1049,7 @@ export class BuscarIncapacidadComponent implements OnInit {
   filterCriteria: any = {
     numeroDeDocumento: '',
     fechaInicio: '',
-    empresa: '',
+    temporal: '',
     estadoIncapacidad: ''
   };
   isFilterCollapsed = true;

@@ -65,8 +65,12 @@
 
           <!-- Filtro por Empresa -->
           <mat-form-field>
-            <mat-label>Empresa</mat-label>
-            <input matInput [(ngModel)]="filterCriteria.empresa" placeholder="Empresa">
+            <mat-label>Temporal</mat-label>
+            <mat-select [(ngModel)]="filterCriteria.temporal">
+              <mat-option *ngFor="let option of temporales" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
 
           <!-- Filtro por Tipo de Incapacidad -->

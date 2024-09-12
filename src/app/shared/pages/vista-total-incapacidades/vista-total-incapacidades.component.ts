@@ -290,11 +290,11 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
-
+  temporales: string[] = ['Tu Alianza', 'Apoyo Laboral'];
   filterCriteria: any = {
     numeroDeDocumento: '',
     fechaInicio: '',
-    empresa: '',
+    temporal: '',
     estadoIncapacidad: ''
   };
   isFilterCollapsed = true;
@@ -437,8 +437,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
 
   applyFilter() {
-    console.log('Criterios de filtro:', this.filterCriteria); // Debug inicial
-    console.log('Datos originales de la tabla:', this.dataSourceTable1.data); // Debug inicial
+
 
     // Función auxiliar para verificar coincidencias de cadenas
     const stringMatch = (value: string, filterValue: string): boolean => {
@@ -449,6 +448,11 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     const exactStringMatch = (value: string, filterValue: string): boolean => {
       return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
     };
+    if(this.filterCriteria.temporal === 'Tu Alianza'){
+      this.filterCriteria.temporal = 'TA';
+    }else if(this.filterCriteria.temporal === 'Apoyo Laboral'){
+      this.filterCriteria.temporal = 'AL';
+    }
 
     // Filtrar los datos basados en los criterios seleccionados
     const filteredData = this.dataSourceTable1.data.filter(item => {
@@ -463,8 +467,8 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
         ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
         : true;
 
-      const empresaMatch = this.filterCriteria.empresa
-        ? stringMatch(item.empresa, this.filterCriteria.empresa)
+      const empresaMatch = this.filterCriteria.temporal
+        ? stringMatch(item.Temporal, this.filterCriteria.temporal)
         : true;
 
       const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
