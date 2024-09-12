@@ -50,7 +50,7 @@ export class IncapacidadValidator {
   private static pagook(incapacidad: any): string {
     if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
     if (incapacidad.observaciones === 'OK') {
-      if (incapacidad.nombre_eps === 'ARL') {
+      if (incapacidad.nombre_eps === 'ARL SURA') {
         return 'SI PAGA ARL';
       }
       if (incapacidad.nombre_eps !== 'No cumple con el tiempo decreto 780') {
