@@ -60,7 +60,7 @@ export class NavbarLateralComponent implements OnInit {
     ],
     ADMIN: [
       'home', 'forma-pago', 'desprendibles-pago',
-      'arl', 'ausentismos', 
+      'arl', 'ausentismos',
       'seguimiento-auditoria', 'estadisticas-auditoria',
       'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo',
       'reporte-contratacion', 'seguimiento-auditoria', 'envio-paquete-documentacion',
@@ -75,7 +75,7 @@ export class NavbarLateralComponent implements OnInit {
     ],
     INCAPACIDADADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades', 'formulario-incapacicades'
     ],
-    INCAPACIDADSUBIDA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'formulario-incapacicades'
+    INCAPACIDADSUBIDA: ['home', 'formulario-incapacicades'
     ],
   };
 
@@ -446,12 +446,12 @@ export class NavbarLateralComponent implements OnInit {
 
     // Crear un array de objetos con los datos mapeados
     const datosMapeados = datos.map((dato: any) => {
-      
+
       if (!dato.proceso_contratacion) {
         console.log("Proceso de contratación no está definido para la cédula: " + dato.datos_generales.numerodeceduladepersona);
-      } else if (dato.proceso_contratacion.fechaIngreso === null || 
-                 dato.proceso_contratacion.fechaIngreso === undefined || 
-                 dato.proceso_contratacion.fechaIngreso === '' || 
+      } else if (dato.proceso_contratacion.fechaIngreso === null ||
+                 dato.proceso_contratacion.fechaIngreso === undefined ||
+                 dato.proceso_contratacion.fechaIngreso === '' ||
                  dato.proceso_contratacion.fechaIngreso === '-') {
         dato.proceso_contratacion.fechaIngreso = '';
         console.log(dato.datos_generales.numerodeceduladepersona + "----" + dato.proceso_contratacion.fechaIngreso + "" + " " + dato.proceso_contratacion.fecha_contratacion);
