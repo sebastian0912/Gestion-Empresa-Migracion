@@ -179,12 +179,26 @@
                 </mat-form-field>
                 <!-- Otros campos de texto -->
                 <mat-form-field class="example-full-width" appearance="fill"
-                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad', 'Observaciones',  'Dias de diferencia']">
+                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad',   'Dias de diferencia','A quien corresponde el pago','Observaciones',]">
                   <mat-label>{{ field }}</mat-label>
                   <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
                 </mat-form-field>
-
-
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Estado del documento Incapacidad</mat-label>
+                  <mat-select [formControlName]="fieldMap['Estado del documento Incapacidad']">
+                    <mat-option *ngFor="let option of estadodocumentoincapacidad" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Estado incapacidad</mat-label>
+                  <mat-select [formControlName]="fieldMap['Estado incapacidad']">
+                    <mat-option *ngFor="let option of estadoincapacidad" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
                 <mat-form-field class="example-full-width">
                   <mat-label>Nombre eps</mat-label>
                   <input type="text" matInput [formControl]="epsControlForm" [formControlName]="fieldMap['Nombre eps']"
@@ -217,14 +231,7 @@
 
 
 
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>Estado incapacidad</mat-label>
-                  <mat-select [formControlName]="fieldMap['Estado incapacidad']">
-                    <mat-option *ngFor="let option of estadoincapacidad" [value]="option">
-                      {{ option }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
+
               </div>
             </mat-card-content>
           </mat-card>
@@ -278,7 +285,7 @@
                     <mat-list>
                       <mat-list-item *ngFor="let file of getFiles(field)" class="file-item">
                         <!-- Nombre del archivo -->
-                        <span mat-line>Archivo de {{ field }}  </span>
+                        <span mat-line>Archivo de {{ field }} </span>
                         <span mat-line>{{ file.name }}</span>
 
                         <!-- Botón para eliminar el archivo -->

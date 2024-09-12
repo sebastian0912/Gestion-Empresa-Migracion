@@ -52,8 +52,8 @@
 
               <!-- Filtro por Empresa -->
               <mat-form-field>
-                <mat-label>Empresa</mat-label>
-                <input matInput [(ngModel)]="filterCriteria.empresa" placeholder="Empresa">
+                <mat-label>Temporal</mat-label>
+                <input matInput [(ngModel)]="filterCriteria.temporal" placeholder="Temporal">
               </mat-form-field>
 
               <!-- Filtro por Tipo de Incapacidad -->
@@ -76,7 +76,7 @@
                 <ng-container [matColumnDef]="column">
                   <th mat-header-cell *matHeaderCellDef>
                     {{ toTitleCase(column, columnTitlesTable1) }}
-            
+
                     <!-- Filtros dinámicos basados en el contenido de la columna -->
                     <mat-form-field *ngIf="columnFilters[column]" appearance="outline">
                       <mat-select (selectionChange)="applyFilterColumn(column, $event.value)" placeholder="Filtrar">
@@ -106,14 +106,14 @@
                   </td>
                 </ng-container>
               </ng-container>
-            
+
               <tr mat-header-row *matHeaderRowDef="ColumnsTable1"></tr>
               <tr mat-row *matRowDef="let row; columns: ColumnsTable1;"></tr>
               <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" colspan="22">No hay datos</td>
               </tr>
             </table>
-            
+
             <div *ngIf="editingRow" class="action-buttons">
               <button mat-raised-button color="primary" (click)="saveChanges()">Guardar</button>
               <button mat-raised-button color="warn" (click)="cancelEditing()">Cancelar</button>

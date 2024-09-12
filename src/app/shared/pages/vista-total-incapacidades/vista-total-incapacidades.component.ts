@@ -27,6 +27,7 @@ interface ColumnTitle {
   [key: string]: string;
 }
 
+
 interface FilterCriteria {
   tipodeincapacidad: string;
   centrodecosto: string;
@@ -64,20 +65,93 @@ interface FileData {
 export class VistaTotalIncapacidadesComponent implements OnInit {
   query: string = '';
   [key: string]: any;
+  columnTitlesTable1excel: Record<string, string> = {
+    Tipo_de_documento: 'Tipo de Documento',
+    Numero_de_documento: 'Número de Documento',
+    numero_de_contrato: 'Número de Contrato',
+    nombre: 'Nombre',
+    apellido: 'Apellido',
+    correoElectronico: 'Correo Electrónico',
 
+    celular_o_telefono_01: 'Celular o Teléfono 01',
+    celular_o_telefono_02: 'Celular o Teléfono 02',
+    sexo: 'Sexo',
+    edad: 'Edad',
+    empresa: 'Empresa',
+    nombre_de_quien_recibio: 'Nombre de Quien Recibió',
+    Oficina: 'Oficina',
+    centrodecosto: 'Centro de Costo',
+    consecutivoSistema: 'Consecutivo Sistema',
+    Temporal: 'Temporal',
+    fecha_de_ingreso_temporal: 'Fecha de Ingreso Temporal',
+    fondo_de_pensiones: 'Fondo de Pensiones',
+    Dias_temporal: 'Días Temporal',
+    nombre_eps: 'Nombre EPS',
+    tipo_incapacidad: 'Tipo Incapacidad',
+    codigo_diagnostico: 'Código Diagnóstico',
+    prorroga: 'Prórroga',
+    descripcion_diagnostico: 'Descripción Diagnóstico',
+    F_inicio: 'Fecha de Inicio Incapacidad',
+    F_final: 'Fecha Final de la Incapacidad',
+    dias_eps: 'Días EPS',
+    dias_incapacidad: 'Días Incapacidad',
+    observaciones: 'Observaciones',
+    Fecha_de_Envio_Incapacidad_Fisica: 'Fecha de Envío Incapacidad Física',
+    dias_de_diferencia: 'Días de Diferencia entre fecha de envio a fecha actual',
+    estado_incapacidad: 'Estado Incapacidad',
+    numero_de_incapacidad: 'Número de Incapacidad',
+    Incapacidad_transcrita: 'Incapacidad Transitada',
+    quiencorrespondepago: 'Quién Corresponde el Pago',
+    estado_documento_incapacidad: 'Estado Documento Incapacidad',
+    estado_robot_doctor: 'Estado Robot Doctor',
+    marcaTemporal: 'Marca Temporal',
+    nit_de_la_IPS: 'NIT de la IPS',
+    ips_punto_de_atencion: 'IPS Punto de Atención',
+    tipo_de_documento_doctor_atendido: 'Tipo de Documento Doctor Atendido',
+    numero_de_documento_doctor: 'Número de Documento Doctor',
+    nombre_doctor: 'Nombre Doctor',
+    responsable_de_envio: 'Responsable de Envío',
+  };
+
+    columnTitlesTable4excel: Record<string, string> = {
+    consecutivoSistema_id: 'Número de consecutivo del sistema',
+    confirmacion_fecha_de_radicacion: 'Fecha de confirmación de radicación',
+    fecha_de_recepcion_de_la_incapacidad: 'Fecha de recepción de la incapacidad',
+    fecha_revision_por_parte_de_incapacidades: 'Fecha de revisión por parte de incapacidades',
+    estado_del_documento_incapacidad: 'Estado del documento de incapacidad',
+    aquien_corresponde_el_pago: 'A quién corresponde el pago',
+    fecha_de_radicado_eps: 'Fecha de radicado EPS',
+    numero_de_radicado: 'Número de radicado',
+    a_donde_se_radico: 'A dónde se radicó',
+    quien_radico: 'Quién radicó',
+    respuesta_de_la_eps: 'Respuesta de la EPS',
+    codigo_respuesta_eps: 'Código de respuesta EPS',
+    fecha_de_respuesta_eps: 'Fecha de respuesta EPS',
+    numero_de_incapacidad_eps: 'Número de incapacidad EPS',
+    dias_pagos_incapacidad: 'Días pagos incapacidad',
+    valor_incapacidad: 'Valor incapacidad',
+    numero_transaccion_eps_arl: 'Número de transacción EPS/ARL',
+    transaccion_empresa_usuaria: 'Transacción empresa usuaria',
+    quien_corresponde_el_pago_final: 'Quién corresponde el pago final',
+    respuesta_final_incapacidad: 'Respuesta final incapacidad'
+  };
   ColumnsTable1 = [
+    'Tipo_de_documento',
+    'Numero_de_documento',
+    'numero_de_contrato',
+    'nombre',
+    'apellido',
+    'celular_o_telefono_01',
+    'celular_o_telefono_02',
+    'Oficina',
+    'Temporal',
+    'edad',
+    'observaciones',
     'Dias_temporal',
     'F_inicio',
     'F_final',
     'Fecha_de_Envio_Incapacidad_Fisica',
-    'Incapacidad_transitada',
-    'Numero_de_documento',
-    'Oficina',
-    'Temporal',
-    'Tipo_de_documento',
-    'apellido',
-    'celular_o_telefono_01',
-    'celular_o_telefono_02',
+    'Incapacidad_transcrita',
     'centrodecosto',
     'codigo_diagnostico',
     'consecutivoSistema',
@@ -86,7 +160,6 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'dias_de_diferencia',
     'dias_eps',
     'dias_incapacidad',
-    'edad',
     'empresa',
     'estado_incapacidad',
     'estado_robot_doctor',
@@ -95,26 +168,26 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'ips_punto_de_atencion',
     'marcaTemporal',
     'nit_de_la_IPS',
-    'nombre',
     'nombre_de_quien_recibio',
     'nombre_doctor',
     'nombre_eps',
-    'numero_de_contrato',
     'numero_de_documento_doctor',
     'numero_de_incapacidad',
-    'observaciones',
     'prorroga',
     'responsable_de_envio',
     'sexo',
     'tipo_de_documento_doctor_atendido',
-    'tipo_incapacidad'
+    'tipo_incapacidad',
+    'quiencorrespondepago',
+    'estado_documento_incapacidad'
+
   ];
 
   columnTitlesTable1 = {
     'dias_temporal': 'Días Temporal',
     'f_inicio': 'Fecha de Inicio',
     'fecha_de_envio_incapacidad_fisica': 'Fecha de Envío Incapacidad Física',
-    'incapacidad_transitada': 'Incapacidad Transitada',
+    'incapacidad_transcrita': 'Incapacidad Transitada',
     'numero_de_documento': 'Número de Documento',
     'oficina': 'Oficina',
     'temporal': 'Temporal',
@@ -151,7 +224,9 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'responsable_de_envio': 'Responsable de Envío',
     'sexo': 'Sexo',
     'tipo_de_documento_doctor_atendido': 'Tipo de Documento Doctor Atendido',
-    'tipo_incapacidad': 'Tipo Incapacidad'
+    'tipo_incapacidad': 'Tipo Incapacidad',
+    'quiencorrespondepago': 'Quién Corresponde el Pago',
+    'estado_documento_incapacidad': 'Estado Documento Incapacidad'
   };
 
 
@@ -223,17 +298,38 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     estadoIncapacidad: ''
   };
   isFilterCollapsed = true;
-
+  isloadeddata = false;
   toggleFilter(): void {
     this.isFilterCollapsed = !this.isFilterCollapsed;
   }
+  toggleOverlay(visible: boolean): void {
+    this.overlayVisible = visible;
+  }
+
+  toggleLoader(visible: boolean, showCounter: boolean = false): void {
+    this.loaderVisible = visible;
+    this.counterVisible = showCounter;
+  }
+
 
   constructor(
     private incapacidadService: IncapacidadService,
     private router: Router
-  ) { }
+  ) {
+    if (!this.isloadeddata){
+      this.toggleLoader(true, true);
+      this.toggleOverlay(true);
+    }else{
+      this.toggleLoader(false, false);
+      this.toggleOverlay(false);
+    }
+
+
+  }
 
   ngOnInit(): void {
+    this.toggleLoader(true, true);
+    this.toggleOverlay(true);
     this.loadData();
   }
   tiposIncapacidad: string[] = [
@@ -262,6 +358,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
 
   private loadData(): void {
+
     Promise.all([
       this.incapacidadService.traerTodosDatosIncapacidad().toPromise(),
       this.incapacidadService.traerTodosDatosReporte().toPromise()
@@ -297,7 +394,8 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
           text: 'Ocurrió un error al cargar los datos, por favor intenta de nuevo.',
           confirmButtonText: 'Aceptar'
         });
-        this.toggleLoader(false);
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
       });
   }
   applyDateFilter() {
@@ -337,14 +435,6 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     audio.play();
   }
 
-  toggleOverlay(visible: boolean): void {
-    this.overlayVisible = visible;
-  }
-
-  toggleLoader(visible: boolean, showCounter: boolean = false): void {
-    this.loaderVisible = visible;
-    this.counterVisible = showCounter;
-  }
 
   applyFilter() {
     console.log('Criterios de filtro:', this.filterCriteria); // Debug inicial
@@ -449,20 +539,64 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     // Crear una nueva instancia de un libro de trabajo
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
 
-    // Mapear los datos de la primera tabla con los títulos correspondientes
-    const mappedData1 = this.mapDataWithTitles(this.dataSourceTable1.data, this.columnTitlesTable1);
-    const ws1: XLSX.WorkSheet = XLSX.utils.json_to_sheet(mappedData1);
-    XLSX.utils.book_append_sheet(wb, ws1, 'Incapacidades');
+    // Mapear los datos de la segunda tabla (Reporte) con los títulos correspondientes y crear un diccionario
+    const reporteMap = new Map<string, any>();
+    this.dataSourceTable4.data.forEach((item: any) => {
+      const mappedItem: any = {};
+      Object.keys(this.columnTitlesTable4excel).forEach(key => {
+        mappedItem[this.columnTitlesTable4excel[key]] = item[key] || ''; // Mapea el título y el valor, asigna vacío si no hay datos
+      });
+      const numeroConsecutivo = item['consecutivoSistema_id'];
+      if (numeroConsecutivo) {
+        reporteMap.set(numeroConsecutivo, mappedItem);
+      }
+    });
 
-    // Mapear los datos de la segunda tabla con los títulos correspondientes
-    const mappedData2 = this.mapDataWithTitles(this.dataSourceTable4.data, this.columnTitlesTable4);
-    const ws2: XLSX.WorkSheet = XLSX.utils.json_to_sheet(mappedData2);
-    XLSX.utils.book_append_sheet(wb, ws2, 'Reporte');
+    // Combinar los datos de la primera tabla (Incapacidades) con los datos de "Reporte" basados en el consecutivo del sistema
+    const combinedData = this.dataSourceTable1.data.map((item: any) => {
+      const mappedItem: any = {};
+      Object.keys(this.columnTitlesTable1excel).forEach(key => {
+        mappedItem[this.columnTitlesTable1excel[key]] = item[key] || ''; // Mapea el título y el valor, asigna vacío si no hay datos
+      });
+
+      // Buscar el reporte correspondiente usando el consecutivoSistema
+      const numeroConsecutivo = item['consecutivoSistema'];
+      const reporteItem = reporteMap.get(numeroConsecutivo);
+
+      // Si existe un reporte correspondiente, combinar los datos
+      if (reporteItem) {
+        Object.keys(this.columnTitlesTable4excel).forEach(key => {
+          mappedItem[this.columnTitlesTable4excel[key]] = reporteItem[this.columnTitlesTable4excel[key]] || ''; // Mapea el título y el valor
+        });
+      } else {
+        // Si no existe un reporte correspondiente, agrega columnas vacías para los campos del reporte
+        Object.keys(this.columnTitlesTable4excel).forEach(key => {
+          mappedItem[this.columnTitlesTable4excel[key]] = ''; // Llena con vacío si no hay reporte correspondiente
+        });
+      }
+
+      return mappedItem;
+    });
+
+    // Crear una hoja de trabajo de Excel con los datos combinados
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(combinedData);
+
+    // Añadir la hoja al libro de trabajo
+    XLSX.utils.book_append_sheet(wb, ws, 'Incapacidades y Reporte');
+
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
 
     // Generar el archivo Excel y descargarlo
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'Reporte.xlsx');
+    saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
   }
+
+
+
+
+
+
 
   mapDataWithTitles(data: any[], columnTitles: ColumnTitle): any[] {
     return data.map(item => {

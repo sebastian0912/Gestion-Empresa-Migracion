@@ -99,7 +99,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Fondo de pensiones', 'Estado incapacidad', 'Prorroga', 'Incapacidad Transcrita', 'Numero de incapacidad',
     'Nit de la IPS', 'IPS punto de atencion', 'Observaciones', 'Tipo de documento doctor atendido', 'Numero de documento doctor',
     'Nombre doctor', 'Estado robot doctor', 'Archivo Incapacidad', 'Historial clinico', 'Dias de diferencia',
-    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente','Correspondeelpago'
+    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente', 'A quien corresponde el pago','Estado del documento Incapacidad'
   ];
   nombreepspersona: string = '';
   fieldMap: { [key: string]: string } = {
@@ -146,7 +146,8 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Historial clinico': 'historial_clinico',
     'Dias de diferencia': 'dias_de_diferencia',
     'Fecha de Envio Incapacidad Fisica': 'Fecha_de_Envio_Incapacidad_Fisica',
-    'Correspondeelpago': 'correspondeelpago'
+    'A quien corresponde el pago': 'correspondeelpago',
+    'Estado del documento Incapacidad': 'estado_documento_incapacidad',
   };
   files: Record<string, File[]> = {
     'Historial clinico': [],
@@ -336,7 +337,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       }
     });
 
-    
+
   }
   private setupIPSFilters() {
     this.filteredIpsNit = this.ipsControlNit.valueChanges.pipe(
@@ -376,7 +377,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     if (this.isIncapacidadSectionActive(formData)) {
       // Desestructuración del objeto devuelto por validateConditions
-      const { errors, observaciones, quienpaga } = IncapacidadValidator.validateConditions(formData);
+      const { errors, observaciones, quienpaga , } = IncapacidadValidator.validateConditions(formData);
 
       this.validationErrors = errors;
       this.observaciones = observaciones;
@@ -389,7 +390,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       // Deshabilitar el botón de envío si hay errores de validación
       this.isSubmitButtonDisabled = this.validationErrors.length > 0;
 
-      
+
     } else {
       this.isSubmitButtonDisabled = false; // Habilitar el botón si la sección no está activa
     }
@@ -777,9 +778,9 @@ export class FormularioIncapacidadComponent implements OnInit {
             icon: 'success',
             title: 'Incapacidad creada',
             text: 'La incapacidad ha sido creada exitosamente'
-            
+
           }).then(() => {
-            
+
             this.incapacidadForm.reset();
             for (const key in this.fieldMap) {
               this.incapacidadForm.get(key)?.setValue('');
@@ -792,7 +793,7 @@ export class FormularioIncapacidadComponent implements OnInit {
             this.isSubmitButtonDisabled = false;
             this.resetPage();
           });
-          
+
         },
         error => {
           Swal.fire({
@@ -997,7 +998,7 @@ export class FormularioIncapacidadComponent implements OnInit {
   tiposDocumento: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte'];
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
-  estadoincapacidad: string[] = [
+  estadodocumentoincapacidad: string[] = [
     'TRASLAPADA',
 'PRESCRITA',
 'OK',
@@ -1013,6 +1014,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 'FALTA FURAT',
 'FALTA SOAT'
   ];
+  estadoincapacidad: string[] = ['Original', 'Falsa', 'Copia']
   centrodecosto: string[] = [
     'Andes',
     'Cartagenita',
