@@ -1,5 +1,5 @@
 export class IncapacidadValidator {
-  static validateConditions(incapacidad: any): { errors: string[], quienpaga: string, observaciones: string} {
+  static validateConditions(incapacidad: any): { errors: string[], quienpaga: string } {
     let errors: string[] = [];
     let quienpaga: string = '';
     let observaciones: string = '';
@@ -9,69 +9,98 @@ export class IncapacidadValidator {
     const isHigherPriority = (newPriority: string, currentPriority: string): boolean => {
       const priorityOrder = ['baja', 'media', 'alta'];
       return priorityOrder.indexOf(newPriority) > priorityOrder.indexOf(currentPriority);
-
     };
 
-    // Regla 1: No cumple con el tiempo decreto 780 de 2016
-    if (!this.hasEnoughDays(incapacidad) && isHigherPriority('alta', prioridadActual)) {
-      errors.push("No cumple con el tiempo decreto 780 de 2016.");
-      quienpaga = "NO PAGAR";
-      observaciones = "No cumple con el tiempo decreto 780 de 2016.";
-      prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
+    // Utilizar las nuevas funciones dentro de la lógica de validación
+    if (this.pagook(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push(this.pagook(incapacidad));
+      quienpaga = this.pagook(incapacidad);
+      prioridadActual = 'media';
     }
 
-    // Regla 2: Empleador si paga (1 y 2 días iniciales)
-    if (this.employerShouldPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push("El empleador debe hacerse cargo del pago de la incapacidad.");
-      quienpaga = "PAGA EMPLEADOR";
-      observaciones = "El empleador debe hacerse cargo del pago";
-      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
-
+    if (this.faltancosas(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push(this.faltancosas(incapacidad));
+      quienpaga = this.faltancosas(incapacidad);
+      prioridadActual = 'media';
     }
 
-    // Regla 3: ARL debe pagar (día 1 a cargo del empleador)
-    if (this.arlShouldPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
-      quienpaga = "PAGA ARL";
-      observaciones = "El ARL debe hacerse cargo del pago";
-      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    if (this.pagoproporcional(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push(this.pagoproporcional(incapacidad));
+      quienpaga = this.pagoproporcional(incapacidad);
+      observaciones = "Pago proporcional debido a la licencia";
+      prioridadActual = 'media';
     }
 
-    // Regla 4: No pagar (documentos ilegibles o faltantes)
-    if (this.shouldNotPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push("La incapacidad no debe ser pagada debido a documentos ilegibles o faltantes.");
-      quienpaga = "NO PAGAR";
-      observaciones = "La incapacidad no debe ser pagada debido a documentos ilegibles o faltantes.";
-      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    if (this.pagoempleador(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push(this.pagoempleador(incapacidad));
+      quienpaga = this.pagoempleador(incapacidad);
+      prioridadActual = 'media';
     }
 
-    // Regla 5: EPS paga a partir del tercer día
-    if (this.epsShouldPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push("La EPS debe hacerse cargo del pago a partir del tercer día.");
-      quienpaga = "PAGA EPS";
-      observaciones = "La EPS debe hacerse cargo del pago";
-      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    if (this.pagoepsoarl(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push(this.pagoepsoarl(incapacidad));
+      quienpaga = this.pagoepsoarl(incapacidad);
+      prioridadActual = 'media';
     }
 
-    // Regla para prorroga SI
-    if (this.prorrogaSi(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push("La EPS debe hacerse cargo del pago a partir del tercer día de incapacidad.");
-      quienpaga = "PAGA EPS";
-      observaciones = "La EPS debe hacerse cargo del pago";
-      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
-    }
-
-    // Regla para prorroga NO
-    if (this.prorrogaNo(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push("El empleador debe hacerse cargo del pago de los 2 primeros días y luego la EPS.");
-      quienpaga = "PAGA EMPLEADOR";
-      observaciones = "El empleador debe hacerse cargo del pago";
-      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
-    }
-
-    return { errors, quienpaga, observaciones };
+    return { errors, quienpaga };
   }
 
+
+  private static pagook(incapacidad: any): string {
+    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
+    if (incapacidad.observaciones === 'OK') {
+      if (incapacidad.nombre_eps === 'ARL') {
+        return 'SI PAGA ARL';
+      }
+      if (incapacidad.nombre_eps !== 'No cumple con el tiempo decreto 780') {
+        return 'SI PAGA EPS';
+      }
+    }
+    return '';
+  }
+
+  private static faltancosas(incapacidad: any): string {
+    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
+    const observaciones = [
+      'PRESCRITA', 'FALSA', 'SIN EPICRISIS', 'SIN INCAPACIDAD', 'MEDICINA PREPA', 'ILEGIBLE',
+      'INCONSISTENTE-,MAS DE 180 DIAS', 'MAS DE 540 DIAS', 'FECHAS INCONSISTENTES', 'FALTA ORIGINAL',
+      'FALTA FURAT', 'FALTA SOAT'
+    ];
+    if (observaciones.includes(incapacidad.observaciones)) {
+      return 'NO PAGAR';
+    }
+    return '';
+  }
+
+  private static pagoproporcional(incapacidad: any): string {
+    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
+    const observaciones = ['LICENCIA DE MATERNIDAD', 'LICENCIA DE PATERNIDAD', 'TRASLAPADA'];
+    if (observaciones.includes(incapacidad.observaciones)) {
+      return 'PAGO PROPORCIONAL';
+    }
+    return '';
+  }
+
+  private static pagoempleador(incapacidad: any): string {
+    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
+    const observaciones = ['INCAPACIDAD DE 1 DIA ARL', 'INCAPACIDAD DE 1 Y 2 DIAS EPS   SI NO ES PROROGA'];
+    if (observaciones.includes(incapacidad.observaciones)) {
+      return 'EMPLEADOR PAGA';
+    }
+    return '';
+  }
+
+  private static pagoepsoarl(incapacidad: any): string {
+    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
+    if (incapacidad.observaciones === 'INCAPACIDAD 1 Y 2 DIAS PRORROGA') {
+      return 'EPS SI PAGA';
+    }
+    if (incapacidad.observaciones === 'INCAPACIDAD 1 DIA ARL PRORROGA') {
+      return 'ARL SI PAGA';
+    }
+    return '';
+  }
   private static hasEnoughDays(incapacidad: any): boolean {
     // Verificar que los campos no estén vacíos
     if (!incapacidad.fecha_contratacion || !incapacidad.fecha_inicio_incapacidad) {
@@ -97,9 +126,12 @@ export class IncapacidadValidator {
     if (!incapacidad.dias_incapacidad || !incapacidad.tipo_incapacidad) {
       return false;
     }
-
-    const diasIncapacidad = incapacidad.dias_incapacidad || 0;
-    return diasIncapacidad <= 2 && incapacidad.nombre_eps !== 'ARL';
+    if (incapacidad.porroga === 'NO') {
+      const diasIncapacidad = incapacidad.dias_incapacidad || 0;
+      return diasIncapacidad <= 2 && incapacidad.nombre_eps !== 'ARL';
+    } else {
+      return false;
+    }
   }
 
   private static arlShouldPay(incapacidad: any): boolean {

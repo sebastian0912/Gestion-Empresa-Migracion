@@ -167,6 +167,10 @@ export class FormularioIncapacidadComponent implements OnInit {
   filteredIpsNit: Observable<string[]> = of([]);
   filteredIpsNombre: Observable<string[]> = of([]);
   private unsubscribe$ = new Subject<void>();
+  observacionesControl = new FormControl();
+  quiencorrespondepagoControl = new FormControl();
+  filteredObservaciones: Observable<string[]> = of([]);
+  filteredQuiencorrespondepago: Observable<string[]> = of([]);
   nombredelarchvio = ''
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private incapacidadService: IncapacidadService, private contratacionService: ContratacionService,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -257,6 +261,10 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
 
   private setupFormFilters(): void {
+    this.filteredObservaciones = this.observacionesControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterObservaciones(value || ''))
+    );
     // Configuración de los filtros para los campos del formulario
     this.filteredEps = this.epsControlForm.valueChanges.pipe(
       startWith(''),
@@ -280,7 +288,33 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
   observaciones: string = '';
   quienpaga: string = '';
+  observacionesincapacidad: string[] = [
+    'TRASLAPADA',
+    'PRESCRITA',
+    'OK',
+    'FALSA',
+    'SIN EPICRISIS',
+    'SIN INCAPACIDAD',
+    'MEDICINA PREPAGADA',
+    'ILEGIBLE',
+    'INCONSISTENTE -, MAS DE 180 DIAS',
+    'MAS DE 540 DIAS',
+    'FECHAS INCONSISTENTES',
+    'LICENCIA DE MATERNIDAD',
+    'LICENCIA DE PATERNIDAD',
+    'INCAPACIDAD DE 1 DIA ARL',
+    'FALTA ORIGINAL',
+    'FALTA FURAT',
+    'FALTA SOAT',
+    'INCAPACIDAD 1 DIA ARL PRORROGA',
+    'INCAPACIDAD DE 1 Y 2 DIAS EPS   SI NO ES PROROGA',
+    'INCAPACIDAD 1 Y 2 DIAS PRORROGA '
 
+  ];
+  private _filterObservaciones(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.observacionesincapacidad.filter(option => option.toLowerCase().includes(filterValue));
+  }
   private setupFormValidations(): void {
     // Suscripciones a los cambios de valores de los campos del formulario
     this.incapacidadForm.get('fecha_contratacion')?.valueChanges.pipe(
@@ -326,6 +360,12 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.calcularprorroga();
       this.applyValidation();
     });
+    this.incapacidadForm.get('observaciones')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      this.applyValidation();
+    });
 
     this.incapacidadForm.get('estado_incapacidad')?.valueChanges.pipe(
       distinctUntilChanged(),
@@ -339,6 +379,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
 
   }
+
   private setupIPSFilters() {
     this.filteredIpsNit = this.ipsControlNit.valueChanges.pipe(
       debounceTime(300),
@@ -373,18 +414,18 @@ export class FormularioIncapacidadComponent implements OnInit {
     });
   }
   applyValidation() {
+
+    console.log('Applying validation');
     const formData = this.incapacidadForm.getRawValue(); // Obtener todos los valores actuales del formulario
 
     if (this.isIncapacidadSectionActive(formData)) {
       // Desestructuración del objeto devuelto por validateConditions
-      const { errors, observaciones, quienpaga , } = IncapacidadValidator.validateConditions(formData);
+      const { errors, quienpaga , } = IncapacidadValidator.validateConditions(formData);
 
       this.validationErrors = errors;
-      this.observaciones = observaciones;
       this.quienpaga = quienpaga;
 
       // Actualizar el campo de "observaciones" en el formulario
-      this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
       this.incapacidadForm.get('correspondeelpago')?.setValue(quienpaga, { emitEvent: false });
 
       // Deshabilitar el botón de envío si hay errores de validación
@@ -448,6 +489,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.incapacidadForm.get('dias_de_diferencia')?.setValue(diasDiferenciaPositivo);
     }
   }
+
   // Método para verificar si los campos relevantes están llenos
   private areRelevantFieldsFilled(formData: any): boolean {
     // Función auxiliar para verificar si un campo está vacío, nulo o indefinido
@@ -521,8 +563,9 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad - 1);
       this.incapacidadForm.get('Dias_temporal')?.setValue(1);
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
-      this.incapacidadForm.get('nombre_eps')?.setValue('ARL');
+      this.incapacidadForm.get('nombre_eps')?.setValue('ARL SURA');
     }
+
     if(this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL'){
       this.calcularDiasIncapacidad();
       this.incapacidadForm.get('nombre_eps')?.setValue(this.nombreepspersona);
@@ -530,6 +573,12 @@ export class FormularioIncapacidadComponent implements OnInit {
     if (this.incapacidadForm.get('prorroga')?.value == 'SI' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL') {
       const diasincapacidad = this.incapacidadForm.get('dias_incapacidad')?.value
       this.incapacidadForm.get('nombre_eps')?.setValue(this.nombreepspersona);
+      this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad);
+      this.incapacidadForm.get('Dias_temporal')?.setValue(0);
+      this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
+    } if (this.incapacidadForm.get('prorroga')?.value == 'SI' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ACCIDENTE DE TRABAJO') {
+      const diasincapacidad = this.incapacidadForm.get('dias_incapacidad')?.value
+      this.incapacidadForm.get('nombre_eps')?.setValue('ARL SURA');
       this.incapacidadForm.get('dias_eps')?.setValue(diasincapacidad);
       this.incapacidadForm.get('Dias_temporal')?.setValue(0);
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
@@ -729,6 +778,27 @@ export class FormularioIncapacidadComponent implements OnInit {
     Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
       this.incapacidadForm.get(controlName)?.enable();
     });
+
+    if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de ciudadania'){
+      this.incapacidadForm.get('tipodedocumento')?.setValue('CC');
+    }
+    if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de extranjeria'){
+      this.incapacidadForm.get('tipodedocumento')?.setValue('CE');
+    }
+    if (this.incapacidadForm.get('tipodedocumento')?.value == 'Pasaporte'){
+      this.incapacidadForm.get('tipodedocumento')?.setValue('PA');
+    }
+
+
+    if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de ciudadania') {
+      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CC');
+      }
+    if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de extranjeria') {
+      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CE');
+      }
+    if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Pasaporte') {
+      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('PA');
+      }
     const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
     const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
     const fechaEnvioStr = this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.value;
@@ -998,22 +1068,7 @@ export class FormularioIncapacidadComponent implements OnInit {
   tiposDocumento: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte'];
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
-  estadodocumentoincapacidad: string[] = [
-    'TRASLAPADA',
-'PRESCRITA',
-'OK',
-'FALSA',
-'SIN EPICRISIS',
-'SIN INCAPACIDAD',
-'MEDICINA PREPAGADA',
-'ILEGIBLE',
-'INCONSISTENTE -, MAS DE 180 DIAS',
-'MAS DE 540 DIAS',
-'FECHAS INCONSISTENTES',
-'FALTA ORIGINAL',
-'FALTA FURAT',
-'FALTA SOAT'
-  ];
+
   estadoincapacidad: string[] = ['Original', 'Falsa', 'Copia']
   centrodecosto: string[] = [
     'Andes',

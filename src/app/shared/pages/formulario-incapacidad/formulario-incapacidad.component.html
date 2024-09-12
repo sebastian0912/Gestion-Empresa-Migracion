@@ -179,17 +179,30 @@
                 </mat-form-field>
                 <!-- Otros campos de texto -->
                 <mat-form-field class="example-full-width" appearance="fill"
-                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad',   'Dias de diferencia','A quien corresponde el pago','Observaciones',]">
+                  *ngFor="let field of [ 'Descripcion diagnostico', 'Dias incapacidad', 'Dias temporal', 'Dias eps',  'Numero de incapacidad',   'Dias de diferencia',]">
                   <mat-label>{{ field }}</mat-label>
                   <input matInput [formControlName]="fieldMap[field]" [type]="getFieldType(field)">
                 </mat-form-field>
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>Estado del documento Incapacidad</mat-label>
-                  <mat-select [formControlName]="fieldMap['Estado del documento Incapacidad']">
-                    <mat-option *ngFor="let option of estadodocumentoincapacidad" [value]="option">
-                      {{ option }}
+                  <mat-label>Observaciones</mat-label>
+                  <!-- Usa formControlName para enlazar con el FormGroup -->
+                  <input type="text" matInput [formControlName]="fieldMap['Observaciones']" [matAutocomplete]="autoEps">
+                  <mat-autocomplete #autoEps="matAutocomplete">
+                    <mat-option *ngFor="let nombre of filteredObservaciones | async" [value]="nombre">
+                      {{ nombre }}
                     </mat-option>
-                  </mat-select>
+                  </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>A quien corresponde el pago</mat-label>
+                  <!-- El input permite escribir o seleccionar del autocomplete -->
+                  <input type="text" matInput [formControl]="quiencorrespondepagoControl" [formControlName]="fieldMap['A quien corresponde el pago']"
+                    [matAutocomplete]="autoEps">
+                  <mat-autocomplete #autoEps="matAutocomplete">
+                    <mat-option *ngFor="let nombre of filteredQuiencorrespondepago | async" [value]="nombre">
+                      {{ nombre }}
+                    </mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>Estado incapacidad</mat-label>

@@ -48,7 +48,7 @@ interface FileData {
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
-    MatOptionModule ,
+    MatOptionModule,
     MatSelectModule,
     MatButtonModule,
     MatDatepickerModule,
@@ -66,63 +66,62 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   query: string = '';
   [key: string]: any;
   columnTitlesTable1excel: Record<string, string> = {
+    marcaTemporal: 'Marca Temporal',
+    Oficina: 'Oficina',
+    consecutivoSistema: 'Consecutivo Sistema',
+    numero_de_contrato: 'Número de Contrato',
+    Temporal: 'Temporal',
+    Fecha_de_Envio_Incapacidad_Fisica: 'Fecha de Envío Incapacidad Física',
     Tipo_de_documento: 'Tipo de Documento',
     Numero_de_documento: 'Número de Documento',
-    numero_de_contrato: 'Número de Contrato',
+
     nombre: 'Nombre',
     apellido: 'Apellido',
-    correoElectronico: 'Correo Electrónico',
-
-    celular_o_telefono_01: 'Celular o Teléfono 01',
-    celular_o_telefono_02: 'Celular o Teléfono 02',
-    sexo: 'Sexo',
-    edad: 'Edad',
     empresa: 'Empresa',
-    nombre_de_quien_recibio: 'Nombre de Quien Recibió',
-    Oficina: 'Oficina',
     centrodecosto: 'Centro de Costo',
-    consecutivoSistema: 'Consecutivo Sistema',
-    Temporal: 'Temporal',
-    fecha_de_ingreso_temporal: 'Fecha de Ingreso Temporal',
-    fondo_de_pensiones: 'Fondo de Pensiones',
-    Dias_temporal: 'Días Temporal',
-    nombre_eps: 'Nombre EPS',
     tipo_incapacidad: 'Tipo Incapacidad',
     codigo_diagnostico: 'Código Diagnóstico',
-    prorroga: 'Prórroga',
     descripcion_diagnostico: 'Descripción Diagnóstico',
     F_inicio: 'Fecha de Inicio Incapacidad',
     F_final: 'Fecha Final de la Incapacidad',
-    dias_eps: 'Días EPS',
     dias_incapacidad: 'Días Incapacidad',
-    observaciones: 'Observaciones',
-    Fecha_de_Envio_Incapacidad_Fisica: 'Fecha de Envío Incapacidad Física',
-    dias_de_diferencia: 'Días de Diferencia entre fecha de envio a fecha actual',
+    Dias_temporal: 'Días Temporal',
+    dias_eps: 'Días EPS',
+    edad: 'Edad',
+    sexo: 'Sexo',
+    fecha_de_ingreso_temporal: 'Fecha de Ingreso Temporal',
+    celular_o_telefono_01: 'Celular o Teléfono 01',
+    celular_o_telefono_02: 'Celular o Teléfono 02',
+    correoElectronico: 'Correo Electrónico',
+    nombre_eps: 'Nombre EPS',
     estado_incapacidad: 'Estado Incapacidad',
-    numero_de_incapacidad: 'Número de Incapacidad',
+    prorroga: 'Prórroga',
     Incapacidad_transcrita: 'Incapacidad Transitada',
+    numero_de_incapacidad: 'Número de Incapacidad',
+    nit_de_la_IPS: 'NIT de la IPS',
+    ips_punto_de_atencion: 'IPS Punto de Atención',
+    fondo_de_pensiones: 'Fondo de Pensiones',
+    nombre_de_quien_recibio: 'Nombre de Quien Recibió',
+    dias_de_diferencia: 'Días de Diferencia entre fecha de envio a fecha actual',
+    observaciones: 'Observaciones',
     quiencorrespondepago: 'Quién Corresponde el Pago',
     estado_documento_incapacidad: 'Estado Documento Incapacidad',
     estado_robot_doctor: 'Estado Robot Doctor',
-    marcaTemporal: 'Marca Temporal',
-    nit_de_la_IPS: 'NIT de la IPS',
-    ips_punto_de_atencion: 'IPS Punto de Atención',
+
+
+
     tipo_de_documento_doctor_atendido: 'Tipo de Documento Doctor Atendido',
     numero_de_documento_doctor: 'Número de Documento Doctor',
     nombre_doctor: 'Nombre Doctor',
     responsable_de_envio: 'Responsable de Envío',
   };
 
-    columnTitlesTable4excel: Record<string, string> = {
+  columnTitlesTable4excel: Record<string, string> = {
     consecutivoSistema_id: 'Número de consecutivo del sistema',
-    confirmacion_fecha_de_radicacion: 'Fecha de confirmación de radicación',
     fecha_de_recepcion_de_la_incapacidad: 'Fecha de recepción de la incapacidad',
-    fecha_revision_por_parte_de_incapacidades: 'Fecha de revisión por parte de incapacidades',
-    estado_del_documento_incapacidad: 'Estado del documento de incapacidad',
-    aquien_corresponde_el_pago: 'A quién corresponde el pago',
     fecha_de_radicado_eps: 'Fecha de radicado EPS',
+    confirmacion_fecha_de_radicacion: 'Fecha de confirmación de radicación',
     numero_de_radicado: 'Número de radicado',
-    a_donde_se_radico: 'A dónde se radicó',
     quien_radico: 'Quién radicó',
     respuesta_de_la_eps: 'Respuesta de la EPS',
     codigo_respuesta_eps: 'Código de respuesta EPS',
@@ -133,7 +132,11 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     numero_transaccion_eps_arl: 'Número de transacción EPS/ARL',
     transaccion_empresa_usuaria: 'Transacción empresa usuaria',
     quien_corresponde_el_pago_final: 'Quién corresponde el pago final',
-    respuesta_final_incapacidad: 'Respuesta final incapacidad'
+    respuesta_final_incapacidad: 'Respuesta final incapacidad',
+    fecha_revision_por_parte_de_incapacidades: 'Fecha de revisión por parte de incapacidades',
+    estado_del_documento_incapacidad: 'Estado del documento de incapacidad',
+    aquien_corresponde_el_pago: 'A quién corresponde el pago',
+    a_donde_se_radico: 'A dónde se radicó',
   };
   ColumnsTable1 = [
     'Tipo_de_documento',
@@ -316,10 +319,10 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     private incapacidadService: IncapacidadService,
     private router: Router
   ) {
-    if (!this.isloadeddata){
+    if (!this.isloadeddata) {
       this.toggleLoader(true, true);
       this.toggleOverlay(true);
-    }else{
+    } else {
       this.toggleLoader(false, false);
       this.toggleOverlay(false);
     }
@@ -448,9 +451,9 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     const exactStringMatch = (value: string, filterValue: string): boolean => {
       return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
     };
-    if(this.filterCriteria.temporal === 'Tu Alianza'){
+    if (this.filterCriteria.temporal === 'Tu Alianza') {
       this.filterCriteria.temporal = 'TA';
-    }else if(this.filterCriteria.temporal === 'Apoyo Laboral'){
+    } else if (this.filterCriteria.temporal === 'Apoyo Laboral') {
       this.filterCriteria.temporal = 'AL';
     }
 
