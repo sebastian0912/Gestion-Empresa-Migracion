@@ -23,7 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { saveAs } from 'file-saver';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DatePipe } from '@angular/common'; // Importa DatePipe
-import { forkJoin } from 'rxjs';
+import { forkJoin, mergeMap } from 'rxjs';
 
 interface ColumnTitle {
   [key: string]: string;
@@ -321,9 +321,8 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     private datePipe: DatePipe
   ) {
     this.myForm = this.fb.group({
-      confirmacion_fecha_de_radicacion_inicio: [''],
-      confirmacion_fecha_de_radicacion_fin: [''],
-      // otros controles...
+      confirmacion_fecha_de_radicacion_inicio: ['', Validators.required],
+      confirmacion_fecha_de_radicacion_fin: ['', Validators.required]
     });
 
     this.initializeLoader();
@@ -351,7 +350,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   private formatDate(date: any): string {
-    return this.datePipe.transform(date, 'MM/dd/yyyy') || '';
+    return this.datePipe.transform(date, 'dd-MM-YYYY') || '';
   }
 
   toggleFilter(): void {
@@ -368,15 +367,23 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   private loadData(): void {
-    this.toggleLoader(true, true);
-    this.toggleOverlay(true);
 
-    forkJoin({
-      incapacidadesResponse: this.incapacidadService.traerTodosDatosIncapacidad(),
-      reporteResponse: this.incapacidadService.traerTodosDatosReporte()
-    }).subscribe({
-      next: ({ incapacidadesResponse, reporteResponse }) => {
-        this.handleDataSuccess(incapacidadesResponse.data || [], reporteResponse.data || []);
+    // Utiliza mergeMap para manejar las solicitudes de manera más eficiente
+    this.incapacidadService.traerTodosDatosIncapacidad().pipe(
+      mergeMap(incapacidadesResponse =>
+        this.incapacidadService.traerTodosDatosReporte().pipe(
+          mergeMap(reporteResponse => {
+            // Procesa ambos conjuntos de datos aquí
+            this.handleDataSuccess(incapacidadesResponse || [], reporteResponse.data || []);
+            return []; // Retorna vacío o un Observable según sea necesario
+          })
+        )
+      )
+    ).subscribe({
+      next: () => {
+        // Se completó la carga de datos
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
       },
       error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
     });
@@ -403,13 +410,23 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   applyDateFilter(): void {
-    const { fechaInicio, fechaFin } = this.filterCriteria;
+    const fechaInicio = this.formatDate(this.myForm.get('confirmacion_fecha_de_radicacion_inicio')?.value);
+    // Verifica que la fecha de inicio esté presente
     if (!fechaInicio) {
       this.showWarning('Por favor, selecciona una fecha para filtrar.');
       return;
     }
 
-    const filteredData = this.dataSourceTable1.data.filter(item => this.isDateWithinRange(item.f_inicio, fechaInicio, fechaFin));
+    // Convierte la fecha de inicio al formato de Date
+    const fechaInicioDate = new Date(fechaInicio);
+
+    // Filtra los datos según la fecha de inicio proporcionada
+    const filteredData = this.dataSourceTable1.data.filter(item => {
+      const itemDate = new Date(item.F_inicio);
+      return this.isDateWithinRange(itemDate, fechaInicioDate);
+    });
+
+    // Muestra un mensaje si no hay datos filtrados o actualiza las tablas con los datos filtrados
     if (filteredData.length === 0) {
       this.showInfo('No se encontraron datos con los criterios seleccionados.');
     } else {
@@ -417,11 +434,12 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     }
   }
 
-  private isDateWithinRange(date: string, startDate: string, endDate?: string): boolean {
-    const itemDate = new Date(date);
-    const start = new Date(startDate);
-    return endDate ? itemDate >= start && itemDate <= new Date(endDate) : itemDate >= start;
+  // Función actualizada para manejar solo la fecha de inicio
+  private isDateWithinRange(itemDate: Date, startDate: Date): boolean {
+    // Verifica que la fecha del elemento sea igual o posterior a la fecha de inicio
+    return itemDate.getTime() >= startDate.getTime();
   }
+
 
   private showInfo(message: string): void {
     Swal.fire({
@@ -455,20 +473,33 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     if (filteredData.length === 0) {
       this.showInfo('No se encontraron datos con los criterios seleccionados.');
       this.resetFilterCriteria();
+      this.dataSourceTable1.data = this.copiadataSourceTable1.data;
+      this.dataSourceTable4.data = this.copiadataSourceTable4.data;
+    }else{
+      this.updateDataSources(filteredData);
+      this.resetFilterCriteria();
     }
 
-    this.updateDataSources(filteredData);
   }
 
   private filterData(data: any[]): any[] {
     return data.filter(item => this.matchesCriteria(item));
   }
-
+  private empresaAbreviaturas: { [key: string]: string } = {
+    'Tu Alianza': 'TA',
+    'Apoyo Laboral': 'AL',
+    // Agrega más correspondencias según sea necesario
+  };
   private matchesCriteria(item: any): boolean {
-    const { numeroDeDocumento, fechaInicio, empresa, tipoIncapacidad } = this.filterCriteria;
-    return this.exactStringMatch(item.Numero_de_documento, numeroDeDocumento) &&
-      this.dateMatch(item.f_inicio, fechaInicio) &&
-      this.stringMatch(item.Temporal, empresa) &&
+    const { numeroDeDocumento, fechaInicio, temporal, tipoIncapacidad } = this.filterCriteria;
+
+    // Obtener la abreviatura de la empresa si existe
+    const empresaAbreviada = temporal ? this.empresaAbreviaturas[temporal.trim()] : '';
+
+    return this.exactStringMatch(item.Numero_de_documento, numeroDeDocumento) ||
+      this.dateMatch(item.f_inicio, fechaInicio) ||
+
+      this.stringMatch(item.Temporal, empresaAbreviada) ||
       this.exactStringMatch(item.tipo_incapacidad, tipoIncapacidad);
   }
 
@@ -477,7 +508,10 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   private stringMatch(value: string, filterValue: string): boolean {
-    return value?.toLowerCase().trim().includes(filterValue?.toLowerCase().trim());
+    console.log(value, filterValue);
+
+    if (!value || !filterValue) return false; // Asegura que ambos valores existan antes de comparar
+    return value.toLowerCase().trim().includes(filterValue.toLowerCase().trim());
   }
 
   private dateMatch(date: string, filterDate: string): boolean {
@@ -491,6 +525,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
   private resetFilterCriteria(): void {
     this.filterCriteria = { numeroDeDocumento: '', fechaInicio: '', empresa: '', tipoIncapacidad: '' };
+
   }
 
   downloadExcel(): void {
