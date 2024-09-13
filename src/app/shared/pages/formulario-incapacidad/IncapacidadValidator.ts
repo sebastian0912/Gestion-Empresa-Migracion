@@ -12,12 +12,22 @@ export class IncapacidadValidator {
     };
 
     // Regla 1: No cumple con el tiempo decreto 780 de 2016
-    if (!this.hasEnoughDays(incapacidad) && isHigherPriority('alta', prioridadActual)) {
-      const mensaje = "No cumple con el tiempo decreto 780 de 2016.";
-      quienpaga = this.pagook(incapacidad, mensaje);
-      errors.push("No cumple con el tiempo decreto 780 de 2016.");
-      observaciones = "OK";
-      prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
+    if (!this.hasEnoughDays(incapacidad)  && isHigherPriority('alta', prioridadActual)) {
+
+      if (this.isAccidentelaboral(incapacidad)){
+        errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
+        const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
+        quienpaga = this.pagook(incapacidad, mensaje);
+        observaciones = "OK";
+        prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+      }else{
+        const mensaje = "No cumple con el tiempo decreto 780 de 2016.";
+        quienpaga = this.pagook(incapacidad, mensaje);
+        errors.push("No cumple con el tiempo decreto 780 de 2016.");
+        observaciones = "OK";
+        prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
+      }
+
     }
 
 
@@ -238,4 +248,13 @@ export class IncapacidadValidator {
 
     return incapacidad.prorroga === 'NO';
   }
+  private static isAccidentelaboral(incapacidad: any): boolean {
+    // Verificar que el campo no esté vacío
+    if (incapacidad.tipo_incapacidad === 'ACCIDENTE DE TRABAJO') {
+      return true;
+    }
+
+    return false;
+  }
+
 }
