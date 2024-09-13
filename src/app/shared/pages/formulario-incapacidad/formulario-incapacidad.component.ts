@@ -420,10 +420,13 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     if (this.isIncapacidadSectionActive(formData)) {
       // Desestructuración del objeto devuelto por validateConditions
-      const { errors, quienpaga , } = IncapacidadValidator.validateConditions(formData);
+      const { errors, quienpaga , observaciones} = IncapacidadValidator.validateConditions(formData);
 
       this.validationErrors = errors;
       this.quienpaga = quienpaga;
+      if (observaciones === 'OK') {
+        this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
+      }
 
       // Actualizar el campo de "observaciones" en el formulario
       this.incapacidadForm.get('correspondeelpago')?.setValue(quienpaga, { emitEvent: false });

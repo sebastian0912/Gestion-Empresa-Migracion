@@ -1,5 +1,5 @@
 export class IncapacidadValidator {
-  static validateConditions(incapacidad: any): { errors: string[], quienpaga: string } {
+  static validateConditions(incapacidad: any): { errors: string[], quienpaga: string, observaciones:string} {
     let errors: string[] = [];
     let quienpaga: string = '';
     let observaciones: string = '';
@@ -11,12 +11,65 @@ export class IncapacidadValidator {
       return priorityOrder.indexOf(newPriority) > priorityOrder.indexOf(currentPriority);
     };
 
-    // Utilizar las nuevas funciones dentro de la lógica de validación
-    if (this.pagook(incapacidad) && isHigherPriority('media', prioridadActual)) {
-      errors.push(this.pagook(incapacidad));
-      quienpaga = this.pagook(incapacidad);
-      prioridadActual = 'media';
+    // Regla 1: No cumple con el tiempo decreto 780 de 2016
+    if (!this.hasEnoughDays(incapacidad) && isHigherPriority('alta', prioridadActual)) {
+      const mensaje = "No cumple con el tiempo decreto 780 de 2016.";
+      quienpaga = this.pagook(incapacidad, mensaje);
+      errors.push("No cumple con el tiempo decreto 780 de 2016.");
+      observaciones = "OK";
+      prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
     }
+
+
+    // Regla 2: Empleador si paga (1 y 2 días iniciales)
+    if (this.employerShouldPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push("El empleador debe hacerse cargo del pago de la incapacidad.");
+      quienpaga = "PAGA EMPLEADOR";
+      observaciones = "El empleador debe hacerse cargo del pago";
+      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+
+    }
+
+    // Regla 3: ARL debe pagar (día 1 a cargo del empleador)
+    if (this.arlShouldPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
+      const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
+      quienpaga = this.pagook(incapacidad, mensaje);
+      observaciones = "El ARL debe hacerse cargo del pago";
+      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    }
+
+    // Regla 4: No pagar (documentos ilegibles o faltantes)
+    if (this.shouldNotPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push("La incapacidad no debe ser pagada debido a documentos ilegibles o faltantes.");
+      observaciones = "La incapacidad no debe ser pagada debido a documentos ilegibles o faltantes.";
+      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    }
+
+    // Regla 5: EPS paga a partir del tercer día
+    if (this.epsShouldPay(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push("La EPS debe hacerse cargo del pago a partir del tercer día.");
+      observaciones = "La EPS debe hacerse cargo del pago";
+      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    }
+
+    // Regla para prorroga SI
+    if (this.prorrogaSi(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push("La EPS debe hacerse cargo del pago a partir del tercer día de incapacidad.");
+      quienpaga = "PAGA EPS";
+      observaciones = "La EPS debe hacerse cargo del pago";
+      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    }
+
+    // Regla para prorroga NO
+    if (this.prorrogaNo(incapacidad) && isHigherPriority('media', prioridadActual)) {
+      errors.push("El empleador debe hacerse cargo del pago de los 2 primeros días y luego la EPS.");
+      quienpaga = "PAGA EMPLEADOR";
+      observaciones = "El empleador debe hacerse cargo del pago";
+      prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+    }
+    // Utilizar las nuevas funciones dentro de la lógica de validación
+
 
     if (this.faltancosas(incapacidad) && isHigherPriority('media', prioridadActual)) {
       errors.push(this.faltancosas(incapacidad));
@@ -43,18 +96,21 @@ export class IncapacidadValidator {
       prioridadActual = 'media';
     }
 
-    return { errors, quienpaga };
+    return { errors, quienpaga, observaciones };
   }
 
 
-  private static pagook(incapacidad: any): string {
+  private static pagook(incapacidad: any,mensaje:string): string {
     if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
     if (incapacidad.observaciones === 'OK') {
-      if (incapacidad.nombre_eps === 'ARL SURA') {
+      if (mensaje === 'El ARL debe hacerse cargo del pago desde el segundo día.') {
         return 'SI PAGA ARL';
       }
-      if (incapacidad.nombre_eps !== 'No cumple con el tiempo decreto 780') {
+      if (mensaje !== 'No cumple con el tiempo decreto 780') {
         return 'SI PAGA EPS';
+      }
+      if (mensaje === 'No cumple con el tiempo decreto 780'){
+        return 'NO PAGAR';
       }
     }
     return '';
@@ -76,7 +132,7 @@ export class IncapacidadValidator {
   private static pagoproporcional(incapacidad: any): string {
     if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
     const observaciones = ['LICENCIA DE MATERNIDAD', 'LICENCIA DE PATERNIDAD', 'TRASLAPADA'];
-    if (observaciones.includes(incapacidad.observaciones)) {
+    if (observaciones.includes(incapacidad.tipo_incapacidad) || observaciones.includes(incapacidad.observaciones)) {
       return 'PAGO PROPORCIONAL';
     }
     return '';
@@ -128,7 +184,7 @@ export class IncapacidadValidator {
     }
     if (incapacidad.porroga === 'NO') {
       const diasIncapacidad = incapacidad.dias_incapacidad || 0;
-      return diasIncapacidad <= 2 && incapacidad.nombre_eps !== 'ARL';
+      return diasIncapacidad <= 2 && incapacidad.nombre_eps !== 'ARL SURA';
     } else {
       return false;
     }
@@ -142,7 +198,7 @@ export class IncapacidadValidator {
 
     const tipoIncapacidad = incapacidad.nombre_eps || '';
     const diasIncapacidad = incapacidad.dias_incapacidad || 0;
-    return tipoIncapacidad === 'ARL' && diasIncapacidad > 1;
+    return tipoIncapacidad === 'ARL SURA';
   }
 
   private static shouldNotPay(incapacidad: any): boolean {
@@ -162,7 +218,7 @@ export class IncapacidadValidator {
     }
 
     const diasIncapacidad = incapacidad.dias_incapacidad || 0;
-    return diasIncapacidad >= 3 && incapacidad.tipo_incapacidad !== 'ARL';
+    return diasIncapacidad >= 3 && incapacidad.tipo_incapacidad !== 'ARL SURA';
   }
 
   private static prorrogaSi(incapacidad: any): boolean {
