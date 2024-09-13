@@ -1,6 +1,6 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { FingerprintReader, SampleFormat } from '@digitalpersona/devices';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { IncapacidadService } from '../../services/incapacidad/incapacidad.service';
 import { Incapacidad } from '../../../models/incapacidad.model';
 import { MatTableDataSource } from '@angular/material/table';
@@ -34,6 +34,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { format } from 'date-fns';
 import { MatGridListModule } from '@angular/material/grid-list';  // Importa MatGridListModule
+import { MatListModule } from '@angular/material/list'; // Módulo de MatList
 
 @Component({
   selector: 'app-documentos-contratacion',
@@ -54,6 +55,7 @@ import { MatGridListModule } from '@angular/material/grid-list';  // Importa Mat
     CommonModule,
     MatButtonModule,
     MatDatepickerModule,
+    MatListModule ,
     MatIconModule,
     FormsModule,
     MatCardModule,
@@ -65,73 +67,106 @@ import { MatGridListModule } from '@angular/material/grid-list';  // Importa Mat
   styleUrl: './documentos-contratacion.component.css'
 })
 export class DocumentosContratacionComponent implements OnInit {
-  fichaForm: FormGroup;
-overlayVisible = false;
-  loaderVisible = false;
+  formFicha: FormGroup;
+  iscontratocomplete = false;
+  isfichacomplete = false;
+  isEntregaDocumentosComplete = false;
+  isHojaVidaComplete = false;
+  isPruebaLecturaComplete = false;
+  isPruebaSSTComplete = false;
+  isAutorizacionDatosComplete = false;
+  isTrasladosComplete = false;
   counterVisible = false;
-  informacionPersonal : string[] = [
-    'Primer Apellido',
-    'Segundo Apellido',
-    'Nombres',
-    'Fecha de expedición',
-    'Lugar de expedición',
-    'Fecha de nacimiento',
-    'Lugar de nacimiento',
-    'Numero de documento',
-    'Direccion',
-    'Municipio',
-    'Barrio',
-    'Celular',
-    'Email',
-    'Eps',
-    'Afp',
-    'Afc',
-    'Caja de compensación',
-    'Desea afiliarse a plan funerario'
-
-
-  ];
-  informacionAcademica : string[] = [];
-  informacionFamiliar : string[] = [];
-  informacionHijos : string[] = [];
-  informacionDotacion : string[] = [];
-  referenciasLaborales : string[] = [];
-  ReferenciasPersonales : string[] = [];
-  ReferenciasFamiliares : string[] = [];
-  huellaDigital : string = '';
-  firma: string = '';
-
-
-
-
-
-
-  ngOnInit(): void {}
+  loaderVisible = false;
   constructor(private fb: FormBuilder) {
-    this.fichaForm = this.fb.group({
-      primerApellido: ['', Validators.required],
-      segundoApellido: ['', Validators.required],
-      nombres: ['', Validators.required],
-      fechaExpedicion: ['', Validators.required],
-      lugarExpedicion: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
-      lugarNacimiento: ['', Validators.required],
-      direccion: ['', Validators.required],
-      municipio: ['', Validators.required],
-      celular: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      diestrado: ['', Validators.required],
-      rh: ['', Validators.required],
-      estadoCivil: ['', Validators.required],
-      eps: ['', Validators.required],
-      afp: ['', Validators.required],
-      // Agrega más campos según sea necesario
+    this.formFicha = this.fb.group({
     });
   }
-  onSubmit(): void {
-    if (this.fichaForm.valid) {
-      console.log(this.fichaForm.value);
-      // Aquí puedes manejar el envío del formulario
-    }
+
+
+  ngOnInit(): void {
+    this.formFicha = this.fb.group({
+      personalInfo: this.fb.group({
+        primerApellido: ['', Validators.required],
+        segundoApellido: [''],
+        nombres: ['', Validators.required],
+        numerodeidentifacion: ['', Validators.required],
+
+        fechaExpedicionylugardeexpedicion: [''],
+        fechaNacimientoylugardenacimiento: [''],
+        direccion: [''],
+        municipioBarrio: [''],
+        celular: [''],
+        diestroZurdo: [''],
+        rh: [''],
+        estadoCivil: [''],
+        numerodehijos: [''],
+        correoelectronico: [''],
+        eps: [''],
+        afp: [''],
+        afc: [''],
+        cajaCompensacion: [''],
+        planFunerario: [''],
+      }),
+      familiarInfo: this.fb.group({
+        nombreapellidoPadre: [''],
+        direccionPadre: [''],
+        vivepadre: [''],
+        ocupacionPadre: [''],
+        telefonoPadre: [''],
+        barrioMunicipioPadre: [''],
+        nombreapellidoMadre: [''],
+        direccionMadre: [''],
+        viveMadre: [''],
+        ocupacionMadre: [''],
+        telefonoMadre: [''],
+        barrioMunicipioMadre: [''],
+        nombreapellidoConyuge: [''],
+        direccionConyuge: [''],
+        viveConyuge: [''],
+        ocupacionConyuge: [''],
+        telefonoConyuge: [''],
+        familiarCasodeEmergencia: [''],
+        parentescoCasodeEmergencia: [''],
+        telefonoCasodeEmergencia: [''],
+        ocupacionCasoEmergencia: [''],
+        barrioMunicipioCasodeEmergencia: [''],
+        direccionfamiliarCasodeEmergencia: [''],
+      }),
+      academicInfo: this.fb.group({
+        gradoEscolaridad: [''],
+        isTecnologo: [''],
+        isUniversidad: [''],
+        isEspecializacion: [''],
+        isOtros: [''],
+        institucion: [''],
+        anoFinalizacion: [''],
+        tituloObtenido: ['']
+      }),
+      dotacionInfo: this.fb.group({
+        tallachaqueta: [''],
+        tallaPantalon: [''],
+        tallaOverol: [''],
+        isOtros: [''],
+        institucion: [''],
+        anoFinalizacion: [''],
+        tituloObtenido: ['']
+      }),
+    comments: this.fb.group({
+        comentariosPersonales: [''],
+        comentariosFamiliares: [''],
+        comentariosLaborales: ['']
+      }),
+      contractorInfo: this.fb.group({
+        nombreContratante: [''],
+      })
+    });
   }
+
+
+
+
+  onSubmit(): void {
+  }
+
 }

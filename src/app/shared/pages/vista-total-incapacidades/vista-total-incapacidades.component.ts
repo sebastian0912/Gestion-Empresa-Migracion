@@ -22,6 +22,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { saveAs } from 'file-saver';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DatePipe } from '@angular/common'; // Importa DatePipe
+import { forkJoin } from 'rxjs';
 
 interface ColumnTitle {
   [key: string]: string;
@@ -60,7 +62,8 @@ interface FileData {
     NgIf,
     NgFor],
   templateUrl: './vista-total-incapacidades.component.html',
-  styleUrl: './vista-total-incapacidades.component.css'
+  styleUrl: './vista-total-incapacidades.component.css',
+  providers: [DatePipe]
 })
 export class VistaTotalIncapacidadesComponent implements OnInit {
   query: string = '';
@@ -281,11 +284,20 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
   dataSourceTable1 = new MatTableDataSource<any>();
   dataSourceTable4 = new MatTableDataSource<any>();
-
+  copiadataSourceTable1 = new MatTableDataSource<any>();
+  copiadataSourceTable4 = new MatTableDataSource<any>();
+  tiposIncapacidad: string[] = [
+    'ENFERMEDAD GENERAL',
+    'LICENCIA DE MATERNIDAD',
+    'LICENCIA PATERNIDAD',
+    'ACCIDENTE DE TRABAJO',
+    'SOAT / ACCIDENTE DE TRANCITO',
+    'ENFERMEDAD LABORAL'
+  ];
   resultsincapacidades: any[] = [];
   resultsarl: any[] = [];
   resultssst: any[] = [];
-
+  myForm: FormGroup;
   user: any;
   correo: any;
   filteredData: any[] = [];
@@ -302,9 +314,50 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   };
   isFilterCollapsed = true;
   isloadeddata = false;
+  constructor(
+    private incapacidadService: IncapacidadService,
+    private router: Router,
+    private fb: FormBuilder,
+    private datePipe: DatePipe
+  ) {
+    this.myForm = this.fb.group({
+      confirmacion_fecha_de_radicacion_inicio: [''],
+      confirmacion_fecha_de_radicacion_fin: [''],
+      // otros controles...
+    });
+
+    this.initializeLoader();
+  }
+
+  ngOnInit(): void {
+    this.setupFormListeners();
+    this.loadData();
+  }
+
+  private initializeLoader(): void {
+    const isLoading = !this.isloadeddata;
+    this.toggleLoader(isLoading, isLoading);
+    this.toggleOverlay(isLoading);
+  }
+
+  private setupFormListeners(): void {
+    this.myForm.get('confirmacion_fecha_de_radicacion_inicio')?.valueChanges.subscribe(value => {
+      this.filterCriteria.fechaInicio = this.formatDate(value);
+    });
+
+    this.myForm.get('confirmacion_fecha_de_radicacion_fin')?.valueChanges.subscribe(value => {
+      this.filterCriteria.fechaFin = this.formatDate(value);
+    });
+  }
+
+  private formatDate(date: any): string {
+    return this.datePipe.transform(date, 'MM/dd/yyyy') || '';
+  }
+
   toggleFilter(): void {
     this.isFilterCollapsed = !this.isFilterCollapsed;
   }
+
   toggleOverlay(visible: boolean): void {
     this.overlayVisible = visible;
   }
@@ -314,296 +367,167 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     this.counterVisible = showCounter;
   }
 
-
-  constructor(
-    private incapacidadService: IncapacidadService,
-    private router: Router
-  ) {
-    if (!this.isloadeddata) {
-      this.toggleLoader(true, true);
-      this.toggleOverlay(true);
-    } else {
-      this.toggleLoader(false, false);
-      this.toggleOverlay(false);
-    }
-
-
-  }
-
-  ngOnInit(): void {
+  private loadData(): void {
     this.toggleLoader(true, true);
     this.toggleOverlay(true);
-    this.loadData();
-  }
-  tiposIncapacidad: string[] = [
-    'ENFERMEDAD GENERAL',
-    'LICENCIA DE MATERNIDAD',
-    'LICENCIA PATERNIDAD',
-    'ACCIDENTE DE TRABAJO',
-    'SOAT / ACCIDENTE DE TRANCITO',
-    'ENFERMEDAD LABORAL'
-  ];
 
-  private normalizeKeys(data: any): { [key: string]: any } {
-    const normalizedData: { [key: string]: any } = {};
-
-    Object.keys(data).forEach(key => {
-      const normalizedKey = key
-        .toLowerCase()
-        .replace(/ /g, '_')
-        .replace(/-/g, '_');
-
-      normalizedData[normalizedKey] = data[key];
+    forkJoin({
+      incapacidadesResponse: this.incapacidadService.traerTodosDatosIncapacidad(),
+      reporteResponse: this.incapacidadService.traerTodosDatosReporte()
+    }).subscribe({
+      next: ({ incapacidadesResponse, reporteResponse }) => {
+        this.handleDataSuccess(incapacidadesResponse.data || [], reporteResponse.data || []);
+      },
+      error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
     });
-
-    return normalizedData;
   }
 
-
-  private loadData(): void {
-
-    Promise.all([
-      this.incapacidadService.traerTodosDatosIncapacidad().toPromise(),
-      this.incapacidadService.traerTodosDatosReporte().toPromise()
-    ])
-      .then(([incapacidadesResponse, reporteResponse]) => {
-        this.toggleLoader(false);
-        const incapacidades = incapacidadesResponse.data || [];
-        const reporte = reporteResponse.data || [];
-        // Combinar los datos
-        const incapacidadData = incapacidades.map((incapacidad: any, index: number) => {
-          // Puedes combinar los datos aquí si hay una relación entre ellos
-          // En este ejemplo, solo se concatenan, pero puedes personalizar la lógica según tus necesidades
-          return {
-            ...incapacidad,
-          };
-        });
-        const reporteData = reporte.map((reporte: any, index: number) => {
-          // Puedes combinar los datos aquí si hay una relación entre ellos
-          // En este ejemplo, solo se concatenan, pero puedes personalizar la lógica según tus necesidades
-          return {
-            ...reporte,
-          };
-        });
-        console.log('Datos combinados:', incapacidadData);
-        // Asigna los datos normalizados a sus respectivas tablas
-        this.dataSourceTable1.data = incapacidadesResponse.data
-        this.dataSourceTable4.data = reporte
-      })
-      .catch(error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al cargar los datos',
-          text: 'Ocurrió un error al cargar los datos, por favor intenta de nuevo.',
-          confirmButtonText: 'Aceptar'
-        });
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
-      });
+  private handleDataSuccess(incapacidades: any[], reporte: any[]): void {
+    this.dataSourceTable1.data = incapacidades;
+    this.dataSourceTable4.data = reporte;
+    this.copiadataSourceTable1.data = incapacidades;
+    this.copiadataSourceTable4.data = reporte;
+    this.toggleLoader(false, false);
+    this.toggleOverlay(false);
   }
-  applyDateFilter() {
-    const startDate = this.filterCriteria.fechaInicio;
-    const endDate = this.filterCriteria.fechaFin;
 
-    if (startDate && endDate) {
-      // Asegura que las fechas son válidas y filtra los datos según el rango de fechas
-      const filteredData = this.dataSourceTable1.data.filter(item => {
-        const itemDate = new Date(item.f_inicio); // Suponiendo que 'f_inicio' es la propiedad de la fecha
-        return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
-      });
+  private handleError(errorMessage: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: errorMessage,
+      confirmButtonText: 'Aceptar'
+    });
+    this.toggleLoader(false, false);
+    this.toggleOverlay(false);
+  }
 
-      this.dataSourceTable1.data = filteredData;
-      this.dataSourceTable1._updateChangeSubscription(); // Asegura que la tabla se actualice
+  applyDateFilter(): void {
+    const { fechaInicio, fechaFin } = this.filterCriteria;
+    if (!fechaInicio) {
+      this.showWarning('Por favor, selecciona una fecha para filtrar.');
+      return;
+    }
+
+    const filteredData = this.dataSourceTable1.data.filter(item => this.isDateWithinRange(item.f_inicio, fechaInicio, fechaFin));
+    if (filteredData.length === 0) {
+      this.showInfo('No se encontraron datos con los criterios seleccionados.');
     } else {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'Por favor, selecciona ambas fechas para filtrar.',
-        confirmButtonText: 'Aceptar'
-      });
+      this.updateDataSources(filteredData);
     }
   }
 
-
-  toTitleCase(text: string, columnTitles: ColumnTitle): string {
-    return columnTitles[text] || text
-      .toLowerCase()
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+  private isDateWithinRange(date: string, startDate: string, endDate?: string): boolean {
+    const itemDate = new Date(date);
+    const start = new Date(startDate);
+    return endDate ? itemDate >= start && itemDate <= new Date(endDate) : itemDate >= start;
   }
 
-  playSound(success: boolean): void {
-    const audio = new Audio(success ? 'Sounds/positivo.mp3' : 'Sounds/negativo.mp3');
-    audio.play();
+  private showInfo(message: string): void {
+    Swal.fire({
+      icon: 'info',
+      title: 'Información',
+      text: message,
+      confirmButtonText: 'Aceptar'
+    });
   }
 
-
-  applyFilter() {
-
-
-    // Función auxiliar para verificar coincidencias de cadenas
-    const stringMatch = (value: string, filterValue: string): boolean => {
-      return value?.toLowerCase().trim().includes(filterValue?.toLowerCase().trim());
-    };
-
-    // Función auxiliar para verificar coincidencias exactas de cadenas
-    const exactStringMatch = (value: string, filterValue: string): boolean => {
-      return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
-    };
-    if (this.filterCriteria.temporal === 'Tu Alianza') {
-      this.filterCriteria.temporal = 'TA';
-    } else if (this.filterCriteria.temporal === 'Apoyo Laboral') {
-      this.filterCriteria.temporal = 'AL';
-    }
-
-    // Filtrar los datos basados en los criterios seleccionados
-    const filteredData = this.dataSourceTable1.data.filter(item => {
-
-
-      // Verifica específicamente si el campo existe y normaliza la comparación
-      const numeroDeDocumentoMatch = this.filterCriteria.numeroDeDocumento
-        ? exactStringMatch(item.Numero_de_documento?.toString(), this.filterCriteria.numeroDeDocumento)
-        : true;
-
-      const fechaInicioMatch = this.filterCriteria.fechaInicio
-        ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
-        : true;
-
-      const empresaMatch = this.filterCriteria.temporal
-        ? stringMatch(item.Temporal, this.filterCriteria.temporal)
-        : true;
-
-      const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
-        ? exactStringMatch(item.tipo_incapacidad, this.filterCriteria.tipoIncapacidad)
-        : true;
-
-      return numeroDeDocumentoMatch && fechaInicioMatch && empresaMatch && tipoIncapacidadMatch;
+  private showWarning(message: string): void {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Advertencia',
+      text: message,
+      confirmButtonText: 'Aceptar'
     });
-    const filteredData2 = this.dataSourceTable4.data.filter(item => {
+  }
 
-      // Verifica específicamente si el campo existe y normaliza la comparación
-      const numeroDeDocumentoMatch = this.filterCriteria.numeroDeDocumento
-        ? exactStringMatch(item.Numero_de_documento?.toString(), this.filterCriteria.numeroDeDocumento)
-        : true;
+  private updateDataSources(data: any[]): void {
+    this.dataSourceTable1.data = data;
+    this.dataSourceTable1._updateChangeSubscription();
+    this.dataSourceTable4.data = data;
+    this.dataSourceTable4._updateChangeSubscription();
+  }
 
-      const fechaInicioMatch = this.filterCriteria.fechaInicio
-        ? (item.f_inicio && new Date(item.f_inicio).toISOString().split('T')[0] === new Date(this.filterCriteria.fechaInicio).toISOString().split('T')[0])
-        : true;
-
-      const empresaMatch = this.filterCriteria.empresa
-        ? stringMatch(item.empresa, this.filterCriteria.empresa)
-        : true;
-
-      const tipoIncapacidadMatch = this.filterCriteria.tipoIncapacidad
-        ? exactStringMatch(item.tipo_incapacidad, this.filterCriteria.tipoIncapacidad)
-        : true;
-
-      return numeroDeDocumentoMatch && fechaInicioMatch && empresaMatch && tipoIncapacidadMatch;
-    });
-
+  applyFilter(): void {
+    const filteredData = this.filterData(this.dataSourceTable1.data);
+    const filteredData2 = this.filterData(this.dataSourceTable4.data);
 
     if (filteredData.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'No se encontraron datos',
-        text: 'No se encontraron datos con los criterios seleccionados.',
-        confirmButtonText: 'Aceptar'
-      });
-
-      // Limpia los criterios de filtro
-      this.filterCriteria = {
-        numeroDeDocumento: '',
-        fechaInicio: '',
-        empresa: '',
-        tipoIncapacidad: ''
-      };
+      this.showInfo('No se encontraron datos con los criterios seleccionados.');
+      this.resetFilterCriteria();
     }
 
-    // Actualiza el dataSource con los datos filtrados
-    this.dataSourceTable1.data = filteredData;
-    this.dataSourceTable1._updateChangeSubscription(); // Asegura que la tabla se actualice
-    this.dataSourceTable4.data = filteredData2;
-    this.dataSourceTable4._updateChangeSubscription(); // Asegura que la tabla se actualice
+    this.updateDataSources(filteredData);
   }
 
-
-
-  resetFileInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    input.value = '';
+  private filterData(data: any[]): any[] {
+    return data.filter(item => this.matchesCriteria(item));
   }
 
+  private matchesCriteria(item: any): boolean {
+    const { numeroDeDocumento, fechaInicio, empresa, tipoIncapacidad } = this.filterCriteria;
+    return this.exactStringMatch(item.Numero_de_documento, numeroDeDocumento) &&
+      this.dateMatch(item.f_inicio, fechaInicio) &&
+      this.stringMatch(item.Temporal, empresa) &&
+      this.exactStringMatch(item.tipo_incapacidad, tipoIncapacidad);
+  }
 
+  private exactStringMatch(value: string, filterValue: string): boolean {
+    return value?.toLowerCase().trim() === filterValue?.toLowerCase().trim();
+  }
 
-  readonly claves = [
-    "NroDes", "Contrato", "Cedula", "Nombre", "CentrodeCosto", "Concepto",
-    "FormadePago", "Valor", "Banco", "FECHADEPAGO"
-  ];
+  private stringMatch(value: string, filterValue: string): boolean {
+    return value?.toLowerCase().trim().includes(filterValue?.toLowerCase().trim());
+  }
 
+  private dateMatch(date: string, filterDate: string): boolean {
+    if (!date || !filterDate) return false; // Verifica si alguna fecha es inválida o está vacía
 
-  downloadExcel() {
-    // Crear una nueva instancia de un libro de trabajo
+    const formattedDate = new Date(date).toISOString().split('T')[0];
+    const formattedFilterDate = new Date(filterDate).toISOString().split('T')[0];
+
+    return formattedDate === formattedFilterDate; // Devuelve el resultado de la comparación booleana
+  }
+
+  private resetFilterCriteria(): void {
+    this.filterCriteria = { numeroDeDocumento: '', fechaInicio: '', empresa: '', tipoIncapacidad: '' };
+  }
+
+  downloadExcel(): void {
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-
-    // Mapear los datos de la segunda tabla (Reporte) con los títulos correspondientes y crear un diccionario
-    const reporteMap = new Map<string, any>();
-    this.dataSourceTable4.data.forEach((item: any) => {
-      const mappedItem: any = {};
-      Object.keys(this.columnTitlesTable4excel).forEach(key => {
-        mappedItem[this.columnTitlesTable4excel[key]] = item[key] || ''; // Mapea el título y el valor, asigna vacío si no hay datos
-      });
-      const numeroConsecutivo = item['consecutivoSistema_id'];
-      if (numeroConsecutivo) {
-        reporteMap.set(numeroConsecutivo, mappedItem);
-      }
-    });
-
-    // Combinar los datos de la primera tabla (Incapacidades) con los datos de "Reporte" basados en el consecutivo del sistema
-    const combinedData = this.dataSourceTable1.data.map((item: any) => {
-      const mappedItem: any = {};
-      Object.keys(this.columnTitlesTable1excel).forEach(key => {
-        mappedItem[this.columnTitlesTable1excel[key]] = item[key] || ''; // Mapea el título y el valor, asigna vacío si no hay datos
-      });
-
-      // Buscar el reporte correspondiente usando el consecutivoSistema
-      const numeroConsecutivo = item['consecutivoSistema'];
-      const reporteItem = reporteMap.get(numeroConsecutivo);
-
-      // Si existe un reporte correspondiente, combinar los datos
-      if (reporteItem) {
-        Object.keys(this.columnTitlesTable4excel).forEach(key => {
-          mappedItem[this.columnTitlesTable4excel[key]] = reporteItem[this.columnTitlesTable4excel[key]] || ''; // Mapea el título y el valor
-        });
-      } else {
-        // Si no existe un reporte correspondiente, agrega columnas vacías para los campos del reporte
-        Object.keys(this.columnTitlesTable4excel).forEach(key => {
-          mappedItem[this.columnTitlesTable4excel[key]] = ''; // Llena con vacío si no hay reporte correspondiente
-        });
-      }
-
-      return mappedItem;
-    });
-
-    // Crear una hoja de trabajo de Excel con los datos combinados
+    const combinedData = this.combineDataForExcel();
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(combinedData);
 
-    // Añadir la hoja al libro de trabajo
     XLSX.utils.book_append_sheet(wb, ws, 'Incapacidades y Reporte');
-
-    const currentDate = new Date();
-    const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-
-    // Generar el archivo Excel y descargarlo
+    const formattedDate = new Date().toISOString().split('T')[0];
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
   }
 
+  private combineDataForExcel(): any[] {
+    const reporteMap = this.createReportMap();
+    return this.dataSourceTable1.data.map((item: any) => this.combineItemData(item, reporteMap));
+  }
 
+  private createReportMap(): Map<string, any> {
+    const map = new Map<string, any>();
+    this.dataSourceTable4.data.forEach((item: any) => {
+      const mappedItem = this.mapDataWithTitles([item], this.columnTitlesTable4excel)[0];
+      if (item['consecutivoSistema_id']) {
+        map.set(item['consecutivoSistema_id'], mappedItem);
+      }
+    });
+    return map;
+  }
 
-
-
-
+  private combineItemData(item: any, reporteMap: Map<string, any>): any {
+    const mappedItem = this.mapDataWithTitles([item], this.columnTitlesTable1excel)[0];
+    const reporteItem = reporteMap.get(item['consecutivoSistema']);
+    Object.keys(this.columnTitlesTable4excel).forEach(key => {
+      mappedItem[this.columnTitlesTable4excel[key]] = reporteItem?.[this.columnTitlesTable4excel[key]] || '';
+    });
+    return mappedItem;
+  }
 
   mapDataWithTitles(data: any[], columnTitles: ColumnTitle): any[] {
     return data.map(item => {
@@ -617,4 +541,22 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     });
   }
 
+  playSound(success: boolean): void {
+    const audio = new Audio(success ? 'Sounds/positivo.mp3' : 'Sounds/negativo.mp3');
+    audio.play();
+  }
+
+  resetFileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = '';
+  }
+  toTitleCase(text: string, columnTitles: ColumnTitle): string {
+    return columnTitles[text] || text
+      .toLowerCase()
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
 }
+
+

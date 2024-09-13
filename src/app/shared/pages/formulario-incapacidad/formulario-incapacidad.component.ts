@@ -99,7 +99,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Fondo de pensiones', 'Estado incapacidad', 'Prorroga', 'Incapacidad Transcrita', 'Numero de incapacidad',
     'Nit de la IPS', 'IPS punto de atencion', 'Observaciones', 'Tipo de documento doctor atendido', 'Numero de documento doctor',
     'Nombre doctor', 'Estado robot doctor', 'Archivo Incapacidad', 'Historial clinico', 'Dias de diferencia',
-    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente', 'A quien corresponde el pago','Estado del documento Incapacidad'
+    'Fecha de Envio Incapacidad Fisica', 'Centro de costos', 'Vigente', 'A quien corresponde el pago', 'Estado del documento Incapacidad'
   ];
   nombreepspersona: string = '';
   fieldMap: { [key: string]: string } = {
@@ -210,8 +210,8 @@ export class FormularioIncapacidadComponent implements OnInit {
     const fieldsToDisable = [
       'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
       'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
-      'fecha_contratacion', 'fondo_de_pension', 'dias_eps','dias_incapacidad',
-      'Dias_temporal', 'descripcion_diagnostico','dias_de_diferencia'
+      'fecha_contratacion', 'fondo_de_pension', 'dias_eps', 'dias_incapacidad',
+      'Dias_temporal', 'descripcion_diagnostico', 'dias_de_diferencia'
     ];
 
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.disable());
@@ -420,7 +420,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     if (this.isIncapacidadSectionActive(formData)) {
       // Desestructuración del objeto devuelto por validateConditions
-      const { errors, quienpaga , observaciones} = IncapacidadValidator.validateConditions(formData);
+      const { errors, quienpaga, observaciones } = IncapacidadValidator.validateConditions(formData);
 
       this.validationErrors = errors;
       this.quienpaga = quienpaga;
@@ -504,6 +504,12 @@ export class FormularioIncapacidadComponent implements OnInit {
     if (isFieldEmpty(formData.fecha_inicio_incapacidad)) {
       return false;
     }
+    if (isFieldEmpty(formData.Oficina)) {
+      return false;
+    }
+    if (isFieldEmpty(formData.temporal)) {
+      return false;
+    }
 
     if (isFieldEmpty(formData.fecha_fin_incapacidad)) {
       return false;
@@ -569,7 +575,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       this.incapacidadForm.get('nombre_eps')?.setValue('ARL SURA');
     }
 
-    if(this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL'){
+    if (this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL') {
       this.calcularDiasIncapacidad();
       this.incapacidadForm.get('nombre_eps')?.setValue(this.nombreepspersona);
     }
@@ -639,7 +645,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     const user = await this.getUser();
     this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
-    if (this.currentRole === 'INCAPACIDADADMIN'){
+    if (this.currentRole === 'INCAPACIDADADMIN') {
       this.undisableInitialFields();
     }
     this.allIps.forEach(item => {
@@ -772,125 +778,134 @@ export class FormularioIncapacidadComponent implements OnInit {
 
   onSubmit(): void {
     // Evitar múltiples envíos
-    this.unsubscribe$.next();
-    this.toggleLoader(true, true);
-    this.toggleOverlay(true);
-
-
-    // Asegúrate de habilitar todos los controles antes de enviar
-    Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
-      this.incapacidadForm.get(controlName)?.enable();
-    });
-
-    if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de ciudadania'){
-      this.incapacidadForm.get('tipodedocumento')?.setValue('CC');
-    }
-    if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de extranjeria'){
-      this.incapacidadForm.get('tipodedocumento')?.setValue('CE');
-    }
-    if (this.incapacidadForm.get('tipodedocumento')?.value == 'Pasaporte'){
-      this.incapacidadForm.get('tipodedocumento')?.setValue('PA');
-    }
-
-
-    if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de ciudadania') {
-      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CC');
-      }
-    if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de extranjeria') {
-      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CE');
-      }
-    if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Pasaporte') {
-      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('PA');
-      }
-    const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
-    const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
-    const fechaEnvioStr = this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.value;
-
-    if (fechaInicioStr && fechaFinStr) {
-      // Normalizar las fechas al formato 'dd-MM-yyyy'
-      const normalizedStartDate = format(new Date(fechaInicioStr), 'dd-MM-yyyy');
-      const normalizedEndDate = format(new Date(fechaFinStr), 'dd-MM-yyyy');
-      const normalizedFechaEnvio = format(new Date(fechaEnvioStr), 'dd-MM-yyyy');
-
-      // Actualizar las fechas normalizadas en el formulario
-      this.incapacidadForm.patchValue({
-        fecha_inicio_incapacidad: normalizedStartDate,
-        fecha_fin_incapacidad: normalizedEndDate,
-        Fecha_de_Envio_Incapacidad_Fisica: normalizedFechaEnvio,
-      });
-
-      const nuevaIncapacidad: Incapacidad = this.incapacidadForm.value;
-
-      if (isNaN(nuevaIncapacidad.dias_incapacidad) || nuevaIncapacidad.dias_incapacidad === undefined) {
-        const fechaInicio = new Date(fechaInicioStr);
-        const fechaFin = new Date(fechaFinStr);
-
-        if (!isNaN(fechaInicio.getTime()) && !isNaN(fechaFin.getTime())) {
-          const diferenciaEnTiempo = fechaFin.getTime() - fechaInicio.getTime();
-          const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24)) + 1; // Incluye ambos días
-          nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
-          });
-          this.toggleLoader(false, false);
-          this.toggleOverlay(false);
-          return;
-        }
-      }
-
-
-      // Envía la incapacidad al servicio
-      this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
-        response => {
-          this.toggleLoader(false, false);
-          this.toggleOverlay(false);
-          Swal.fire({
-            icon: 'success',
-            title: 'Incapacidad creada',
-            text: 'La incapacidad ha sido creada exitosamente'
-
-          }).then(() => {
-
-            this.incapacidadForm.reset();
-            for (const key in this.fieldMap) {
-              this.incapacidadForm.get(key)?.setValue('');
-            }
-            this.files = {
-              'Historial clinico': [],
-              'Archivo Incapacidad': []
-            };
-            this.validationErrors = [];
-            this.isSubmitButtonDisabled = false;
-            this.resetPage();
-          });
-
-        },
-        error => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al crear la incapacidad'
-          });
-          this.loaderVisible = false;
-          this.disableCertainFields();
-          this.toggleLoader(false, false);
-          this.toggleOverlay(false);
-        }
-      );
-
-    } else {
+    if (!this.areRelevantFieldsFilled(this.incapacidadForm.getRawValue())) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
+        text: 'Por favor llena los campos obligatorios'
       });
-      this.loaderVisible = false;
-      this.disableCertainFields();
-      this.toggleLoader(false, false);
-      this.toggleOverlay(false);
+      return;
+    } else {
+      this.unsubscribe$.next();
+      this.toggleLoader(true, true);
+      this.toggleOverlay(true);
+
+
+      // Asegúrate de habilitar todos los controles antes de enviar
+      Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
+        this.incapacidadForm.get(controlName)?.enable();
+      });
+
+      if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de ciudadania') {
+        this.incapacidadForm.get('tipodedocumento')?.setValue('CC');
+      }
+      if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de extranjeria') {
+        this.incapacidadForm.get('tipodedocumento')?.setValue('CE');
+      }
+      if (this.incapacidadForm.get('tipodedocumento')?.value == 'Pasaporte') {
+        this.incapacidadForm.get('tipodedocumento')?.setValue('PA');
+      }
+
+
+      if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de ciudadania') {
+        this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CC');
+      }
+      if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de extranjeria') {
+        this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CE');
+      }
+      if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Pasaporte') {
+        this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('PA');
+      }
+      const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
+      const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
+      const fechaEnvioStr = this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.value;
+
+      if (fechaInicioStr && fechaFinStr) {
+        // Normalizar las fechas al formato 'dd-MM-yyyy'
+        const normalizedStartDate = format(new Date(fechaInicioStr), 'dd-MM-yyyy');
+        const normalizedEndDate = format(new Date(fechaFinStr), 'dd-MM-yyyy');
+        const normalizedFechaEnvio = format(new Date(fechaEnvioStr), 'dd-MM-yyyy');
+
+        // Actualizar las fechas normalizadas en el formulario
+        this.incapacidadForm.patchValue({
+          fecha_inicio_incapacidad: normalizedStartDate,
+          fecha_fin_incapacidad: normalizedEndDate,
+          Fecha_de_Envio_Incapacidad_Fisica: normalizedFechaEnvio,
+        });
+
+        const nuevaIncapacidad: Incapacidad = this.incapacidadForm.value;
+
+        if (isNaN(nuevaIncapacidad.dias_incapacidad) || nuevaIncapacidad.dias_incapacidad === undefined) {
+          const fechaInicio = new Date(fechaInicioStr);
+          const fechaFin = new Date(fechaFinStr);
+
+          if (!isNaN(fechaInicio.getTime()) && !isNaN(fechaFin.getTime())) {
+            const diferenciaEnTiempo = fechaFin.getTime() - fechaInicio.getTime();
+            const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24)) + 1; // Incluye ambos días
+            nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
+            });
+            this.toggleLoader(false, false);
+            this.toggleOverlay(false);
+            return;
+          }
+        }
+
+
+        // Envía la incapacidad al servicio
+        this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
+          response => {
+            this.toggleLoader(false, false);
+            this.toggleOverlay(false);
+            Swal.fire({
+              icon: 'success',
+              title: 'Incapacidad creada',
+              text: 'La incapacidad ha sido creada exitosamente'
+
+            }).then(() => {
+
+              this.incapacidadForm.reset();
+              for (const key in this.fieldMap) {
+                this.incapacidadForm.get(key)?.setValue('');
+              }
+              this.files = {
+                'Historial clinico': [],
+                'Archivo Incapacidad': []
+              };
+              this.validationErrors = [];
+              this.isSubmitButtonDisabled = false;
+              this.resetPage();
+            });
+
+          },
+          error => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ha ocurrido un error al crear la incapacidad'
+            });
+            this.loaderVisible = false;
+            this.disableCertainFields();
+            this.toggleLoader(false, false);
+            this.toggleOverlay(false);
+          }
+        );
+
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
+        });
+        this.loaderVisible = false;
+        this.disableCertainFields();
+        this.toggleLoader(false, false);
+        this.toggleOverlay(false);
+      }
     }
   }
   resetPage(): void {
@@ -1089,7 +1104,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Tocancipa',
     'Bosa',
     'Bogota']
-    vigentelist: string[] = ['Si','No']
+  vigentelist: string[] = ['Si', 'No']
   convertToTitleCaseAndRemoveAccents(value: string): string {
     if (value === null || value === undefined) {
       Swal.fire({
@@ -1098,10 +1113,10 @@ export class FormularioIncapacidadComponent implements OnInit {
         text: 'No hay oficina afiliada a tu cuenta, por favor contacta a tu administrador'
       });
       return '';
-    }else{
+    } else {
       if (value === 'FACA_PRINCIPAL') {
         value = 'FACATATIVA PRINCIPAL'
-      } if (value === 'FACA_CENTRO'){
+      } if (value === 'FACA_CENTRO') {
         value = 'FACATATIVA CENTRO'
       }
       const valueWithoutAccents = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');

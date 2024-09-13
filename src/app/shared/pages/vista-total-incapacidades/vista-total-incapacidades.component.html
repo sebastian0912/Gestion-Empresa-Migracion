@@ -22,23 +22,25 @@
           <app-info-card title="Descargar Reporte" imageUrl="comun/excel.png" (click)="downloadExcel()"
             style="cursor: pointer;">
           </app-info-card>
+          <form [formGroup]="myForm">
+            <!-- Campos de Fecha de Inicio y Fin -->
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Fecha de inicio de reporte</mat-label>
+              <input matInput [matDatepicker]="fecha_de_inicio_de_reporte"
+                formControlName="confirmacion_fecha_de_radicacion_inicio" placeholder="MM/DD/YYYY">
+              <mat-datepicker-toggle matSuffix [for]="fecha_de_inicio_de_reporte"></mat-datepicker-toggle>
+              <mat-datepicker #fecha_de_inicio_de_reporte></mat-datepicker>
+            </mat-form-field>
 
-          <!-- Campos de Fecha de Inicio y Fin -->
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Fecha de inicio de reporte</mat-label>
-            <input matInput [matDatepicker]="fecha_de_inicio_de_reporte"
-              formControlName="confirmacion_fecha_de_radicacion" placeholder="MM/DD/YYYY">
-            <mat-datepicker-toggle matSuffix [for]="fecha_de_inicio_de_reporte"></mat-datepicker-toggle>
-            <mat-datepicker #fecha_de_inicio_de_reporte></mat-datepicker>
-          </mat-form-field>
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Fecha de fin de reporte</mat-label>
+              <input matInput [matDatepicker]="fecha_de_fin_de_reporte"
+                formControlName="confirmacion_fecha_de_radicacion_fin" placeholder="MM/DD/YYYY">
+              <mat-datepicker-toggle matSuffix [for]="fecha_de_fin_de_reporte"></mat-datepicker-toggle>
+              <mat-datepicker #fecha_de_fin_de_reporte></mat-datepicker>
+            </mat-form-field>
+          </form>
 
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Fecha de fin de reporte</mat-label>
-            <input matInput [matDatepicker]="fecha_de_fin_de_reporte" formControlName="confirmacion_fecha_de_radicacion"
-              placeholder="MM/DD/YYYY">
-            <mat-datepicker-toggle matSuffix [for]="fecha_de_fin_de_reporte"></mat-datepicker-toggle>
-            <mat-datepicker #fecha_de_fin_de_reporte></mat-datepicker>
-          </mat-form-field>
 
           <!-- Botón para filtrar por fechas -->
           <button mat-raised-button color="primary" (click)="applyDateFilter()">
@@ -141,4 +143,3 @@
     </mat-card>
   </div>
 </div>
-

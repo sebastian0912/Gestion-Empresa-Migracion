@@ -11,6 +11,203 @@
       <div class="ficha-container">
         <mat-card>
 
+          <div *ngIf="!isfichacomplete">
+            <!-- dynamic-form.component.html -->
+            <form [formGroup]="formFicha" (ngSubmit)="onSubmit()">
+              <h2>Información Personal</h2>
+              <div formGroupName="personalInfo">
+                <mat-form-field appearance="fill">
+                  <mat-label>1er Apellido</mat-label>
+                  <input matInput id="primerApellido" formControlName="primerApellido">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>2do Apellido</mat-label>
+                  <input matInput id="segundoApellido" formControlName="segundoApellido">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Nombres</mat-label>
+                  <input matInput id="nombres" formControlName="nombres">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Fecha y lugar de Expedición</mat-label>
+                  <input matInput id="fechaExpedicion" formControlName="fechaExpedicion">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Fecha y lugar de Nacimiento</mat-label>
+                  <input matInput id="fechaNacimiento" formControlName="fechaNacimiento">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Dirección</mat-label>
+                  <input matInput id="direccion" formControlName="direccion">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Municipio/Barrio</mat-label>
+                  <input matInput id="municipioBarrio" formControlName="municipioBarrio">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Celular</mat-label>
+                  <input matInput id="celular" formControlName="celular" type="tel">
+                </mat-form-field>
+
+                <mat-checkbox formControlName="diestro">¿Es diestro?</mat-checkbox>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>RH</mat-label>
+                  <input matInput id="rh" formControlName="rh">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Estado Civil</mat-label>
+                  <input matInput id="estadoCivil" formControlName="estadoCivil">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>EPS</mat-label>
+                  <input matInput id="eps" formControlName="eps">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>AFP</mat-label>
+                  <input matInput id="afp" formControlName="afp">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Caja de Compensación</mat-label>
+                  <input matInput id="cajaCompensacion" formControlName="cajaCompensacion">
+                </mat-form-field>
+
+                <mat-checkbox formControlName="planFunerario">¿Desea afiliarse al plan funerario?</mat-checkbox>
+              </div>
+
+              <h2>Información Académica</h2>
+              <div formArrayName="academicInfo">
+                <div>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Grado de Escolaridad (1-11)</mat-label>
+                    <input matInput formControlName="gradoEscolaridad">
+                  </mat-form-field>
+
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nombre de la Institución</mat-label>
+                    <input matInput formControlName="institucion">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Año de Finalización</mat-label>
+                    <input matInput formControlName="anoFinalizacion">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Título Obtenido o Último Cursado</mat-label>
+                    <input matInput formControlName="tituloObtenido">
+                  </mat-form-field>
+
+                </div>
+              </div>
+              <h2>Información Familiar</h2>
+              <div formArrayName="academicInfo">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nombre y apellido (padre)</mat-label>
+                    <input matInput formControlName="nombreapellidoPadre">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Direccion</mat-label>
+                    <input matInput formControlName="institucion">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Año de Finalización</mat-label>
+                    <input matInput formControlName="anoFinalizacion">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Título Obtenido o Último Cursado</mat-label>
+                    <input matInput formControlName="tituloObtenido">
+                  </mat-form-field>
+              </div>
+
+              <h2>Informacion hijos hasta los 25 años</h2>
+              <div formArrayName="references">
+                <div >
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nombre de Referencia</mat-label>
+                    <input matInput formControlName="nombreReferencia">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Teléfono</mat-label>
+                    <input matInput formControlName="telefonoReferencia" type="tel">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ocupación</mat-label>
+                    <input matInput formControlName="ocupacionReferencia">
+                  </mat-form-field>
+
+                </div>
+
+              </div>
+              <h2>Referencias</h2>
+              <div formArrayName="references">
+                <div>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nombre de Referencia</mat-label>
+                    <input matInput formControlName="nombreReferencia">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Teléfono</mat-label>
+                    <input matInput formControlName="telefonoReferencia" type="tel">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ocupación</mat-label>
+                    <input matInput formControlName="ocupacionReferencia">
+                  </mat-form-field>
+
+                </div>
+
+              </div>
+
+              <h2>Comentarios</h2>
+              <div formGroupName="comments">
+                <mat-form-field appearance="fill">
+                  <mat-label>Comentarios de las Referencias Personales</mat-label>
+                  <textarea matInput id="comentariosPersonales" formControlName="comentariosPersonales"></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Comentarios de las Referencias Familiares</mat-label>
+                  <textarea matInput id="comentariosFamiliares" formControlName="comentariosFamiliares"></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Comentarios de las Referencias Laborales</mat-label>
+                  <textarea matInput id="comentariosLaborales" formControlName="comentariosLaborales"></textarea>
+                </mat-form-field>
+              </div>
+
+              <h2>Información del Contratante</h2>
+              <div formGroupName="contractorInfo">
+                <mat-form-field appearance="fill">
+                  <mat-label>Nombre y Cédula de quien contrata</mat-label>
+                  <input matInput id="nombreContratante" formControlName="nombreContratante">
+                </mat-form-field>
+              </div>
+
+              <button mat-raised-button color="primary" type="submit">Enviar</button>
+            </form>
+
+          </div>
         </mat-card>
       </div>
     </mat-card>
