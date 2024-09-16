@@ -1,6 +1,6 @@
 {
   "name": "gestion-empresa-migracion",
-  "version": "1.0.53",
+  "version": "1.0.54",
   "description": "Programa para gestionar los procesos de la empresa",
   "author": "SebastianGuarnizoCampos",
   "license": "Uso Interno en TuAlianza, Apoyo Laboral, Comercializadora, prohibida su distribucion",
@@ -75,7 +75,6 @@
     "express": "^4.18.2",
     "file-saver": "^2.0.5",
     "fstream": "^1.0.12",
-    "gestion-empresa-migracion": "file:",
     "glob": "^11.0.0",
     "lru-cache": "^11.0.1",
     "moment": "^2.30.1",
