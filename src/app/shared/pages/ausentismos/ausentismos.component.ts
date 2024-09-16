@@ -69,7 +69,7 @@ export class AusentismosComponent implements OnInit {
     const user = await this.pagosService.getUser();
     if (user) {
       this.correo = user.correo_electronico;
-    } 
+    }
   }
 
   // Funciones para mostrar y ocultar el loader
@@ -167,6 +167,15 @@ export class AusentismosComponent implements OnInit {
   }
 
 
+
+  removeSpecialCharacters = (text: string): string => {
+    // Expresión regular ampliada para eliminar cualquier emoji, pictogramas y símbolos especiales
+    const emojiPattern = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F7E0}-\u{1F7EF}]/gu;
+
+    return text.replace(emojiPattern, '');
+  };
+
+
   // Función para subir archivo de contratación
   cargarExcel(event: any): void {
     this.toggleLoader(true);
@@ -181,40 +190,83 @@ export class AusentismosComponent implements OnInit {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
-      // Omite la primera fila (encabezados)
-      json.shift();
+      json.shift(); // Eliminar la fila de encabezados si es necesario
 
-      // Convertir todos los valores a cadena de texto y manejar las fechas
+      const formatDate = (date: string): string => {
+        const regex_ddmmyyyy = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+        const regex_mmddyy = /^\d{1,2}\/\d{1,2}\/\d{2}$/;
+
+        if (regex_ddmmyyyy.test(date)) {
+          return date;
+        } else if (regex_mmddyy.test(date)) {
+          const [month, day, year] = date.split('/');
+          const fullYear = (parseInt(year, 10) < 50) ? `20${year}` : `19${year}`;
+          return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${fullYear}`;
+        }
+        return date;
+      };
+
+      const indicesFechas = [0, 8, 16, 24, 44, 134];
+
       const rows: string[][] = (json as any[][]).map((row: any[]) => {
-        // Asegurarse de que todas las filas tengan exactamente 195 columnas
-        const completeRow = new Array(195).fill('-');
+        const completeRow = new Array(195).fill('-'); // Inicializar la fila con un array vacío de 195 elementos
+
         row.forEach((cell, index) => {
           if (index < 195) {
-            if (cell == null || cell === '') {
+            if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
               completeRow[index] = '-';
-            } else if ((index === 0 || index === 8 || index === 16 || index === 24 || index === 134) && this.isExcelDate(cell)) {
-              completeRow[index] = this.excelSerialToJSDate2(cell);
             } else if (index === 11 || index === 1) {
-              completeRow[index] = cell.toString().replace(/,/g, '').replace(/\./g, '').replace(/\s/g, '');
+              completeRow[index] = this.removeSpecialCharacters(
+                cell.toString()
+                  .replace(/,/g, '')      // Elimina comas
+                  .replace(/\./g, '')     // Elimina puntos
+                  .replace(/\s/g, '')     // Elimina espacios
+                  .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
+              );
+            }
+            else if (index === 4) {
+              completeRow[index] = this.removeSpecialCharacters(
+                cell.toString()
+                  .replace(/,/g, '')      // Elimina comas
+                  .replace(/\./g, '')     // Elimina puntos
+                  .replace(/\s/g, '')     // Elimina espacios
+              );
+            }
+
+            else if (indicesFechas.includes(index)) {
+              completeRow[index] = formatDate(this.removeSpecialCharacters(cell.toString()));
             } else {
-              completeRow[index] = cell.toString();
+              completeRow[index] = this.removeSpecialCharacters(cell.toString());
             }
           }
         });
+
         return completeRow;
       });
+      console.log(rows);
 
       this.contratacionService.subirContratacion(rows).then((response: any) => {
+        console.log(response);
         if (response.message === 'success') {
+          const total = response.actualizados + response.creados;
+
           this.playSound(true);
           this.toggleLoader(false);
           this.toggleOverlay(false);
+
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: 'Los datos se han procesado correctamente.'
+            text: `Los datos se han procesado correctamente. 
+                   Actualizados: ${response.actualizados} 
+                   Creados: ${response.creados}
+                   Total procesados: ${total}.`
           });
-          this.generateErrorExcel(response.errores);
+
+          console.log(response.errores);
+          if (response.errores !== undefined || response.errores != null) {
+            this.generateErrorExcel(response.errores);
+          }
         } else {
           Swal.fire({
             icon: 'error',
@@ -226,6 +278,7 @@ export class AusentismosComponent implements OnInit {
           this.toggleOverlay(false);
         }
       }).catch((error: any) => {
+        console.log(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -245,6 +298,7 @@ export class AusentismosComponent implements OnInit {
     const worksheetData = [
       ['Registro', 'Campo', 'Error']
     ];
+    console.log(errores);
 
     errores.forEach((error: any) => {
       worksheetData.push([error.registro, error.campo, error.error]);
