@@ -2,10 +2,68 @@
     <app-navbar-lateral></app-navbar-lateral>
     <div class="contenedor">
         <app-navbar-superior></app-navbar-superior>
-        <mat-card>
-            <mat-card-content>
+        <div class="anadir">
+            <button mat-flat-button class="add-button" (click)="openModal()">
+                <mat-icon>add</mat-icon>
+                <span>Añadir Vacante</span>
+            </button>
+        </div>
 
-            </mat-card-content>
-        </mat-card>
+        <div class="vacantes-container">
+            <mat-card class="vacante-card" *ngFor="let vacante of vacantes">
+                <mat-card-header>
+                    <div mat-card-avatar class="vacante-icon">
+                        <mat-icon>work_outline</mat-icon>
+                    </div>
+                    <mat-card-title>{{ vacante.Cargovacante_id }}</mat-card-title>
+                    <mat-card-subtitle>{{ vacante.Localizaciondelavacante }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p><strong>Temporal:</strong> {{ vacante.empresaQueSolicita_id }}</p>
+                    <p><strong>Oficina:</strong> {{ vacante.localizacionDeLaPersona }}</p>
+                    <p><strong>Experiencia Requerida:</strong> {{ vacante.experiencia }}</p>
+                    <p><strong>Prueba Técnica:</strong> {{ vacante.Pruebatecnica }}</p>
+                    <p *ngIf="vacante.Pruebatecnica === 'si'">
+                        <strong>Fecha Prueba Técnica:</strong> {{ vacante.fechadePruebatecnica }}
+                    </p>
+                    <p *ngIf="vacante.horadePruebatecnica">
+                        <strong>Hora Prueba Técnica:</strong> {{ vacante.horadePruebatecnica }}
+                    </p>
+                    <p *ngIf="vacante.lugarPrueba">
+                        <strong>Lugar Prueba Técnica:</strong> {{ vacante.lugarPrueba }}
+                    </p>
+                    <p><strong>Número de Personas Requeridas:</strong> {{ vacante.numeroDeGenteRequerida }}</p>
+                    <p *ngIf="vacante.fechadeingreso">
+                        <strong>Fecha de Ingreso:</strong> {{ vacante.fechadeingreso }}
+                    </p>
+                    <p *ngIf="vacante.Observaciones">
+                        <strong>Observaciones:</strong> {{ vacante.Observaciones }}
+                    </p>
+                </mat-card-content>
+
+                <!-- Menu button for actions -->
+                <div class="actions-wrapper">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="openModalEdit(vacante)">
+                            <mat-icon>edit</mat-icon>
+                            <span>Editar</span>
+                        </button>
+                        <button mat-menu-item (click)="eliminarVacante(vacante)">
+                            <mat-icon>delete</mat-icon>
+                            <span>Eliminar</span>
+                        </button>
+                        <!-- Botón para escoger vacante -->
+                        <button mat-menu-item (click)="escogerVacante(vacante)">
+                            <mat-icon>check_circle</mat-icon>
+                            <span>Escoger</span>
+                        </button>
+                    </mat-menu>
+                </div>
+            </mat-card>
+        </div>
     </div>
 </div>

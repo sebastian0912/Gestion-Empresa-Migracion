@@ -1,29 +1,37 @@
 <div class="app-layout">
-    <app-navbar-lateral></app-navbar-lateral>
-    <div class="contenedor">
-      <app-navbar-superior></app-navbar-superior>
+  <app-navbar-lateral></app-navbar-lateral>
+  <div class="contenedor">
+    <app-navbar-superior></app-navbar-superior>
+
+    <!-- Tarjeta para búsqueda de cédula -->
+    <div class="seleccion">
       <mat-card>
         <mat-card-content>
-          <div class="valor">
-            <div class="valoresEscribir">
-              <h1 class="titulo" style="margin-right: 10px; width: 100%;">
-                Ingrese la cédula del usuario a buscar:
-              </h1>
-              <!-- Campo de texto para cédula -->
-              <mat-form-field appearance="fill" class="example-full-width" style="margin-left: 0;">
-                <mat-label>Cédula</mat-label>
-                <input matInput type="text" id="cedulaB" placeholder="Cédula">
-              </mat-form-field>
-              <!-- Botón de búsqueda -->
-              <button mat-raised-button color="primary" id="buscarCedula"
-                class="example-full-width" style="margin-top: -5px;">
-                Buscar
-              </button>
-            </div>
-          </div>
+          <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+            Ingrese la cédula del usuario a buscar:
+          </h1>
+          <!-- Campo de texto para cédula -->
+          <mat-form-field appearance="fill" class="example-full-width2" style="margin-left: 0;">
+            <mat-label>Cédula</mat-label>
+            <input matInput type="text" [(ngModel)]="cedula" placeholder="Cédula">
+          </mat-form-field>
+          <!-- Botón de búsqueda -->
+          <button mat-flat-button (click)="buscarCedula()" class="example-full-width"
+            style="margin-top: -5px;">
+            Buscar
+          </button>
           <!-- Imagen informativa -->
-          <img src="comun/image.png" alt="info" class="info" style="display: none;" id="info">
-          
+          <img src="comun/image.png" (click)="abrirModal()" alt="info" class="info"  *ngIf="infoGeneral">
+
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+          Dilegencie los campos correspondientes:
+        </h1>
+        <mat-card-content>
+
           <!-- Accordion Sections -->
           <mat-accordion>
             <!-- Verificaciones y Área de Aplicación -->
@@ -66,10 +74,10 @@
                   <mat-label>Área para la que aplica</mat-label>
                   <input matInput type="text" id="areaAplica" placeholder="Área para la que aplica">
                 </mat-form-field>
-                <button mat-raised-button color="primary" class="example-full-width" id="botonParte1">Cargar</button>
+                <button mat-flat-button class="example-full-width" id="botonParte1">Cargar</button>
               </div>
             </mat-expansion-panel>
-            
+
             <!-- Entrevista o Prueba Técnica -->
             <mat-expansion-panel>
               <mat-expansion-panel-header>
@@ -80,7 +88,8 @@
               <div class="seccion">
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Centro de Costo</mat-label>
-                  <input matInput type="text" id="centroCosto" placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
+                  <input matInput type="text" id="centroCosto"
+                    placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Cargo</mat-label>
@@ -100,12 +109,13 @@
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Dirección o indicación para llegar a la empresa</mat-label>
-                  <input matInput type="text" id="direccionEmpresa" placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
+                  <input matInput type="text" id="direccionEmpresa"
+                    placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
                 </mat-form-field>
-                <button mat-raised-button color="primary" class="example-full-width" id="botonParte2">Cargar</button>
+                <button mat-flat-button class="example-full-width" id="botonParte2">Cargar</button>
               </div>
             </mat-expansion-panel>
-  
+
             <!-- Examen de Salud Ocupacional -->
             <mat-expansion-panel>
               <mat-expansion-panel-header>
@@ -134,10 +144,10 @@
                   <mat-label>Apto para el cargo (Sí/No)</mat-label>
                   <input matInput type="text" id="aptoCargo" placeholder="APTO PARA EL CARGO SI/NO">
                 </mat-form-field>
-                <button mat-raised-button color="primary" class="example-full-width" id="botonParte3">Cargar</button>
+                <button mat-flat-button class="example-full-width" id="botonParte3">Cargar</button>
               </div>
             </mat-expansion-panel>
-  
+
             <!-- Contratación -->
             <mat-expansion-panel>
               <mat-expansion-panel-header>
@@ -174,12 +184,13 @@
                   <mat-label>Bonificación</mat-label>
                   <input matInput type="text" id="bonificacion" placeholder="BONIFICACION">
                 </mat-form-field>
-                <button mat-raised-button color="primary" class="example-full-width" id="botonParte4">Cargar</button>
+                <button mat-flat-button class="example-full-width" id="botonParte4">Cargar</button>
               </div>
             </mat-expansion-panel>
           </mat-accordion>
         </mat-card-content>
       </mat-card>
+
     </div>
   </div>
-  
+</div>

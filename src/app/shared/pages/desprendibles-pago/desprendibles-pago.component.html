@@ -92,10 +92,15 @@
                   <span *ngIf="!isValidLink(element.cartas_retiro)">{{element.cartas_retiro}}</span>
                 </td>
               </ng-container>
+
               <ng-container matColumnDef="carta_cesantias">
                 <th mat-header-cell *matHeaderCellDef> Carta Cesantías </th>
-                <td mat-cell *matCellDef="let element"> {{element.carta_cesantias}} </td>
-              </ng-container>
+                <td mat-cell *matCellDef="let element">
+                  <a *ngIf="isValidLink(element.carta_cesantias)" [href]="element.carta_cesantias" target="_blank">Ver link</a>
+                  <span *ngIf="!isValidLink(element.carta_cesantias)">{{element.carta_cesantias}}</span>
+                </td>
+              </ng-container>       
+                    
               <ng-container matColumnDef="entrevista_retiro">
                 <th mat-header-cell *matHeaderCellDef> Entrevista Retiro </th>
                 <td mat-cell *matCellDef="let element">

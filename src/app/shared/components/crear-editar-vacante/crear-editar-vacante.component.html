@@ -1,0 +1,136 @@
+<h2 mat-dialog-title>Agregar o Modificar Información</h2>
+<mat-dialog-content>
+    <form [formGroup]="vacanteForm">
+        <!-- Empresa que solicita -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Empresa que solicita</mat-label>
+            <input type="text" placeholder="Filtrar empresa" matInput [matAutocomplete]="autoEmpresa"
+                formControlName="empresa">
+            <mat-autocomplete #autoEmpresa="matAutocomplete">
+                <mat-option *ngFor="let empresa of empresasFiltradas | async" [value]="empresa">
+                    {{ empresa }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- Temporal que necesita -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Temporal que necesita</mat-label>
+            <mat-select formControlName="temporal">
+                <mat-option value="APOYO LABORAL TS SAS">Apoyo Laboral SAS</mat-option>
+                <mat-option value="TU ALIANZA SAS">Tu alianza SAS</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Oficina quien puede contratar (Multiselect) -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Oficina quien puede contratar</mat-label>
+            <mat-select formControlName="oficina" multiple>
+                <mat-option *ngFor="let oficina of oficinas" [value]="oficina">{{ oficina }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Cargos Dinámicos -->
+        <div formArrayName="cargos">
+            <div *ngFor="let cargo of cargos.controls; let i = index" [formGroupName]="i">
+                <div class="headerCargoAdd">
+                    <h4 class="title">Cargo #{{ i + 1 }}</h4>
+
+                    <!-- Botón para eliminar cargo -->
+                    <button mat-icon-button color="warn" (click)="eliminarCargo(i)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+
+                <mat-form-field class="example-full-width">
+                    <mat-label>Cargo que necesita</mat-label>
+                    <input type="text" placeholder="Filtrar cargo" matInput [matAutocomplete]="autoCargo"
+                        formControlName="cargo">
+                    <mat-autocomplete #autoCargo="matAutocomplete">
+                        <mat-option *ngFor="let cargos of cargosFiltrados | async" [value]="cargos.nombredelavacante">
+                            {{ cargos.nombredelavacante }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <!-- Prueba Técnica -->
+                <mat-form-field class="example-full-width">
+                    <mat-label>Prueba Técnica</mat-label>
+                    <mat-select formControlName="pruebaTecnica" (selectionChange)="onPruebaTecnicaChange($event, i)">
+                        <mat-option value="Si">Sí</mat-option>
+                        <mat-option value="No">No</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Fecha y hora de Prueba Técnica, displayed if "Prueba Técnica" is "Sí" -->
+                <div *ngIf="mostrarPruebaTecnica(i)">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Fecha de Prueba Técnica</mat-label>
+                        <input matInput [matDatepicker]="pruebaDatepicker" formControlName="fechaPrueba">
+                        <mat-hint>DD/MM/YYYY</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="pruebaDatepicker"></mat-datepicker-toggle>
+                        <mat-datepicker #pruebaDatepicker></mat-datepicker>
+                    </mat-form-field>
+
+
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Hora de Prueba Técnica</mat-label>
+                        <input matInput type="time" formControlName="horaPrueba">
+                    </mat-form-field>
+                    
+
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Lugar de Prueba Técnica</mat-label>
+                        <input matInput formControlName="lugarPrueba">
+                    </mat-form-field>
+                </div>
+
+                <!-- Fecha de ingreso -->
+                <mat-form-field class="example-full-width">
+                    <mat-label>Tiene Fecha de Ingreso?</mat-label>
+                    <mat-select formControlName="fechaIngreso" (selectionChange)="onFechaIngresoChange($event, i)">
+                        <mat-option value="Si">Sí</mat-option>
+                        <mat-option value="No">No</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="mostrarFechaIngreso(i)" class="example-full-width">
+                    <mat-label>Fecha de Ingreso</mat-label>
+                    <input matInput [matDatepicker]="ingresoDatepicker" formControlName="fechaIngresoSeleccionada">
+                    <mat-hint>DD/MM/YYYY</mat-hint> <!-- Sugerencia de formato -->
+                    <mat-datepicker-toggle matSuffix [for]="ingresoDatepicker"></mat-datepicker-toggle>
+                    <mat-datepicker #ingresoDatepicker></mat-datepicker>
+                </mat-form-field>
+
+
+                <!-- Requiere Experiencia -->
+                <mat-form-field class="example-full-width">
+                    <mat-label>Requiere Experiencia?</mat-label>
+                    <mat-select formControlName="requiereExperiencia">
+                        <mat-option value="Si">Sí</mat-option>
+                        <mat-option value="No">No</mat-option>
+                        <mat-option value="Ambas">Ambas</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Número de Personas -->
+                <mat-form-field class="example-full-width">
+                    <mat-label>Número de Personas</mat-label>
+                    <input matInput type="number" formControlName="numeroPersonas">
+                </mat-form-field>
+
+                <!-- Observaciones -->
+                <mat-form-field class="example-full-width">
+                    <mat-label>Observaciones</mat-label>
+                    <textarea matInput formControlName="observaciones"></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <button mat-button (click)="agregarOtroCargo()">Agregar otro cargo</button>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-button (click)="guardar()">Guardar</button>
+</mat-dialog-actions>

@@ -60,7 +60,7 @@ export class NavbarLateralComponent implements OnInit {
     ],
     ADMIN: [
       'home', 'forma-pago', 'desprendibles-pago',
-      'arl', 'ausentismos',
+      'arl', 'ausentismos', 'publicidad', 'vacantes',
       'seguimiento-auditoria', 'estadisticas-auditoria',
       'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo',
       'reporte-contratacion', 'seguimiento-auditoria', 'envio-paquete-documentacion',
@@ -75,8 +75,9 @@ export class NavbarLateralComponent implements OnInit {
     ],
     INCAPACIDADADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades', 'formulario-incapacicades'
     ],
-    INCAPACIDADSUBIDA: ['home', 'formulario-incapacicades'
+    INCAPACIDADSUBIDA: ['home', 'formulario-incapacicades', 'forma-pago', 'desprendibles-pago', 'ausentismos',
     ],
+    
   };
 
   empleadosProblemas: any[] = [];
