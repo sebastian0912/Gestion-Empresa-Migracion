@@ -84,3 +84,60 @@ button.mat-button:focus {
     width: 100%;
   }
 }
+.app-layout {
+  display: flex;
+  flex-direction: row;
+}
+
+.contenedor {
+  flex-grow: 1;
+  padding: 16px;
+}
+
+.main-card {
+  margin: 16px;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filter-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-container {
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}
+
+.filter-container.collapsed {
+  max-height: 0;
+}
+
+.filter-container.expanded {
+  max-height: 500px;
+  /* Ajusta según sea necesario */
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.title {
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+.download-button {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}

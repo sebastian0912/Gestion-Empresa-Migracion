@@ -8,45 +8,38 @@
   <app-navbar-lateral></app-navbar-lateral>
   <div class="contenedor">
     <app-navbar-superior></app-navbar-superior>
-    <mat-card>
+    <mat-card class="main-card">
       <mat-card-content>
         <!-- Contenedor para los botones y fechas -->
-        <div class="filter-header" style="display: flex; align-items: center; gap: 10px;">
-
+        <div class="filter-header">
           <!-- Botón para desplegar el filtro -->
-          <button mat-raised-button (click)="toggleFilter()">
+          <button mat-raised-button color="primary" (click)="toggleFilter()">
             Filtros
           </button>
 
           <!-- Botón para descargar el reporte -->
           <app-info-card title="Descargar Reporte" imageUrl="comun/excel.png" (click)="downloadExcel()"
-            style="cursor: pointer;">
+            class="download-button">
           </app-info-card>
-          <form [formGroup]="myForm">
-            <!-- Campos de Fecha de Inicio y Fin -->
-            <mat-form-field class="example-full-width" appearance="fill">
+
+          <!-- Formulario para la fecha de inicio -->
+          <form [formGroup]="myForm" (ngSubmit)="applyDateFilter()" class="filter-form">
+            <mat-form-field appearance="fill">
               <mat-label>Fecha de inicio de reporte</mat-label>
               <input matInput [matDatepicker]="fecha_de_inicio_de_reporte"
-                formControlName="confirmacion_fecha_de_radicacion_inicio" placeholder="MM/DD/YYYY">
+                formControlName="confirmacion_fecha_de_radicacion_inicio" placeholder="MM/DD/YYYY" />
               <mat-datepicker-toggle matSuffix [for]="fecha_de_inicio_de_reporte"></mat-datepicker-toggle>
               <mat-datepicker #fecha_de_inicio_de_reporte></mat-datepicker>
+              <mat-error *ngIf="myForm.get('confirmacion_fecha_de_radicacion_inicio')?.hasError('required')">
+                La fecha de inicio es requerida.
+              </mat-error>
             </mat-form-field>
 
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>Fecha de fin de reporte</mat-label>
-              <input matInput [matDatepicker]="fecha_de_fin_de_reporte"
-                formControlName="confirmacion_fecha_de_radicacion_fin" placeholder="MM/DD/YYYY">
-              <mat-datepicker-toggle matSuffix [for]="fecha_de_fin_de_reporte"></mat-datepicker-toggle>
-              <mat-datepicker #fecha_de_fin_de_reporte></mat-datepicker>
-            </mat-form-field>
+            <!-- Botón para aplicar el filtro -->
+            <button mat-raised-button color="primary" type="submit">
+              Aplicar Filtro
+            </button>
           </form>
-
-
-          <!-- Botón para filtrar por fechas -->
-          <button mat-raised-button color="primary" (click)="applyDateFilter()">
-            Filtrar Fechas
-          </button>
-
         </div>
 
         <!-- Contenedor del filtro que se despliega y colapsa -->
@@ -54,19 +47,19 @@
           <h3>Filtros de Incapacidades</h3>
 
           <!-- Filtro por Número de Documento -->
-          <mat-form-field>
+          <mat-form-field appearance="fill">
             <mat-label>Número de Documento</mat-label>
             <input matInput [(ngModel)]="filterCriteria.numeroDeDocumento" placeholder="Número de Documento">
           </mat-form-field>
 
           <!-- Filtro por Fecha de Inicio -->
-          <mat-form-field>
+          <mat-form-field appearance="fill">
             <mat-label>Fecha de Inicio</mat-label>
             <input matInput [(ngModel)]="filterCriteria.fechaInicio" placeholder="YYYY-MM-DD" type="date">
           </mat-form-field>
 
           <!-- Filtro por Empresa -->
-          <mat-form-field>
+          <mat-form-field appearance="fill">
             <mat-label>Temporal</mat-label>
             <mat-select [(ngModel)]="filterCriteria.temporal">
               <mat-option *ngFor="let option of temporales" [value]="option">
@@ -76,7 +69,7 @@
           </mat-form-field>
 
           <!-- Filtro por Tipo de Incapacidad -->
-          <mat-form-field>
+          <mat-form-field appearance="fill">
             <mat-label>Tipo de Incapacidad</mat-label>
             <mat-select [(ngModel)]="filterCriteria.tipoIncapacidad">
               <mat-option *ngFor="let tipo of tiposIncapacidad" [value]="tipo">
@@ -85,7 +78,7 @@
             </mat-select>
           </mat-form-field>
 
-          <button mat-button (click)="applyFilter()">Aplicar Filtro</button>
+          <button mat-raised-button color="primary" (click)="applyFilter()">Aplicar Filtro</button>
         </div>
 
         <!-- Tabla de Búsqueda de Incapacidades -->
@@ -94,7 +87,6 @@
           <div class="table-container">
             <table mat-table [dataSource]="dataSourceTable1" class="mat-elevation-z8"
               aria-label="Tabla de búsqueda de incapacidades">
-
               <!-- Definición de las columnas para la tabla de búsqueda de incapacidades -->
               <ng-container *ngFor="let column of ColumnsTable1" [matColumnDef]="column">
                 <th mat-header-cell *matHeaderCellDef> {{ toTitleCase(column, columnTitlesTable1) }} </th>
@@ -121,7 +113,6 @@
           <div class="table-container">
             <table mat-table [dataSource]="dataSourceTable4" class="mat-elevation-z8"
               aria-label="Tabla de información del reporte">
-
               <!-- Definición de las columnas para la tabla de información del reporte -->
               <ng-container *ngFor="let column of displayedColumnsTable4" [matColumnDef]="column">
                 <th mat-header-cell *matHeaderCellDef> {{ toTitleCase(column, columnTitlesTable4) }} </th>
