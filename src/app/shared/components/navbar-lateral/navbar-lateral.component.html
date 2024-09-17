@@ -67,6 +67,11 @@
       <li> Arl </li>
     </div>
 
+    <div class="blockLink" *ngIf="hasPermission('adres')" (click)="selectFile('adres')">
+      <img src="navbar/ai.png" alt="Dashboard" class="icon">
+      <li> Adress Robots </li>
+    </div>
+
     <div class="blockLink" [class.active]="currentRoute === '/ausentismos'" routerLink="/ausentismos"
       *ngIf="hasPermission('ausentismos')">
       <img src="navbar/person.png" alt="Dashboard" class="icon">

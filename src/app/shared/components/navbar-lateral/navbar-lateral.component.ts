@@ -18,6 +18,8 @@ import FileSaver from 'file-saver';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { isPlatformBrowser, NgIf } from '@angular/common';
 import moment from 'moment';
+import { RobotsService } from '../../services/robots/robots.service';
+
 
 @Component({
   selector: 'app-navbar-lateral',
@@ -67,7 +69,7 @@ export class NavbarLateralComponent implements OnInit {
       'recibir-paquete-documentacion', 'formulario-incapacicades', 'subida-archivos-incapacidades',
       'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
       'contratacion',
-      'archivos-contratacion', 'ver-reporte'
+      'archivos-contratacion', 'ver-reporte', 'adres'
 
     ],
     TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
@@ -77,7 +79,7 @@ export class NavbarLateralComponent implements OnInit {
     ],
     INCAPACIDADSUBIDA: ['home', 'formulario-incapacicades', 'forma-pago', 'desprendibles-pago', 'ausentismos',
     ],
-    
+
   };
 
   empleadosProblemas: any[] = [];
@@ -91,7 +93,7 @@ export class NavbarLateralComponent implements OnInit {
     public dialog: MatDialog,
     private contratacionService: ContratacionService,
     private jefeAreaService: ContratacionService,
-
+    private robotsService: RobotsService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.router.events.pipe(
@@ -149,6 +151,10 @@ export class NavbarLateralComponent implements OnInit {
         case 'personalActivo':
           this.processPersonalActivo(workbook);
           break;
+
+        case 'adres':
+          this.processAdres(workbook);
+          break;
       }
 
       // Reset the file input value to allow uploading the same file again
@@ -171,6 +177,108 @@ export class NavbarLateralComponent implements OnInit {
       this.handleFile(file, action);
     }
   }
+
+  // Función para convertir el valor de fecha numérico de Excel a una fecha válida de JavaScript
+  convertirFechaExcel(fechaExcel: number): string {
+    const fechaBase = new Date(1899, 11, 30); // Excel usa 1 de enero de 1900 como día base, con un desfase de dos días.
+    const fechaReal = new Date(fechaBase.getTime() + fechaExcel * 24 * 60 * 60 * 1000);
+
+    // Para formatear la fecha en el formato DD/MM/YYYY
+    const dia = fechaReal.getDate();
+    const mes = fechaReal.getMonth() + 1; // Los meses en JavaScript empiezan desde 0
+    const año = fechaReal.getFullYear();
+
+    return `${dia}/${mes}/${año}`;
+  }
+
+  // Función para convertir el valor de marca temporal numérico de Excel a una fecha válida de JavaScript con hora
+  convertirMarcaTemporalExcel(fechaExcel: number): string {
+    const fechaBase = new Date(1899, 11, 30);
+    const fechaReal = new Date(fechaBase.getTime() + fechaExcel * 24 * 60 * 60 * 1000);
+
+    // Extraer la fecha y hora
+    const dia = fechaReal.getDate();
+    const mes = fechaReal.getMonth() + 1; // Los meses empiezan desde 0
+    const año = fechaReal.getFullYear();
+    const horas = fechaReal.getHours();
+    const minutos = fechaReal.getMinutes();
+
+    return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+  }
+
+
+
+  // Función para procesar el archivo de Excel ya leído
+  async processAdres(workbook: XLSX.WorkBook): Promise<void> {
+    // Obtener la primera hoja del archivo
+    const worksheet: XLSX.WorkSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    // Convertir la hoja a un formato JSON
+    const data: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+    // Procesar los datos y generar un arreglo con las afiliaciones
+    const afiliaciones = this.procesarDatosAfiliacion(data);
+    console.log(afiliaciones);
+    // Enviar los datos al backend en una sola petición
+    //await this.enviarAfiliaciones(afiliaciones);
+    this.robotsService.enviarAfiliaciones(afiliaciones)
+      .subscribe((response: any) => {
+        console.log(response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'Los datos se han cargado correctamente en el sistema.',
+          confirmButtonText: 'Aceptar'
+        });
+      }, (error) => {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al procesar los datos. Por favor, inténtelo de nuevo.',
+          confirmButtonText: 'Aceptar'
+        });
+      });
+
+  }
+
+  procesarDatosAfiliacion(data: any[]): any[] {
+    const afiliaciones: any[] = [];
+  
+    data.forEach((row, index) => {
+      if (index > 0) {  // Ignorar la primera fila (cabecera)
+        const afiliacion = {
+          numeroCedula: row[0],
+          tipoDocumento: row[1],
+          nombre: row[2],
+          apellido: row[3],
+          departamento: row[4],
+          municipio: row[5],
+          estado: row[6],
+          entidad: row[7],
+          regimen: row[8],
+  
+          // Convertir las fechas numéricas de Excel a formato DD/MM/YYYY
+          fechaAfiliacionEfectiva: this.convertirFechaExcel(row[9]),
+          fechaFinalizacionAfiliacion: this.convertirFechaExcel(row[10]),
+          
+          tipoAfiliacion: row[11],
+          fechaAddress: this.convertirFechaExcel(row[12]),
+          pdfDocumento: row[13],
+  
+          // Convertir la marca temporal numérica de Excel a formato DD/MM/YYYY HH:MM
+          marcaTemporal: this.convertirMarcaTemporalExcel(row[14])
+        };
+  
+        // Agregar la afiliación al arreglo
+        afiliaciones.push(afiliacion);
+      }
+    });
+  
+    return afiliaciones;
+  }
+  
+
 
   async processPersonalActivo(workbook: XLSX.WorkBook): Promise<void> {
     Swal.fire({
@@ -451,9 +559,9 @@ export class NavbarLateralComponent implements OnInit {
       if (!dato.proceso_contratacion) {
         console.log("Proceso de contratación no está definido para la cédula: " + dato.datos_generales.numerodeceduladepersona);
       } else if (dato.proceso_contratacion.fechaIngreso === null ||
-                 dato.proceso_contratacion.fechaIngreso === undefined ||
-                 dato.proceso_contratacion.fechaIngreso === '' ||
-                 dato.proceso_contratacion.fechaIngreso === '-') {
+        dato.proceso_contratacion.fechaIngreso === undefined ||
+        dato.proceso_contratacion.fechaIngreso === '' ||
+        dato.proceso_contratacion.fechaIngreso === '-') {
         dato.proceso_contratacion.fechaIngreso = '';
         console.log(dato.datos_generales.numerodeceduladepersona + "----" + dato.proceso_contratacion.fechaIngreso + "" + " " + dato.proceso_contratacion.fecha_contratacion);
       }

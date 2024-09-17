@@ -47,27 +47,62 @@ export class LeerInfoCandidatoComponent {
   }
 
   // Convertir un número de días en una fecha válida (basado en el 1 de enero de 1900)
-  convertirDiasAFecha(dias: string): Date {
-    const diasDesde1900 = parseInt(dias, 10); // Convertimos a entero
-    const fechaBase = new Date(1900, 0, 1); // 1 de enero de 1900
-    fechaBase.setDate(fechaBase.getDate() + diasDesde1900);
-    return fechaBase;
+  convertirAFecha(fecha: string): Date | null {
+    // Si la fecha es un número de días (solo contiene dígitos)
+    if (/^\d+$/.test(fecha)) {
+      const diasDesde1900 = Number(fecha);
+      const fechaBase = new Date(1900, 0, 1); // 1 de enero de 1900
+      fechaBase.setDate(fechaBase.getDate() + diasDesde1900);
+      
+      if (isNaN(fechaBase.getTime())) {
+        console.error('Fecha inválida generada a partir de los días:', fecha);
+        return null;
+      }
+      
+      return fechaBase;
+  
+    // Si la fecha está en formato "DD/MM/YYYY"
+    } else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
+      const [dia, mes, anio] = fecha.split('/').map(Number);
+      if (!dia || !mes || !anio) {
+        console.error('Formato de fecha inválido:', fecha);
+        return null;
+      }
+  
+      const fechaValida = new Date(anio, mes - 1, dia);
+      
+      if (isNaN(fechaValida.getTime())) {
+        console.error('Fecha inválida generada a partir del string:', fecha);
+        return null;
+      }
+  
+      return fechaValida;
+  
+    } else {
+      console.error('Formato de fecha no reconocido:', fecha);
+      return null;
+    }
   }
+  
 
   // Calcular edad a partir del número de días desde 1 de enero de 1900
-  calcularEdad(dias: string): number {
-    if (!dias || isNaN(Number(dias))) {
-      return NaN; // Si no es un número válido
+  calcularEdad(fecha: string): number {
+    const fechaNacimiento = this.convertirAFecha(fecha);
+    if (!fechaNacimiento) {
+      return NaN; // Si la fecha no es válida
     }
-    const fechaNacimiento = this.convertirDiasAFecha(dias);
+  
     const today = new Date();
     let age = today.getFullYear() - fechaNacimiento.getFullYear();
+  
+    // Restar un año si aún no ha pasado el cumpleaños este año
     const monthDiff = today.getMonth() - fechaNacimiento.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < fechaNacimiento.getDate())) {
       age--;
     }
     return age;
   }
+  
 
   // Obtener el nombre completo
   getFullName(): string {
