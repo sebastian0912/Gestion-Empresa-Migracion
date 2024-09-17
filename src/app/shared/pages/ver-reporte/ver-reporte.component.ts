@@ -45,7 +45,7 @@ export class VerReporteComponent implements OnInit {
 
   consolidadoDataSource = new MatTableDataSource<any>(); // Table 2 Data Source
   consolidadoDisplayedColumns: string[] = [
-    'fecha', 'sede', 'cantidadContratosTuAlianza', 
+    'fecha', 'status' ,'sede', 'cantidadContratosTuAlianza', 
     'cantidadContratosApoyoLaboral', 'totalIngresos', 
     'cedulas', 'traslados', 'sst', 'notas'
   ];
@@ -161,24 +161,51 @@ export class VerReporteComponent implements OnInit {
   // Function to generate consolidated data for second table
   async generateConsolidatedData(reportes: any[]): Promise<any[]> {
     const consolidado: any[] = [];
-    
+  
     // Traer las sucursales y generar el consolidado
     const sucursalesObservable = await this.adminService.traerSucursales();
-    
+  
     return new Promise((resolve, reject) => {
       sucursalesObservable.subscribe((data: any) => {
         // Ordenar por nombre las sucursales
         const sucursalesOrdenadas = data.sucursal.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
-        
+  
         // Recorrer las sucursales para generar el consolidado
         sucursalesOrdenadas.forEach((sucursal: any) => {
           const reportsForSede = reportes.filter(report => report.sede === sucursal.nombre);
           const totalContratosTuAlianza = reportsForSede.reduce((sum: any, report: { cantidadContratosTuAlianza: any; }) => sum + (report.cantidadContratosTuAlianza || 0), 0);
           const totalContratosApoyoLaboral = reportsForSede.reduce((sum: any, report: { cantidadContratosApoyoLaboral: any; }) => sum + (report.cantidadContratosApoyoLaboral || 0), 0);
-          const totalCedulas = reportsForSede.reduce((sum: any, report: { cedulas: string | any[]; }) => sum + (report.cedulas?.length || 0), 0);
-          const totalTraslados = reportsForSede.reduce((sum: any, report: { traslados: string | any[]; }) => sum + (report.traslados?.length || 0), 0);
+  
+          // Filtrar y sumar cédulas solo si no contienen el texto "No se han cargado cédulas"
+          const totalCedulas = reportsForSede.reduce((sum: any, report: { cedulas: any; }) => {
+            if (report.cedulas !== 'No se han cargado cédulas') {
+              return sum + (Array.isArray(report.cedulas) ? report.cedulas.length : 0);
+            }
+            return sum;
+          }, 0);
+  
+          // Filtrar y sumar traslados solo si no contienen el texto "No se han cargado traslados"
+          const totalTraslados = reportsForSede.reduce((sum: any, report: { traslados: any; }) => {
+            if (report.traslados !== 'No se han cargado traslados') {
+              return sum + (Array.isArray(report.traslados) ? report.traslados.length : 0);
+            }
+            return sum;
+          }, 0);
+  
           const sstOk = reportsForSede.some((report: { sst: string | null; }) => report.sst !== null && report.sst !== 'No se ha cargado SST');
           const notas = reportsForSede.map((report: { nota: any; }) => report.nota).filter((nota: any) => nota).join(', ');
+  
+          // Definir el status de acuerdo a las reglas
+          let status = '';
+          if (reportsForSede.length === 0) {
+            status = 'NO REALIZO REPORTE';
+          } 
+          else if (totalContratosTuAlianza > 0 && totalContratosApoyoLaboral > 0) {
+            status = 'REALIZO REPORTE';
+          }
+          else if (totalContratosTuAlianza === 0 && totalContratosApoyoLaboral === 0) {
+            status = 'NO HUBO CONTRATACION';
+          }
   
           consolidado.push({
             fecha: reportsForSede.length > 0 ? reportsForSede[0].fecha : null,
@@ -189,7 +216,8 @@ export class VerReporteComponent implements OnInit {
             cedulas: totalCedulas,
             traslados: totalTraslados,
             sst: sstOk,
-            notas
+            notas,
+            status // Nueva columna status
           });
         });
   
@@ -199,6 +227,7 @@ export class VerReporteComponent implements OnInit {
       });
     });
   }
+  
   
   
   // Helper function to group by sede

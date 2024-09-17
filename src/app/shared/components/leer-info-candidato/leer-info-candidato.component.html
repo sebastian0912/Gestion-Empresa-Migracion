@@ -4,8 +4,9 @@
 
     <div class="columns-container">
         <div class="left-column">
-            <!-- Foto Personal -->
+            <!-- Foto Personal 
             <img [src]="data.infoGeneralC?.fotoPersonal || 'ruta/por_defecto.jpg'" alt="Foto personal" class="foto" />
+            -->
 
             <!-- Icono de descarga (ejemplo) -->
             <div class="icon-container">
@@ -39,19 +40,23 @@
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Celular</mat-label>
-                <input matInput [value]="data.infoGeneralC?.celular || 'No disponible'" (input)="updateField('celular', $event)" />
+                <input matInput [value]="data.infoGeneralC?.celular || 'No disponible'"
+                    (input)="updateField('celular', $event)" />
             </mat-form-field>
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Número WhatsApp</mat-label>
-                <input matInput [value]="data.infoGeneralC?.whatsapp || 'No disponible'" (input)="updateField('whatsapp', $event)" />
+                <input matInput [value]="data.infoGeneralC?.whatsapp || 'No disponible'"
+                    (input)="updateField('whatsapp', $event)" />
             </mat-form-field>
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Género</mat-label>
-                <input matInput [value]="data.infoGeneralC?.genero || 'No disponible'" (input)="updateField('genero', $event)" />
+                <input matInput [value]="data.infoGeneralC?.genero || 'No disponible'"
+                    (input)="updateField('genero', $event)" />
             </mat-form-field>
 
+            <!-- Edad y Fecha de Nacimiento -->
             <!-- Edad y Fecha de Nacimiento -->
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Edad</mat-label>
@@ -60,18 +65,22 @@
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Fecha de Nacimiento</mat-label>
-                <input matInput [value]="convertirDiasAFecha(data.infoGeneralC?.fecha_nacimiento) | date:'dd/MM/yyyy'" readonly />
+                <input matInput [value]="convertirAFecha(data.infoGeneralC?.fecha_nacimiento) | date:'dd/MM/yyyy'"
+                    readonly />
             </mat-form-field>
+
 
             <!-- Barrio y experiencia -->
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Barrio</mat-label>
-                <input matInput [value]="data.infoGeneralC?.barrio || 'No disponible'" (input)="updateField('barrio', $event)" />
+                <input matInput [value]="data.infoGeneralC?.barrio || 'No disponible'"
+                    (input)="updateField('barrio', $event)" />
             </mat-form-field>
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Cuenta con experiencia en flores</mat-label>
-                <input matInput [value]="data.infoGeneralC?.tiene_experiencia_laboral || 'No disponible'" (input)="updateField('experiencia', $event)" />
+                <input matInput [value]="data.infoGeneralC?.tiene_experiencia_laboral || 'No disponible'"
+                    (input)="updateField('experiencia', $event)" />
             </mat-form-field>
 
             <!-- Viene referenciado, cómo se enteró de la vacante -->
@@ -85,7 +94,8 @@
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Cómo se enteró de la vacante</mat-label>
-                <input matInput [value]="data.infoGeneralC?.como_se_entero || 'No disponible'" (input)="updateField('como_se_entero', $event)" />
+                <input matInput [value]="data.infoGeneralC?.como_se_entero || 'No disponible'"
+                    (input)="updateField('como_se_entero', $event)" />
             </mat-form-field>
 
             <!-- ¿Se presentó a entrevista?, EPS -->
@@ -110,13 +120,15 @@
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Labores realizadas</mat-label>
-                <input matInput [value]="data.infoGeneralC?.labores_realizadas || 'No disponible'" (input)="updateField('labores_realizadas', $event)" />
+                <input matInput [value]="data.infoGeneralC?.labores_realizadas || 'No disponible'"
+                    (input)="updateField('labores_realizadas', $event)" />
             </mat-form-field>
 
             <!-- Empresas en las que ha laborado -->
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Empresas en las que ha laborado</mat-label>
-                <input matInput [value]="data.infoGeneralC?.empresas_laborado || 'No disponible'" (input)="updateField('empresas_laborado', $event)" />
+                <input matInput [value]="data.infoGeneralC?.empresas_laborado || 'No disponible'"
+                    (input)="updateField('empresas_laborado', $event)" />
             </mat-form-field>
 
             <!-- Tiempo de experiencia, Nivel de escolaridad, N° de Hijos y Edades, Quién los cuida -->
@@ -127,17 +139,20 @@
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Nivel de escolaridad</mat-label>
-                <input matInput [value]="data.infoGeneralC?.escolaridad || 'No disponible'" (input)="updateField('escolaridad', $event)" />
+                <input matInput [value]="data.infoGeneralC?.escolaridad || 'No disponible'"
+                    (input)="updateField('escolaridad', $event)" />
             </mat-form-field>
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>N° de Hijos y Edades</mat-label>
-                <input matInput [value]="data.infoGeneralC?.num_hijos_dependen_economicamente || 'No disponible'" (input)="updateField('num_hijos_dependen_economicamente', $event)" />
+                <input matInput [value]="data.infoGeneralC?.num_hijos_dependen_economicamente || 'No disponible'"
+                    (input)="updateField('num_hijos_dependen_economicamente', $event)" />
             </mat-form-field>
 
             <mat-form-field appearance="fill" class="info-item">
                 <mat-label>Quién los cuida</mat-label>
-                <input matInput [value]="data.infoGeneralC?.quien_los_cuida || 'No disponible'" (input)="updateField('quien_los_cuida', $event)" />
+                <input matInput [value]="data.infoGeneralC?.quien_los_cuida || 'No disponible'"
+                    (input)="updateField('quien_los_cuida', $event)" />
             </mat-form-field>
 
             <!-- Observación de la novedad y del evaluador -->

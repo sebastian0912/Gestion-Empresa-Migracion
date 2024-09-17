@@ -21,7 +21,7 @@ import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { MatTableDataSource } from '@angular/material/table';
 import { AdminService } from '../../services/admin/admin.service';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reporte-contratacion',
@@ -40,7 +40,6 @@ import { AdminService } from '../../services/admin/admin.service';
     MatDatepickerModule,
     MatTableModule,
     FormsModule
-
   ],
   templateUrl: './reporte-contratacion.component.html',
   styleUrls: ['./reporte-contratacion.component.css']
@@ -66,14 +65,23 @@ export class ReporteContratacionComponent implements OnInit {
   cruceBase64: string = '';
   sstBase64: string = '';
   arlBase64: string = '';
+  numeroContratosAlianza: number = 0;
+  numeroContratosApoyoLaboral: number = 0;
+  isArlValidado: boolean = true;
 
   processingErrors: string[] = [];
 
   constructor(
     private fb: FormBuilder,
     private jefeAreaService: ContratacionService,
-    private adminService: AdminService
-  ) { }
+    private adminService: AdminService,
+    private router: Router
+  ) {
+    this.reporteForm = this.fb.group({
+      cantidadContratosTuAlianza: [0],
+      cantidadContratosApoyoLaboral: [0]
+    });
+  }
 
   async ngOnInit() {
     // Inicialización del formulario reactivo
@@ -362,6 +370,46 @@ export class ReporteContratacionComponent implements OnInit {
     });
   }
 
+  private async contarALyTAEnColumna(file: File): Promise<{ AL: number, TA: number }> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const bstr: string = e.target.result;
+        const workbook = XLSX.read(bstr, { type: 'binary' });
+
+        try {
+          const sheetName = workbook.SheetNames[0]; // Asumiendo que quieres la primera hoja
+          const sheet = workbook.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+          json.shift(); // Eliminar el encabezado, si lo tiene
+
+          let alCount = 0;
+          let taCount = 0;
+
+          // Recorrer cada fila y contar AL y TA en la columna 2 (índice 1)
+          (json as any[]).forEach((row: any[]) => {
+            const valor = row[2]; // Columna de índice 1
+            if (valor === 'AL') {
+              alCount++;
+            } else if (valor === 'TA') {
+              taCount++;
+            }
+          });
+
+          resolve({ AL: alCount, TA: taCount });
+
+        } catch (error) {
+          console.error('Error al procesar el archivo:', error);
+          reject(error);
+        }
+      };
+
+      reader.readAsBinaryString(file);
+    });
+  }
+
+
   private extraerCedulasDeArchivos(files: File[]): string[] {
     const cedulas: string[] = [];
 
@@ -451,6 +499,17 @@ export class ReporteContratacionComponent implements OnInit {
 
       // Extraer cédulas del archivo Excel de cruce diario
       const cedulasExcel = await this.extraerCedulasDelArchivo(file);
+
+      // Contar AL y TA en la columna 2 del archivo de cruce diario
+      this.contarALyTAEnColumna(file).then(result => {
+        this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(result.AL);
+        this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(result.TA);
+      }).catch(error => {
+        // console.error('Error al contar AL y TA:', error);
+        console.error('Error al contar AL y TA:', error);
+      });
+
+
 
       let mensaje = "";
       let consoleOutput = "";
@@ -1002,12 +1061,14 @@ export class ReporteContratacionComponent implements OnInit {
         const row = worksheet.addRow(dato);
 
         if (dato["Arl"] === 'SATISFACTORIO') {
+          this.isArlValidado = true;
           row.getCell('Arl').fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: { argb: '00FF00' } // Verde
           };
         } else if (dato["Arl"] === 'ALERTA NO ESTA EN ARL') {
+          this.isArlValidado = false;
           row.getCell('Arl').fill = {
             type: 'pattern',
             pattern: 'solid',
@@ -1022,6 +1083,7 @@ export class ReporteContratacionComponent implements OnInit {
             fgColor: { argb: '00FF00' } // Verde
           };
         } else if (dato["ARL_FECHAS"] === 'ALERTA NO COINCIDEN') {
+          this.isArlValidado = false;
           row.getCell('ARL_FECHAS').fill = {
             type: 'pattern',
             pattern: 'solid',
@@ -1030,6 +1092,7 @@ export class ReporteContratacionComponent implements OnInit {
         }
 
         if (dato["fechaIngresoArl"] === 'NO DISPONIBLE') {
+          this.isArlValidado = false;
           row.getCell('fechaIngresoArl').fill = {
             type: 'pattern',
             pattern: 'solid',
@@ -1038,6 +1101,8 @@ export class ReporteContratacionComponent implements OnInit {
         }
 
         if (dato["fechaIngresoCruce"] === 'NO DISPONIBLE') {
+          this.isArlValidado = false;
+
           row.getCell('fechaIngresoCruce').fill = {
             type: 'pattern',
             pattern: 'solid',
@@ -1354,12 +1419,6 @@ export class ReporteContratacionComponent implements OnInit {
 
         } else {
           Swal.close();
-          Swal.fire({
-            icon: 'success',
-            title: '¡Éxito!',
-            text: 'Formulario enviado exitosamente.',
-            confirmButtonText: 'Aceptar'
-          });
 
           // Preparar datos para el reporte
           const reporteData = {
@@ -1379,12 +1438,27 @@ export class ReporteContratacionComponent implements OnInit {
           // Enviar reporte
           try {
             await this.jefeAreaService.cargarReporte(reporteData);
-            Swal.fire({
-              icon: 'success',
-              title: 'Reporte enviado',
-              text: 'El reporte ha sido enviado correctamente.',
-              confirmButtonText: 'Aceptar'
-            });
+            if (this.isArlValidado) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Reporte enviado',
+                text: 'El reporte ha sido enviado correctamente.',
+                confirmButtonText: 'Aceptar'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+                    this.router.navigate(['/reporte-contratacion']);
+                  });
+                }
+              });
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'Se han encontrado errores en el archivo de ARL. Por favor, corrija los datos y vuelva a intentarlo.',
+                confirmButtonText: 'Aceptar'
+              });
+            }
           } catch (error) {
             Swal.fire({
               icon: 'error',
@@ -1428,6 +1502,12 @@ export class ReporteContratacionComponent implements OnInit {
             title: 'Reporte enviado',
             text: 'El reporte ha sido enviado correctamente.',
             confirmButtonText: 'Aceptar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['/reporte-contratacion']);
+              });
+            }
           });
         } catch (error) {
           Swal.fire({
