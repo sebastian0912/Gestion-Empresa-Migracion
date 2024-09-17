@@ -24,7 +24,7 @@ export class IncapacidadValidator {
         const mensaje = "No cumple con el tiempo decreto 780 de 2016.";
         quienpaga = this.pagook(incapacidad, mensaje);
         errors.push("No cumple con el tiempo decreto 780 de 2016.");
-        observaciones = "OK";
+        observaciones = "No cumple con el tiempo decreto 780 de 2016";
         prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
       }
 
@@ -112,17 +112,17 @@ export class IncapacidadValidator {
 
   private static pagook(incapacidad: any,mensaje:string): string {
     if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
-    if (incapacidad.observaciones === 'OK') {
-      if (mensaje === 'El ARL debe hacerse cargo del pago desde el segundo día.') {
-        return 'SI PAGA ARL';
-      }
-      if (mensaje !== 'No cumple con el tiempo decreto 780') {
-        return 'SI PAGA EPS';
-      }
-      if (mensaje === 'No cumple con el tiempo decreto 780'){
-        return 'NO PAGAR';
-      }
+
+    if (mensaje === 'El ARL debe hacerse cargo del pago desde el segundo día.') {
+      return 'SI PAGA ARL';
     }
+    if (mensaje !== 'No cumple con el tiempo decreto 780 de 2016.') {
+      return 'SI PAGA EPS';
+    }
+    if (mensaje === 'No cumple con el tiempo decreto 780 de 2016.'){
+      return 'NO PAGAR';
+    }
+
     return '';
   }
 

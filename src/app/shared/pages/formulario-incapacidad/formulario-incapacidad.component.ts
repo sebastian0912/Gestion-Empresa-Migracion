@@ -308,7 +308,8 @@ export class FormularioIncapacidadComponent implements OnInit {
     'FALTA SOAT',
     'INCAPACIDAD 1 DIA ARL PRORROGA',
     'INCAPACIDAD DE 1 Y 2 DIAS EPS   SI NO ES PROROGA',
-    'INCAPACIDAD 1 Y 2 DIAS PRORROGA '
+    'INCAPACIDAD 1 Y 2 DIAS PRORROGA ',
+    'No cumple con el tiempo decreto 780'
 
   ];
   private _filterObservaciones(value: string): string[] {
@@ -424,7 +425,8 @@ export class FormularioIncapacidadComponent implements OnInit {
 
       this.validationErrors = errors;
       this.quienpaga = quienpaga;
-      if (observaciones === 'OK') {
+      console.log('Quien paga', quienpaga);
+      if (observaciones === "No cumple con el tiempo decreto 780 de 2016") {
         this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
       }
 
