@@ -9,7 +9,6 @@ import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Console } from 'console';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
 

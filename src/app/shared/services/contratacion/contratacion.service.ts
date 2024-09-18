@@ -362,14 +362,12 @@ export class ContratacionService {
       const response = await firstValueFrom(
         this.http.post<string>(urlcompleta, data, { headers }).pipe(
           catchError((error) => {
-            console.error('Error en la solicitud:', error);
             return throwError(() => new Error('Error en la solicitud al guardar errores de validación'));
           })
         )
       );
       return response;
     } catch (error) {
-      console.error('Error al procesar la solicitud:', error);
       throw error;
     }
   }

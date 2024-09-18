@@ -218,12 +218,10 @@ export class NavbarLateralComponent implements OnInit {
 
     // Procesar los datos y generar un arreglo con las afiliaciones
     const afiliaciones = this.procesarDatosAfiliacion(data);
-    console.log(afiliaciones);
     // Enviar los datos al backend en una sola petición
     //await this.enviarAfiliaciones(afiliaciones);
     this.robotsService.enviarAfiliaciones(afiliaciones)
       .subscribe((response: any) => {
-        console.log(response);
         Swal.fire({
           icon: 'success',
           title: 'Éxito',
@@ -231,7 +229,6 @@ export class NavbarLateralComponent implements OnInit {
           confirmButtonText: 'Aceptar'
         });
       }, (error) => {
-        console.error(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -470,7 +467,6 @@ export class NavbarLateralComponent implements OnInit {
           });
         })
         .catch((error) => {
-          console.error(error);
           Swal.close();
           Swal.fire({
             icon: 'error',
@@ -481,7 +477,6 @@ export class NavbarLateralComponent implements OnInit {
         });
 
     } catch (error) {
-      console.error(error);
       Swal.close();
       Swal.fire({
         icon: 'error',
@@ -493,7 +488,6 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   exportarDatosAExcel(datos: any[], cedulasNoEncontradas: any[]): void {
-    console.log(datos);
     const titulos = [
       "ARL", "ARL Fecha", "ARL_FECHA_INGRESO", "Fecha de ingreso Comparada", "Fecha de firma de contrato", "N° CC", "TEM", "Código", "Empresa Usuaria y Centro de Costo",
       "Tipo de Documento de Identidad", "Ingreso,(ing) No Ingres , Sin Confirmar, Cambio de contrato",
@@ -557,13 +551,12 @@ export class NavbarLateralComponent implements OnInit {
     const datosMapeados = datos.map((dato: any) => {
 
       if (!dato.proceso_contratacion) {
-        console.log("Proceso de contratación no está definido para la cédula: " + dato.datos_generales.numerodeceduladepersona);
+        //console.log("Proceso de contratación no está definido para la cédula: " + dato.datos_generales.numerodeceduladepersona);
       } else if (dato.proceso_contratacion.fechaIngreso === null ||
         dato.proceso_contratacion.fechaIngreso === undefined ||
         dato.proceso_contratacion.fechaIngreso === '' ||
         dato.proceso_contratacion.fechaIngreso === '-') {
         dato.proceso_contratacion.fechaIngreso = '';
-        console.log(dato.datos_generales.numerodeceduladepersona + "----" + dato.proceso_contratacion.fechaIngreso + "" + " " + dato.proceso_contratacion.fecha_contratacion);
       }
 
       const mapeado: any = {

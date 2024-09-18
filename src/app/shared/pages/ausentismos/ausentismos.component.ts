@@ -243,10 +243,8 @@ export class AusentismosComponent implements OnInit {
 
         return completeRow;
       });
-      console.log(rows);
 
       this.contratacionService.subirContratacion(rows).then((response: any) => {
-        console.log(response);
         if (response.message === 'success') {
           const total = response.actualizados + response.creados;
 
@@ -263,7 +261,6 @@ export class AusentismosComponent implements OnInit {
                    Total procesados: ${total}.`
           });
 
-          console.log(response.errores);
           if (response.errores !== undefined || response.errores != null) {
             this.generateErrorExcel(response.errores);
           }
@@ -278,7 +275,6 @@ export class AusentismosComponent implements OnInit {
           this.toggleOverlay(false);
         }
       }).catch((error: any) => {
-        console.log(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -298,7 +294,6 @@ export class AusentismosComponent implements OnInit {
     const worksheetData = [
       ['Registro', 'Campo', 'Error']
     ];
-    console.log(errores);
 
     errores.forEach((error: any) => {
       worksheetData.push([error.registro, error.campo, error.error]);

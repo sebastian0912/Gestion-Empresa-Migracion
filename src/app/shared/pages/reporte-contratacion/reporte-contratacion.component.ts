@@ -127,16 +127,19 @@ export class ReporteContratacionComponent implements OnInit {
 
     // Cargar sucursales
     const sucursalesObservable = await this.adminService.traerSucursales();
-    sucursalesObservable.subscribe((data: any) => {
-      if (data && Array.isArray(data.sucursal)) {
-        const sucursalesUnicas = data.sucursal.filter((item: any, index: number, self: any[]) =>
-          index === self.findIndex((t) => t.nombre === item.nombre)
-        );
-        this.sedes = sucursalesUnicas.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
-      } else {
-        Swal.fire('Error', 'No se pudieron cargar las sedes', 'error');
-      }
-    });
+    if (sucursalesObservable){
+      sucursalesObservable.subscribe((data: any) => {
+        if (data && Array.isArray(data.sucursal)) {
+          const sucursalesUnicas = data.sucursal.filter((item: any, index: number, self: any[]) =>
+            index === self.findIndex((t) => t.nombre === item.nombre)
+          );
+          this.sedes = sucursalesUnicas.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+        } else {
+          Swal.fire('Error', 'No se pudieron cargar las sedes', 'error');
+        }
+      });
+
+    }
 
   }
 
@@ -215,9 +218,9 @@ export class ReporteContratacionComponent implements OnInit {
     if (file) {
       this.updateFileName([file], controlName);  // Actualizar el nombre del archivo mostrado
       this.filesToUpload[controlName] = [file];  // Guardar el archivo seleccionado en filesToUpload
-      // No procesamos el archivo ARL aquí, el procesamiento se hará en onSubmit
     }
   }
+  
 
   updateFileName(files: File[], controlName: string) {
     const fileNames = files.map(file => file.name).join(', ');
@@ -361,7 +364,6 @@ export class ReporteContratacionComponent implements OnInit {
           resolve(cedulas);
 
         } catch (error) {
-          console.error('Error al procesar el archivo:', error);
           reject(error);
         }
       };
@@ -400,7 +402,6 @@ export class ReporteContratacionComponent implements OnInit {
           resolve({ AL: alCount, TA: taCount });
 
         } catch (error) {
-          console.error('Error al procesar el archivo:', error);
           reject(error);
         }
       };
@@ -408,7 +409,6 @@ export class ReporteContratacionComponent implements OnInit {
       reader.readAsBinaryString(file);
     });
   }
-
 
   private extraerCedulasDeArchivos(files: File[]): string[] {
     const cedulas: string[] = [];
@@ -502,11 +502,10 @@ export class ReporteContratacionComponent implements OnInit {
 
       // Contar AL y TA en la columna 2 del archivo de cruce diario
       this.contarALyTAEnColumna(file).then(result => {
-        this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(result.AL);
-        this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(result.TA);
+        this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(result.TA);
+        this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(result.AL)
       }).catch(error => {
         // console.error('Error al contar AL y TA:', error);
-        console.error('Error al contar AL y TA:', error);
       });
 
 
@@ -596,7 +595,6 @@ export class ReporteContratacionComponent implements OnInit {
             Swal.fire('Error', 'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.', 'error');
           },
           (error) => {
-            console.error('Error al guardar los errores:', error);
             Swal.close();
             Swal.fire('Error', 'Error al guardar los errores.', 'error');
           }
@@ -616,11 +614,9 @@ export class ReporteContratacionComponent implements OnInit {
 
     } catch (error) {
       Swal.close();  // Asegurarse de cerrar el Swal de carga antes de mostrar el error
-      console.error('Error al extraer cédulas:', error);
       await Swal.fire('Error', 'Error al procesar el archivo. Inténtelo de nuevo.', 'error');
     }
   }
-
 
   async validarCruce() {
     Swal.close();
@@ -759,7 +755,6 @@ export class ReporteContratacionComponent implements OnInit {
         }
 
       } catch (error) {
-        console.error('Error al procesar el archivo:', error);
         Swal.fire('Error', 'Error procesando el archivo. Verifique el formato e intente de nuevo.', 'error');
       }
     };
@@ -767,12 +762,10 @@ export class ReporteContratacionComponent implements OnInit {
     reader.readAsBinaryString(file);
   }
 
-
   applyFilter(column: string, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.erroresValidacion.filter = filterValue.trim().toLowerCase();
   }
-
 
   async processArl(workbook: XLSX.WorkBook): Promise<void> {
     this.arlBase64 = await this.convertToBase64(this.filesToUpload['arl'][0]);
@@ -1158,9 +1151,6 @@ export class ReporteContratacionComponent implements OnInit {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-
-
-
   async processFileList(files: File[]) {
     for (const file of files) {
       await this.processFile(file);
@@ -1169,9 +1159,14 @@ export class ReporteContratacionComponent implements OnInit {
 
   async processFile(file: File) {
     try {
-
       const base64 = await this.convertToBase64(file);
-
+  
+      // Compara el nombre del archivo para identificar si es el archivo de inducción SSO
+      const induccionSSOFile = this.filesToUpload['induccionSSO']?.[0];
+      if (file.name === induccionSSOFile?.name) {
+        this.sstBase64 = base64;
+      }
+  
     } catch (error) {
       this.processingErrors.push('archivo');
       Swal.fire({
@@ -1181,6 +1176,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
     }
   }
+  
 
   async processExcelFiles(files: File[]) {
     for (const file of files) {
@@ -1299,7 +1295,7 @@ export class ReporteContratacionComponent implements OnInit {
       }
 
     } catch (error) {
-      console.error('Error procesando el archivo Excel:', error);
+      //console.error('Error procesando el archivo Excel:', error);
       this.processingErrors.push('Cruce diario Excel');
     }
   }
@@ -1364,9 +1360,8 @@ export class ReporteContratacionComponent implements OnInit {
 
     // Validar si el formulario completo es válido
     if (this.reporteForm.valid) {
-
       // si contratos es si
-      if (this.reporteForm.get('contratosHoy')?.value === 'Si') {
+      if (this.reporteForm.get('contratosHoy')?.value === 'si') {
 
         this.processingErrors = [];
         const processes = [
@@ -1404,7 +1399,7 @@ export class ReporteContratacionComponent implements OnInit {
               continue;
             }
           }
-          await this.delay(1000); // Espera de un segundo
+          await this.delay(200); // Espera de un segundo
         }
 
         // Si hay errores, mostrarlos
@@ -1419,7 +1414,6 @@ export class ReporteContratacionComponent implements OnInit {
 
         } else {
           Swal.close();
-
           // Preparar datos para el reporte
           const reporteData = {
             sede: this.reporteForm.get('sede')?.value.nombre,

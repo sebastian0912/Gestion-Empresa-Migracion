@@ -128,7 +128,6 @@ export class VerReporteComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Modal cerrado');
     });
   }
 
@@ -248,8 +247,7 @@ export class VerReporteComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        console.log('Fecha de inicio:', result);
-  
+ 
         // Mostrar el swal de cargando
         Swal.fire({
           icon: 'info',
@@ -266,7 +264,6 @@ export class VerReporteComponent implements OnInit {
             // Ocultar el Swal de cargando
             Swal.close();
   
-            console.log('Reportes por fechas:', response);
             this.reportes = response.reportes;
             this.dataSource.data = this.reportes; // Actualiza la tabla principal
   

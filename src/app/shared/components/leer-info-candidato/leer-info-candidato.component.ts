@@ -35,8 +35,6 @@ export class LeerInfoCandidatoComponent {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.data.seleccion);
-    console.log(this.data.infoGeneralC);
     this.getUser();
   }
 
@@ -55,7 +53,6 @@ export class LeerInfoCandidatoComponent {
       fechaBase.setDate(fechaBase.getDate() + diasDesde1900);
       
       if (isNaN(fechaBase.getTime())) {
-        console.error('Fecha inválida generada a partir de los días:', fecha);
         return null;
       }
       
@@ -65,21 +62,18 @@ export class LeerInfoCandidatoComponent {
     } else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
       const [dia, mes, anio] = fecha.split('/').map(Number);
       if (!dia || !mes || !anio) {
-        console.error('Formato de fecha inválido:', fecha);
         return null;
       }
   
       const fechaValida = new Date(anio, mes - 1, dia);
       
       if (isNaN(fechaValida.getTime())) {
-        console.error('Fecha inválida generada a partir del string:', fecha);
         return null;
       }
   
       return fechaValida;
   
     } else {
-      console.error('Formato de fecha no reconocido:', fecha);
       return null;
     }
   }
@@ -117,7 +111,6 @@ export class LeerInfoCandidatoComponent {
       if (user) {
         // Parsea el JSON almacenado en el localStorage para convertirlo en un objeto
         const parsedUser = JSON.parse(user);
-        console.log(parsedUser);
         this.evaluador = parsedUser.primer_nombre + ' ' + parsedUser.primer_apellido;
         this.oficina = parsedUser.sucursalde;
       }
@@ -126,7 +119,6 @@ export class LeerInfoCandidatoComponent {
 
 
   enviarFormulario() {
-    console.log('Información del formulario:', this.data.infoGeneralC);
     // Aquí puedes agregar la lógica para enviar los datos al backend o servicio correspondiente
   }
 

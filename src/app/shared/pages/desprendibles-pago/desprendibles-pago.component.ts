@@ -106,11 +106,9 @@ export class DesprendiblesPagoComponent implements OnInit {
 
     // Convertir todo en mayúsculas
     cleanedCedula = cleanedCedula.toUpperCase();
-    console.log(cleanedCedula);
 
     this.pagosService.buscarDesprendibles(cleanedCedula).subscribe(
         (response: any) => {
-            console.log(response);
             if (response.message == 'No se encontró el número de cédula') {
                 Swal.fire({
                     icon: 'info',

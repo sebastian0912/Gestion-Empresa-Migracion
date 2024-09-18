@@ -308,7 +308,6 @@ export class FormularioReporteComponent implements OnInit {
         if (this.isDateField(formControlName) && value) {
           value = new Date(value); // Convertir el valor a un objeto Date
           if (isNaN(value.getTime())) {
-            console.warn(`Fecha inválida para el campo ${formControlName}: ${data[formControlName]}`);
             value = null; // Si la fecha no es válida, establecer como null
           }
         }
@@ -349,7 +348,6 @@ export class FormularioReporteComponent implements OnInit {
       .forEach(field => {
         this.reporteForm.get(field)?.valueChanges.subscribe((value) => {
           if (value && !(value instanceof Date)) {
-            console.log('Fecha:', value);
             const fechaFormateada = this.formatDateToMMDDYYYY(new Date(value));
             if (value) {
               this.reporteForm.get(field)?.setValue(value, { emitEvent: false });
