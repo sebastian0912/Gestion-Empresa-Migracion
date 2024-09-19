@@ -186,9 +186,11 @@
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>Observaciones</mat-label>
                   <!-- Usa formControlName para enlazar con el FormGroup -->
-                  <input type="text" matInput [formControlName]="fieldMap['Observaciones']" [matAutocomplete]="autoObservaciones">
+                  <input type="text" matInput [formControlName]="fieldMap['Observaciones']"
+                    [matAutocomplete]="autoObservaciones">
                   <mat-autocomplete #autoObservaciones="matAutocomplete">
-                    <mat-option *ngFor="let nombreobservacion of filteredObservaciones | async" [value]="nombreobservacion">
+                    <mat-option *ngFor="let nombreobservacion of filteredObservaciones | async"
+                      [value]="nombreobservacion">
                       {{ nombreobservacion }}
                     </mat-option>
                   </mat-autocomplete>
@@ -196,10 +198,11 @@
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>A quien corresponde el pago</mat-label>
                   <!-- El input permite escribir o seleccionar del autocomplete -->
-                  <input type="text" matInput [formControl]="quiencorrespondepagoControl" [formControlName]="fieldMap['A quien corresponde el pago']"
-                    [matAutocomplete]="autoQuienpaga">
+                  <input type="text" matInput [formControl]="quiencorrespondepagoControl"
+                    [formControlName]="fieldMap['A quien corresponde el pago']" [matAutocomplete]="autoQuienpaga">
                   <mat-autocomplete #autoQuienpaga="matAutocomplete">
-                    <mat-option *ngFor="let nombrequienpaga of filteredQuiencorrespondepago | async" [value]="nombrequienpaga">
+                    <mat-option *ngFor="let nombrequienpaga of filteredQuiencorrespondepago | async"
+                      [value]="nombrequienpaga">
                       {{ nombrequienpaga }}
                     </mat-option>
                   </mat-autocomplete>
