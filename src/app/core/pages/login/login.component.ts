@@ -32,6 +32,7 @@ export class LoginComponent {
       password: ['', [Validators.required]]
     });
 
+
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       secondName: [''],
@@ -42,6 +43,7 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
+
   }
 
   togglePanel(isSignUp: boolean): void {
@@ -99,6 +101,7 @@ export class LoginComponent {
     try {
       this.authService.login(loginData.email, loginData.password).then(response => {
         if (response) {
+          console.log(response);
           if (response.jwt === "Contraseña incorrecta") {
             Swal.fire({
               icon: 'error',

@@ -44,3 +44,48 @@ mat-card:nth-child(2) {
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     overflow-y: auto; /* Permitir desplazamiento si el contenido se expande */
 }
+
+
+/*------------------------------------------------------*/
+
+.opcionesVer {
+    width: 72vw;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+mat-card-title,
+mat-card-subtitle {
+    font-weight: bold;
+    font-size: 13pt;
+}
+
+mat-card-subtitle{
+    margin-bottom: 10px;
+}
+
+.actions-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px;
+}
+
+.vacante-card {
+    position: relative; /* Added to ensure absolute positioning works inside the card */
+}
+
+.actions-wrapper {
+    position: absolute; /* Ensures the button is positioned absolutely inside the card */
+    top: 10px; /* Adjust the top padding as needed */
+    right: 10px; /* Ensures it stays on the right side */
+    z-index: 1; /* Brings the button on top of other elements */
+}
+
+.fixed-button {
+    background-color: white; /* Optional: to give the button a background */
+    box-shadow: none; /* Remove default shadow if present */
+}

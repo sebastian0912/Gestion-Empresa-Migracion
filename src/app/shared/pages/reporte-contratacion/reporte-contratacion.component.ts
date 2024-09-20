@@ -127,7 +127,7 @@ export class ReporteContratacionComponent implements OnInit {
 
     // Cargar sucursales
     const sucursalesObservable = await this.adminService.traerSucursales();
-    if (sucursalesObservable){
+    if (sucursalesObservable) {
       sucursalesObservable.subscribe((data: any) => {
         if (data && Array.isArray(data.sucursal)) {
           const sucursalesUnicas = data.sucursal.filter((item: any, index: number, self: any[]) =>
@@ -220,7 +220,7 @@ export class ReporteContratacionComponent implements OnInit {
       this.filesToUpload[controlName] = [file];  // Guardar el archivo seleccionado en filesToUpload
     }
   }
-  
+
 
   updateFileName(files: File[], controlName: string) {
     const fileNames = files.map(file => file.name).join(', ');
@@ -1005,11 +1005,21 @@ export class ReporteContratacionComponent implements OnInit {
 
       // Procesar los datos del cruce
       const datosMapeados = this.datoscruced.map((cruceRow: any[]) => {
-        const cedulaCruce = cruceRow[1];  // Cédula en el índice 1 del cruce
+        let cedulaCruce = cruceRow[1];  // Cédula en el índice 1 del cruce
         const comparativoCruce = cruceRow[8];  // Índice 8 del cruce diario
 
-        // Buscar en ARL por cédula
-        const filaArl = rowsArl.find(arlRow => arlRow[3] === cedulaCruce);
+        // Remover espacios y puntos de la cédula del cruce
+        cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
+
+        // Buscar en ARL por cédula (removiendo espacios y puntos también en arlRow[3])
+        const filaArl = rowsArl.find(arlRow => {
+          const cedulaArl = arlRow[3].replace(/\s|\./g, '');
+
+          // Imprimir los valores comparados
+          console.log(`Comparando cédulas: ${cedulaCruce} (Cruce) === ${cedulaArl} (ARL)`);
+
+          return cedulaArl === cedulaCruce;
+        });
 
         let estadoCedula = 'ALERTA NO ESTA EN ARL';
         let estadoFechas = 'ALERTA NO COINCIDEN';
@@ -1020,9 +1030,21 @@ export class ReporteContratacionComponent implements OnInit {
           estadoCedula = 'SATISFACTORIO';  // Se encontró la cédula
           const comparativoArl = filaArl[9];  // Índice 9 en ARL
 
+          // Convertir ambas fechas al formato YYYY-MM-DD
+          const formatDate = (dateStr: string) => {
+            const [day, month, year] = dateStr.split('/').map(Number);
+            return new Date(year, month - 1, day);  // Meses en JS son 0 indexados
+          };
+
+          const fechaArl = formatDate(comparativoArl);
+          const fechaCruce = formatDate(comparativoCruce);
+
           // Verificar si las fechas son iguales
-          estadoFechas = comparativoCruce === comparativoArl ? 'SATISFACTORIO' : 'ALERTA';
+          estadoFechas = fechaCruce.getTime() === fechaArl.getTime() ? 'SATISFACTORIO' : 'ALERTA';
           fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
+
+          // Imprimir las fechas comparadas
+          console.log(`Comparando fechas: ${fechaCruce.toLocaleDateString()} (Cruce) === ${fechaArl.toLocaleDateString()} (ARL)`);
         }
 
         // Generar un objeto para cada fila con los encabezados del cruce diario y la comparación del ARL
@@ -1160,13 +1182,13 @@ export class ReporteContratacionComponent implements OnInit {
   async processFile(file: File) {
     try {
       const base64 = await this.convertToBase64(file);
-  
+
       // Compara el nombre del archivo para identificar si es el archivo de inducción SSO
       const induccionSSOFile = this.filesToUpload['induccionSSO']?.[0];
       if (file.name === induccionSSOFile?.name) {
         this.sstBase64 = base64;
       }
-  
+
     } catch (error) {
       this.processingErrors.push('archivo');
       Swal.fire({
@@ -1176,7 +1198,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
     }
   }
-  
+
 
   async processExcelFiles(files: File[]) {
     for (const file of files) {

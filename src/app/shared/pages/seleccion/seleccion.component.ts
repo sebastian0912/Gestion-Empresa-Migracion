@@ -11,12 +11,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
-import { NgIf } from '@angular/common';
+import { NgFor, NgForOf, NgIf } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { LeerInfoCandidatoComponent } from '../../components/leer-info-candidato/leer-info-candidato.component';
 import { MatDialog } from '@angular/material/dialog';
+import { VacantesService } from '../../services/vacantes/vacantes.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-seleccion',
@@ -33,22 +35,66 @@ import { MatDialog } from '@angular/material/dialog';
     FormsModule,
     MatCardModule,
     NgIf,
-    MatExpansionModule
+    NgFor,
+    NgForOf,
+    MatExpansionModule,
+    MatMenuModule,
   ],
   templateUrl: './seleccion.component.html',
   styleUrl: './seleccion.component.css'
 })
-export class SeleccionComponent {
+export class SeleccionComponent implements OnInit {
   cedula: string = ''; // Variable to store the cedula input
-  infoGeneral: boolean = false; 
+  infoGeneral: boolean = false;
   seleccion: any;
   infoGeneralC = null;
+  vacantes: any[] = [];
+
   constructor(
     private contratacionService: ContratacionService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private vacantesService: VacantesService
   ) { }
 
-  async buscarCedula() {    
+  async ngOnInit(): Promise<void> {
+    await this.loadData();
+  }
+
+  async loadData(): Promise<void> {
+    this.vacantesService.listarVacantes().pipe(
+      catchError((error) => {
+        Swal.fire('Error', 'Ocurrió un error al cargar las vacantes', 'error');
+        return of([]); // Retorna un arreglo vacío para manejar el error y continuar
+      })
+    ).subscribe((response: any) => {
+      this.vacantes = response.publicacion.map((vacante: any) => ({
+        ...vacante,
+      }));
+    });
+  }
+
+  // Función para escoger una vacante y almacenarla en LocalStorage
+  escogerVacante(vacante: any): void {
+    // Almacenar la vacante seleccionada en LocalStorage
+    localStorage.setItem('vacanteSeleccionada', JSON.stringify(vacante));
+    Swal.fire('Vacante seleccionada', 'La vacante ha sido almacenada para ejecutarla en su proceso de seleccion', 'success');
+  }
+
+  filtro: string = '';
+
+  filtrarVacantes() {
+    if (!this.filtro) {
+      return this.vacantes;
+    }
+    const filtroLower = this.filtro.toLowerCase();
+    return this.vacantes.filter(vacante => {
+      return vacante.Cargovacante_id.toLowerCase().includes(filtroLower) ||
+             vacante.localizacionDeLaPersona.toLowerCase().includes(filtroLower) ||
+             vacante.empresaQueSolicita_id.toLowerCase().includes(filtroLower);
+    });
+  }
+
+  async buscarCedula() {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula)
@@ -71,7 +117,7 @@ export class SeleccionComponent {
             confirmButtonText: 'Ok'
           });
         }
-  
+
         if (infoGeneral && infoGeneral.data) {
           this.infoGeneralC = infoGeneral.data[0];
           this.infoGeneral = true;
@@ -95,8 +141,8 @@ export class SeleccionComponent {
       }
     );
   }
-  
-  
+
+
 
 
   abrirModal(): void {
