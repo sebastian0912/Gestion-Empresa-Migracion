@@ -28,6 +28,12 @@ export class IncapacidadValidator {
         observaciones = "No cumple con el tiempo decreto 780 de 2016";
         prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
       }
+    }if(!this.hasEnoughDays(incapacidad)){
+      const mensaje = "pagaeps";
+      quienpaga = this.pagook(incapacidad, mensaje);
+      errors.push("Paga eps");
+      observaciones = "OK";
+      prioridadActual = 'alta'; // Actualizar la prioridad actual
     }
 
 
@@ -114,7 +120,7 @@ export class IncapacidadValidator {
     if (mensaje === 'El ARL debe hacerse cargo del pago desde el segundo día.') {
       return 'SI PAGA ARL';
     }
-    if (mensaje !== 'No cumple con el tiempo decreto 780 de 2016.') {
+    if (mensaje === 'pagaeps') {
       return 'SI PAGA EPS';
     }
     if (mensaje === 'No cumple con el tiempo decreto 780 de 2016.'){
