@@ -998,7 +998,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('numero_de_contrato')?.setValue(contratacion.codigo_contrato);
           this.incapacidadForm.get('Oficina')?.setValue(this.convertToTitleCaseAndRemoveAccents(this.sucursalde));
           this.incapacidadForm.get('nombre_de_quien_recibio')?.setValue(this.nombredequienrecibio);
-          this.incapacidadForm.get('empresa')?.setValue(contratacion.centro_costo_carnet);
+          this.incapacidadForm.get('empresa')?.setValue(contratacion.empresaUsuaraYCCentrodeCosto);
           this.incapacidadForm.get('celular')?.setValue(datosBasicos.celular);
           this.incapacidadForm.get('tipodedocumento')?.setValue(datosBasicos.tipodedocumento);
           this.incapacidadForm.get('numerodeceduladepersona')?.setValue(cedula);
@@ -1008,7 +1008,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
           this.incapacidadForm.get('primercorreoelectronico')?.setValue(datosBasicos.primercorreoelectronico);
           this.incapacidadForm.get('genero')?.setValue(datosBasicos.genero);
-          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_de_costos);
+          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_costo_carnet);
           this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_de_costos);
           this.incapacidadForm.get('fecha_contratacion')?.setValue(contratacion.fecha_contratacion);
           this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
