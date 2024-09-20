@@ -89,8 +89,8 @@ export class SeleccionComponent implements OnInit {
     const filtroLower = this.filtro.toLowerCase();
     return this.vacantes.filter(vacante => {
       return vacante.Cargovacante_id.toLowerCase().includes(filtroLower) ||
-             vacante.localizacionDeLaPersona.toLowerCase().includes(filtroLower) ||
-             vacante.empresaQueSolicita_id.toLowerCase().includes(filtroLower);
+        vacante.localizacionDeLaPersona.toLowerCase().includes(filtroLower) ||
+        vacante.empresaQueSolicita_id.toLowerCase().includes(filtroLower);
     });
   }
 
@@ -101,15 +101,10 @@ export class SeleccionComponent implements OnInit {
     }).subscribe(
       ({ seleccion, infoGeneral }) => {
         if (seleccion && seleccion.procesoSeleccion && Array.isArray(seleccion.procesoSeleccion)) {
-          let id = 0;
-          seleccion.procesoSeleccion.forEach((element: { id: number }) => {  // Asegúrate que element tiene un campo 'id'
-            if (element.id > id) {
-              id = element.id;
-              this.seleccion = element;
-            }
-          });
+          // Usar reducción para encontrar el id más alto
+          this.seleccion = seleccion.procesoSeleccion.reduce((prev: { id: number; }, current: { id: number; }) =>
+            current.id > prev.id ? current : prev, { id: 0 });
         } else {
-          // Manejo de error si seleccion.procesoSeleccion no es válido
           Swal.fire({
             title: '¡Error!',
             text: 'Datos de selección no válidos',
@@ -122,7 +117,6 @@ export class SeleccionComponent implements OnInit {
           this.infoGeneralC = infoGeneral.data[0];
           this.infoGeneral = true;
         } else {
-          // Manejo de error si infoGeneral.data no es válido
           Swal.fire({
             title: '¡Error!',
             text: 'Datos generales no válidos',
@@ -130,6 +124,8 @@ export class SeleccionComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
         }
+        // Mueve verificarSeleccion aquí
+        this.verificarSeleccion();
       },
       (err) => {
         Swal.fire({
@@ -142,6 +138,30 @@ export class SeleccionComponent implements OnInit {
     );
   }
 
+  async verificarSeleccion() {
+    console.log(this.seleccion);
+    // Si es diferente de undefined o null, mostrar un swal con el código en negrita
+    if (this.seleccion) {
+      Swal.fire({
+        title: '¡Atención!',
+        html: 'Este usuario ya tiene un proceso de selección con el código de contrato <b>' + this.seleccion.codigo_contrato + '</b>. ¿Deseas crear otro o seguir con este?',  // Usar html en lugar de text
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Crear otro',
+        cancelButtonText: 'Seguir con este'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log('Crear otro');
+        } else {
+          console.log('Seguir con este');
+        }
+      });
+  
+    } else {
+      console.log('No tiene proceso de selección');
+    }
+  }
+  
 
 
 

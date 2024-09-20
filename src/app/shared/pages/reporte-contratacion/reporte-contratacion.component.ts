@@ -802,6 +802,7 @@ export class ReporteContratacionComponent implements OnInit {
         }
         return row;
       });
+      console.log('rowsArl:', rowsArl);
 
       const headers = [
         "Fecha de firma de contrato",
@@ -1013,13 +1014,10 @@ export class ReporteContratacionComponent implements OnInit {
 
         // Buscar en ARL por cédula (removiendo espacios y puntos también en arlRow[3])
         const filaArl = rowsArl.find(arlRow => {
-          const cedulaArl = arlRow[3].replace(/\s|\./g, '');
-
-          // Imprimir los valores comparados
-          console.log(`Comparando cédulas: ${cedulaCruce} (Cruce) === ${cedulaArl} (ARL)`);
-
+          const cedulaArl = (arlRow[3] || '').toString().replace(/\s|\./g, '');
           return cedulaArl === cedulaCruce;
         });
+
 
         let estadoCedula = 'ALERTA NO ESTA EN ARL';
         let estadoFechas = 'ALERTA NO COINCIDEN';
@@ -1029,22 +1027,23 @@ export class ReporteContratacionComponent implements OnInit {
         if (filaArl) {
           estadoCedula = 'SATISFACTORIO';  // Se encontró la cédula
           const comparativoArl = filaArl[9];  // Índice 9 en ARL
-
-          // Convertir ambas fechas al formato YYYY-MM-DD
+          // Convertir la fecha al formato YYYY-MM-DD, manejando tanto '/' como '-' en la fecha
           const formatDate = (dateStr: string) => {
-            const [day, month, year] = dateStr.split('/').map(Number);
+            // Reemplazar los guiones por barras si están presentes
+            const normalizedDateStr = dateStr.includes('-') ? dateStr.replace(/-/g, '/') : dateStr;
+
+            // Convertir al formato YYYY-MM-DD
+            const [day, month, year] = normalizedDateStr.split('/').map(Number);
             return new Date(year, month - 1, day);  // Meses en JS son 0 indexados
           };
 
           const fechaArl = formatDate(comparativoArl);
           const fechaCruce = formatDate(comparativoCruce);
 
-          // Verificar si las fechas son iguales
-          estadoFechas = fechaCruce.getTime() === fechaArl.getTime() ? 'SATISFACTORIO' : 'ALERTA';
-          fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
 
-          // Imprimir las fechas comparadas
-          console.log(`Comparando fechas: ${fechaCruce.toLocaleDateString()} (Cruce) === ${fechaArl.toLocaleDateString()} (ARL)`);
+          // Verificar si las fechas son iguales
+          estadoFechas = fechaCruce.getTime() === fechaArl.getTime() ? 'SATISFACTORIO' : 'ALERTA FECHAS NO COINCIDEN';
+          fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
         }
 
         // Generar un objeto para cada fila con los encabezados del cruce diario y la comparación del ARL
@@ -1052,8 +1051,8 @@ export class ReporteContratacionComponent implements OnInit {
           "Numero de Cedula": cedulaCruce,
           "Arl": estadoCedula,
           "ARL_FECHAS": estadoFechas,
-          "fechaIngresoArl": fechaIngresoArl,
-          "fechaIngresoCruce": fechaIngresoCruce
+          "FECHA EN ARL": fechaIngresoArl,
+          "FECHA INGRESO SUBIDA CONTRATACION": fechaIngresoCruce
         };
 
         // Añadir los campos del cruce diario a los resultados
@@ -1097,7 +1096,7 @@ export class ReporteContratacionComponent implements OnInit {
             pattern: 'solid',
             fgColor: { argb: '00FF00' } // Verde
           };
-        } else if (dato["ARL_FECHAS"] === 'ALERTA NO COINCIDEN') {
+        } else if (dato["ARL_FECHAS"] === 'ALERTA FECHAS NO COINCIDEN') {
           this.isArlValidado = false;
           row.getCell('ARL_FECHAS').fill = {
             type: 'pattern',
@@ -1150,6 +1149,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
 
     } catch (error) {
+      console.log(error);
       Swal.close();
       Swal.fire({
         icon: 'error',

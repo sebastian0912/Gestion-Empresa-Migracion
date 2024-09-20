@@ -421,6 +421,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     if (this.isIncapacidadSectionActive(formData)) {
       // Desestructuración del objeto devuelto por validateConditions
+      
       const { errors, quienpaga, observaciones } = IncapacidadValidator.validateConditions(formData);
 
       this.validationErrors = errors;

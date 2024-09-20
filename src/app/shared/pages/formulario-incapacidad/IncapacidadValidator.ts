@@ -12,8 +12,8 @@ export class IncapacidadValidator {
     };
 
     // Regla 1: No cumple con el tiempo decreto 780 de 2016
-    if (!this.hasEnoughDays(incapacidad)) {
-      if (incapacidad.fecha_inicio_incapacidad !== '') {
+    if (this.hasEnoughDays(incapacidad)) {
+      
       if (this.isAccidentelaboral(incapacidad)){
         errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
         const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
@@ -28,8 +28,6 @@ export class IncapacidadValidator {
         observaciones = "No cumple con el tiempo decreto 780 de 2016";
         prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
       }
-    }
-
     }
 
 
@@ -113,8 +111,6 @@ export class IncapacidadValidator {
 
 
   private static pagook(incapacidad: any,mensaje:string): string {
-    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
-
     if (mensaje === 'El ARL debe hacerse cargo del pago desde el segundo día.') {
       return 'SI PAGA ARL';
     }
@@ -177,12 +173,10 @@ export class IncapacidadValidator {
 
     const fechaContratacion = new Date(incapacidad.fecha_contratacion);
 
-    const fechaInicio = new Date(incapacidad.fecha_inicio_incapacidad);
-    if (isNaN(fechaInicio.getTime())) {
-      return false;
-    }
+    const fechaInicio = new Date();
+
     // Verificar si las fechas son válidas
-    if (isNaN(fechaContratacion.getTime()) || isNaN(fechaInicio.getTime())) {
+    if (isNaN(fechaContratacion.getTime())) {
       return false;
     }
 

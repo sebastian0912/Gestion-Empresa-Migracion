@@ -25,6 +25,7 @@ import { AdminService } from '../../services/admin/admin.service';
 export class NavbarSuperiorComponent implements OnInit {
   role: string = '';
   username: string = '';
+  sede: string = '';
   sedes: any[] = [];
 
   constructor(
@@ -38,6 +39,7 @@ export class NavbarSuperiorComponent implements OnInit {
     if (user) {
       this.username = `${user.primer_nombre} ${user.primer_apellido}`;
       this.role = user.rol;
+      this.sede = user.sucursalde;
     }
   }
   
@@ -74,7 +76,12 @@ export class NavbarSuperiorComponent implements OnInit {
           Swal.fire('Editado!', 'La sede ha sido asignada.', 'success')
             .then(() => {
               // que mire donde esta y lo redirija a la pagina donde esta
-              this.router.navigate([this.router.url]);
+              
+              this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+                this.router.navigate([this.router.url], { skipLocationChange: true });
+              });
+              
+              
             });
         }
       }
