@@ -264,3 +264,84 @@ td button {
         transform: rotate(1turn)
     }
 }
+
+
+
+
+/*--------------------------------vacantes-----------------------------------*/
+.vacantes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.vacante-card {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    transition: transform 0.3s;
+    min-width: 353px;
+    max-width: 353px;
+}
+
+.vacante-card:hover {
+    transform: scale(1.03);
+}
+
+.vacante-icon {
+    background-color: #3f51b5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+
+.vacante-icon mat-icon {
+    font-size: 24px;
+}
+
+.anadir {
+    width: 100%;
+    margin-left: 20px;
+}
+
+.add-button {
+    display: flex;
+    align-items: center;
+    background-color: #0066b2;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.add-button mat-icon {
+    margin-right: 5px;
+}
+
+.add-button span {
+    font-weight: 500;
+}
+
+mat-card-title,
+mat-card-subtitle {
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+mat-card-content p {
+    margin: 5px 0;
+}
+
+.actions-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+

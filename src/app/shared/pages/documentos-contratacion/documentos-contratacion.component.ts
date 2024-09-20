@@ -1,5 +1,4 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { FingerprintReader, SampleFormat } from '@digitalpersona/devices';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { IncapacidadService } from '../../services/incapacidad/incapacidad.service';
 import { Incapacidad } from '../../../models/incapacidad.model';

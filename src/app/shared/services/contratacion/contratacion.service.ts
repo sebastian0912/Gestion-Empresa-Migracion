@@ -372,7 +372,21 @@ export class ContratacionService {
     }
   }
 
-
+  // Obtener base contratacion por rango de fechas
+  public obtenerBaseContratacionPorFechas(start: string, end: string): Observable<Blob> {
+    const headers = this.createAuthorizationHeader();
+    const params = { start, end };
+  
+    // Indicamos que el responseType será 'blob' para manejar archivos binarios
+    return this.http.get(`${this.apiUrl}/contratacion/descargarReporte/`, {
+      headers,
+      params,
+      responseType: 'blob'  // Tipo de respuesta como Blob
+    }).pipe(
+      map((response: Blob) => response),  // Mapea la respuesta a Blob
+      catchError(this.handleError)        // Manejo de errores
+    );
+  }
 
 
 }
