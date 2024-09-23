@@ -3,17 +3,17 @@
   <div class="contenedor">
     <app-navbar-superior></app-navbar-superior>
 
-    
-    <mat-accordion>
+
+    <mat-accordion *ngIf="procesoValido">
       <mat-expansion-panel class="opcionesVer">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Vacantes Disponibles
           </mat-panel-title>
         </mat-expansion-panel-header>
-        
+
         <!-- Buscador para filtrar vacantes -->
-        <mat-form-field  class="example-full-width">
+        <mat-form-field class="example-full-width">
           <mat-label>Buscar Vacante</mat-label>
           <input matInput [(ngModel)]="filtro" placeholder="Buscar por título, oficina, etc." />
         </mat-form-field>
@@ -78,9 +78,9 @@
         </mat-card-content>
       </mat-card>
 
-      <mat-card>
+      <mat-card *ngIf="procesoValido">
         <h1 class="titulo" style="margin-right: 10px; width: 100%;">
-          Dilegencie los campos correspondientes:
+          Diligencie los campos correspondientes:
         </h1>
         <mat-card-content>
 
@@ -88,160 +88,176 @@
           <mat-accordion>
             <!-- Verificaciones y Área de Aplicación -->
             <mat-expansion-panel>
-              <mat-expansion-panel-header>
+              <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup1))}">
                 <mat-panel-title>
-                  Verificaciones y Área de Aplicación
+                  Verificaciones y Área de Aplicación ({{ getPercentage(formGroup1) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="seccion">
+              <div class="seccion" [formGroup]="formGroup1">
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>EPS</mat-label>
-                  <input matInput type="text" id="eps" placeholder="EPS">
+                  <input matInput formControlName="eps" placeholder="EPS">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>AFP</mat-label>
-                  <input matInput type="text" id="afp" placeholder="AFP">
+                  <input matInput formControlName="afp" placeholder="AFP">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Policivos</mat-label>
-                  <input matInput type="text" id="policivos" placeholder="POLICIVOS">
+                  <input matInput formControlName="policivos" placeholder="POLICIVOS">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Procuraduría</mat-label>
-                  <input matInput type="text" id="procuraduria" placeholder="PROCURADURIA">
+                  <input matInput formControlName="procuraduria" placeholder="PROCURADURIA">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Contraloría</mat-label>
-                  <input matInput type="text" id="contraloria" placeholder="CONTRALORIA">
+                  <input matInput formControlName="contraloria" placeholder="CONTRALORIA">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Rama Judicial</mat-label>
-                  <input matInput type="text" id="ramaJudicial" placeholder="RAMA JUDICIAL">
+                  <input matInput formControlName="ramaJudicial" placeholder="RAMA JUDICIAL">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Medidas Correctivas</mat-label>
-                  <input matInput type="text" id="medidasCorrectivas" placeholder="MEDIDAS CORRECTIVAS">
+                  <input matInput formControlName="medidasCorrectivas" placeholder="MEDIDAS CORRECTIVAS">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Área para la que aplica</mat-label>
-                  <input matInput type="text" id="areaAplica" placeholder="Área para la que aplica">
+                  <input matInput formControlName="areaAplica" placeholder="Área para la que aplica">
                 </mat-form-field>
-                <button mat-flat-button class="example-full-width" id="botonParte1">Cargar</button>
+                <button mat-flat-button (click)="imprimirVerificacionesAplicacion()"
+                  class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
 
             <!-- Entrevista o Prueba Técnica -->
             <mat-expansion-panel>
-              <mat-expansion-panel-header>
+              <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup2))}">
                 <mat-panel-title>
-                  Entrevista o Prueba Técnica
+                  Entrevista o Prueba Técnica ({{ getPercentage(formGroup2) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="seccion">
+              <div class="seccion" [formGroup]="formGroup2">
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Centro de Costo</mat-label>
-                  <input matInput type="text" id="centroCosto"
+                  <input matInput formControlName="centroCosto"
                     placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Cargo</mat-label>
-                  <input matInput type="text" id="cargo" placeholder="CARGO">
+                  <input matInput formControlName="cargo" placeholder="CARGO">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Área en la que presentará la entrevista</mat-label>
-                  <input matInput type="text" id="areaEntrevista" placeholder="ÁREA EN LA QUE PRESENTARA LA ENTREVISTA">
+                  <input matInput formControlName="areaEntrevista"
+                    placeholder="ÁREA EN LA QUE PRESENTARA LA ENTREVISTA">
                 </mat-form-field>
+
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Fecha de la Prueba o Entrevista</mat-label>
-                  <input matInput type="date" id="fechaPruebaEntrevista">
+                  <input matInput [matDatepicker]="picker" formControlName="fechaPruebaEntrevista">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
+
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Hora de la Prueba o Entrevista</mat-label>
-                  <input matInput type="time" id="horaPruebaEntrevista">
+                  <input matInput type="time" formControlName="horaPruebaEntrevista">
                 </mat-form-field>
+
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Dirección o indicación para llegar a la empresa</mat-label>
-                  <input matInput type="text" id="direccionEmpresa"
+                  <input matInput formControlName="direccionEmpresa"
                     placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
                 </mat-form-field>
-                <button mat-flat-button class="example-full-width" id="botonParte2">Cargar</button>
+                <button mat-flat-button (click)="imprimirEntrevistaPrueba()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
 
             <!-- Examen de Salud Ocupacional -->
             <mat-expansion-panel>
-              <mat-expansion-panel-header>
+              <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup3))}">
                 <mat-panel-title>
-                  Examen de Salud Ocupacional
+                  Examen de Salud Ocupacional ({{ getPercentage(formGroup3) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="seccion">
+              <div class="seccion" [formGroup]="formGroup3">
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Examen Salud Ocupacional</mat-label>
-                  <input matInput type="text" id="examenSaludOcupacional" placeholder="Examen Salud Ocupacional">
+                  <input matInput formControlName="examenSaludOcupacional" placeholder="Examen Salud Ocupacional">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>IPS</mat-label>
-                  <input matInput type="text" id="ips" placeholder="IPS">
+                  <input matInput formControlName="ips" placeholder="IPS">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Laboratorios</mat-label>
-                  <input matInput type="text" id="laboratorios" placeholder="Laboratorios">
+                  <input matInput formControlName="laboratorios" placeholder="Laboratorios">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>IPSLAB</mat-label>
-                  <input matInput type="text" id="ipsLab" placeholder="IPSLAB">
+                  <input matInput formControlName="ipsLab" placeholder="IPSLAB">
                 </mat-form-field>
+
+                <!-- aPTO COMO UN SELECT-->
                 <mat-form-field appearance="fill" class="example-full-width">
-                  <mat-label>Apto para el cargo (Sí/No)</mat-label>
-                  <input matInput type="text" id="aptoCargo" placeholder="APTO PARA EL CARGO SI/NO">
+                  <mat-label>Apto para el cargo</mat-label>
+                  <mat-select formControlName="aptoCargo">
+                    <mat-option value="Si">Si es apto</mat-option>
+                    <mat-option value="No">No es apto</mat-option>
+                  </mat-select>
                 </mat-form-field>
-                <button mat-flat-button class="example-full-width" id="botonParte3">Cargar</button>
+
+                <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
 
             <!-- Contratación -->
             <mat-expansion-panel>
-              <mat-expansion-panel-header>
+              <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup4))}">
                 <mat-panel-title>
-                  Contratación
+                  Contratación ({{ getPercentage(formGroup4) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="seccion">
+              <div class="seccion" [formGroup]="formGroup4">
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Empresa Usuaria</mat-label>
-                  <input matInput type="text" id="empresaUsuaria" placeholder="EMPRESA USUARIA">
+                  <input matInput formControlName="empresaUsuaria" placeholder="EMPRESA USUARIA">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Fecha de Ingreso</mat-label>
-                  <input matInput type="date" id="fechaIngreso">
+                  <input matInput type="date" formControlName="fechaIngreso">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Salario</mat-label>
-                  <input matInput type="text" id="salario" placeholder="SALARIO">
+                  <input matInput formControlName="salario" placeholder="SALARIO">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Auxilio de Transporte</mat-label>
-                  <input matInput type="text" id="auxTransporte" placeholder="AUXTRANSPORTE">
+                  <input matInput formControlName="auxTransporte" placeholder="AUXTRANSPORTE">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Rodamiento</mat-label>
-                  <input matInput type="text" id="rodamiento" placeholder="RODAMIENTO">
+                  <input matInput formControlName="rodamiento" placeholder="RODAMIENTO">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Auxilio de Movilidad</mat-label>
-                  <input matInput type="text" id="auxMovilidad" placeholder="AUX MOVILIDAD">
+                  <input matInput formControlName="auxMovilidad" placeholder="AUX MOVILIDAD">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Bonificación</mat-label>
-                  <input matInput type="text" id="bonificacion" placeholder="BONIFICACION">
+                  <input matInput formControlName="bonificacion" placeholder="BONIFICACION">
                 </mat-form-field>
-                <button mat-flat-button class="example-full-width" id="botonParte4">Cargar</button>
+                <button mat-flat-button (click)="imprimirContratacion()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
           </mat-accordion>
         </mat-card-content>
       </mat-card>
+
+
+
 
     </div>
   </div>

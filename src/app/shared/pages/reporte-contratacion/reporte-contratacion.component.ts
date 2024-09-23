@@ -446,7 +446,6 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async validarTodo() {
-
     // Mostrar el modal de carga
     const loadingSwal = Swal.fire({
       icon: 'info',
@@ -505,10 +504,9 @@ export class ReporteContratacionComponent implements OnInit {
         this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(result.TA);
         this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(result.AL)
       }).catch(error => {
-        // console.error('Error al contar AL y TA:', error);
+        // Manejo de errores al contar AL y TA, si es necesario
+        console.error('Error al contar AL y TA:', error);
       });
-
-
 
       let mensaje = "";
       let consoleOutput = "";
@@ -603,7 +601,12 @@ export class ReporteContratacionComponent implements OnInit {
       } else {
         Swal.close();
         this.isCruceValidado = true;
-        this.validarCruce();
+
+        // Validar el cruce diario
+        await this.validarCruce();
+
+
+
         await Swal.fire({
           icon: 'success',
           title: 'Validación exitosa',
@@ -617,6 +620,7 @@ export class ReporteContratacionComponent implements OnInit {
       await Swal.fire('Error', 'Error al procesar el archivo. Inténtelo de nuevo.', 'error');
     }
   }
+
 
   async validarCruce() {
     Swal.close();
@@ -693,7 +697,7 @@ export class ReporteContratacionComponent implements OnInit {
           return completeRow;
         });
 
-
+        this.datoscruced = rows;
         Swal.update({ text: 'Dividiendo los datos en lotes...' });
 
         const batchSize = 1500;
@@ -715,6 +719,9 @@ export class ReporteContratacionComponent implements OnInit {
         }
 
         this.erroresValidacion.data = allErrors;
+        console.log('Errores de validación en proceso cruce:', allErrors);
+        // Luego, validar la ARL una vez que el cruce diario haya sido validado
+        await this.proccssArl([this.filesToUpload['arl'][0]]);
 
         if (allErrors.length > 0) {
           // Crear un array de errores con el formato adecuado para el backend
@@ -768,6 +775,9 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async processArl(workbook: XLSX.WorkBook): Promise<void> {
+    console.log('Procesando archivo de ARL...');
+    let confirmarErrores = true;
+
     this.arlBase64 = await this.convertToBase64(this.filesToUpload['arl'][0]);
 
     Swal.fire({
@@ -781,18 +791,15 @@ export class ReporteContratacionComponent implements OnInit {
     });
 
     try {
-      // Utiliza XLSX para leer el contenido del archivo ARL
       const sheetArl = workbook.Sheets[workbook.SheetNames[0]];
 
-      // Convertir la hoja ARL a formato JSON, comenzando desde la fila 3 (para omitir encabezados)
       const dataArl = XLSX.utils.sheet_to_json(sheetArl, {
-        header: 1, // Leer como un array de arrays
-        range: 2,  // Saltar las primeras dos filas
-        raw: true, // Leer los valores sin convertir
-        defval: '' // Reemplazar valores vacíos con una cadena vacía
+        header: 1,
+        range: 2,
+        raw: true,
+        defval: ''
       });
 
-      // Convertir los campos que contienen fechas a formato legible
       const rowsArl = (dataArl as any[][]).map(row => {
         if (row[9] && typeof row[9] === 'number') {
           row[9] = this.excelSerialToJSDate(row[9]);
@@ -802,7 +809,6 @@ export class ReporteContratacionComponent implements OnInit {
         }
         return row;
       });
-      console.log('rowsArl:', rowsArl);
 
       const headers = [
         "Fecha de firma de contrato",
@@ -1002,22 +1008,16 @@ export class ReporteContratacionComponent implements OnInit {
         "OBSERVACIONES"
       ];
 
+      const datosMapeados = this.datoscruced.map((cruceRow: any[], index: number) => {
+        let cedulaCruce = cruceRow[1];
+        const comparativoCruce = cruceRow[8];
 
-
-      // Procesar los datos del cruce
-      const datosMapeados = this.datoscruced.map((cruceRow: any[]) => {
-        let cedulaCruce = cruceRow[1];  // Cédula en el índice 1 del cruce
-        const comparativoCruce = cruceRow[8];  // Índice 8 del cruce diario
-
-        // Remover espacios y puntos de la cédula del cruce
         cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
 
-        // Buscar en ARL por cédula (removiendo espacios y puntos también en arlRow[3])
         const filaArl = rowsArl.find(arlRow => {
           const cedulaArl = (arlRow[3] || '').toString().replace(/\s|\./g, '');
           return cedulaArl === cedulaCruce;
         });
-
 
         let estadoCedula = 'ALERTA NO ESTA EN ARL';
         let estadoFechas = 'ALERTA NO COINCIDEN';
@@ -1025,68 +1025,67 @@ export class ReporteContratacionComponent implements OnInit {
         let fechaIngresoCruce = comparativoCruce || 'NO DISPONIBLE';
 
         if (filaArl) {
-          estadoCedula = 'SATISFACTORIO';  // Se encontró la cédula
-          const comparativoArl = filaArl[9];  // Índice 9 en ARL
-          // Convertir la fecha al formato YYYY-MM-DD, manejando tanto '/' como '-' en la fecha
+          estadoCedula = 'SATISFACTORIO';
+          const comparativoArl = filaArl[9];
           const formatDate = (dateStr: string) => {
-            // Reemplazar los guiones por barras si están presentes
             const normalizedDateStr = dateStr.includes('-') ? dateStr.replace(/-/g, '/') : dateStr;
-
-            // Convertir al formato YYYY-MM-DD
             const [day, month, year] = normalizedDateStr.split('/').map(Number);
-            return new Date(year, month - 1, day);  // Meses en JS son 0 indexados
+            return new Date(year, month - 1, day);
           };
 
           const fechaArl = formatDate(comparativoArl);
           const fechaCruce = formatDate(comparativoCruce);
 
-
-          // Verificar si las fechas son iguales
           estadoFechas = fechaCruce.getTime() === fechaArl.getTime() ? 'SATISFACTORIO' : 'ALERTA FECHAS NO COINCIDEN';
           fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
         }
 
-        // Generar un objeto para cada fila con los encabezados del cruce diario y la comparación del ARL
         const resultado: { [key: string]: any } = {
           "Numero de Cedula": cedulaCruce,
           "Arl": estadoCedula,
           "ARL_FECHAS": estadoFechas,
           "FECHA EN ARL": fechaIngresoArl,
-          "FECHA INGRESO SUBIDA CONTRATACION": fechaIngresoCruce
+          "FECHA INGRESO SUBIDA CONTRATACION": fechaIngresoCruce,
+          "Errores": "OK"  // Inicializamos con "OK" por defecto
         };
 
-        // Añadir los campos del cruce diario a los resultados
         headers.forEach((header, index) => {
-          resultado[header] = cruceRow[index] || 'NO DISPONIBLE';  // Agregar valor del cruce diario o marcar como NO DISPONIBLE si no hay
+          resultado[header] = cruceRow[index] || 'NO DISPONIBLE';
         });
+        // Buscamos los errores correspondientes a la fila de Excel (index + 1 porque Excel es 1-indexed)
+        const registroErrores = this.erroresValidacion.data.find((err: any) => err.registro == (index + 1));
+        if (registroErrores && registroErrores.errores.length > 0) {
+          confirmarErrores = false;
+          // Si hay errores, reemplazamos "OK" por los errores concatenados
+          resultado["Errores"] = registroErrores.errores.join(', ');
+        }
 
         return resultado;
       });
 
-      // Crear el workbook con ExcelJS
+
+
+
       const workbookOut = new ExcelJS.Workbook();
       const worksheet = workbookOut.addWorksheet('Datos');
 
-      // Configurar columnas con titulos
       worksheet.columns = Object.keys(datosMapeados[0]).map(titulo => ({ header: titulo, key: titulo, width: 20 }));
 
-      // Añadir filas al worksheet y aplicar colores
       datosMapeados.forEach(dato => {
         const row = worksheet.addRow(dato);
 
         if (dato["Arl"] === 'SATISFACTORIO') {
-          this.isArlValidado = true;
           row.getCell('Arl').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: '00FF00' } // Verde
+            fgColor: { argb: '00FF00' }
           };
         } else if (dato["Arl"] === 'ALERTA NO ESTA EN ARL') {
           this.isArlValidado = false;
           row.getCell('Arl').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' } // Rojo
+            fgColor: { argb: 'FF0000' }
           };
         }
 
@@ -1094,40 +1093,34 @@ export class ReporteContratacionComponent implements OnInit {
           row.getCell('ARL_FECHAS').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: '00FF00' } // Verde
+            fgColor: { argb: '00FF00' }
           };
         } else if (dato["ARL_FECHAS"] === 'ALERTA FECHAS NO COINCIDEN') {
           this.isArlValidado = false;
           row.getCell('ARL_FECHAS').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' } // Rojo
+            fgColor: { argb: 'FF0000' }
           };
         }
 
-        if (dato["fechaIngresoArl"] === 'NO DISPONIBLE') {
-          this.isArlValidado = false;
-          row.getCell('fechaIngresoArl').fill = {
+        if (dato["FECHA EN ARL"] === 'NO DISPONIBLE') {
+          row.getCell('FECHA EN ARL').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' } // Rojo
+            fgColor: { argb: 'FF0000' }
           };
         }
 
-        if (dato["fechaIngresoCruce"] === 'NO DISPONIBLE') {
-          this.isArlValidado = false;
-
-          row.getCell('fechaIngresoCruce').fill = {
+        if (dato["FECHA INGRESO SUBIDA CONTRATACION"] === 'NO DISPONIBLE') {
+          row.getCell('FECHA INGRESO SUBIDA CONTRATACION').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' } // Rojo
+            fgColor: { argb: 'FF0000' }
           };
         }
-
-
       });
 
-      // Crear otra hoja para las cédulas no encontradas en ARL
       const cedulasNoEncontradas = datosMapeados.filter(dato => dato["Arl"] === 'ALERTA NO ESTA EN ARL').map(dato => dato["Numero de Cedula"]);
       const cedulasWorksheet = workbookOut.addWorksheet('Cédulas No Encontradas');
       cedulasWorksheet.columns = [{ header: 'Cédula', key: 'cedula', width: 20 }];
@@ -1135,21 +1128,33 @@ export class ReporteContratacionComponent implements OnInit {
         cedulasWorksheet.addRow({ cedula });
       });
 
-      // Exportar el archivo Excel
       workbookOut.xlsx.writeBuffer().then(buffer => {
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         FileSaver.saveAs(blob, 'ReporteARL.xlsx');
       });
+      // Cerrar el Swal de carga
+      Swal.close();
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Éxito',
-        text: 'Archivo de ARL procesado, comparado y guardado como Excel.',
-        confirmButtonText: 'Aceptar'
-      });
+      // Mostrar el Swal de éxito después de cerrar el anterior
+      setTimeout(() => {
+        if (this.isArlValidado) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Validación exitosa',
+            text: 'Todos los datos de ARL coinciden con el cruce diario',
+            heightAuto: false
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'El arl tiene problemas',
+            text: 'Se han encontrado discrepancias en los datos de ARL. Por favor, revise los datos y vuelva a intentarlo. Si tiene errores en la base tambien se mostraran',
+            heightAuto: false
+          });
+        }
+      }, 500);
 
     } catch (error) {
-      console.log(error);
       Swal.close();
       Swal.fire({
         icon: 'error',
@@ -1159,6 +1164,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
     }
   }
+
 
   excelSerialToJSDate(serial: number): string {
     const utc_days = Math.floor(serial - 25569);
@@ -1389,7 +1395,7 @@ export class ReporteContratacionComponent implements OnInit {
         const processes = [
           { key: 'cedulasEscaneadas', name: 'Cédulas Escaneadas', process: this.processCedulasEscaneadas.bind(this) },
           { key: 'cruceDiario', name: 'Cruce diario Excel', process: this.processExcelFiles.bind(this) },
-          { key: 'arl', name: 'Archivo ARL', process: this.proccssArl.bind(this) },
+          // { key: 'arl', name: 'Archivo ARL', process: this.proccssArl.bind(this) },
           { key: 'induccionSSO', name: 'Inducción Seguridad y Salud en el trabajo', process: this.processFileList.bind(this) },
           { key: 'traslados', name: 'Traslados', process: this.processTraslados.bind(this) },
         ];
@@ -1454,7 +1460,6 @@ export class ReporteContratacionComponent implements OnInit {
           // Enviar reporte
           try {
             await this.jefeAreaService.cargarReporte(reporteData);
-            if (this.isArlValidado) {
               Swal.fire({
                 icon: 'success',
                 title: 'Reporte enviado',
@@ -1467,14 +1472,7 @@ export class ReporteContratacionComponent implements OnInit {
                   });
                 }
               });
-            } else {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Advertencia',
-                text: 'Se han encontrado errores en el archivo de ARL. Por favor, corrija los datos y vuelva a intentarlo.',
-                confirmButtonText: 'Aceptar'
-              });
-            }
+            
           } catch (error) {
             Swal.fire({
               icon: 'error',

@@ -15,6 +15,8 @@ import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date
 import Swal from 'sweetalert2';
 import { AdminService } from '../../services/admin/admin.service';
 import saveAs from 'file-saver';
+import { response } from 'express';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 @Component({
@@ -29,7 +31,8 @@ import saveAs from 'file-saver';
     MatTableModule,
     MatIconModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatMenuModule
   ],
   templateUrl: './ver-reporte.component.html',
   styleUrl: './ver-reporte.component.css'
@@ -38,7 +41,9 @@ export class VerReporteComponent implements OnInit {
   reportes: any[] = [];
   displayedColumns: string[] = ['fecha', 'nombre', 'sede', 'cantidadContratosTuAlianza', 'cantidadContratosApoyoLaboral', 'cedulas', 'traslados', 'cruce', 'sst', 'nota'];
   dataSource = new MatTableDataSource<any>(); // Table 1 Data Source
-
+  consolidadoFechasFincaDataSource: any[] = [];
+  userCorreo: string = '';
+  userNombre: string = '';
   filterValues: any = {
     nombre: '',
     sede: ''
@@ -57,8 +62,13 @@ export class VerReporteComponent implements OnInit {
     private adminService: AdminService
   ) { }
 
-  ngOnInit(): void {
-    this.obtenerReportes();
+  async ngOnInit(): Promise<void> {
+    const user = await this.contratacionService.getUser();
+    if (user) {
+      this.userCorreo = user.correo_electronico;
+      this.userNombre = user.primer_nombre + ' ' + user.primer_apellido;
+    }    
+    this.obtenerReportes();    
     this.dataSource.filterPredicate = this.createFilter(); // Ensure filter applies to the first table
   }
 
@@ -73,32 +83,59 @@ export class VerReporteComponent implements OnInit {
         Swal.showLoading();
       }
     });
+   
+    if (this.userCorreo != "tuafiliacion@tsservicios.co" && this.userCorreo != "programador.ts@gmail.com" ) {
+      // Llamar al servicio para obtener los reportes
+      this.contratacionService.obtenerTodosLosReportes(this.userNombre).subscribe(
+        async (response) => {
+          // Ocultar el Swal de cargando
+          Swal.close();
 
-    // Llamar al servicio para obtener los reportes
-    this.contratacionService.obtenerTodosLosReportes().subscribe(
-      async (response) => {
-        // Ocultar el Swal de cargando
-        Swal.close();
+          this.reportes = response.reportes;
+          this.dataSource.data = this.reportes; // Actualiza la tabla principal
 
-        this.reportes = response.reportes;
-        this.dataSource.data = this.reportes; // Actualiza la tabla principal
+        },
+        (error) => {
+          // Ocultar el Swal de cargando
+          Swal.close();
 
-        // Espera a que los datos consolidados estén listos
-        const consolidado = await this.generateConsolidatedData(this.reportes);
-        this.consolidadoDataSource.data = consolidado; // Actualiza la tabla consolidada
-      },
-      (error) => {
-        // Ocultar el Swal de cargando
-        Swal.close();
+          // Mostrar alerta de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al obtener los reportes',
+            text: 'Ocurrió un error al obtener los reportes, por favor intenta de nuevo.'
+          });
+        }
+      );
+    }
+    else {
+      // Llamar al servicio para obtener los reportes
+      this.contratacionService.obtenerTodosLosReportes("todos").subscribe(
+        async (response) => {
+          // Ocultar el Swal de cargando
+          Swal.close();
 
-        // Mostrar alerta de error
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al obtener los reportes',
-          text: 'Ocurrió un error al obtener los reportes, por favor intenta de nuevo.'
-        });
-      }
-    );
+          this.reportes = response.reportes;
+          this.dataSource.data = this.reportes; // Actualiza la tabla principal
+
+          // Espera a que los datos consolidados estén listos
+          const consolidado = await this.generateConsolidatedData(this.reportes);
+          this.consolidadoDataSource.data = consolidado; // Actualiza la tabla consolidada
+        },
+        (error) => {
+          // Ocultar el Swal de cargando
+          Swal.close();
+
+          // Mostrar alerta de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al obtener los reportes',
+            text: 'Ocurrió un error al obtener los reportes, por favor intenta de nuevo.'
+          });
+        }
+      );
+    }
+
   }
 
 
@@ -291,32 +328,141 @@ export class VerReporteComponent implements OnInit {
 
   openDateRangeDialog2(): void {
     const dialogRef = this.dialog.open(DateRangeDialogComponent, { width: '550px' });
-  
+
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        console.log('Fechas seleccionadas:', result);
-        // Asumiendo que 'result' contiene las fechas como { start: 'YYYY-MM-DD', end: 'YYYY-MM-DD' }
         const start = result.start;
         const end = result.end;
-  
+
+        // Mostrar Swal de "Cargando"
+        Swal.fire({
+          icon: 'info',
+          title: 'Cargando',
+          text: 'Espere mientras se descarga el archivo...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();  // Mostrar animación de carga
+          }
+        });
+
         // Llama al servicio para descargar el archivo Excel
         this.contratacionService.obtenerBaseContratacionPorFechas(start, end).subscribe(
           (response: Blob) => {
-            console.log('Archivo descargado:', response);
+
             const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const fileName = `reporte_contratacion_${start}_a_${end}.xlsx`;
-  
+
             // Usar FileSaver.js para descargar el archivo
             saveAs(blob, fileName);
+
+            // Cerrar el Swal de "Cargando"
+            Swal.close();
           },
           (error) => {
             console.error('Error al descargar el archivo:', error);
+
+            // Cerrar el Swal y mostrar error
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al descargar el archivo.',
+            });
           }
         );
       }
     });
   }
-  
+
+  openDateRangeDialog3(): void {
+    const dialogRef = this.dialog.open(DateRangeDialogComponent, { width: '550px' });
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        this.contratacionService.obtenerReportesPorFechasCentroCosto(result.start, result.end).subscribe(
+          (response: any) => {
+            if (response.resultado.total_general === 0) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'No hay reportes',
+                text: 'No se encontraron reportes para las fechas seleccionadas.'
+              });
+              return;
+            }
+            // Asignar los datos al dataSource de la tabla
+            this.consolidadoFechasFincaDataSource = this.formatData(response.resultado.detalles);
+          }
+        );
+      }
+    });
+  }
+
+  openDateRangeDialog4(): void {
+    const dialogRef = this.dialog.open(DateRangeDialogComponent, { width: '550px' });
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+
+        // Descargar archivo
+        this.contratacionService.descargarReporteFechaIngresoCentroCostoFincas(result.start, result.end).subscribe(
+          (response: Blob) => {
+            // Verifica si la respuesta es un archivo binario
+            if (response.size === 0) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'No hay reportes',
+                text: 'No se encontraron reportes para las fechas seleccionadas.'
+              });
+              return;
+            }
+
+            // Crear un enlace de descarga
+            const file = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(file);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'reporte_centro_costos.xlsx';  // Nombre del archivo
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);  // Liberar el objeto URL
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al descargar el archivo.',
+            });
+          }
+        );
+      }
+    });
+  }
+
+
+  // Función para formatear los datos y ordenar las fechas de mayor a menor
+  formatData(data: any): any[] {
+    const formattedData = [];
+
+    // Obtener las fechas y ordenarlas de mayor a menor
+    const fechas = Object.keys(data).sort((a, b) => {
+      // Convertir 'dd/mm/yyyy' a objetos Date para compararlas
+      const dateA = new Date(a.split('/').reverse().join('-'));
+      const dateB = new Date(b.split('/').reverse().join('-'));
+      return dateB.getTime() - dateA.getTime();  // Orden descendente
+    });
+
+    // Iterar sobre las fechas ya ordenadas
+    for (const fecha of fechas) {
+      formattedData.push({ fechaIngreso: fecha, centroCosto: '', total: '' }); // Fila de la fecha
+      for (const item of data[fecha]) {
+        formattedData.push({ fechaIngreso: '', centroCosto: item.centro_costo, total: item.total }); // Filas de los centros de costo
+      }
+    }
+
+    return formattedData;
+  }
+
+
+
 
 
 }

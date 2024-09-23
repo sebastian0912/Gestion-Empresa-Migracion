@@ -67,8 +67,8 @@ export class CrearEditarVacanteComponent implements OnInit {
     "7210 (VALMAR)",
     "7211 (VALMAR)",
     "7219 (COMERCIAL/VALMAR)",
-
   ];
+
   vacanteForm: FormGroup;
   oficinas = ['FACATATIVA', 'ROSAL', 'CARTAGENITA', 'MADRID', 'FUNZA', 'SOACHA', 'FONTIBÓN', 'SUBA', 'TOCANCIPÁ', 'BOSA', 'BOGOTÁ', 'OTRA'];
   empresasFiltradas!: Observable<string[]>;
@@ -103,6 +103,7 @@ export class CrearEditarVacanteComponent implements OnInit {
     this.dateAdapter.setLocale('en-GB'); // Format date as dd/MM/yyyy
 
     if (this.data) {
+      console.log(this.data);
       this.id = this.data.id;
 
       // Patching company-related fields
@@ -122,7 +123,7 @@ export class CrearEditarVacanteComponent implements OnInit {
         cargo: this.data.Cargovacante_id,
         pruebaTecnica: this.capitalizeFirstLetter(this.data.fechadePruebatecnica ? 'Si' : 'No'),
         fechaPrueba: this.convertirStringADate(this.data.fechadePruebatecnica),
-        horaPrueba: this.data.horadepruebatecnica ? this.formatHoraTo12(this.data.horadepruebatecnica) : '', // Convert to 12-hour format
+        horaPrueba: this.data.horadePruebatecnica ,
         lugarPrueba: this.data.lugarPrueba,
         requiereExperiencia: this.data.experiencia,
         numeroPersonas: this.data.numeroDeGenteRequerida,

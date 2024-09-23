@@ -309,13 +309,21 @@ export class ContratacionService {
 
 
 
-  public obtenerTodosLosReportes(page: number = 1): Observable<any> {
+  public obtenerTodosLosReportes(nombre: string): Observable<any> {
+    console.log(nombre);
     const headers = this.createAuthorizationHeader();
-    return this.http.get(`${this.apiUrl}/reportes/obtenerReportes`, { headers }).pipe(
+    
+    // Usar una sola ruta para obtener todos o filtrar por nombre
+    const url = nombre === 'todos' 
+      ? `${this.apiUrl}/reportes/obtenerReportes` 
+      : `${this.apiUrl}/reportes/obtenerReportes/${nombre}`;
+    
+    return this.http.get(url, { headers }).pipe(
       map((response: any) => response),  // Mapea la respuesta
       catchError(this.handleError)       // Manejo de errores
     );
   }
+  
 
   public obtenerReportesPorFechas(start: string, end: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
@@ -326,6 +334,35 @@ export class ContratacionService {
       catchError(this.handleError)       // Manejo de errores
     );
   }
+
+
+  public obtenerReportesPorFechasCentroCosto(start: string, end: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    const params = { start, end };  // Parámetros para enviar el rango de fechas
+
+    return this.http.get(`${this.apiUrl}/contratacion/descargarReporteFechaIngresoCentroCosto/`, { headers, params }).pipe(
+      map((response: any) => response),  // Mapea la respuesta
+      catchError(this.handleError)       // Manejo de errores
+    );
+  }
+
+
+
+  public descargarReporteFechaIngresoCentroCostoFincas(start: string, end: string): Observable<Blob> {
+    const headers = this.createAuthorizationHeader();
+    const params = { start, end };
+
+    return this.http.get(`${this.apiUrl}/contratacion/descargarReporteFechaIngresoCentroCostoFincas/`, {
+      headers,
+      params,
+      responseType: 'blob'  // Indicar que esperamos un archivo binario
+    }).pipe(
+      map((response: Blob) => response),  // Mapea la respuesta a un blob
+      catchError(this.handleError)        // Manejo de errores
+    );
+  }
+
+
 
   //--------------------------------------------------------------------------------------------
   // ------------------------- Métodos para el módulo de reportes de errores --------------------------------
@@ -339,7 +376,7 @@ export class ContratacionService {
       responsable: string;
       tipo: string;
     },
-    
+
   ): Promise<any> {
     const token = this.getToken();
 
@@ -376,7 +413,7 @@ export class ContratacionService {
   public obtenerBaseContratacionPorFechas(start: string, end: string): Observable<Blob> {
     const headers = this.createAuthorizationHeader();
     const params = { start, end };
-  
+
     // Indicamos que el responseType será 'blob' para manejar archivos binarios
     return this.http.get(`${this.apiUrl}/contratacion/descargarReporte/`, {
       headers,

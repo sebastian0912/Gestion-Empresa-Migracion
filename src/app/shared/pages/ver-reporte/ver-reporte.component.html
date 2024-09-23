@@ -7,7 +7,7 @@
         <div class="tabla">
             <h1 class="title">Reporte uno a uno por persona </h1>
 
-            <div class="filter-container">
+            <div class="filter-container" *ngIf="userCorreo == 'tuafiliacion@tsservicios.co' || userCorreo == 'programador.ts@gmail.com'">
                 <mat-form-field appearance="fill" class="example-full-width">
                     <mat-label>Buscar por Nombre</mat-label>
                     <input matInput (keyup)="applyFilter('nombre', $event)" placeholder="Ej. Sebastian">
@@ -18,17 +18,24 @@
                     <input matInput (keyup)="applyFilter('sede', $event)" placeholder="Ej. Facatativa">
                 </mat-form-field>
 
-                <div class="caja">
-                    <img src="comun/calendario.png" class="excel"
-                        style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;"
-                        (click)="openDateRangeDialog()">
-                </div>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                    <img src="comun/calendario.png" style="width: 200px;">
+                </button>
+                <mat-menu #menu="matMenu" >
+                    <button mat-menu-item (click)="openDateRangeDialog()" class="submenu">
+                        <span>Filtrar tablas por fecha</span>
+                    </button>
+                    <button mat-menu-item (click)="openDateRangeDialog2()" class="submenu">
+                        <span>Extraer base contratación por código de contrato</span>
+                    </button>
+                    <button mat-menu-item (click)="openDateRangeDialog3()" class="submenu">
+                        <span>Generar reporte</span>
+                    </button>
+                    <button mat-menu-item (click)="openDateRangeDialog4()" class="submenu">
+                        <span>Generar reporte fincas</span>
+                    </button>
+                </mat-menu>
 
-                <div class="caja">
-                    <img src="comun/calendario.png" class="excel"
-                        style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;"
-                        (click)="openDateRangeDialog2()">
-                </div>
 
             </div>
 
@@ -151,9 +158,7 @@
             </div>
         </div>
 
-
-
-        <div class="tabla">
+        <div class="tabla" *ngIf="userCorreo == 'tuafiliacion@tsservicios.co' || userCorreo == 'programador.ts@gmail.com'">
             <h1 class="title">Consolidado por oficina</h1>
 
             <div class="table-container">
@@ -225,6 +230,41 @@
                 </table>
             </div>
         </div>
+
+        <div class="tabla" *ngIf="userCorreo == 'tuafiliacion@tsservicios.co' || userCorreo == 'programador.ts@gmail.com'">
+            <h1 class="title">Reporte Finca por Fecha de Ingreso</h1>
+
+            <div class="table-container">
+                <table mat-table [dataSource]="consolidadoFechasFincaDataSource" class="mat-elevation-z8">
+
+                    <!-- Fecha Column -->
+                    <ng-container matColumnDef="fechaIngreso">
+                        <th mat-header-cell *matHeaderCellDef> Fecha de Ingreso </th>
+                        <td mat-cell *matCellDef="let element"> {{element.fechaIngreso}} </td>
+                    </ng-container>
+
+                    <!-- Centro de Costo Column -->
+                    <ng-container matColumnDef="centroCosto">
+                        <th mat-header-cell *matHeaderCellDef> Centro de Costo </th>
+                        <td mat-cell *matCellDef="let element"> {{element.centroCosto}} </td>
+                    </ng-container>
+
+                    <!-- Total Column -->
+                    <ng-container matColumnDef="total">
+                        <th mat-header-cell *matHeaderCellDef> Total </th>
+                        <td mat-cell *matCellDef="let element"> {{element.total}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="['fechaIngreso', 'centroCosto', 'total']"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['fechaIngreso', 'centroCosto', 'total'];"></tr>
+
+                </table>
+            </div>
+        </div>
+
+
+
+
 
     </div>
 </div>

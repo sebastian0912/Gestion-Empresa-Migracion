@@ -1,3 +1,10 @@
+.tabla{
+  min-width: 100%;
+}
+
+
+
+
 /* Estilo para los enlaces de PDF */
 a.pdf-link {
   color: #4240d6;
@@ -31,13 +38,18 @@ button:hover {
 }
 
 
+.submenu span {
+  color: #000;
+  font-weight: normal;
+}
+
 span {
   font-size: 11pt;
   font-weight: bold;
   color: #4240d6;
 }
 
-.ver{
+.ver {
   display: flex;
   width: 100%;
   justify-content: space-between;

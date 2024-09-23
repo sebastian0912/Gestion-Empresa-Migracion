@@ -47,21 +47,26 @@ export class NavbarLateralComponent implements OnInit {
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
 
   rolePermissions: any = {
-    GERENCIA: ['home', , 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos',
-      'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria',
-      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo'
+    GERENCIA: [
+      'forma-pago', 'desprendibles-pago', 'arl',
+      'ausentismos', 'reporte-contratacion', 'seguimiento-auditoria',
+      'estadisticas-auditoria', 'envio-paquete-documentacion', 'recibir-paquete-documentacion',
+      'personal-activo'
     ],
-    RECEPCION: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
-    COORDINADOR: ['home',
+    RECEPCION: [
+      'forma-pago', 'desprendibles-pago', 'ausentismos'
+    ],
+    COORDINADOR: [
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'reporte-contratacion', 'seguimiento-auditoria',
+      'reporte-contratacion', 'seguimiento-auditoria', 'ver-reporte'
     ],
     JEFE_DE_AREA: [
-      'home', 'forma-pago', 'desprendibles-pago',
+      'forma-pago', 'desprendibles-pago',
       'ausentismos', 'seguimiento-auditoria', 'estadisticas-auditoria',
+      'ver-reporte'
     ],
     ADMIN: [
-      'home', 'forma-pago', 'desprendibles-pago',
+      'forma-pago', 'desprendibles-pago',
       'arl', 'ausentismos', 'publicidad', 'vacantes',
       'seguimiento-auditoria', 'estadisticas-auditoria',
       'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo',
@@ -72,12 +77,22 @@ export class NavbarLateralComponent implements OnInit {
       'archivos-contratacion', 'ver-reporte', 'adres'
 
     ],
-    TESORERIA: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos'],
-    CAROL: ['home', 'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'personal-activo', 'reporte-contratacion', 'ver-reporte'
+    TESORERIA: [
+      'forma-pago', 'desprendibles-pago', 'ausentismos'
     ],
-    INCAPACIDADADMIN: ['home', 'forma-pago', 'desprendibles-pago', 'ausentismos', 'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades', 'formulario-incapacicades'
+    CAROL: [
+      'forma-pago', 'desprendibles-pago', 'arl', 
+      'ausentismos', 'reporte-contratacion', 'personal-activo', 
+      'reporte-contratacion', 'ver-reporte'
     ],
-    INCAPACIDADSUBIDA: ['home', 'formulario-incapacicades', 'forma-pago', 'desprendibles-pago', 'ausentismos',
+    INCAPACIDADADMIN: [
+      'forma-pago', 'desprendibles-pago', 'ausentismos', 
+      'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades', 
+      'formulario-incapacicades'
+    ],
+    INCAPACIDADSUBIDA: [
+      'formulario-incapacicades', 'forma-pago', 'desprendibles-pago', 
+      'ausentismos',
     ],
 
   };
@@ -241,7 +256,7 @@ export class NavbarLateralComponent implements OnInit {
 
   procesarDatosAfiliacion(data: any[]): any[] {
     const afiliaciones: any[] = [];
-  
+
     data.forEach((row, index) => {
       if (index > 0) {  // Ignorar la primera fila (cabecera)
         const afiliacion = {
@@ -254,27 +269,27 @@ export class NavbarLateralComponent implements OnInit {
           estado: row[6],
           entidad: row[7],
           regimen: row[8],
-  
+
           // Convertir las fechas numéricas de Excel a formato DD/MM/YYYY
           fechaAfiliacionEfectiva: this.convertirFechaExcel(row[9]),
           fechaFinalizacionAfiliacion: this.convertirFechaExcel(row[10]),
-          
+
           tipoAfiliacion: row[11],
           fechaAddress: this.convertirFechaExcel(row[12]),
           pdfDocumento: row[13],
-  
+
           // Convertir la marca temporal numérica de Excel a formato DD/MM/YYYY HH:MM
           marcaTemporal: this.convertirMarcaTemporalExcel(row[14])
         };
-  
+
         // Agregar la afiliación al arreglo
         afiliaciones.push(afiliacion);
       }
     });
-  
+
     return afiliaciones;
   }
-  
+
 
 
   async processPersonalActivo(workbook: XLSX.WorkBook): Promise<void> {
