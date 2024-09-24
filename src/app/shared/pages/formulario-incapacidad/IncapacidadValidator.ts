@@ -29,12 +29,20 @@ export class IncapacidadValidator {
         prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
       }
     }if(!this.hasEnoughDays(incapacidad)){
+      if (this.isAccidentelaboral(incapacidad)){
+        errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
+        const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
+        quienpaga = this.pagook(incapacidad, mensaje);
+        observaciones = "OK";
+        prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+      }else{
       const mensaje = "pagaeps";
       quienpaga = this.pagook(incapacidad, mensaje);
       errors.push("Paga eps");
       observaciones = "OK";
       prioridadActual = 'alta'; // Actualizar la prioridad actual
     }
+  }
 
 
     // Regla 2: Empleador si paga (1 y 2 días iniciales)
@@ -179,7 +187,7 @@ export class IncapacidadValidator {
 
     const fechaContratacion = new Date(incapacidad.fecha_contratacion);
 
-    const fechaInicio = new Date();
+    const fechaInicio = new Date(incapacidad.fecha_inicio_incapacidad);
 
     // Verificar si las fechas son válidas
     if (isNaN(fechaContratacion.getTime())) {
@@ -189,7 +197,7 @@ export class IncapacidadValidator {
     const diferenciaEnMilisegundos = fechaInicio.getTime() - fechaContratacion.getTime();
     const diasCotizados = Math.floor(diferenciaEnMilisegundos / (1000 * 60 * 60 * 24));
 
-    if (diasCotizados <= 45){
+    if (diasCotizados <= 48){
       return true;
     }else{
       return false;
