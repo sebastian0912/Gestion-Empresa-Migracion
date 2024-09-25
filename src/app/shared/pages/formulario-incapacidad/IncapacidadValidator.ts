@@ -12,8 +12,9 @@ export class IncapacidadValidator {
     };
 
     // Regla 1: No cumple con el tiempo decreto 780 de 2016
+    console.log(this.hasEnoughDays(incapacidad));
     if (this.hasEnoughDays(incapacidad)) {
-      
+
       if (this.isAccidentelaboral(incapacidad)){
         errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
         const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
@@ -28,13 +29,21 @@ export class IncapacidadValidator {
         observaciones = "No cumple con el tiempo decreto 780 de 2016";
         prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
       }
-    }if(!this.hasEnoughDays(incapacidad)){
+    }if(!this.hasEnoughDays(incapacidad)) {
+      if (this.isAccidentelaboral(incapacidad)){
+        errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
+        const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
+        quienpaga = this.pagook(incapacidad, mensaje);
+        observaciones = "OK";
+        prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+      }else{
       const mensaje = "pagaeps";
       quienpaga = this.pagook(incapacidad, mensaje);
       errors.push("Paga eps");
       observaciones = "OK";
       prioridadActual = 'alta'; // Actualizar la prioridad actual
     }
+  }
 
 
     // Regla 2: Empleador si paga (1 y 2 días iniciales)
@@ -177,23 +186,36 @@ export class IncapacidadValidator {
       return false;
     }
 
-    const fechaContratacion = new Date(incapacidad.fecha_contratacion);
+    // Función para convertir fechas en formato DD/MM/YYYY a objeto Date
+    function parseDate(dateString: string): Date {
+      const [day, month, year] = dateString.split('/').map(Number);
+      // Restar 1 al mes ya que en JavaScript los meses son de 0 a 11
+      return new Date(year, month - 1, day);
+    }
 
-    const fechaInicio = new Date();
+    const fechaInicio = parseDate(incapacidad.fecha_contratacion);
+    const fechaFin = parseDate(incapacidad.fecha_inicio_incapacidad);
 
     // Verificar si las fechas son válidas
-    if (isNaN(fechaContratacion.getTime())) {
+    if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
+      console.log('Fechas inválidas');
       return false;
     }
 
-    const diferenciaEnMilisegundos = fechaInicio.getTime() - fechaContratacion.getTime();
-    const diasCotizados = Math.floor(diferenciaEnMilisegundos / (1000 * 60 * 60 * 24));
+    // Normalizar las fechas para asegurar cálculo correcto en días completos
+    const fechaInicioMidnight = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), fechaInicio.getDate());
+    const fechaFinMidnight = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), fechaFin.getDate());
 
-    if (diasCotizados <= 45){
-      return true;
-    }else{
-      return false;
-    }
+    // Calcular la diferencia en tiempo (milisegundos)
+    const diferenciaEnTiempo = fechaFinMidnight.getTime() - fechaInicioMidnight.getTime();
+
+    // Calcular los días cotizados
+    const diasCotizados = Math.floor(diferenciaEnTiempo / (1000 * 3600 * 24));
+
+    // Imprimir los días cotizados
+    console.log(`Días cotizados: ${diasCotizados}`);
+
+    return diasCotizados <= 48;
 
   }
 

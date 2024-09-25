@@ -231,6 +231,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     this.toggleOverlay(true);
     this.incapacidadService.traerDatosListas().subscribe(
       response => {
+        console.log(response.codigos);
         // Transformar los datos y asignar a los arreglos
         this.allIps = response.IPSNames.map((item: { nit: string, nombreips: string }) => ({
           nit: item.nit,
@@ -420,14 +421,17 @@ export class FormularioIncapacidadComponent implements OnInit {
     const formData = this.incapacidadForm.getRawValue(); // Obtener todos los valores actuales del formulario
 
     if (this.isIncapacidadSectionActive(formData)) {
+      console.log(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value);
+      const normalizedStartDate = format(new Date(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value), 'dd/MM/yyyy');
+      formData.fecha_inicio_incapacidad = normalizedStartDate;
+
       // Desestructuración del objeto devuelto por validateConditions
-      
+
       const { errors, quienpaga, observaciones } = IncapacidadValidator.validateConditions(formData);
 
       this.validationErrors = errors;
       this.quienpaga = quienpaga;
-      console.log('Quien paga', quienpaga);
-      if (observaciones === "No cumple con el tiempo decreto 780 de 2016") {
+      if (observaciones === "No cumple con el tiempo decreto 780 de 2016" || observaciones === "OK") {
         this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
       }
 

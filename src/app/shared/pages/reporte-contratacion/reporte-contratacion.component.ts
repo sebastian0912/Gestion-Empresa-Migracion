@@ -1307,7 +1307,6 @@ export class ReporteContratacionComponent implements OnInit {
                   .replace(/\s/g, '')     // Elimina espacios
               );
             }
-
             else if (indicesFechas.includes(index)) {
               completeRow[index] = formatDate(this.removeSpecialCharacters(cell.toString()));
             } else {
