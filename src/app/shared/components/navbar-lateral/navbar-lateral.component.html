@@ -101,6 +101,11 @@
       <img src="navbar/contratacion.png" alt="Dashboard" class="icon">
       <li>Contratación</li>
     </div>
+<div class="blockLink" [class.active]="currentRoute === '/crear-documentos-contratacion'" routerLink="/crear-documentos-contratacion"
+  *ngIf="hasPermission('crear-documentos-contratacion')">
+  <img src="navbar/contratacion.png" alt="Dashboard" class="icon">
+  <li>Contratación documetnos</li>
+</div>
 
     <div class="blockLink" [class.active]="currentRoute === '/reporte-contratacion'" routerLink="/reporte-contratacion"
       *ngIf="hasPermission('reporte-contratacion')">

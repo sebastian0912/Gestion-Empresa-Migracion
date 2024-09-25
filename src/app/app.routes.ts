@@ -62,5 +62,6 @@ export const routes: Routes = [
   { path: 'formulario-reporte/:cedula', component: FormularioReporteComponent },
   { path: 'subida-archivos-incapacidades', component: SubidaArchivosIncapacidadesComponent },
   { path: 'archivos-contratacion', component: DocumentosContratacionComponent },
-  { path: 'ver-reporte', component: VerReporteComponent }
+  { path: 'ver-reporte', component: VerReporteComponent },
+  { path: 'crear-documentos-contratacion', component: DocumentosContratacionComponent }
 ];

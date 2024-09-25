@@ -1,41 +1,154 @@
-.ficha-container {
-  margin: 20px auto;
-  font-family: 'Arial', sans-serif;
+.form-group {
+  margin-bottom: 15px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #000;
+label {
+  display: block;
+  margin-bottom: 5px;
 }
 
-.logo img {
-  width: 120px;
-}
 
-.header-info {
-  text-align: center;
-  flex-grow: 1;
-}
-
-.photo img {
-  width: 120px;
-  height: 120px;
-  border: 1px solid #000;
-}
-
-mat-grid-tile {
-  padding: 8px;
-}
-
-mat-form-field {
+.aumentar {
   width: 100%;
+  margin: 10px;
 }
 
-.button-container {
-  text-align: center;
-  margin-top: 20px;
+
+
+
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* Espacio entre los módulos */
+  width: 100%;
+  /* Asegura que el contenedor ocupe todo el ancho disponible */
+}
+
+/* Ajuste de filas dentro de los módulos */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  /* Espacio entre los campos dentro del módulo */
+  width: 100%;
+  /* Asegura que las filas ocupen todo el ancho disponible */
+}
+
+/* Ajuste de los campos de formulario */
+.form-field {
+  flex: 1 1 calc(50% - 20px);
+  /* Campos ocupan 50% del ancho disponible, menos el espacio entre ellos */
+  min-width: 200px;
+  /* Ancho mínimo de los campos */
+  max-width: calc(50% - 20px);
+  /* Máximo ancho del campo, controlando el tamaño dentro del contenedor */
+}
+
+/* Estilo de los módulos (mat-cards) */
+.module-card {
+  padding: 20px;
+  margin-bottom: 20px;
+  /* Espacio entre módulos */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* Sombra para que las tarjetas se destaquen */
+  border-radius: 8px;
+  width: 100%;
+  /* Asegura que el módulo ocupe todo el ancho del contenedor padre */
+}
+
+/* Ajuste del título dentro del mat-card */
+.module-card mat-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Ajuste para los mat-form-fields dentro de los módulos */
+.module-card .form-field mat-form-field {
+  width: 100%;
+  /* Asegura que el campo ocupe todo el ancho disponible dentro del form-field */
+}
+
+.mat-form-field {
+  width: 100%;
+  /* Ancho completo para el campo */
+  margin-bottom: 15px;
+}
+
+.mat-form-field-flex {
+  display: flex;
+  align-items: center;
+  /* Asegura que los elementos dentro estén alineados verticalmente */
+}
+
+.mat-datepicker-toggle {
+  margin-left: 5px;
+  /* Espacio entre el campo de entrada y el icono de calendario */
+  height: 100%;
+}
+
+.mat-input-element {
+  padding-right: 40px;
+  /* Asegura que haya espacio para el icono de calendario */
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #f5f7fa;
+  /* Fondo del campo */
+}
+
+.mat-form-field-appearance-fill .mat-form-field-outline {
+  color: #d1d1d1;
+  /* Color del borde */
+}
+
+.notification-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 60px;
+  /* Tamaño del botón */
+  height: 60px;
+  background-color: #4A90E2;
+  /* Color de fondo del botón */
+  border-radius: 50%;
+  /* Forma circular */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  /* Sombra para darle un efecto flotante */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.notification-button:hover {
+  background-color: #357ABD;
+  /* Cambio de color al pasar el mouse */
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  /* Tamaño ajustado para centrado */
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  /* Sombra para la insignia */
+}
+
+.notification-icon {
+  color: white;
+  /* Color del icono */
+  font-size: 28px;
+  /* Tamaño del icono */
 }

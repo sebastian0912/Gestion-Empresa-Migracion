@@ -10,6 +10,9 @@ declare global {
         on: (channel: string, func: (...args: any[]) => void) => void;
         send: (channel: string, ...args: any[]) => void;
       };
+      fingerprint: {
+        get: () => Promise<{ success: boolean; data?: string; error?: string }>;
+      };
       __dirname: string;
     }
   }

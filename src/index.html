@@ -7,22 +7,24 @@
   <base href="./">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Define una política de seguridad de contenido ampliada -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
-           connect-src 'self' http://10.10.10.60:4545; 
-           script-src 'self' 'unsafe-inline'; 
-           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-           img-src 'self' data:; 
-           font-src 'self' https://fonts.gstatic.com; 
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self';
+           connect-src 'self' http://10.10.10.60:4545;
+           script-src 'self' 'unsafe-inline';
+           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+           img-src 'self' data:;
+           font-src 'self' https://fonts.gstatic.com;
            frame-src 'self' data:;">
 
 
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
 
 <body class="mat-typography">
   <app-root></app-root>
-</body>
 
+
+</body>
 </html>
