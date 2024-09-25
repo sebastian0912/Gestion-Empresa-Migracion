@@ -58,12 +58,12 @@ export class NavbarLateralComponent implements OnInit {
     ],
     COORDINADOR: [
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'reporte-contratacion', 'seguimiento-auditoria', 'ver-reporte'
+      'seguimiento-auditoria',
     ],
     JEFE_DE_AREA: [
       'forma-pago', 'desprendibles-pago',
       'ausentismos', 'seguimiento-auditoria', 'estadisticas-auditoria',
-      'ver-reporte'
+      'ver-reporte', 'reporte-contratacion',
     ],
     ADMIN: [
       'forma-pago', 'desprendibles-pago',
@@ -75,26 +75,35 @@ export class NavbarLateralComponent implements OnInit {
       'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
       'contratacion',
       'archivos-contratacion', 'ver-reporte', 'adres'
-
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos'
     ],
     CAROL: [
-      'forma-pago', 'desprendibles-pago', 'arl', 
-      'ausentismos', 'reporte-contratacion', 'personal-activo', 
+      'forma-pago', 'desprendibles-pago', 'arl',
+      'ausentismos', 'reporte-contratacion', 'personal-activo',
       'reporte-contratacion', 'ver-reporte'
     ],
     INCAPACIDADADMIN: [
-      'forma-pago', 'desprendibles-pago', 'ausentismos', 
-      'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades', 
-      'formulario-incapacicades'
+      'forma-pago', 'desprendibles-pago', 'ausentismos',
+      'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades',
+      'formulario-incapacicades', 'reporte-contratacion', 'ver-reporte'
     ],
     INCAPACIDADSUBIDA: [
-      'formulario-incapacicades', 'forma-pago', 'desprendibles-pago', 
-      'ausentismos',
+      'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
+      'ausentismos'
     ],
-
+    AUX_CONTRATACION: [
+      'reporte-contratacion',
+      'ver-reporte',
+      'forma-pago', 'desprendibles-pago',
+      'ausentismos', 'seguimiento-auditoria'
+    ],
+    reporteIncapacidad: [
+      'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
+      'ausentismos',
+      'ver-reporte', 'reporte-contratacion',
+    ]
   };
 
   empleadosProblemas: any[] = [];
@@ -119,19 +128,41 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-
     const user = await this.getUser();
     if (user) {
+      const auxContratacionEmails = [
+        'contratacionfaca.rtc@gmail.com',
+        'contratacionfaca3.rtc@gmail.com',
+        'contratacionelrosalts@gmail.com',
+        'contratacionfunza.rtc@gmail.com',
+        'contratacionbogota.rtc@gmail.com',
+        'contratacionsuba.ts@gmail.com',
+      ];
+
+      const reporteIncapacidadEmails = [
+        'contratacionmadrid.rtc@gmail.com',
+        'contratacionsoacha@gmail.com',
+        'contratacioncartagenita@gmail.com',
+        'contratacionnorte.ts@gmail.com'
+      ];
+
       if (user.correo_electronico === "tuafiliacion@tsservicios.co") {
         this.currentRole = "CAROL";
+      } else if (reporteIncapacidadEmails.includes(user.correo_electronico.toLowerCase())) {
+        this.currentRole = "reporteIncapacidad";
+      } else if (auxContratacionEmails.includes(user.correo_electronico.toLowerCase())) {
+        this.currentRole = "AUX_CONTRATACION";
       } else {
         this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
       }
+
       if (user.correo_electronico === 'archivotualianza@gmail.com' || user.correo_electronico === 'programador.ts@gmail.com' || user.rol === 'Gerencia') {
         this.angelaVisible = true;
       }
     }
   }
+
+
 
   toggleMenu(): void {
     this.isMenuVisible = !this.isMenuVisible;

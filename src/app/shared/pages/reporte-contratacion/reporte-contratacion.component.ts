@@ -795,7 +795,7 @@ export class ReporteContratacionComponent implements OnInit {
 
       const dataArl = XLSX.utils.sheet_to_json(sheetArl, {
         header: 1,
-        range: 2,
+        range: 1,
         raw: true,
         defval: ''
       });
@@ -809,6 +809,8 @@ export class ReporteContratacionComponent implements OnInit {
         }
         return row;
       });
+
+      console.log('Filas de ARL:', rowsArl);
 
       const headers = [
         "Fecha de firma de contrato",
@@ -1011,19 +1013,19 @@ export class ReporteContratacionComponent implements OnInit {
       const datosMapeados = this.datoscruced.map((cruceRow: any[], index: number) => {
         let cedulaCruce = cruceRow[1];
         const comparativoCruce = cruceRow[8];
-
+      
         cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
-
+      
         const filaArl = rowsArl.find(arlRow => {
           const cedulaArl = (arlRow[3] || '').toString().replace(/\s|\./g, '');
           return cedulaArl === cedulaCruce;
         });
-
+      
         let estadoCedula = 'ALERTA NO ESTA EN ARL';
         let estadoFechas = 'ALERTA NO COINCIDEN';
         let fechaIngresoArl = 'NO DISPONIBLE';
         let fechaIngresoCruce = comparativoCruce || 'NO DISPONIBLE';
-
+      
         if (filaArl) {
           estadoCedula = 'SATISFACTORIO';
           const comparativoArl = filaArl[9];
@@ -1032,14 +1034,19 @@ export class ReporteContratacionComponent implements OnInit {
             const [day, month, year] = normalizedDateStr.split('/').map(Number);
             return new Date(year, month - 1, day);
           };
-
+      
           const fechaArl = formatDate(comparativoArl);
           const fechaCruce = formatDate(comparativoCruce);
-
-          estadoFechas = fechaCruce.getTime() === fechaArl.getTime() ? 'SATISFACTORIO' : 'ALERTA FECHAS NO COINCIDEN';
+      
+          if (fechaCruce.getTime() !== fechaArl.getTime()) {
+            estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
+            console.log(`Fechas no coinciden para la cédula: ${cedulaCruce}`);
+          }
           fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
+        } else {
+          console.log(`Cédula no encontrada en ARL: ${cedulaCruce}`);
         }
-
+      
         const resultado: { [key: string]: any } = {
           "Numero de Cedula": cedulaCruce,
           "Arl": estadoCedula,
@@ -1048,20 +1055,20 @@ export class ReporteContratacionComponent implements OnInit {
           "FECHA INGRESO SUBIDA CONTRATACION": fechaIngresoCruce,
           "Errores": "OK"  // Inicializamos con "OK" por defecto
         };
-
+      
         headers.forEach((header, index) => {
           resultado[header] = cruceRow[index] || 'NO DISPONIBLE';
         });
-        // Buscamos los errores correspondientes a la fila de Excel (index + 1 porque Excel es 1-indexed)
+        
         const registroErrores = this.erroresValidacion.data.find((err: any) => err.registro == (index + 1));
         if (registroErrores && registroErrores.errores.length > 0) {
           confirmarErrores = false;
-          // Si hay errores, reemplazamos "OK" por los errores concatenados
           resultado["Errores"] = registroErrores.errores.join(', ');
         }
-
+      
         return resultado;
       });
+      
 
 
 
