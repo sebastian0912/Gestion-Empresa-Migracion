@@ -1,5 +1,5 @@
 export class IncapacidadValidator {
-  static validateConditions(incapacidad: any): { errors: string[], quienpaga: string, observaciones:string} {
+  static validateConditions(incapacidad: any): { errors: string[], quienpaga: string, observaciones: string } {
     let errors: string[] = [];
     let quienpaga: string = '';
     let observaciones: string = '';
@@ -12,38 +12,39 @@ export class IncapacidadValidator {
     };
 
     // Regla 1: No cumple con el tiempo decreto 780 de 2016
-    console.log(this.hasEnoughDays(incapacidad));
     if (this.hasEnoughDays(incapacidad)) {
 
-      if (this.isAccidentelaboral(incapacidad)){
+      if (this.isAccidentelaboral(incapacidad)) {
         errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
         const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
         quienpaga = this.pagook(incapacidad, mensaje);
         observaciones = "OK";
         prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
-      }else{
+      } else {
 
         const mensaje = "No cumple con el tiempo decreto 780 de 2016.";
         quienpaga = this.pagook(incapacidad, mensaje);
         errors.push("No cumple con el tiempo decreto 780 de 2016.");
         observaciones = "No cumple con el tiempo decreto 780 de 2016";
-        prioridadActual = 'alta'; // Actualizar la prioridad actual a "alta"
+        prioridadActual = 'media'; // Actualizar la prioridad actual a "alta"
       }
-    }if(!this.hasEnoughDays(incapacidad)) {
-      if (this.isAccidentelaboral(incapacidad)){
+    } if (!this.hasEnoughDays(incapacidad)) {
+      if (this.isAccidentelaboral(incapacidad)) {
         errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
         const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
         quienpaga = this.pagook(incapacidad, mensaje);
         observaciones = "OK";
         prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
-      }else{
-      const mensaje = "pagaeps";
-      quienpaga = this.pagook(incapacidad, mensaje);
-      errors.push("Paga eps");
-      observaciones = "OK";
-      prioridadActual = 'alta'; // Actualizar la prioridad actual
+      } else {
+        const mensaje = "pagaeps";
+        quienpaga = this.pagook(incapacidad, mensaje);
+        errors.push("Paga eps");
+        observaciones = "OK";
+        prioridadActual = 'media'; // Actualizar la prioridad actual
+      }
     }
-  }
+
+
 
 
     // Regla 2: Empleador si paga (1 y 2 días iniciales)
@@ -96,7 +97,7 @@ export class IncapacidadValidator {
     // Utilizar las nuevas funciones dentro de la lógica de validación
 
 
-    if (this.faltancosas(incapacidad) && isHigherPriority('media', prioridadActual)) {
+    if (this.faltancosasBool(incapacidad)) {
       errors.push(this.faltancosas(incapacidad));
       quienpaga = this.faltancosas(incapacidad);
       prioridadActual = 'media';
@@ -125,14 +126,14 @@ export class IncapacidadValidator {
   }
 
 
-  private static pagook(incapacidad: any,mensaje:string): string {
+  private static pagook(incapacidad: any, mensaje: string): string {
     if (mensaje === 'El ARL debe hacerse cargo del pago desde el segundo día.') {
       return 'SI PAGA ARL';
     }
     if (mensaje === 'pagaeps') {
       return 'SI PAGA EPS';
     }
-    if (mensaje === 'No cumple con el tiempo decreto 780 de 2016.'){
+    if (mensaje === 'No cumple con el tiempo decreto 780 de 2016.') {
       return 'NO PAGAR';
     }
 
@@ -140,16 +141,31 @@ export class IncapacidadValidator {
   }
 
   private static faltancosas(incapacidad: any): string {
-    if (!incapacidad.observaciones) return ''; // Verificar si observaciones tiene algún valor
+
+    console.log(`Días cotizados: ${incapacidad.observaciones}`);
     const observaciones = [
       'PRESCRITA', 'FALSA', 'SIN EPICRISIS', 'SIN INCAPACIDAD', 'MEDICINA PREPA', 'ILEGIBLE',
-      'INCONSISTENTE-,MAS DE 180 DIAS', 'MAS DE 540 DIAS', 'FECHAS INCONSISTENTES', 'FALTA ORIGINAL',
+      'INCONSISTENTE -, MAS DE 180 DIAS', 'MAS DE 540 DIAS', 'FECHAS INCONSISTENTES', 'FALTA ORIGINAL',
       'FALTA FURAT', 'FALTA SOAT'
     ];
     if (observaciones.includes(incapacidad.observaciones)) {
       return 'NO PAGAR';
     }
     return '';
+  }
+
+  private static faltancosasBool(incapacidad: any): boolean {
+
+    console.log(`Días cotizados: ${incapacidad.observaciones}`);
+    const observaciones = [
+      'PRESCRITA', 'FALSA', 'SIN EPICRISIS', 'SIN INCAPACIDAD', 'MEDICINA PREPA', 'ILEGIBLE',
+      'INCONSISTENTE -, MAS DE 180 DIAS', 'MAS DE 540 DIAS', 'FECHAS INCONSISTENTES', 'FALTA ORIGINAL',
+      'FALTA FURAT', 'FALTA SOAT'
+    ];
+    if (observaciones.includes(incapacidad.observaciones)) {
+      return true;
+    }
+    return false;
   }
 
   private static pagoproporcional(incapacidad: any): string {

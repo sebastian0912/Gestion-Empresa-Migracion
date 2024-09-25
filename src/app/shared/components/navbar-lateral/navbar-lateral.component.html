@@ -149,11 +149,7 @@
       <img src="navbar/buscar.png" alt="Dashboard" class="icon">
       <li>Buscar documentación</li>
     </div>
-    <div class="blockLink" [class.active]="currentRoute === '/archivos-contratacion'"
-      routerLink="/archivos-contratacion" *ngIf="hasPermission('archivos-contratacion')">
-      <img src="navbar/buscar.png" alt="Dashboard" class="icon">
-      <li>Contratacion Archivos</li>
-    </div>
+   
 
     <div class="blockLink" [class.active]="currentRoute === '/auditoria'" routerLink="/auditoria"
       *ngIf="hasPermission('auditoria')">

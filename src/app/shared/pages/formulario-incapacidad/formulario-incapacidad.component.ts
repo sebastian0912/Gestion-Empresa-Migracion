@@ -255,7 +255,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
   private handleServiceError(message: string): void {
     Swal.fire({
-      icon: 'error',
+      icon: 'warning',
       title: 'Error',
       text: message
     });
@@ -375,7 +375,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     ).subscribe(() => {
       this.applyValidation();
       if (this.incapacidadForm.get('estado_incapacidad')?.value === 'Falsa') {
-        this.handleServiceError('No se puede crear una incapacidad falsa');
+        this.handleServiceError('Recuerda que es una incapacidad Falsa, se va a reportar esto al area correspondiente');
       }
     });
 
@@ -419,7 +419,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     console.log('Applying validation');
     const formData = this.incapacidadForm.getRawValue(); // Obtener todos los valores actuales del formulario
-
+    console.log(formData);
     if (this.isIncapacidadSectionActive(formData)) {
       console.log(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value);
       const normalizedStartDate = format(new Date(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value), 'dd/MM/yyyy');
@@ -501,69 +501,45 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
 
   // Método para verificar si los campos relevantes están llenos
-  private areRelevantFieldsFilled(formData: any): boolean {
+  private areRelevantFieldsFilled(formData: any): string | null {
+
+    const fieldsToDisable = [
+      'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
+      'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
+      'fecha_contratacion', 'fondo_de_pension', 'dias_eps', 'dias_incapacidad',
+      'Dias_temporal', 'descripcion_diagnostico', 'dias_de_diferencia'
+    ];
     // Función auxiliar para verificar si un campo está vacío, nulo o indefinido
     const isFieldEmpty = (field: any) => {
       return field === null || field === undefined || field === '';
     };
 
-    // Verifica si los campos principales tienen algún valor
-    if (isFieldEmpty(formData.fecha_inicio_incapacidad)) {
-      return false;
-    }
-    if (isFieldEmpty(formData.Oficina)) {
-      return false;
-    }
-    if (isFieldEmpty(formData.temporal)) {
-      return false;
+    // Función auxiliar para verificar si un campo está deshabilitado
+    const isFieldDisabled = (fieldName: string) => {
+      return fieldsToDisable.includes(fieldName);
+    };
+
+    // Lista de campos que se deben validar
+    const fieldsToValidate = [
+      'Oficina',
+      'temporal_contrato',
+      'codigo_diagnostico',
+      'prorroga',
+      'estado_incapacidad',
+      'Incapacidad_transcrita'
+    ];
+
+    // Recorre los campos y verifica si deben ser validados
+    // Recorre los campos y verifica si están vacíos o deshabilitados
+    for (const field of fieldsToValidate) {
+      // Si el campo no está deshabilitado y está vacío, devolver el nombre del campo
+      if (!isFieldDisabled(field) && isFieldEmpty(formData[field])) {
+        return field;
+      }
     }
 
-    if (isFieldEmpty(formData.fecha_fin_incapacidad)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.codigo_diagnostico)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.fecha_contratacion)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.dias_incapacidad)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.dias_de_diferencia)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.dias_eps)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.prorroga)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.estado_incapacidad)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.Dias_temporal)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.Incapacidad_transcrita)) {
-      return false;
-    }
-
-    if (isFieldEmpty(formData.descripcion_diagnostico)) {
-      return false;
-    }
-
-    // Si todos los campos tienen valores, entonces devolver true
-    return true;
+    // Si todos los campos relevantes tienen valores o están deshabilitados, devolver null
+    return null;
   }
   calcularprorroga() {
     if (this.incapacidadForm.get('prorroga')?.value == 'SI') {
@@ -785,11 +761,12 @@ export class FormularioIncapacidadComponent implements OnInit {
 
   onSubmit(): void {
     // Evitar múltiples envíos
-    if (!this.areRelevantFieldsFilled(this.incapacidadForm.getRawValue())) {
+    let fieldEmpty = this.areRelevantFieldsFilled(this.incapacidadForm.getRawValue());
+    if (fieldEmpty !== null) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Por favor llena los campos obligatorios'
+        text: 'Por favor llena los campos obligatorios, el campo ' + fieldEmpty + ' está vacío'
       });
       return;
     } else {
@@ -1025,7 +1002,7 @@ export class FormularioIncapacidadComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Ha ocurrido un error al buscar la cédula'
+          text: 'La cedula que buscas no se encuentra en la base de datos'
         });
       }
     );
