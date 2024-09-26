@@ -25,6 +25,8 @@ import { AdminService } from '../../services/admin/admin.service';
 export class NavbarSuperiorComponent implements OnInit {
   role: string = '';
   username: string = '';
+  appVersion: string = '';
+
   sede: string = '';
   sedes: any[] = [];
 
@@ -36,13 +38,27 @@ export class NavbarSuperiorComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const user = await this.getUser();
+    this.getAppVersion();
+
     if (user) {
       this.username = `${user.primer_nombre} ${user.primer_apellido}`;
       this.role = user.rol;
       this.sede = user.sucursalde;
     }
   }
-  
+
+  getAppVersion() {
+    // Comprobar si window.electron está disponible
+    if (window.electron) {
+      // Comprobar si window.electron.version.get está disponible
+      if (window.electron.version) {
+        window.electron.version.get().then((response: any) => {
+          this.appVersion = response;
+        });
+      }
+    }
+  }
+
 
   async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
@@ -76,12 +92,12 @@ export class NavbarSuperiorComponent implements OnInit {
           Swal.fire('Editado!', 'La sede ha sido asignada.', 'success')
             .then(() => {
               // que mire donde esta y lo redirija a la pagina donde esta
-              
+
               this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
                 this.router.navigate([this.router.url], { skipLocationChange: true });
               });
-              
-              
+
+
             });
         }
       }

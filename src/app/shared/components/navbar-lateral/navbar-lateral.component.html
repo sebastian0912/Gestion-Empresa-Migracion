@@ -15,6 +15,7 @@
 
     <div class="sidebar-header titulo-header">
       <h3>Gestión Empresa</h3>
+      
     </div>
 
     <div class="sidebar-header servicios-header">
@@ -151,13 +152,13 @@
     </div>
 
     <!--
-      -->
       <div class="blockLink" [class.active]="currentRoute === '/archivos-contratacion'"
       routerLink="/archivos-contratacion" *ngIf="hasPermission('archivos-contratacion')">
       <img src="navbar/buscar.png" alt="Dashboard" class="icon">
       <li>Contratacion Archivos</li>
     </div>
-
+    -->
+    
     <div class="blockLink" [class.active]="currentRoute === '/auditoria'" routerLink="/auditoria"
       *ngIf="hasPermission('auditoria')">
       <img src="navbar/documento.png" alt="Dashboard" class="icon">

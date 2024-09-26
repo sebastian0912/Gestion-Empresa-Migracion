@@ -19,9 +19,9 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      //nodeIntegration: true,
-      nodeIntegration: false,
+      contextIsolation: true,  // Asegúrate de que esté en true para usar contextBridge
+      enableRemoteModule: false,
+      nodeIntegration: false   // Debe estar en false para seguridad
     }
   });
 
@@ -47,7 +47,10 @@ function createWindow() {
 
   autoUpdater.checkForUpdatesAndNotify();
 }
-
+ipcMain.handle('version:get', () => {
+  const packageJson = require(path.resolve(__dirname, 'package.json'));
+  return packageJson.version;
+});
 autoUpdater.on('update-available', () => {
   log.info('Update available.');
   mainWindow.webContents.send('update-available');
