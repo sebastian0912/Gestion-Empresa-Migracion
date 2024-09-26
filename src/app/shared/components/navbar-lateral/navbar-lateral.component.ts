@@ -103,7 +103,9 @@ export class NavbarLateralComponent implements OnInit {
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
       'ausentismos',
       'ver-reporte', 'reporte-contratacion',
-    ]
+    ],
+
+    
   };
 
   empleadosProblemas: any[] = [];
