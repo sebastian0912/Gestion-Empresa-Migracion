@@ -22,10 +22,7 @@
       "dom"
     ]
   },
-  "include": [
-    "src/typings.d.ts", // Asegúrate de incluir esta línea
-    "src/**/*.ts"
-  ],
+
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
