@@ -7,8 +7,8 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.on(channel, (event, ...args) => func(...args));
     },
   },
-  getAppVersion: () => {
-    console.log('getAppVersion invocado'); // Verifica que esta función se está exponiendo correctamente
-    return ipcRenderer.invoke('getAppVersion');
+  version: {
+    get: () => ipcRenderer.invoke('version:get')
   }
+
 });

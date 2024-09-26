@@ -21,7 +21,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: false, // Deshabilita temporalmente para pruebas
       enableRemoteModule: true, // Habilita temporalmente para pruebas
-      nodeIntegration: true 
+      nodeIntegration: true
     }
   });
 
@@ -47,7 +47,7 @@ function createWindow() {
 
   autoUpdater.checkForUpdatesAndNotify();
 }
-ipcMain.handle('getAppVersion', () => {
+ipcMain.handle('version:get', async (event) => {
   const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
   return packageJson.version;
 });

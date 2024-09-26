@@ -49,15 +49,15 @@ export class NavbarSuperiorComponent implements OnInit {
 
   getAppVersion() {
     // Comprobar si window.electron está disponible
-    if ((window as any).electron && (window as any).electron.getAppVersion) {
-      (window as any).electron.getAppVersion()
-        .then((version: string) => {
-          console.log('Versión obtenida:', version);
-          this.appVersion = version;
-        })
-        .catch((err: any) => console.error('Error obteniendo versión:', err));
-    } else {
-      console.error('window.electron o getAppVersion no está disponible');
+    if (window.electron) {
+      // Comprobar si window.electron.version.get está disponible
+      if (window.electron.version.get) {
+        window.electron.version.get().then((response: any) => {
+          if (response.success) {
+            this.appVersion = response.data;
+          }
+        });
+      }
     }
   }
 
