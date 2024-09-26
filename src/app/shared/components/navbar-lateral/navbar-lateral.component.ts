@@ -42,6 +42,7 @@ export class NavbarLateralComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
+  
   angelaVisible = false;
   currentRole: string = '';
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',

@@ -19,9 +19,9 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      //nodeIntegration: true,
-      nodeIntegration: false,
+      contextIsolation: false, // Deshabilita temporalmente para pruebas
+      enableRemoteModule: true, // Habilita temporalmente para pruebas
+      nodeIntegration: true 
     }
   });
 
@@ -47,7 +47,10 @@ function createWindow() {
 
   autoUpdater.checkForUpdatesAndNotify();
 }
-
+ipcMain.handle('getAppVersion', () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+  return packageJson.version;
+});
 autoUpdater.on('update-available', () => {
   log.info('Update available.');
   mainWindow.webContents.send('update-available');

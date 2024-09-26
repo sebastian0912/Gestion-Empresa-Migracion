@@ -15,6 +15,7 @@
 
     <div class="sidebar-header titulo-header">
       <h3>Gestión Empresa</h3>
+      
     </div>
 
     <div class="sidebar-header servicios-header">
@@ -149,7 +150,7 @@
       <img src="navbar/buscar.png" alt="Dashboard" class="icon">
       <li>Buscar documentación</li>
     </div>
-   
+
 
     <div class="blockLink" [class.active]="currentRoute === '/auditoria'" routerLink="/auditoria"
       *ngIf="hasPermission('auditoria')">

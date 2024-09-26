@@ -25,6 +25,8 @@ import { AdminService } from '../../services/admin/admin.service';
 export class NavbarSuperiorComponent implements OnInit {
   role: string = '';
   username: string = '';
+  appVersion: string = '';
+
   sede: string = '';
   sedes: any[] = [];
 
@@ -36,13 +38,29 @@ export class NavbarSuperiorComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const user = await this.getUser();
+    this.getAppVersion();
+
     if (user) {
       this.username = `${user.primer_nombre} ${user.primer_apellido}`;
       this.role = user.rol;
       this.sede = user.sucursalde;
     }
   }
-  
+
+  getAppVersion() {
+    // Comprobar si window.electron está disponible
+    if ((window as any).electron && (window as any).electron.getAppVersion) {
+      (window as any).electron.getAppVersion()
+        .then((version: string) => {
+          console.log('Versión obtenida:', version);
+          this.appVersion = version;
+        })
+        .catch((err: any) => console.error('Error obteniendo versión:', err));
+    } else {
+      console.error('window.electron o getAppVersion no está disponible');
+    }
+  }
+
 
   async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {
@@ -76,12 +94,12 @@ export class NavbarSuperiorComponent implements OnInit {
           Swal.fire('Editado!', 'La sede ha sido asignada.', 'success')
             .then(() => {
               // que mire donde esta y lo redirija a la pagina donde esta
-              
+
               this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
                 this.router.navigate([this.router.url], { skipLocationChange: true });
               });
-              
-              
+
+
             });
         }
       }
