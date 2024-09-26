@@ -53,9 +53,7 @@ export class NavbarSuperiorComponent implements OnInit {
       // Comprobar si window.electron.version.get está disponible
       if (window.electron.version) {
         window.electron.version.get().then((response: any) => {
-          if (response.success) {
-            this.appVersion = response.data;
-          }
+          this.appVersion = response;
         });
       }
     }
