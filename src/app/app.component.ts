@@ -9,9 +9,13 @@ declare global {
       ipcRenderer: {
         on: (channel: string, func: (...args: any[]) => void) => void;
         send: (channel: string, ...args: any[]) => void;
+        invoke: (channel: string, ...args: any[]) => Promise<any>;
       };
       version: {
         get: () => Promise<{ success: boolean; data?: string; error?: string }>;
+      };
+      env: {
+        get: () => Promise<string>;
       };
       __dirname: string;
     }
@@ -28,13 +32,13 @@ declare global {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent implements OnInit {
   title = 'Tesoreria-Angular-Electron-Actualizacion';
   updateAvailable: boolean = false;
   updateDownloaded: boolean = false;
+  downloadProgress: number = 0;
 
-  ngOnInit() {
+  async ngOnInit() {
     if (typeof window !== 'undefined' && window.electron) {
       window.electron.ipcRenderer.on('update-available', () => {
         this.updateAvailable = true;
@@ -46,8 +50,24 @@ export class AppComponent implements OnInit {
         });
       });
 
+      // Mostrar el progreso de la descarga
+      window.electron.ipcRenderer.on('download-progress', (progressObj: any) => {
+        this.downloadProgress = progressObj.percent;
+        Swal.fire({
+          title: 'Descargando actualización...',
+          html: `Progreso: ${this.downloadProgress.toFixed(2)}%`,
+          icon: 'info',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+      });
+
       window.electron.ipcRenderer.on('update-downloaded', () => {
         this.updateDownloaded = true;
+        Swal.close();
         Swal.fire({
           title: 'Actualización descargada',
           text: '¿Quieres reiniciar la aplicación para aplicar la actualización ahora?',
@@ -63,6 +83,7 @@ export class AppComponent implements OnInit {
       });
 
       window.electron.ipcRenderer.on('update-not-available', () => {
+        Swal.close();  // Cierra cualquier Swal abierto en caso de que no haya actualizaciones
         Swal.fire({
           title: 'No hay nuevas actualizaciones',
           text: 'Estás utilizando la última versión.',
@@ -72,6 +93,7 @@ export class AppComponent implements OnInit {
       });
 
       window.electron.ipcRenderer.on('update-error', (error) => {
+        Swal.close();  // Cierra cualquier Swal de progreso si ocurre un error
         Swal.fire({
           title: 'Error en la actualización',
           text: `Error: ${error}`,

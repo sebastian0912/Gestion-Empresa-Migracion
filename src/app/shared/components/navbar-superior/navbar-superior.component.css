@@ -71,6 +71,13 @@ span {
     margin-top: -5px; /* Ajuste para pegar los textos */
 }
 
+.perfil .titulo:nth-of-type(3) {
+    font-size: 11pt;
+    font-weight: 500;
+    font-style: italic;
+    margin-top: -2px; /* Ajuste para pegar los textos */
+}
+
 .opciones{
     display: flex;
     justify-content: space-between;

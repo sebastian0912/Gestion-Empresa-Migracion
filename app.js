@@ -3,15 +3,11 @@ const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
-
 let mainWindow;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
-autoUpdater.autoDownload = false;
-
-
-
+autoUpdater.autoDownload = false; // La descarga manual se gestionará después de la notificación
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -19,9 +15,9 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,  // Asegúrate de que esté en true para usar contextBridge
+      contextIsolation: true,
       enableRemoteModule: false,
-      nodeIntegration: false   // Debe estar en false para seguridad
+      nodeIntegration: false
     }
   });
 
@@ -39,38 +35,53 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // Evento para manejar recargas de página
-  mainWindow.webContents.on('will-navigate', (event, url) => {
-    event.preventDefault();
-    mainWindow.loadURL(url);
-  });
-
+  // Verificar actualizaciones
   autoUpdater.checkForUpdatesAndNotify();
 }
+
+// Obtener la versión de la aplicación
 ipcMain.handle('version:get', () => {
   const packageJson = require(path.resolve(__dirname, 'package.json'));
   return packageJson.version;
 });
+
+// Obtener el entorno actual
+ipcMain.handle('env:get', () => {
+  return process.env.NODE_ENV || 'production';
+});
+
+// Evento para cuando haya una actualización disponible
 autoUpdater.on('update-available', () => {
   log.info('Update available.');
   mainWindow.webContents.send('update-available');
-  autoUpdater.downloadUpdate();
+  autoUpdater.downloadUpdate(); // Iniciar la descarga de la actualización
 });
 
+// Evento para el progreso de la descarga
+autoUpdater.on('download-progress', (progressObj) => {
+  log.info(`Download progress: ${progressObj.percent}%`);
+  mainWindow.webContents.send('download-progress', progressObj);
+});
+
+// Evento cuando la actualización haya sido descargada
 autoUpdater.on('update-downloaded', (info) => {
   log.info('Update downloaded.');
   mainWindow.webContents.send('update-downloaded');
 });
 
+// Evento cuando no haya actualizaciones disponibles
 autoUpdater.on('update-not-available', () => {
   log.info('Update not available.');
+  mainWindow.webContents.send('update-not-available');
 });
 
+// Evento cuando ocurra un error en el proceso de actualización
 autoUpdater.on('error', (error) => {
   log.error('Error in auto-updater:', error);
   mainWindow.webContents.send('update-error', error);
 });
 
+// Reiniciar la aplicación después de la descarga de la actualización
 ipcMain.on('restart-app', () => {
   autoUpdater.quitAndInstall();
 });

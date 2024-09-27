@@ -23,9 +23,9 @@
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   position: absolute;
   overflow: hidden;
-  width: 828px;
+  width: 60vw;
   max-width: 100%;
-  min-height: 580px;
+  min-height: 80vh;
 }
 
 h1 {
@@ -71,6 +71,7 @@ button {
   transition: transform 80ms ease-in;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
   margin-top: 15px;
+  width: 100%;
 }
 
 button:active {
@@ -95,33 +96,35 @@ form {
   padding: 0 50px;
   height: 100%;
   text-align: center;
+  width: 100%; /* Ensure the form takes up the full width */
+}
+
+.input-container {
+  width: 100%; /* Ensures all inputs have the same width */
+  margin-bottom: 10px; /* Adds space between inputs */
 }
 
 input {
   background-color: #ffffff;
   border: none;
   padding: 12px 15px;
-  margin: 0 0 8px 0;
-  width: 100%;
-  /* box shadow para input */
+  width: 100%; 
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
 }
 
-/*Al dar click en el input bordes de color verde*/
 input:focus {
   outline: none;
   border-radius: 5px;
   border: 2px solid #1157fb;
 }
 
-
-
-
 .form-container {
   position: absolute;
   top: 0;
   height: 100%;
   transition: all 0.6s ease-in-out;
+  width: 100%; /* Ensure the form container takes up full width */
 }
 
 .sign-in-container {
@@ -149,15 +152,11 @@ input:focus {
 }
 
 @keyframes show {
-
-  0%,
-  49.99% {
+  0%, 49.99% {
     opacity: 0;
     z-index: 1;
   }
-
-  50%,
-  100% {
+  50%, 100% {
     opacity: 1;
     z-index: 5;
   }

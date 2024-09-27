@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgClass, NgIf } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import Swal from 'sweetalert2';
 import { AuthService } from '../../service/auth/auth.service';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { MatIconModule } from '@angular/material/icon';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -16,34 +16,30 @@ import { AuthService } from '../../service/auth/auth.service';
     MatIconModule
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   rightPanelActive: boolean = false;
   loginForm: FormGroup;
   registerForm: FormGroup;
   showPassword: boolean = false;
-  showConfirmPassword: boolean = false;
   showLoginPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
-
     this.registerForm = this.fb.group({
-      firstName: ['', Validators.required],
-      secondName: [''],
-      firstLastName: ['', Validators.required],
-      secondLastName: [''],
-      documentNumber: ['', Validators.required],
-      email: ['', [Validators.required]],
+      numero_de_documento: ['', Validators.required],
+      primer_nombre: ['', Validators.required],
+      segundo_nombre: [''],
+      primer_apellido: ['', Validators.required],
+      segundo_apellido: [''],
+      correo_electronico: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
-    }, { validators: this.passwordMatchValidator });
-
+    });
   }
 
   togglePanel(isSignUp: boolean): void {
@@ -54,40 +50,75 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-  }
-
   toggleLoginPasswordVisibility(): void {
     this.showLoginPassword = !this.showLoginPassword;
   }
 
-  register(): void {
+  async register(): Promise<void> {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
-
-    const newUser = {
-      firstName: this.registerForm.value.firstName,
-      secondName: this.registerForm.value.secondName,
-      firstLastName: this.registerForm.value.firstLastName,
-      secondLastName: this.registerForm.value.secondLastName,
-      documentNumber: this.registerForm.value.documentNumber,
-      email: this.registerForm.value.email,
-      password: this.registerForm.value.password,
-    };
-
-    this.authService.register(newUser).then(response => {
-      if (response && response.success) {
-        // Navigate to home or show success message
+  
+    const newUser = this.registerForm.value;
+    // Crear campo username y colocarle el valor de correo_electronico
+    newUser.username = newUser.correo_electronico;
+  
+    try {
+      const response = await this.authService.register(newUser);
+      console.log(response);
+      if (response && response) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro Exitoso',
+          text: 'Tu cuenta ha sido creada correctamente'
+        });
+        this.router.navigate(['/home']);
       } else {
-        // Show error message
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en el Registro',
+          text: response.message || 'No se pudo crear la cuenta, por favor intente de nuevo'
+        });
       }
-    });
+    } catch (error: any) {
+      console.error(error.error);
+  
+      // Procesar los errores recibidos del servidor
+      const processedErrors = this.processErrors(error.error);
+  
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en el Registro',
+        text: processedErrors || 'Hubo un problema al intentar crear la cuenta.'
+      });
+    }
   }
+  
+  /**
+   * Función para procesar los errores y excluir el del username.
+   * También traduce los mensajes de error al español.
+   */
+  processErrors(errors: any): string {
+    const errorMessages = [];
+  
+    if (errors.correo_electronico) {
+      errorMessages.push('Ya existe un usuario con este correo electrónico.');
+    }
+    
+    if (errors.numero_de_documento) {
+      errorMessages.push('Ya existe un usuario con este número de documento.');
+    }
+  
+    // Ignorar el error del username
+    // Puedes agregar más campos según tus necesidades
+  
+    // Unir todos los mensajes de error en una sola cadena
+    return errorMessages.join('\n');
+  }
+  
 
-  async login(): Promise<void> {
+  login(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -101,7 +132,6 @@ export class LoginComponent {
     try {
       this.authService.login(loginData.email, loginData.password).then(response => {
         if (response) {
-          console.log(response);
           if (response.jwt === "Contraseña incorrecta") {
             Swal.fire({
               icon: 'error',
@@ -118,9 +148,15 @@ export class LoginComponent {
             return;
           } else {
             localStorage.setItem('token', response.jwt);
-            this.authService.getUser().then(user => {
+             this.authService.getUser().then(user => {
               localStorage.setItem('user', JSON.stringify(user));
               this.router.navigate(['/home']);
+            }).catch(error => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo establecer conexión con el servidor, por favor verifique su conexión a internet e intente de nuevo'
+              });
             });
           }
         } else {
@@ -144,13 +180,5 @@ export class LoginComponent {
         text: 'Ocurrió un error inesperado, por favor intente de nuevo más tarde'
       });
     }
-
-  }
-
-
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { mismatch: true };
   }
 }
