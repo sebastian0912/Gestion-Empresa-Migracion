@@ -30,17 +30,6 @@ interface ColumnTitle {
 }
 
 
-interface FilterCriteria {
-  tipodeincapacidad: string;
-  centrodecosto: string;
-  empresa: string;
-  estadorobot: string;
-  temporal: string;
-}
-
-interface FileData {
-  [key: string]: any[];
-}
 @Component({
   selector: 'app-vista-total-incapacidades',
   standalone: true,
@@ -325,17 +314,47 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
       confirmacion_fecha_de_radicacion_fin: ['', Validators.required]
     });
 
-    this.initializeLoader();
+
   }
 
   ngOnInit(): void {
     this.setupFormListeners();
     this.loadData();
+
+  }
+  mostrarCargando(estado: boolean) {
+    if (estado) {
+      // Mostrar la alerta de carga con spinner
+      Swal.fire({
+        title: 'Cargando...',
+        html: 'Por favor espera mientras se carga la información',
+        allowOutsideClick: false, // Evitar que se cierre al hacer click fuera
+        didOpen: () => {
+          Swal.showLoading(); // Mostrar el spinner
+        }
+      });
+    } else {
+      // Cerrar la alerta de carga
+      Swal.close();
+    }
+  }
+
+  // Método que se llama con el estado
+  cargarInformacion(estado: boolean) {
+    this.mostrarCargando(estado); // Mostrar o cerrar la alerta dependiendo del estado
+
+    if (estado) {
+      // Simulación de una operación de carga (reemplazar con lógica real)
+      setTimeout(() => {
+        // Aquí se cierra el Swal después de la simulación (simulación de 5 segundos)
+        this.mostrarCargando(false);
+      }, 5000);
+    }
   }
 
   private initializeLoader(): void {
     const isLoading = !this.isloadeddata;
-    this.toggleLoader(isLoading, isLoading);
+    this.toggleLoader(isLoading);
     this.toggleOverlay(isLoading);
   }
 
@@ -367,7 +386,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   private loadData(): void {
-
+    this.cargarInformacion(true);
     // Utiliza mergeMap para manejar las solicitudes de manera más eficiente
     this.incapacidadService.traerTodosDatosIncapacidad().pipe(
       mergeMap(incapacidadesResponse =>
@@ -375,6 +394,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
           mergeMap(reporteResponse => {
             // Procesa ambos conjuntos de datos aquí
             this.handleDataSuccess(incapacidadesResponse || [], reporteResponse.data || []);
+            this.cargarInformacion(false);
             return []; // Retorna vacío o un Observable según sea necesario
           })
         )
@@ -382,8 +402,8 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     ).subscribe({
       next: () => {
         // Se completó la carga de datos
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+
+
       },
       error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
     });

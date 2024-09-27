@@ -1,6 +1,10 @@
 <audio id="successSound" src="Sounds/positivo.mp3"></audio>
 <audio id="errorSound" src="Sounds/negativo.mp3"></audio>
 
+<div id="loader" class="cajaloader" [style.display]="loaderVisible ? 'block' : 'none'">
+  <h1 id="cont" class="contador" [style.display]="counterVisible ? 'block' : 'none'"></h1>
+  <div class="custom-loader"></div>
+</div>
 
 
 
