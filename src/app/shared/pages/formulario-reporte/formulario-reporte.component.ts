@@ -226,12 +226,10 @@ export class FormularioReporteComponent implements OnInit {
 
     this.query = this.route.snapshot.paramMap.get('cedula') || '';
     if (this.query) {
-      this.toggleLoader(true, true);
-      this.toggleOverlay(true);
+      this.cargarInformacion(true);
       this.loadData();
     } else {
-      this.toggleLoader(true, true);
-      this.toggleOverlay(true);
+      this.cargarInformacion(true);
       this.loadFromSessionStorage();
     }
 
@@ -239,10 +237,9 @@ export class FormularioReporteComponent implements OnInit {
   }
 
   generateFormGroupConfig(): { [key: string]: any } {
-    
+
     const formGroupConfig: { [key: string]: any } = {};
-    this.toggleLoader(true, true);
-    this.toggleOverlay(true);
+    this.cargarInformacion(true);
     // Itera sobre las claves de fieldMap para configurar cada control de formulario
     Object.keys(this.fieldMap).forEach(label => {
       const formControlName = this.fieldMap[label];
@@ -251,23 +248,47 @@ export class FormularioReporteComponent implements OnInit {
 
     return formGroupConfig;
   }
-  toggleOverlay(visible: boolean): void {
-    this.overlayVisible = visible;
+  mostrarCargando(estado: boolean) {
+    if (estado) {
+      // Mostrar la alerta de carga con spinner
+      Swal.fire({
+        title: 'Cargando...',
+        html: 'Por favor espera mientras se carga la información',
+        allowOutsideClick: false, // Evitar que se cierre al hacer click fuera
+        didOpen: () => {
+          Swal.showLoading(); // Mostrar el spinner
+        }
+      });
+    } else {
+      // Cerrar la alerta de carga
+      Swal.close();
+    }
   }
 
- 
+  // Método que se llama con el estado
+  cargarInformacion(estado: boolean) {
+    this.mostrarCargando(estado); // Mostrar o cerrar la alerta dependiendo del estado
+
+    if (estado) {
+      // Simulación de una operación de carga (reemplazar con lógica real)
+      setTimeout(() => {
+        // Aquí se cierra el Swal después de la simulación (simulación de 5 segundos)
+        this.mostrarCargando(false);
+      }, 5000);
+    }
+  }
+
   loadData(): void {
     this.incapacidadService.traerDatosReporte(this.query).subscribe(
       response => {
 
         this.patchForm(response.data?.[0] || {});
         this.saveToSessionStorage();
-        
+
       },
       error => {
         this.handleError(error);
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+        this.cargarInformacion(false);
       }
     );
 
@@ -277,22 +298,19 @@ export class FormularioReporteComponent implements OnInit {
         this.saveToSessionStorage();
       },
       error => {
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+        this.cargarInformacion(false);
         this.handleError(error);
       }
     );
 
     this.incapacidadService.traerDatosLogs(this.query).subscribe(
       response => {
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+        this.cargarInformacion(false);
         this.dataSourcetable2.data = response.data || [];
         this.saveToSessionStorage();
       },
       error => {
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+        this.cargarInformacion(false);
         this.handleError(error);
       }
     );
@@ -376,8 +394,7 @@ export class FormularioReporteComponent implements OnInit {
       this.dataSourcetable1.data = parsedData.dataTable1;
       this.dataSourcetable2.data = parsedData.dataTable2;
     }
-    this.toggleLoader(false, false);
-    this.toggleOverlay(false);
+    this.cargarInformacion(false);
   }
 
   handleError(error: any): void {

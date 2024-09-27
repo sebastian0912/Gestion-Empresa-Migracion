@@ -227,8 +227,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.enable());
   }
   private loadDataForForm(): void {
-    this.toggleLoader(true, true);
-    this.toggleOverlay(true);
+    this.cargarInformacion(true);
     this.incapacidadService.traerDatosListas().subscribe(
       response => {
         console.log(response.codigos);
@@ -246,8 +245,7 @@ export class FormularioIncapacidadComponent implements OnInit {
         }));
         this.setupIPSFilters();
         this.setupCodigoFilters();
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+        this.cargarInformacion(false);
       },
       error => this.handleServiceError('No se pudo cargar la información necesaria para el formulario')
     );
@@ -417,11 +415,8 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
   applyValidation() {
 
-    console.log('Applying validation');
     const formData = this.incapacidadForm.getRawValue(); // Obtener todos los valores actuales del formulario
-    console.log(formData);
     if (this.isIncapacidadSectionActive(formData)) {
-      console.log(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value);
       const normalizedStartDate = format(new Date(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value), 'dd/MM/yyyy');
       formData.fecha_inicio_incapacidad = normalizedStartDate;
 
@@ -438,7 +433,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       // Actualizar el campo de "observaciones" en el formulario
       this.incapacidadForm.get('correspondeelpago')?.setValue(quienpaga, { emitEvent: false });
 
-      // Deshabilitar el botón de envío si hay errores de validación
+      // Deshabilitar el botón de envío si hay errores de validaciónf
       this.isSubmitButtonDisabled = this.validationErrors.length > 0;
 
 
@@ -749,14 +744,34 @@ export class FormularioIncapacidadComponent implements OnInit {
     return fieldsToCheck.some(field => formData[field] !== null && formData[field] !== '');
   }
 
-
-  toggleOverlay(visible: boolean): void {
-    this.overlayVisible = visible;
+  mostrarCargando(estado: boolean) {
+    if (estado) {
+      // Mostrar la alerta de carga con spinner
+      Swal.fire({
+        title: 'Cargando...',
+        html: 'Por favor espera mientras se carga la información',
+        allowOutsideClick: false, // Evitar que se cierre al hacer click fuera
+        didOpen: () => {
+          Swal.showLoading(); // Mostrar el spinner
+        }
+      });
+    } else {
+      // Cerrar la alerta de carga
+      Swal.close();
+    }
   }
 
-  toggleLoader(visible: boolean, showCounter: boolean = false): void {
-    this.loaderVisible = visible;
-    this.counterVisible = showCounter;
+  // Método que se llama con el estado
+  cargarInformacion(estado: boolean) {
+    this.mostrarCargando(estado); // Mostrar o cerrar la alerta dependiendo del estado
+
+    if (estado) {
+      // Simulación de una operación de carga (reemplazar con lógica real)
+      setTimeout(() => {
+        // Aquí se cierra el Swal después de la simulación (simulación de 5 segundos)
+        this.mostrarCargando(false);
+      }, 5000);
+    }
   }
 
   onSubmit(): void {
@@ -771,8 +786,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       return;
     } else {
       this.unsubscribe$.next();
-      this.toggleLoader(true, true);
-      this.toggleOverlay(true);
+      this.cargarInformacion(true);
 
 
       // Asegúrate de habilitar todos los controles antes de enviar
@@ -833,8 +847,7 @@ export class FormularioIncapacidadComponent implements OnInit {
               title: 'Error',
               text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
             });
-            this.toggleLoader(false, false);
-            this.toggleOverlay(false);
+            this.cargarInformacion(false);
             return;
           }
         }
@@ -843,12 +856,11 @@ export class FormularioIncapacidadComponent implements OnInit {
         // Envía la incapacidad al servicio
         this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
           response => {
-            this.toggleLoader(false, false);
-            this.toggleOverlay(false);
+            this.cargarInformacion(false);
             Swal.fire({
               icon: 'success',
               title: 'Incapacidad creada',
-              text: 'La incapacidad ha sido creada exitosamente'
+              text: 'La incapacidad ha sido creada exitosamente, puedes verla en la lista de incapacidades'
 
             }).then(() => {
 
@@ -874,8 +886,7 @@ export class FormularioIncapacidadComponent implements OnInit {
             });
             this.loaderVisible = false;
             this.disableCertainFields();
-            this.toggleLoader(false, false);
-            this.toggleOverlay(false);
+            this.cargarInformacion(false);
           }
         );
 
@@ -887,12 +898,33 @@ export class FormularioIncapacidadComponent implements OnInit {
         });
         this.loaderVisible = false;
         this.disableCertainFields();
-        this.toggleLoader(false, false);
-        this.toggleOverlay(false);
+        this.cargarInformacion(false);
       }
     }
   }
   resetPage(): void {
+    this.incapacidadForm.reset();
+    this.incapacidadForm.get('nombre_eps')?.setValue('');
+    this.incapacidadForm.get('Oficina')?.setValue('');
+    this.incapacidadForm.get('nombre_de_quien_recibio')?.setValue('');
+    this.incapacidadForm.get('empresa')?.setValue('');
+    this.incapacidadForm.get('nit_de_la_IPS')?.setValue('');
+    this.incapacidadForm.get('ips_punto_de_atencion')?.setValue('');
+    this.incapacidadForm.get('codigo_diagnostico')?.setValue('');
+    this.incapacidadForm.get('descripcion_diagnostico')?.setValue('');
+    this.incapacidadForm.get('dias_incapacidad')?.setValue('');
+    this.incapacidadForm.get('dias_eps')?.setValue('');
+    this.incapacidadForm.get('Dias_temporal')?.setValue('');
+    this.incapacidadForm.get('estado_incapacidad')?.setValue('');
+    this.incapacidadForm.get('Incapacidad_transcrita')?.setValue('');
+    this.incapacidadForm.get('dias_de_diferencia')?.setValue('');
+    this.incapacidadForm.get('fecha_inicio_incapacidad')?.setValue('');
+    this.incapacidadForm.get('fecha_fin_incapacidad')?.setValue('');
+    this.incapacidadForm.get('prorroga')?.setValue('');
+    this.incapacidadForm.get('observaciones')?.setValue('');
+    this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.setValue('');
+    this.incapacidadForm.get('tipo_incapacidad')?.setValue('');
+    this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('');
     this.router.navigate(['/formulario-incapacicades']);
   }
   // Método auxiliar para deshabilitar campos específicos
@@ -918,7 +950,7 @@ export class FormularioIncapacidadComponent implements OnInit {
   buscarCedula(cedula: string): void {
 
     this.cedula = cedula;
-    this.toggleLoader(true);
+    this.cargarInformacion(true);
 
     const storedData = localStorage.getItem('user');
 
@@ -939,8 +971,8 @@ export class FormularioIncapacidadComponent implements OnInit {
     }
     this.contratacionService.traerDatosEncontratacion(cedula).subscribe(
       response => {
-        this.toggleLoader(false);
 
+        this.cargarInformacion(false);
         // Acceder a los sub-objetos dentro de la respuesta
         const contratacion = response.contratacion || {};
         const datosBasicos = response.datos_basicos || {};
@@ -998,11 +1030,11 @@ export class FormularioIncapacidadComponent implements OnInit {
         }
       },
       error => {
-        this.toggleLoader(false);
+        this.cargarInformacion(false);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'La cedula que buscas no se encuentra en la base de datos'
+          text: 'La cedula que buscas no se encuentra en la base de datos, por favor verifica que sea correcta, si el problema persiste reportalo a contratacion'
         });
       }
     );

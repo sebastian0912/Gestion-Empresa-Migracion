@@ -725,9 +725,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     audio.play();
   }
 
-  toggleOverlay(visible: boolean): void {
-    this.overlayVisible = visible;
-  }
+
 
   toggleLoader(visible: boolean, showCounter: boolean = false): void {
     this.loaderVisible = visible;
@@ -738,8 +736,7 @@ export class BuscarIncapacidadComponent implements OnInit {
     return column === 'historial_clinico' || column === 'link_incapacidad';
   }
   onSearch(): void {
-    this.toggleLoader(true, true);
-    this.toggleOverlay(true);
+    this.cargarInformacion(true);
     if (this.query.trim()) { // Verifica que el input no esté vacío
       this.incapacidadService.buscar(this.query).subscribe(
         response => {
@@ -772,16 +769,14 @@ export class BuscarIncapacidadComponent implements OnInit {
             return result;
           });
           // Asignar los datos al DataSource
-          this.toggleLoader(false, false);
-          this.toggleOverlay(false);
+          this.cargarInformacion(false);
           this.dataSourcetable1.data = combinedData;
           this.copiadataSourcetable1.data = combinedData;
           this.isSearchded = true;
 
         },
         error => {
-          this.toggleLoader(false, false);
-          this.toggleOverlay(false);
+          this.cargarInformacion(false);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -918,7 +913,35 @@ export class BuscarIncapacidadComponent implements OnInit {
   resetFileInput(event: any): void {
     event.target.value = '';
   }
+  mostrarCargando(estado: boolean) {
+    if (estado) {
+      // Mostrar la alerta de carga con spinner
+      Swal.fire({
+        title: 'Cargando...',
+        html: 'Por favor espera mientras se carga la información',
+        allowOutsideClick: false, // Evitar que se cierre al hacer click fuera
+        didOpen: () => {
+          Swal.showLoading(); // Mostrar el spinner
+        }
+      });
+    } else {
+      // Cerrar la alerta de carga
+      Swal.close();
+    }
+  }
 
+  // Método que se llama con el estado
+  cargarInformacion(estado: boolean) {
+    this.mostrarCargando(estado); // Mostrar o cerrar la alerta dependiendo del estado
+
+    if (estado) {
+      // Simulación de una operación de carga (reemplazar con lógica real)
+      setTimeout(() => {
+        // Aquí se cierra el Swal después de la simulación (simulación de 5 segundos)
+        this.mostrarCargando(false);
+      }, 5000);
+    }
+  }
   openReportDialog(): void {
     Swal.fire({
       title: 'Crear/Editar Reporte',
