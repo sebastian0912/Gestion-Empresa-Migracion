@@ -344,6 +344,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     ).subscribe(() => {
       this.calcularDiasIncapacidad();
       this.calcularprorroga();
+      this.applyValidation();
     });
 
     this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.valueChanges.pipe(

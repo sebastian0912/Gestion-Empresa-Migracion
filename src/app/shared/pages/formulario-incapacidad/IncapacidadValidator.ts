@@ -15,11 +15,19 @@ export class IncapacidadValidator {
     if (this.hasEnoughDays(incapacidad)) {
 
       if (this.isAccidentelaboral(incapacidad)) {
-        errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
-        const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
-        quienpaga = this.pagook(incapacidad, mensaje);
-        observaciones = "OK";
-        prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+        if (this.arlShouldntPay(incapacidad)){
+          errors.push("El empleador debe hacerse cargo del pago de la incapacidad.");
+          quienpaga = "PAGA EMPLEADOR";
+          observaciones = "El empleador debe hacerse cargo del pago";
+          prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+        }else{
+          errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
+          const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
+          quienpaga = this.pagook(incapacidad, mensaje);
+          observaciones = "OK";
+          prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+        }
+
       } else {
 
         const mensaje = "No cumple con el tiempo decreto 780 de 2016.";
@@ -30,11 +38,18 @@ export class IncapacidadValidator {
       }
     } if (!this.hasEnoughDays(incapacidad)) {
       if (this.isAccidentelaboral(incapacidad)) {
-        errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
-        const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
-        quienpaga = this.pagook(incapacidad, mensaje);
-        observaciones = "OK";
-        prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+        if (this.arlShouldntPay(incapacidad)) {
+          errors.push("El empleador debe hacerse cargo del pago de la incapacidad.");
+          quienpaga = "PAGA EMPLEADOR";
+          observaciones = "El empleador debe hacerse cargo del pago";
+          prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+        } else {
+          errors.push("El ARL debe hacerse cargo del pago desde el segundo día.");
+          const mensaje = "El ARL debe hacerse cargo del pago desde el segundo día.";
+          quienpaga = this.pagook(incapacidad, mensaje);
+          observaciones = "OK";
+          prioridadActual = 'media'; // Actualizar la prioridad actual a "media"
+        }
       } else {
         const mensaje = "pagaeps";
         quienpaga = this.pagook(incapacidad, mensaje);
@@ -248,15 +263,24 @@ export class IncapacidadValidator {
     }
   }
 
+
   private static arlShouldPay(incapacidad: any): boolean {
+    // Verificar que los campos no estén vacíos
+
+
+    const tipoIncapacidad = incapacidad.nombre_eps || '';
+    const diasIncapacidad = incapacidad.Dias_temporal || 0;
+    return tipoIncapacidad === 'ARL SURA';
+  }
+
+  private static arlShouldntPay(incapacidad: any): boolean {
     // Verificar que los campos no estén vacíos
     if (!incapacidad.tipo_incapacidad || !incapacidad.dias_incapacidad) {
       return false;
     }
-
     const tipoIncapacidad = incapacidad.nombre_eps || '';
-    const diasIncapacidad = incapacidad.dias_incapacidad || 0;
-    return tipoIncapacidad === 'ARL SURA';
+    const diasIncapacidad = incapacidad.Dias_temporal || 0;
+    return diasIncapacidad <= 2 && incapacidad.dias_incapacidad <= 2 ;
   }
 
   private static shouldNotPay(incapacidad: any): boolean {
@@ -298,11 +322,8 @@ export class IncapacidadValidator {
   }
   private static isAccidentelaboral(incapacidad: any): boolean {
     // Verificar que el campo no esté vacío
-    if (incapacidad.tipo_incapacidad === 'ACCIDENTE DE TRABAJO') {
-      return true;
-    }
 
-    return false;
+    return incapacidad.tipo_incapacidad === 'ACCIDENTE DE TRABAJO';
   }
 
 }
