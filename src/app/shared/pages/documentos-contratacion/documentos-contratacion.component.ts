@@ -86,8 +86,15 @@ export class DocumentosContratacionComponent implements OnInit {
 
   @ViewChild('signaturePad') signaturePad: any;
   fichaTecnicaForm: FormGroup;
-  iscontratocomplete = false;
-  isfichacomplete = false;
+  contratoForm: FormGroup;
+  HojaVidaForm: FormGroup;
+  entregaDeDocumentosForm: FormGroup;
+  pruebaLecturaForm: FormGroup;
+  pruebaSSTForm: FormGroup;
+  autorizacionDatosForm: FormGroup;
+  trasladosForm: FormGroup;
+  iscontratocomplete = true;
+  isfichacomplete = true;
   isEntregaDocumentosComplete = false;
   isHojaVidaComplete = false;
   isPruebaLecturaComplete = false;
@@ -221,7 +228,7 @@ export class DocumentosContratacionComponent implements OnInit {
     salarioMensualOrdinario: 'Salario Mensual Ordinario',
     periodoDePagoSalario: 'Periodo de Pago Salario',
     subsidioDeTransporte: 'Subsidio de Transporte',
-    formDePago: 'Forma de Pago',
+    formaDePago: 'Forma de Pago',
     nombreEmpresaUsuarioa: 'Nombre Empresa Usuaria',
     cargo:'Cargo',
     descripciondelaObraMotivotemporal: 'Descripción de la Obra/ Motivo temporal',
@@ -240,7 +247,7 @@ export class DocumentosContratacionComponent implements OnInit {
   fieldEntregaDocumento: { [key: string]: string } = {
     descuentoCasino: 'Descuento Casino',
     formadepago: 'Forma de pago',
-    numerodecuenta: 'Número de cuenta',
+    numerodecuenta: 'Número de cuenta o celular',
     codigoTarjeta: 'Código Tarjeta',
     aceptoCambioSinPrevioAviso: 'Acepto Cambio Sin Previo Aviso',
     planFuneral: 'Plan Funeral',
@@ -252,6 +259,8 @@ export class DocumentosContratacionComponent implements OnInit {
     huellaIndiceDerecho: 'Huella Indice Derecho',
     huellaPulgarDerecho: 'Huella Pulgar Derecho',
   }
+  codigopagina: string = '';
+  descuentoCasinoOptions: string[] = ['Si', 'No'];
   fieldTratamientoDatos: { [key: string]: string } = {
     firmaDeAutorizacion: 'Firma de Autorización',
     numerodeidentificacion: 'Número de identificación',
@@ -604,11 +613,74 @@ export class DocumentosContratacionComponent implements OnInit {
     fechaEntregaLocker: 'Fecha de entrega locker',
     firmaEntregaLocker: 'Firma de entrega locker',
   };
+  nombredelaTemporal: string = '';
+  data = [
+    {
+      empresaUsuaria: 'THE ELITE FLOWER S.A.S C.I.',
+      fechasDePago: '01 y 16 de cada mes',
+      valorAlmuerzo: 1849
+    },
+    {
+      empresaUsuaria: 'FUNDACIÓN FERNANDO BORRERO CAICEDO',
+      fechasDePago: '06 y 21 de cada mes',
+      valorAlmuerzo: 1849
+    },
+    {
+      empresaUsuaria: 'FANTASY FLOWER S.A.S',
+      fechasDePago: '06 y 21 de cada mes',
+      valorAlmuerzo: 1849
+    },
+    {
+      empresaUsuaria: 'MERCEDES S.A.S EN REORGANIZACIÓN',
+      fechasDePago: '06 y 21 de cada mes',
+      valorAlmuerzo: 1849
+    },
+    {
+      empresaUsuaria: 'WAYUU FLOWERS S.A.S',
+      fechasDePago: '06 y 21 de cada mes',
+      valorAlmuerzo: 1849
+    }
+  ];
+  formasdepagoOptions = [
+    'Daviplata',
+    'Davivienda cta ahorros',
+    'Bancolombia',
+    'Colpatria cta ahorros',
+    'Otra'
+  ];
 
   constructor(private fb: FormBuilder) {
     this.fichaTecnicaForm = this.fb.group({});
     Object.keys(this.fieldMapFichaTecnica).forEach((key) => {
       this.fichaTecnicaForm.addControl(key, this.fb.control(''));
+    });
+    this.contratoForm = this.fb.group({});
+    Object.keys(this.fieldsContrato).forEach((key) => {
+      this.contratoForm.addControl(key, this.fb.control(''));
+    });
+    this.entregaDeDocumentosForm = this.fb.group({});
+    Object.keys(this.fieldEntregaDocumento).forEach((key) => {
+      this.entregaDeDocumentosForm.addControl(key, this.fb.control(''));
+    });
+    this.trasladosForm = this.fb.group({});
+    Object.keys(this.fieldTratamientoDatos).forEach((key) => {
+      this.trasladosForm.addControl(key, this.fb.control(''));
+    });
+    this.HojaVidaForm = this.fb.group({});
+    Object.keys(this.fieldHojaDeVida).forEach((key) => {
+      this.HojaVidaForm.addControl(key, this.fb.control(''));
+    });
+    this.pruebaLecturaForm = this.fb.group({});
+    Object.keys(this.fieldMapFichaTecnica).forEach((key) => {
+      this.pruebaLecturaForm.addControl(key, this.fb.control(''));
+    });
+    this.pruebaSSTForm = this.fb.group({});
+    Object.keys(this.fieldMapFichaTecnica).forEach((key) => {
+      this.pruebaSSTForm.addControl(key, this.fb.control(''));
+    });
+    this.autorizacionDatosForm = this.fb.group({});
+    Object.keys(this.fieldMapFichaTecnica).forEach((key) => {
+      this.autorizacionDatosForm.addControl(key, this.fb.control(''));
     });
   }
 
@@ -689,18 +761,29 @@ export class DocumentosContratacionComponent implements OnInit {
   }
 
 
-  signatureDataURL: string = '';  // Aquí almacenamos la firma como base64
-
-  onSignatureSaved(dataURL: string) {
-    this.signatureDataURL = dataURL;  // Guardamos la firma en la variable
-    console.log('Firma recibida:', this.signatureDataURL);
-    this.fichaTecnicaForm.get('firma')?.setValue(this.signatureDataURL);
+  signatureDataURLTrabajador: string = '';  // Aquí almacenamos la firma como base64
+  signatureDataURLTestigo1: string = '';
+  signatureDataURLTestigo2: string = '';
+  onSignatureSavedtrabajador(dataURL: string) {
+    this.signatureDataURLTrabajador = dataURL;  // Guardamos la firma en la variable
+    console.log('Firma recibida:', this.signatureDataURLTrabajador);
+    this.fichaTecnicaForm.get('firma')?.setValue(this.signatureDataURLTrabajador);
+  }
+  onSignatureSavedTestigo1(dataURL: string) {
+    this.signatureDataURLTestigo1 = dataURL;  // Guardamos la firma en la variable
+    console.log('Firma recibida:', this.signatureDataURLTestigo1);
+    this.contratoForm.get('firmaTestigo1')?.setValue(this.signatureDataURLTestigo1);
+  }
+  onSignatureSavedTestigo2(dataURL: string) {
+    this.signatureDataURLTestigo2 = dataURL;  // Guardamos la firma en la variable
+    console.log('Firma recibida:', this.signatureDataURLTestigo2);
+    this.contratoForm.get('firmaTestigo2')?.setValue(this.signatureDataURLTestigo2);
   }
 
 
 
   onSubmit(): void {
-    if (!this.signatureDataURL) {
+    if (!this.signatureDataURLTrabajador) {
       alert('Por favor, asegúrese de firmar antes de enviar.');
       return;
     }
