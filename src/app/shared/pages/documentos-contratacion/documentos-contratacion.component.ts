@@ -20,8 +20,8 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';    // Importar la extensión para tablas
 import html2canvas from 'html2canvas';
 import AutoTableDrawPageData from "jspdf-autotable";
-
-
+import * as pdfjsLib from 'pdfjs-dist';
+import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { NgIf, NgFor, NgSwitch } from '@angular/common';
@@ -40,6 +40,7 @@ import { MatGridListModule } from '@angular/material/grid-list';  // Importa Mat
 import { MatListModule } from '@angular/material/list'; // Módulo de MatList
 import { SignaturePadModule } from '../signature-pad/signature-pad.module'; // Importa el componente standalone
 import e from 'express';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -55,6 +56,7 @@ declare module 'jspdf' {
     NavbarSuperiorComponent,
     SignaturePadModule,
     MatSnackBarModule,
+    NgxExtendedPdfViewerModule,
     MatDividerModule,
     InfoCardComponent,
     MatTableModule,
@@ -95,8 +97,8 @@ export class DocumentosContratacionComponent implements OnInit {
   trasladosForm: FormGroup;
   iscontratocomplete = true;
   isfichacomplete = true;
-  isEntregaDocumentosComplete = false;
-  isHojaVidaComplete = false;
+  isEntregaDocumentosComplete = true;
+  isHojaVidaComplete = true;
   isPruebaLecturaComplete = false;
   isPruebaSSTComplete = false;
   isAutorizacionDatosComplete = false;
@@ -345,6 +347,81 @@ export class DocumentosContratacionComponent implements OnInit {
     telefonosHermanos: 'Teléfonos',
 
     //educacionyaptitudes
+    estudios1:' Estudio 1',
+    anoDeFinalizacion1:'Año de finalizacion del estudio 1',
+    tituloObtenido1:'Título Obtenido 1',
+    nombredelaInstitucion1:'Nombre de la Institución 1',
+    ciudadEstudio1: 'Ciudad estudio 1',
+    estudios2: 'Estudio 2',
+    anoDeFinalizacion2: 'Año de finalizacion del estudio 2',
+    tituloObtenido2: 'Título Obtenido 2',
+    nombredelaInstitucion2: 'Nombre de la Institución 2',
+    ciudadEstudio2: 'Ciudad estudio 2',
+    estudios3: 'Estudio 3',
+    anoDeFinalizacion3: 'Año de finalizacion del estudio 3',
+    tituloObtenido3: 'Título Obtenido 3',
+    nombredelaInstitucion3: 'Nombre de la Institución 3',
+    ciudadEstudio3: 'Ciudad estudio 3',
+    cursaCursosActualmente: 'Cursa Cursos Actualmente',
+    queTipoDeEstudios: 'Qué Tipo de Estudios?',
+    duracionDeestudios: 'Duración de Estudios',
+    anosemestrequecursa: 'Año/Semestre que Cursa',
+    nombredelaInstitucionextra: 'Nombre de la Institución',
+    sistemasQueDomina: 'Sistemas que Domina',
+    programasQueDomina: 'Programas que Domina',
+    calificacionProgramas: 'Calificación programas',
+    idiomasQueHabla: 'Idiomas que Habla',
+    idiomasQueEscribe: 'Idiomas que Escribe',
+    calificacionIdiomas: 'Calificación Idiomas',
+
+    // experiencia laboral
+    nombredeLaUltimaEmpresa: 'Nombre de la Última Empresa',
+    actividadEconomicaUltimaEmpresa: 'Actividad Económica',
+    direccionEmpresaUltimaEmpresa: 'Dirección Empresa',
+    telefonoEmpresaUltimaEmpresa: 'Teléfono Empresa',
+    cargoDesempenadoUltimaEmpresa: 'Cargo Desempeñado',
+    areaDelCargoUltimaEmpresa: 'Área del Cargo',
+    fechadeingresoUltimaEmpresa: 'Fecha de Ingreso',
+    fechadeRetiroUltimaEmpresa: 'Fecha de Retiro',
+    sueldoIncialUltimaEmpresa: 'Sueldo Inicial',
+    sueldoFinalUltimaEmpresa: 'Sueldo Final',
+    funcionesRealizadasUltimaEmpresa: 'Funciones Realizadas',
+    nombredeSuJefeInmediatoUltimaEmpresa: 'Nombre de su Jefe Inmediato',
+    cargoJefeInmediatoUltimaEmpresa: 'Cargo Jefe Inmediato',
+    logrosObtenidosUltimaEmpresa: 'Logros Obtenidos',
+    tipoDeContratoEmpresaUltimaEmpresa: 'Tipo de Contrato',
+    horarioDeTrabajoUltimaEmpresa: 'Horario de Trabajo',
+    motivoRetiroUltimaEmpresa: 'Motivo Retiro',
+    nombreDeLaEmpresaAnterior: 'Nombre de la Empresa Anterior',
+    actividadEconomicaAnterior: 'Actividad Económica',
+    direccionEmpresaAnterior: 'Dirección Empresa',
+    telefonoEmpresaAnterior: 'Teléfono Empresa',
+    cargodesempenadoAnterior: 'Cargo Desempeñado',
+    areaDelCargoAnterior: 'Área del Cargo',
+    fechadeingresoAnterior: 'Fecha de Ingreso',
+    fechadeRetiroAnterior: 'Fecha de Retiro',
+    sueldoIncialAnterior: 'Sueldo Inicial',
+    sueldoFinalAnterior: 'Sueldo Final',
+    funcionesRealizadasAnterior: 'Funciones Realizadas',
+    nombredeSuJefeInmediatoAnterior: 'Nombre de su Jefe Inmediato',
+    cargoJefeInmediatoAnterior: 'Cargo Jefe Inmediato',
+    logrosObtenidosAnterior: 'Logros Obtenidos',
+    tipoDeContratoEmpresaAnterior: 'Tipo de Contrato',
+    horarioDeTrabajoAnterior: 'Horario de Trabajo',
+    motivoRetiroAnterior: 'Motivo Retiro',
+
+    //referencias personales
+    nombreReferencia1: 'Nombre Referencia 1',
+    ocupacionReferencia1: 'Ocupación Referencia 1',
+    telefonoReferencia1: 'Teléfono Referencia 1',
+    direccionReferencia1: 'Dirección Referencia 1',
+    nombreReferencia2: 'Nombre Referencia 2',
+    ocupacionReferencia2: 'Ocupación Referencia 2',
+    telefonoReferencia2: 'Teléfono Referencia 2',
+    autorizoPedirInformacionDeMiHojaDeVida: 'Autorizo Pedir Información de mi Hoja de Vida sin ninguna restriccion',
+    firmaSolicitante: 'Firma Solicitante',
+
+
 
 
 
@@ -683,15 +760,21 @@ export class DocumentosContratacionComponent implements OnInit {
       this.autorizacionDatosForm.addControl(key, this.fb.control(''));
     });
   }
-
-
+  
   ngOnInit() {
     // Asegurar que TypeScript sepa que DigitalPersonaSDK tiene un tipo específico
 
   }
 
+  onPdfPagesLoaded(event: any) {
+    console.log('PDF pages loaded:', event);
+  }
 
+  onPdfDownloaded(event: any) {
+    console.log('PDF downloaded:', event);
+  }
 
+  // Convert Base64 to Blob and create an Object URL
 
   getFieldType(key: string): string {
     // Define una lógica para determinar el tipo de campo basado en el nombre de la clave
@@ -780,9 +863,35 @@ export class DocumentosContratacionComponent implements OnInit {
     this.contratoForm.get('firmaTestigo2')?.setValue(this.signatureDataURLTestigo2);
   }
 
+  renderPage(pdf: PDFDocumentProxy, pageNumber: number) {
+    pdf.getPage(pageNumber).then((page: PDFPageProxy) => {
+      const scale = 1.5;
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
+      const context = canvas.getContext('2d');
+
+      // Check if the context is null
+      if (!context) {
+        console.error("Failed to get 2D context");
+        return;
+      }
+
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+
+      page.render(renderContext);
+    });
+  }
 
 
-  onSubmit(): void {
+
+  onSubmit(nombredelfocumento:string): void {
     if (!this.signatureDataURLTrabajador) {
       alert('Por favor, asegúrese de firmar antes de enviar.');
       return;

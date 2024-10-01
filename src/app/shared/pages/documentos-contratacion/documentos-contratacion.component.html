@@ -1,7 +1,15 @@
 <audio id="successSound" src="Sounds/positivo.mp3"></audio>
 <audio id="errorSound" src="Sounds/negativo.mp3"></audio>
-<div id="loader" class="cajaloader" [style.display]="loaderVisible ? 'block' : 'none'">
-  <h1 id="cont" class="contador" [style.display]="counterVisible ? 'block' : 'none'"></h1>
+<div
+  id="loader"
+  class="cajaloader"
+  [style.display]="loaderVisible ? 'block' : 'none'"
+>
+  <h1
+    id="cont"
+    class="contador"
+    [style.display]="counterVisible ? 'block' : 'none'"
+  ></h1>
   <div class="custom-loader"></div>
 </div>
 <div class="app-layout">
@@ -18,7 +26,8 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'primerApellido',
                         'segundoApellido',
@@ -44,10 +53,18 @@
                         'correoelectronico',
                         'sisbenestrato'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -58,7 +75,8 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'empresagrupoelite',
                         'codigoCompania',
@@ -94,10 +112,18 @@
                         'cuenta',
                         'beneficioCacninoFumigacion'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -108,7 +134,8 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'eps',
                         'afp',
@@ -120,10 +147,18 @@
                         'numeroderesolucion',
                         'numerodesemanasCotizadas'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -131,33 +166,55 @@
             </mat-card>
 
             <mat-card class="module-card">
-              <mat-card-title>Información de requerida para el ingreso</mat-card-title>
+              <mat-card-title
+                >Información de requerida para el ingreso</mat-card-title
+              >
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="let field of ['cargoNuevo', 'codigoQueReemplaza']">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                  <ng-container
+                    *ngFor="let field of ['cargoNuevo', 'codigoQueReemplaza']"
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
               </mat-card-content>
             </mat-card>
             <mat-card class="module-card">
-              <mat-card-title>Información de contacto de emergencia</mat-card-title>
+              <mat-card-title
+                >Información de contacto de emergencia</mat-card-title
+              >
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'apellidosYnombresEmergencia',
                         'numerodeContactoEmergencia'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -168,17 +225,26 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'gradoEscolaridad',
                         'tituloObtenido',
                         'institucion',
                         'anoFinalizacion'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -191,17 +257,27 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Padre</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreapellidoPadre',
                           'direccionPadre',
                           'vivepadre',
                           'barrioMunicipioPadre'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -211,7 +287,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información de Madre</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreapellidoMadre',
                           'direccionMadre',
@@ -220,10 +297,19 @@
                           'telefonoMadre',
                           'barrioMunicipioMadre'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -233,7 +319,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Cónyuge</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreapellidoConyuge',
                           'direccionConyuge',
@@ -241,10 +328,19 @@
                           'ocupacionConyuge',
                           'telefonoConyuge'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -258,7 +354,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Hijo 1</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'apellidosynombresHijos1',
                           'fechaNacimientoHijos1',
@@ -277,10 +374,19 @@
                           'esHijastroHijo1',
                           'custodiaLegalHijo1'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -290,7 +396,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Hijo 2</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'apellidosynombresHijos2',
                           'fechaNacimientoHijos2',
@@ -309,10 +416,19 @@
                           'esHijastroHijo2',
                           'custodiaLegalHijo2'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -322,7 +438,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Hijo 3</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'apellidosynombresHijos3',
                           'fechaNacimientoHijos3',
@@ -341,10 +458,19 @@
                           'esHijastroHijo3',
                           'custodiaLegalHijo3'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -354,7 +480,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Hijo 4</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'apellidosynombresHijos4',
                           'fechaNacimientoHijos4',
@@ -373,10 +500,19 @@
                           'esHijastroHijo4',
                           'custodiaLegalHijo4'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -386,7 +522,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Hijo 5</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'apellidosynombresHijos5',
                           'fechaNacimientoHijos5',
@@ -405,10 +542,19 @@
                           'esHijastroHijo5',
                           'custodiaLegalHijo5'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -418,7 +564,8 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Información del Hijo 6</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'apellidosynombresHijos6',
                           'fechaNacimientoHijos6',
@@ -437,10 +584,19 @@
                           'esHijastroHijo6',
                           'custodiaLegalHijo6'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -452,7 +608,8 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'tallachaqueta',
                         'tallaPantalon',
@@ -462,10 +619,18 @@
                         'noZapatones',
                         'noBotasMaterial'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -476,9 +641,12 @@
               <mat-card-content>
                 <!-- Subgrupo: Información de la Empresa 1 -->
                 <div fxLayout="column" fxLayoutGap="20px">
-                  <mat-card-subtitle>Información de la Empresa 1</mat-card-subtitle>
+                  <mat-card-subtitle
+                    >Información de la Empresa 1</mat-card-subtitle
+                  >
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreEmpresa1',
                           'direccionEmpresa1',
@@ -488,10 +656,19 @@
                           'fechaDeRetiro1',
                           'motivoDeRetiro1'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -499,9 +676,12 @@
 
                 <!-- Subgrupo: Información de la Empresa 2 -->
                 <div fxLayout="column" fxLayoutGap="20px">
-                  <mat-card-subtitle>Información de la Empresa 2</mat-card-subtitle>
+                  <mat-card-subtitle
+                    >Información de la Empresa 2</mat-card-subtitle
+                  >
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreEmpresa2',
                           'direccionEmpresa2',
@@ -511,10 +691,19 @@
                           'fechaDeRetiro2',
                           'motivoDeRetiro2'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -522,22 +711,34 @@
               </mat-card-content>
             </mat-card>
             <mat-card class="module-card">
-              <mat-card-title>Información de Referencias Personales</mat-card-title>
+              <mat-card-title
+                >Información de Referencias Personales</mat-card-title
+              >
               <mat-card-content>
                 <!-- Subgrupo: Información de Referencia Personal 1 -->
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Referencia Personal 1</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreReferenciapersonal1',
                           'telefonoReferenciapersonal1',
                           'ocupacionReferenciapersonal1'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -547,16 +748,26 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Referencia Personal 2</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreReferenciapersonal2',
                           'telefonoReferenciapersonal2',
                           'ocupacionReferenciapersonal2'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -564,22 +775,34 @@
               </mat-card-content>
             </mat-card>
             <mat-card class="module-card">
-              <mat-card-title>Información de Referencias Familiares</mat-card-title>
+              <mat-card-title
+                >Información de Referencias Familiares</mat-card-title
+              >
               <mat-card-content>
                 <!-- Subgrupo: Información de Referencia Personal 1 -->
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Referencia Personal 1</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreReferenciaFamiliar1',
                           'telefonoReferenciaFamiliar1',
                           'ocupacionReferenciaFamiliar1'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -589,16 +812,26 @@
                 <div fxLayout="column" fxLayoutGap="20px">
                   <mat-card-subtitle>Referencia Personal 2</mat-card-subtitle>
                   <div fxLayout="row wrap" fxLayoutGap="20px">
-                    <ng-container *ngFor="
+                    <ng-container
+                      *ngFor="
                         let field of [
                           'nombreReferenciaFamiliar2',
                           'telefonoReferenciaFamiliar2',
                           'ocupacionReferenciaFamiliar2'
                         ]
-                      ">
-                      <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                      "
+                    >
+                      <mat-form-field
+                        appearance="fill"
+                        class="example-full-width"
+                        fxFlex="calc(50% - 20px)"
+                      >
                         <mat-label>{{ fieldMapFichaTecnica[field] }}</mat-label>
-                        <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                        <input
+                          matInput
+                          [formControlName]="field"
+                          [type]="getFieldType(field)"
+                        />
                       </mat-form-field>
                     </ng-container>
                   </div>
@@ -613,26 +846,43 @@
                   <mat-card-subtitle>Firma y Huella Digital</mat-card-subtitle>
 
                   <!-- Campo de Nombre y Apellidos -->
-                  <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                  <mat-form-field
+                    appearance="fill"
+                    class="example-full-width"
+                    fxFlex="calc(50% - 20px)"
+                  >
                     <mat-label>{{
                       fieldMapFichaTecnica["nombreyapellidos"]
-                      }}</mat-label>
-                    <input matInput [formControlName]="'nombreyapellidos'" [type]="getFieldType('nombreyapellidos')" />
+                    }}</mat-label>
+                    <input
+                      matInput
+                      [formControlName]="'nombreyapellidos'"
+                      [type]="getFieldType('nombreyapellidos')"
+                    />
                   </mat-form-field>
 
                   <!-- Campo de Número de Identificación -->
-                  <mat-form-field appearance="fill" class="example-full-width" fxFlex="calc(50% - 20px)">
+                  <mat-form-field
+                    appearance="fill"
+                    class="example-full-width"
+                    fxFlex="calc(50% - 20px)"
+                  >
                     <mat-label>{{
                       fieldMapFichaTecnica["numerodeidentificacion"]
-                      }}</mat-label>
-                    <input matInput [formControlName]="'numerodeidentificacion'"
-                      [type]="getFieldType('numerodeidentificacion')" />
+                    }}</mat-label>
+                    <input
+                      matInput
+                      [formControlName]="'numerodeidentificacion'"
+                      [type]="getFieldType('numerodeidentificacion')"
+                    />
                   </mat-form-field>
 
                   <!-- Campo de Huella Dactilar -->
                   <div fxFlex="calc(100% - 20px)">
-                    <mat-card-subtitle>Captura de Huella Digital Indice
-                      Derecho</mat-card-subtitle>
+                    <mat-card-subtitle
+                      >Captura de Huella Digital Indice
+                      Derecho</mat-card-subtitle
+                    >
 
                     <button (click)="captureFingerprintID()">
                       Capturar Huella
@@ -646,12 +896,17 @@
                     <!-- Visualización de la imagen de la huella digital capturada, si está disponible -->
                     <div *ngIf="fingerprintImageID">
                       <h3>Huella Capturada:</h3>
-                      <img [src]="fingerprintImageID" alt="Imagen de la huella digital" />
+                      <img
+                        [src]="fingerprintImageID"
+                        alt="Imagen de la huella digital"
+                      />
                     </div>
                   </div>
                   <div fxFlex="calc(100% - 20px)">
-                    <mat-card-subtitle>Captura de Huella Digital Pulgar
-                      Derecho</mat-card-subtitle>
+                    <mat-card-subtitle
+                      >Captura de Huella Digital Pulgar
+                      Derecho</mat-card-subtitle
+                    >
 
                     <button (click)="captureFingerprintPD()">
                       Capturar Huella
@@ -665,7 +920,10 @@
                     <!-- Visualización de la imagen de la huella digital capturada, si está disponible -->
                     <div *ngIf="fingerprintImagePD">
                       <h3>Huella Capturada:</h3>
-                      <img [src]="fingerprintImagePD" alt="Imagen de la huella digital" />
+                      <img
+                        [src]="fingerprintImagePD"
+                        alt="Imagen de la huella digital"
+                      />
                     </div>
                   </div>
                 </div>
@@ -674,7 +932,12 @@
 
             <!-- Botón de envío -->
             <div fxLayout="row" fxLayoutAlign="center" style="margin-top: 20px">
-              <button mat-raised-button color="primary" type="submit" (click)="onSubmit()">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                (click)="onSubmit('fichatecnica')"
+              >
                 Enviar
               </button>
             </div>
@@ -690,7 +953,8 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'representadoPor',
                         'NombredelTrabajador',
@@ -707,10 +971,18 @@
                         'TipoYNoidentificacion',
                         'correoelectronico'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldsContrato[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
@@ -721,22 +993,41 @@
               <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="20px">
                   <!-- Generación dinámica de campos -->
-                  <ng-container *ngFor="
+                  <ng-container
+                    *ngFor="
                       let field of [
                         'diadeTestigosContrato',
                         'TipoYNoidentificacion',
                         'testigo1NombreYcedula',
                         'testigo2NombreYcedula'
                       ]
-                    ">
-                    <mat-form-field appearance="fill" class="example-full-width">
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
                       <mat-label>{{ fieldsContrato[field] }}</mat-label>
-                      <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
                     </mat-form-field>
                   </ng-container>
                 </div>
               </mat-card-content>
             </mat-card>
+            <div fxLayout="row" fxLayoutAlign="center" style="margin-top: 20px">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                (click)="onSubmit('contrato')"
+              >
+                Enviar contrato
+              </button>
+            </div>
           </form>
         </mat-card-content>
       </div>
@@ -744,12 +1035,12 @@
         <mat-card-content>
           <mat-card-title>Entrega de documentos</mat-card-title>
           <form [formGroup]="entregaDeDocumentosForm">
-
             <!-- Documentos y tabla informativa -->
             <p class="form-text">1. Copia del Contrato Individual de Trabajo</p>
-            <p class="form-text">2. Inducción General de nuestra Compañía e información General de la Empresa Usuaria,
-              que
-              incluye información sobre:</p>
+            <p class="form-text">
+              2. Inducción General de nuestra Compañía e información General de
+              la Empresa Usuaria, que incluye información sobre:
+            </p>
 
             <table class="table">
               <thead>
@@ -765,7 +1056,9 @@
                   <td>{{ item.fechasDePago }}</td>
                   <td>
                     <div>Valor del almuerzo: $ {{ item.valorAlmuerzo }}</div>
-                    <div>Descuento quincenal por Nómina y/o Liquidación Final</div>
+                    <div>
+                      Descuento quincenal por Nómina y/o Liquidación Final
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -773,12 +1066,20 @@
 
             <!-- Campos de selección y entradas -->
             <div fxLayout="column" fxLayoutGap="20px">
-              <p class="form-text">Teniendo en cuenta la información anterior, autorizo el descuento del casino:</p>
+              <p class="form-text">
+                Teniendo en cuenta la información anterior, autorizo el
+                descuento del casino:
+              </p>
 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Descuento casino</mat-label>
-                <mat-select [formControlName]="fieldEntregaDocumento['descuentoCasino']">
-                  <mat-option *ngFor="let option of descuentoCasinoOptions" [value]="option">
+                <mat-select
+                  [formControlName]="fieldEntregaDocumento['descuentoCasino']"
+                >
+                  <mat-option
+                    *ngFor="let option of descuentoCasinoOptions"
+                    [value]="option"
+                  >
                     {{ option }}
                   </mat-option>
                 </mat-select>
@@ -786,76 +1087,114 @@
 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Forma de pago</mat-label>
-                <mat-select [formControlName]="fieldEntregaDocumento['formadepago']">
-                  <mat-option *ngFor="let option of formasdepagoOptions" [value]="option">
+                <mat-select
+                  [formControlName]="fieldEntregaDocumento['formadepago']"
+                >
+                  <mat-option
+                    *ngFor="let option of formasdepagoOptions"
+                    [value]="option"
+                  >
                     {{ option }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
 
               <!-- Campos de entrada -->
-              <mat-form-field *ngFor="let field of ['numerodecuenta', 'codigoTarjeta']" appearance="fill"
-                class="example-full-width">
+              <mat-form-field
+                *ngFor="let field of ['numerodecuenta', 'codigoTarjeta']"
+                appearance="fill"
+                class="example-full-width"
+              >
                 <mat-label>{{ fieldEntregaDocumento[field] }}</mat-label>
-                <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                <input
+                  matInput
+                  [formControlName]="field"
+                  [type]="getFieldType(field)"
+                />
               </mat-form-field>
 
               <!-- Mensaje de advertencia -->
               <p class="form-text">
-                <strong>Importante:</strong> Recuerde que si usted cuenta con su forma de pago Daviplata, cualquier
-                cambio realizado en la misma debe ser notificado a la empresa temporal. También tenga presente que la
-                entrega de la tarjeta Master por parte de la empresa temporal es provisional, y se reemplaza por la
-                forma
-                de pago DAVIPLATA. Tan pronto como Davivienda nos informe que usted activó su DAVIPLATA, se le genera
-                automáticamente el cambio de forma de pago. ¡CUIDADO! El manejo de estas cuentas es responsabilidad de
-                usted como trabajador, por lo tanto, son personales e intransferibles.
+                <strong>Importante:</strong> Recuerde que si usted cuenta con su
+                forma de pago Daviplata, cualquier cambio realizado en la misma
+                debe ser notificado a la empresa temporal. También tenga
+                presente que la entrega de la tarjeta Master por parte de la
+                empresa temporal es provisional, y se reemplaza por la forma de
+                pago DAVIPLATA. Tan pronto como Davivienda nos informe que usted
+                activó su DAVIPLATA, se le genera automáticamente el cambio de
+                forma de pago. ¡CUIDADO! El manejo de estas cuentas es
+                responsabilidad de usted como trabajador, por lo tanto, son
+                personales e intransferibles.
               </p>
 
               <!-- Autorización de descuento -->
-              <p class="form-text">Autorizo a la empresa temporal para que me realice el descuento de los valores</p>
+              <p class="form-text">
+                Autorizo a la empresa temporal para que me realice el descuento
+                de los valores
+              </p>
 
               <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>Acepto cambio sin previo aviso</mat-label>
-                <mat-select [formControlName]="fieldEntregaDocumento['aceptoCambioSinPrevioAviso']">
-                  <mat-option *ngFor="let option of descuentoCasinoOptions" [value]="option">
+                <mat-label>{{
+                  fieldEntregaDocumento["aceptoCambioSinPrevioAviso"]
+                }}</mat-label>
+                <mat-select formControlName="aceptoCambioSinPrevioAviso">
+                  <mat-option
+                    *ngFor="let option of descuentoCasinoOptions"
+                    [value]="option"
+                  >
                     {{ option }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
 
-              <!-- Información adicional -->
-              <p class="form-text">3. Entrega y manejo del carné de la empresa de servicios temporales {{
-                this.nombredelaTemporal }}</p>
-              <p class="form-text">4. Capacitación de la Ley 1010 del 2006 (Acoso laboral) y mecanismos para interponer
-                una
-                queja general o frente al acoso</p>
-              <p class="form-text">5. Socialización de la Política de Libertad de Asociación y Política de Igualdad
-                Laboral y
-                No Discriminación</p>
-              <p class="form-text">6. Curso de Seguridad y Salud en el Trabajo "SST" de la Empresa Temporal</p>
+              <!-- Información adicional-->
               <p class="form-text">
-                7. Se hace entrega de la documentación requerida para la vinculación de beneficiarios a la Caja de
-                Compensación Familiar y se establece el compromiso de 15 días para la entrega de la documentación para
-                la
-                afiliación de beneficiarios de la Caja de Compensación y EPS, si aplica. De lo contrario, se entenderá
-                que
-                usted no desea recibir este beneficio. Recuerde que es su responsabilidad el registro de los mismos.
+                3. Entrega y manejo del carné de la empresa de servicios
+                temporales {{ this.nombredelaTemporal }}
               </p>
               <p class="form-text">
-                8. Plan funeral Cooserpark: AUTORIZO la afiliación y descuento VOLUNTARIO al plan, por un valor de
-                $4.094,5
-                descontados quincenalmente por nómina. La afiliación se hace efectiva a partir del primer descuento.
+                4. Capacitación de la Ley 1010 del 2006 (Acoso laboral) y
+                mecanismos para interponer una queja general o frente al acoso
               </p>
               <p class="form-text">
-                Nota: Si usted autorizó este descuento, debe presentar una carta en la oficina de la temporal
-                solicitando el
-                retiro para la desafiliación de este plan.
+                5. Socialización de la Política de Libertad de Asociación y
+                Política de Igualdad Laboral y No Discriminación
+              </p>
+              <p class="form-text">
+                6. Curso de Seguridad y Salud en el Trabajo "SST" de la Empresa
+                Temporal
+              </p>
+              <p class="form-text">
+                7. Se hace entrega de la documentación requerida para la
+                vinculación de beneficiarios a la Caja de Compensación Familiar
+                y se establece el compromiso de 15 días para la entrega de la
+                documentación para la afiliación de beneficiarios de la Caja de
+                Compensación y EPS, si aplica. De lo contrario, se entenderá que
+                usted no desea recibir este beneficio. Recuerde que es su
+                responsabilidad el registro de los mismos.
+              </p>
+
+              <p class="form-text">
+                8. Plan funeral Cooserpark: AUTORIZO la afiliación y descuento
+                VOLUNTARIO al plan, por un valor de $4.094,5 descontados
+                quincenalmente por nómina. La afiliación se hace efectiva a
+                partir del primer descuento.
+              </p>
+              <p class="form-text">
+                Nota: Si usted autorizó este descuento, debe presentar una carta
+                en la oficina de la temporal solicitando el retiro para la
+                desafiliación de este plan.
               </p>
 
               <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>Acepto cambio sin previo aviso</mat-label>
-                <mat-select [formControlName]="fieldEntregaDocumento['planFuneral']">
-                  <mat-option *ngFor="let option of descuentoCasinoOptions" [value]="option">
+                <mat-label>Acepto plan funerario</mat-label>
+                <mat-select
+                  [formControlName]="fieldEntregaDocumento['planFuneral']"
+                >
+                  <mat-option
+                    *ngFor="let option of descuentoCasinoOptions"
+                    [value]="option"
+                  >
                     {{ option }}
                   </mat-option>
                 </mat-select>
@@ -863,50 +1202,441 @@
 
               <!-- Información adicional sobre la página web -->
               <p class="form-text">
-                <strong>Recuerde que:</strong> Puede encontrar esta información disponible en:
-                <a href="http://www.apoyolaboralts.com" target="_blank">http://www.apoyolaboralts.com</a> ingresando el
-                código:
+                <strong>Recuerde que:</strong> Puede encontrar esta información
+                disponible en:
+                <a href="http://www.apoyolaboralts.com" target="_blank"
+                  >http://www.apoyolaboralts.com</a
+                >
+                ingresando el código:
                 {{ this.codigopagina }}
               </p>
 
               <!-- Declaraciones del trabajador -->
               <p class="form-text">
-                a. Por medio de la presente manifiesto que recibí lo anteriormente mencionado y que acepto el mismo.
+                a. Por medio de la presente manifiesto que recibí lo
+                anteriormente mencionado y que acepto el mismo.
               </p>
               <p class="form-text">
-                b. Leí y comprendí el curso de inducción general y de seguridad y salud en el trabajo, así como el
-                contrato
-                laboral y todas las cláusulas y condiciones establecidas.
+                b. Leí y comprendí el curso de inducción general y de seguridad
+                y salud en el trabajo, así como el contrato laboral y todas las
+                cláusulas y condiciones establecidas.
               </p>
               <p class="form-text">
-                c. Información condiciones de salud: manifiesto que conozco los resultados de mis exámenes médicos de
-                ingreso
-                y las recomendaciones dadas por el médico ocupacional.
+                c. Información condiciones de salud: manifiesto que conozco los
+                resultados de mis exámenes médicos de ingreso y las
+                recomendaciones dadas por el médico ocupacional.
               </p>
               <mat-form-field
-                *ngFor="let field of ['firmadeResponsabledeSocializacion', 'fechadeRecibido','nombreDeResponsable']"
-                appearance="fill" class="example-full-width">
+                *ngFor="
+                  let field of [
+                    'firmadeResponsabledeSocializacion',
+                    'fechadeRecibido',
+                    'nombreDeResponsable'
+                  ]
+                "
+                appearance="fill"
+                class="example-full-width"
+              >
                 <mat-label>{{ fieldEntregaDocumento[field] }}</mat-label>
-                <input matInput [formControlName]="field" [type]="getFieldType(field)" />
+                <input
+                  matInput
+                  [formControlName]="field"
+                  [type]="getFieldType(field)"
+                />
               </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center" style="margin-top: 20px">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                (click)="onSubmit('entregaDocumentos')"
+              >
+                Enviar
+              </button>
             </div>
           </form>
         </mat-card-content>
       </div>
 
+      <div *ngIf="!isHojaVidaComplete">
+        <mat-card-content>
+          <mat-card-title>Hoja de vida</mat-card-title>
+          <form [formGroup]="HojaVidaForm">
+            <mat-card class="module-card">
+              <mat-card-title>Información general</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'apellidoDelAspirante',
+                        'nombreDelAspirante',
+                        'fechadeNacimiento',
+                        'lugarDeNacimiento',
+                        'direccionDeDomicilio',
+                        'barrio',
+                        'ciudad',
+                        'correoElectronico',
+                        'nacionalidad',
+                        'profesionOcupacion',
+                        'estadoCivil',
+                        'anosDeExperiencia',
+                        'tipoDeDocumento',
+                        'numeroDeDocumento',
+                        'expedidoEn',
+                        'tieneVehiculo'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="module-card">
+              <mat-card-title>Información laboral</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'estidiosRealizados',
+                        'experioenciaLaboral',
+                        'habilidadesQuePosee'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="module-card">
+              <mat-card-title>Información personal</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'estaTrabajandoActualmente',
+                        'enQueEmpresa',
+                        'empleadoOIdependiente',
+                        'tipoDeContrato',
+                        'trabajoAntesenEstaEmpresa',
 
+                        'solicitoEmplesoAntesEnEstaEmpresa',
+                        'fechadeSolicitud',
+                        'conoceAlguienEnLaEmpresa',
+                        'nombreDeLaPersona',
+                        'dependenciaDeLaEmpresa',
+                        'tienePareienesTrabajandoEnLaEmpresa',
+                        'nombreDelPariente',
+                        'parentescodelPariente',
+                        'comoTuvoConocimientoDeLaVacante',
+                        'aceptariaTrabajarEnOtraCiudad',
+                        'viveEncasa',
+                        'nombredelarendador',
+                        'telefonoDelArrendador',
+                        'haceCuantotiempoRecideenEsteLugar',
+                        'actualmenteTieneUnIngresoAdicional',
+                        'describaloeIndiqueElValor',
+                        'cuantoSumanSusObligacionesMensuales',
+                        'porQueConceptos',
+                        'cuantoessiAspiracionSalarial',
+                        'cualessiPrincipalAficion',
+                        'practicaAlgunDeporte',
+                        'cualDeporte',
+                        'algunasveceshaObtenidoDistincionesoReconomientos',
+                        'cuales'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
 
+            <mat-card class="module-card">
+              <mat-card-title>Información Familiar</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'nombreEsposaOcompalnera',
+                        'profesionOcupacionuOficio',
+                        'empresadodnetrabaja',
+                        'cargoActual',
+                        'direccionDeCompanera',
+                        'telefonoDeCompanera',
+                        'ciudaddeCompanera',
+                        'numerodepersonasquedepenbdendeusted',
+                        'parentescoDeLasPersonas',
+                        'edadesDeLasPersonas',
 
-
-
-
-
+                        'nombreDelPadre',
+                        'profesionOcupacionPadre',
+                        'telefonosDelPadre',
+                        'nombreDelamadre',
+                        'profesionOcupacionMadre',
+                        'telefonosDeLaMadre',
+                        'nombresHermanos',
+                        'profesionOcupacionHermanos',
+                        'telefonosHermanos'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="module-card">
+              <mat-card-title>Información Academica</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'estudios1',
+                        'anoDeFinalizacion1',
+                        'tituloObtenido1',
+                        'nombredelaInstitucion1',
+                        'ciudadEstudio1',
+                        'estudios2',
+                        'anoDeFinalizacion2',
+                        'tituloObtenido2',
+                        'nombredelaInstitucion2',
+                        'ciudadEstudio2',
+                        'estudios3',
+                        'anoDeFinalizacion3',
+                        'tituloObtenido3',
+                        'nombredelaInstitucion3',
+                        'ciudadEstudio3',
+                        'cursaCursosActualmente',
+                        'queTipoDeEstudios',
+                        'duracionDeestudios',
+                        'anosemestrequecursa',
+                        'nombredelaInstitucionextra',
+                        'sistemasQueDomina',
+                        'programasQueDomina',
+                        'calificacionProgramas',
+                        'idiomasQueHabla',
+                        'idiomasQueEscribe',
+                        'calificacionIdiomas'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="module-card">
+              <mat-card-title>Experiencia laboral</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'nombredeLaUltimaEmpresa',
+                        'actividadEconomicaUltimaEmpresa',
+                        'direccionEmpresaUltimaEmpresa',
+                        'telefonoEmpresaUltimaEmpresa',
+                        'cargoDesempenadoUltimaEmpresa',
+                        'areaDelCargoUltimaEmpresa',
+                        'fechadeingresoUltimaEmpresa',
+                        'fechadeRetiroUltimaEmpresa',
+                        'sueldoIncialUltimaEmpresa',
+                        'sueldoFinalUltimaEmpresa',
+                        'funcionesRealizadasUltimaEmpresa',
+                        'nombredeSuJefeInmediatoUltimaEmpresa',
+                        'cargoJefeInmediatoUltimaEmpresa',
+                        'logrosObtenidosUltimaEmpresa',
+                        'tipoDeContratoEmpresaUltimaEmpresa',
+                        'horarioDeTrabajoUltimaEmpresa',
+                        'motivoRetiroUltimaEmpresa',
+                        'nombreDeLaEmpresaAnterior',
+                        'actividadEconomicaAnterior',
+                        'direccionEmpresaAnterior',
+                        'telefonoEmpresaAnterior',
+                        'cargodesempenadoAnterior',
+                        'areaDelCargoAnterior',
+                        'fechadeingresoAnterior',
+                        'fechadeRetiroAnterior',
+                        'sueldoIncialAnterior',
+                        'sueldoFinalAnterior',
+                        'funcionesRealizadasAnterior',
+                        'nombredeSuJefeInmediatoAnterior',
+                        'cargoJefeInmediatoAnterior',
+                        'logrosObtenidosAnterior',
+                        'tipoDeContratoEmpresaAnterior',
+                        'horarioDeTrabajoAnterior',
+                        'motivoRetiroAnterior'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="module-card">
+              <mat-card-title>Referencias personales</mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of [
+                        'nombreReferencia1',
+                        'ocupacionReferencia1',
+                        'telefonoReferencia1',
+                        'direccionReferencia1',
+                        'nombreReferencia2',
+                        'ocupacionReferencia2',
+                        'telefonoReferencia2'
+                      ]
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="module-card">
+              <mat-card-title>Autorizaciones </mat-card-title>
+              <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutGap="20px">
+                  <!-- Generación dinámica de campos -->
+                  <ng-container
+                    *ngFor="
+                      let field of ['autorizoPedirInformacionDeMiHojaDeVida']
+                    "
+                  >
+                    <mat-form-field
+                      appearance="fill"
+                      class="example-full-width"
+                    >
+                      <mat-label>{{ fieldHojaDeVida[field] }}</mat-label>
+                      <input
+                        matInput
+                        [formControlName]="field"
+                        [type]="getFieldType(field)"
+                      />
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <div fxLayout="row" fxLayoutAlign="center" style="margin-top: 20px">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                (click)="onSubmit('hojadevida')"
+              >
+                Enviar contrato
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </div>
+      <div *ngIf="!isPruebaLecturaComplete">
+        <mat-card-content>
+          <mat-card>
+            <ngx-extended-pdf-viewer [src]="'https://github.com/sebastian0912/Gestion-Empresa-Migracion/blob/documentos-contratacion/src/app/shared/pages/documentos-contratacion/EVALUACIONSSTALV1.pdf'" (pagesLoaded)="onPdfPagesLoaded($event)"
+              (pdfDownloaded)="onPdfDownloaded($event)" height="100%">
+            </ngx-extended-pdf-viewer>
+          </mat-card>
+        </mat-card-content>
+      </div>
       <div>
         <!-- Campo de Firma Digital -->
         <mat-card class="module-card">
           <mat-card-title>Información de Firma del trabajador</mat-card-title>
           <mat-card-content>
-            <app-signature-pad (signatureSaved)="onSignatureSavedtrabajador($event)"></app-signature-pad>
+            <app-signature-pad
+              (signatureSaved)="onSignatureSavedtrabajador($event)"
+            ></app-signature-pad>
             <!-- Resto del contenido -->
           </mat-card-content>
         </mat-card>
@@ -915,9 +1645,13 @@
       <div>
         <!-- Campo de Firma Digital -->
         <mat-card class="module-card">
-          <mat-card-title>Información de Firma del del testigo 1</mat-card-title>
+          <mat-card-title
+            >Información de Firma del del testigo 1</mat-card-title
+          >
           <mat-card-content>
-            <app-signature-pad (signatureSaved)="onSignatureSavedTestigo1($event)"></app-signature-pad>
+            <app-signature-pad
+              (signatureSaved)="onSignatureSavedTestigo1($event)"
+            ></app-signature-pad>
             <!-- Resto del contenido -->
           </mat-card-content>
         </mat-card>
@@ -925,14 +1659,17 @@
       <div>
         <!-- Campo de Firma Digital -->
         <mat-card class="module-card">
-          <mat-card-title>Información de Firma del del testigo 2</mat-card-title>
+          <mat-card-title
+            >Información de Firma del del testigo 2</mat-card-title
+          >
           <mat-card-content>
-            <app-signature-pad (signatureSaved)="onSignatureSavedTestigo2($event)"></app-signature-pad>
+            <app-signature-pad
+              (signatureSaved)="onSignatureSavedTestigo2($event)"
+            ></app-signature-pad>
             <!-- Resto del contenido -->
           </mat-card-content>
         </mat-card>
       </div>
     </mat-card>
   </div>
-
 </div>
