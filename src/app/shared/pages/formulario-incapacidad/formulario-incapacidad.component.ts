@@ -933,7 +933,9 @@ export class FormularioIncapacidadComponent implements OnInit {
     this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.setValue('');
     this.incapacidadForm.get('tipo_incapacidad')?.setValue('');
     this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('');
-    this.router.navigate(['/formulario-incapacicades']);
+    this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/formulario-incapacicades']);
+    });
   }
   // Método auxiliar para deshabilitar campos específicos
   disableCertainFields(): void {
