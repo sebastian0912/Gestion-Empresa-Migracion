@@ -91,6 +91,13 @@ export class FormularioIncapacidadComponent implements OnInit {
   counterVisible = false;
   incapacidadForm: FormGroup = this.fb.group({});
   cedula: string = '';
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+  
   fields: string[] = [
     'Oficina', 'Nombre de quien recibio', 'Tipo de documento', 'Numero de documento', 'Temporal del contrato',
     'Numero de contrato', 'Apellido', 'Nombre', 'Edad', 'Sexo', 'Empresa', 'Centro de costo', 'Celular o telefono 01',

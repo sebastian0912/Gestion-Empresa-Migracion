@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 import { NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, elementAt, forkJoin, of } from 'rxjs';
 import { LeerInfoCandidatoComponent } from '../../components/leer-info-candidato/leer-info-candidato.component';
 import { MatDialog } from '@angular/material/dialog';
 import { VacantesService } from '../../services/vacantes/vacantes.service';
@@ -24,6 +24,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { GestionDocumentalService } from '../../services/gestion-documental/gestion-documental.service';
 
 @Component({
   selector: 'app-seleccion',
@@ -59,9 +60,10 @@ export class SeleccionComponent implements OnInit {
   codigoContrato: string = ''; // Variable to store the contract code
   infoGeneral: boolean = false;
   seleccion: any;
-  infoGeneralC = null;
+  infoGeneralC: any;
   vacantes: any[] = [];
   sede: string = '';
+  sedeLogin: string = '';
   // Formularios 
   formGroup1: FormGroup;
   formGroup2: FormGroup;
@@ -69,12 +71,88 @@ export class SeleccionComponent implements OnInit {
   formGroup4: FormGroup;
   filtro: string = '';
   procesoValido: boolean = false;
+  infoPersonalForm: FormGroup;
+  entrevistaForm: FormGroup;
+  observacionesForm: FormGroup;
+  vacantesForm: FormGroup;
+
+  // Mapeo de campos a sus correspondientes tags
+  tagsMap: { [key: string]: number[] } = {
+    afp: [3],
+    eps: [3],
+    policivos: [3],
+    procuraduria: [3],
+    contraloria: [3],
+    medidasCorrectivas: [3],
+    ramaJudicial: [3]
+  };
+
+  typeMap: { [key: string]: number } = {
+    afp: 5,
+    eps: 6,
+    policivos: 8,
+    procuraduria: 9,
+    contraloria: 10,
+    medidasCorrectivas: 11,
+    ramaJudicial: 12
+  };
+
+  uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
+
+
+  epsList: string[] = [
+    'ALIANSALUD',
+    'ASMET SALUD',
+    'CAJACOPI',
+    'CAPITAL SALUD',
+    'CAPRESOCA',
+    'COMFAMILIARHUILA',
+    'COMFAORIENTE',
+    'COMPENSAR',
+    'COOSALUD',
+    'DUSAKAWI',
+    'ECOOPSOS',
+    'FAMISANAR',
+    'FAMILIAR DE COLOMBIA',
+    'MUTUAL SER',
+    'NUEVA EPS',
+    'PIJAOS SALUD',
+    'SALUD TOTAL',
+    'SANITAS',
+    'SAVIA SALUD',
+    'SOS',
+    'SURA',
+    'No Tiene',
+    'Sin Buscar',
+  ];
+
+  afpList: string[] = [
+    'PORVENIR',
+    'COLFONDOS',
+    'PROTECCION',
+    'COLPENSIONES'
+  ];
+
+  antecedentesEstados: string[] = [
+    'Cumple',
+    'No Cumple',
+    'Sin Buscar'
+  ];
+
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+
   constructor(
     private fb: FormBuilder,
     private contratacionService: ContratacionService,
     public dialog: MatDialog,
     private vacantesService: VacantesService,
-    private seleccionService: SeleccionService
+    private seleccionService: SeleccionService,
+    private gestionDocumentalService: GestionDocumentalService
   ) {
     this.formGroup1 = this.fb.group({
       eps: [''],
@@ -84,7 +162,7 @@ export class SeleccionComponent implements OnInit {
       contraloria: [''],
       ramaJudicial: [''],
       medidasCorrectivas: [''],
-      areaAplica: ['']
+      area_aplica: ['']
     });
 
     this.formGroup2 = this.fb.group({
@@ -106,16 +184,62 @@ export class SeleccionComponent implements OnInit {
 
     this.formGroup4 = this.fb.group({
       empresaUsuaria: [''],
-      fechaIngreso: [''],
+      fechaIngreso: [null],      
       salario: [''],
       auxTransporte: [''],
       rodamiento: [''],
       auxMovilidad: [''],
       bonificacion: ['']
     });
+
+
+    // forms de ayuda 
+
+    // Inicializamos cada FormGroup de manera independiente
+    this.infoPersonalForm = this.fb.group({
+      oficina: [{ value: '', disabled: true }],
+      tipodedocumento: [{ value: '', disabled: true }],
+      numerodecedula: [{ value: '', disabled: true }],
+      nombreCompleto: [{ value: '', disabled: true }],
+      celular: [''],
+      whatsapp: [''],
+      genero: [''],
+      edad: [{ value: '', disabled: true }],
+      fechaNacimiento: [{ value: '', disabled: true }],
+      barrio: [''],
+      tieneExperienciaFlores: [''],
+      referenciado: [''],
+      comoSeEntero: ['']
+    });
+
+    this.entrevistaForm = this.fb.group({
+      presentoEntrevista: [''],
+      eps: [''],
+      revisionAntecedentes: [''],
+      laboresRealizadas: [''],
+      empresasLaborado: [''],
+      tiempoExperiencia: [''],
+      escolaridad: [''],
+      numHijos: [''],
+      quienLosCuida: ['']
+    });
+
+    this.observacionesForm = this.fb.group({
+      observacionNovedad: [''],
+      observacionEvaluador: ['']
+    });
+
+    // Formulario para vacantes
+    this.vacantesForm = this.fb.group({
+      centroCosto: [{ value: '', disabled: true }],
+      cargo: [{ value: '', disabled: true }],
+      fechaPruebaEntrevista: [{ value: '', disabled: true }],
+      horaPruebaEntrevista: [{ value: '', disabled: true }],
+      porQuienPregunta: [''],
+      retroalimentacionFinal: ['']
+    });
+
   }
-
-
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -143,7 +267,7 @@ export class SeleccionComponent implements OnInit {
 
         // Asegurarte de que user.sucursalde es string
         const sede: string = user.sucursalde;
-
+        this.sedeLogin = sede;
         this.sede = abreviaciones[sede] || sede;
       }
     });
@@ -169,8 +293,8 @@ export class SeleccionComponent implements OnInit {
 
     // Si los datos de la vacante existen, actualizar el formulario directamente
     if (vacante) {
+      console.log('Vacante seleccionada:', vacante);
       // imprimir hora de prueba tecnica
-      console.log(vacante);
       this.formGroup2.patchValue({
         centroCosto: vacante.Localizaciondelavacante || '',
         cargo: vacante.Cargovacante_id || '',
@@ -179,6 +303,55 @@ export class SeleccionComponent implements OnInit {
         horaPruebaEntrevista: vacante.horadePruebatecnica || '',
         direccionEmpresa: vacante.lugarPrueba || ''
       });
+
+      this.vacantesService.obtenerDetalleLaboral(vacante.Localizaciondelavacante, vacante.finca, vacante.Cargovacante_id).subscribe((response: any) => {
+        if (response) {
+          console.log('Detalle laboral:', vacante.fechaIngreso);
+          
+          let valorT = 0;
+      
+          // Verificar si auxilio_transporte NO es "No" ni "NO"
+          if (response.auxilio_transporte === "No" || response.auxilio_transporte === "NO") {
+            valorT = 0;
+          } else {
+            // Verificar si valor_transporte es un número válido
+            if (!isNaN(parseFloat(response.valor_transporte))) {
+              valorT = parseFloat(response.valor_transporte);
+            } 
+          }
+      
+          // Convertir fecha de ingreso (DD/MM/YYYY) a un objeto Date válido
+          let fechaIngresoConvertida: Date | null = null;
+          if (vacante.fechadeIngreso) {
+            const partesFecha = vacante.fechadeIngreso.split('/');
+            if (partesFecha.length === 3) {
+              const dia = parseInt(partesFecha[0], 10);  // Tomamos el primer valor como día
+              const mes = parseInt(partesFecha[1], 10) - 1; // Meses en JavaScript son base 0
+              const año = parseInt(partesFecha[2], 10);
+              fechaIngresoConvertida = new Date(año, mes, dia);  // Crear el objeto Date con el formato adecuado
+            }
+          }
+      
+          this.formGroup4.patchValue({
+            empresaUsuaria: vacante.Localizaciondelavacante || '',
+            fechaIngreso: fechaIngresoConvertida || null,  // Asegurarse de que se asigne un Date válido
+            salario: response.salario || '',
+            auxTransporte: valorT,
+            rodamiento: response.rodamiento || '',
+            auxMovilidad: response.auxMovilidad || '',
+            bonificacion: response.bonificacion || ''
+          });
+        }
+      });
+      
+
+
+
+
+
+
+
+
     }
   }
 
@@ -193,25 +366,23 @@ export class SeleccionComponent implements OnInit {
 
 
   filtrarVacantes() {
-    if (!this.filtro) {
-      return this.vacantes;
-    }
+    if (!this.filtro) return this.vacantes;
+
     const filtroLower = this.filtro.toLowerCase();
-    return this.vacantes.filter(vacante => {
-      return vacante.Cargovacante_id.toLowerCase().includes(filtroLower) ||
-        vacante.localizacionDeLaPersona.toLowerCase().includes(filtroLower) ||
-        vacante.empresaQueSolicita_id.toLowerCase().includes(filtroLower);
-    });
+    return this.vacantes.filter(vacante =>
+      ['Cargovacante_id', 'localizacionDeLaPersona', 'empresaQueSolicita_id']
+        .some(key => vacante[key]?.toLowerCase().includes(filtroLower))
+    );
   }
+
 
   async buscarCedula() {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
     }).subscribe(
-      ({ seleccion, infoGeneral }) => {
+      async ({ seleccion, infoGeneral }) => {
         if (seleccion && seleccion.procesoSeleccion && Array.isArray(seleccion.procesoSeleccion)) {
-          // Usar reducción para encontrar el id más alto
           this.seleccion = seleccion.procesoSeleccion.reduce((prev: { id: number; }, current: { id: number; }) =>
             current.id > prev.id ? current : prev, { id: 0 });
         } else {
@@ -234,18 +405,23 @@ export class SeleccionComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
         }
-        // Mueve verificarSeleccion aquí
-        this.verificarSeleccion();
+
+        // Mueve verificarSeleccion aquí para que luego de asignar código de contrato se haga la llamada
+        await this.verificarSeleccion();
+
+        await this.infoGeneralCandidato();
         this.procesoValido = true;
       },
       (err) => {
+        console.error(err);
         Swal.fire({
           title: 'Atención',
-          text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podra continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
+          text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
           icon: 'warning',
           confirmButtonText: 'Ok'
         });
 
+        // Generar el código de contrato si no se encuentra la cédula
         this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
           this.codigoContrato = response.codigo_contrato;
           this.procesoValido = true;
@@ -256,15 +432,125 @@ export class SeleccionComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
         });
-
       }
     );
+  }
 
 
+
+  // Obtener el nombre completo
+  getFullName(): string {
+    const { primer_nombre, segundo_nombre, primer_apellido, segundo_apellido } = this.infoGeneralC || {};
+    return `${primer_nombre || ''} ${segundo_nombre || ''} ${primer_apellido || ''} ${segundo_apellido || ''}`.trim();
+  }
+
+  // Convertir un número de días en una fecha válida (basado en el 1 de enero de 1900)
+  convertirAFecha(fecha: string): Date | null {
+    // Si la fecha es un número de días (solo contiene dígitos)
+    if (/^\d+$/.test(fecha)) {
+      const diasDesde1900 = Number(fecha);
+      const fechaBase = new Date(1900, 0, 1); // 1 de enero de 1900
+      fechaBase.setDate(fechaBase.getDate() + diasDesde1900);
+
+      if (isNaN(fechaBase.getTime())) {
+        return null;
+      }
+
+      return fechaBase;
+
+      // Si la fecha está en formato "DD/MM/YYYY"
+    } else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
+      const [dia, mes, anio] = fecha.split('/').map(Number);
+      if (!dia || !mes || !anio) {
+        return null;
+      }
+
+      const fechaValida = new Date(anio, mes - 1, dia);
+
+      if (isNaN(fechaValida.getTime())) {
+        return null;
+      }
+
+      return fechaValida;
+
+    } else {
+      return null;
+    }
+  }
+
+  // Calcular edad a partir del número de días desde 1 de enero de 1900
+  calcularEdad(fecha: string): number {
+    const fechaNacimiento = this.convertirAFecha(fecha);
+    if (!fechaNacimiento) {
+      return NaN; // Si la fecha no es válida
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - fechaNacimiento.getFullYear();
+
+    // Restar un año si aún no ha pasado el cumpleaños este año
+    const monthDiff = today.getMonth() - fechaNacimiento.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < fechaNacimiento.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
+  async infoGeneralCandidato() {
+    if (this.infoGeneralC) {
+      // Llenar el formulario de Info Personal con los datos de this.infoGeneralC
+      this.infoPersonalForm.patchValue({
+        oficina: this.sedeLogin || 'No disponible',
+        tipodedocumento: this.infoGeneralC.tipodedocumento || 'No disponible',
+        numerodecedula: this.infoGeneralC.numerodeceduladepersona || 'No disponible',
+        nombreCompleto: this.getFullName(),
+        celular: this.infoGeneralC.celular || '',
+        whatsapp: this.infoGeneralC.whatsapp || '',
+        genero: this.infoGeneralC.genero || '',
+        edad: this.calcularEdad(this.infoGeneralC.fecha_nacimiento) || '',
+        fechaNacimiento: this.convertirAFecha(this.infoGeneralC.fecha_nacimiento),
+        barrio: this.infoGeneralC.barrio || '',
+        tieneExperienciaFlores: this.infoGeneralC.tiene_experiencia_laboral || '',
+        referenciado: this.infoGeneralC.referenciado || '',
+        comoSeEntero: this.infoGeneralC.como_se_entero || ''
+      });
+
+      // Llenar el formulario de Entrevista con los datos de this.infoGeneralC
+      this.entrevistaForm.patchValue({
+        presentoEntrevista: this.infoGeneralC.presento_entrevista || '',
+        eps: this.infoGeneralC.eps || '',
+        revisionAntecedentes: this.infoGeneralC.revision_antecedentes || '',
+        laboresRealizadas: this.infoGeneralC.labores_realizadas || '',
+        empresasLaborado: this.infoGeneralC.empresas_laborado || '',
+        tiempoExperiencia: this.infoGeneralC.tiempo_experiencia || '',
+        escolaridad: this.infoGeneralC.escolaridad || '',
+        numHijos: this.infoGeneralC.num_hijos_dependen_economicamente || '',
+        quienLosCuida: this.infoGeneralC.quien_los_cuida || ''
+      });
+
+      // Llenar el formulario de Observaciones con los datos de this.infoGeneralC
+      this.observacionesForm.patchValue({
+        observacionNovedad: this.infoGeneralC.observacion_novedad || '',
+        observacionEvaluador: this.infoGeneralC.observacion_evaluador || ''
+      });
+
+
+    }
+
+    if (this.seleccion) {
+      // Llenar el formulario de vacantes con los datos de this.seleccion
+      this.vacantesForm.patchValue({
+        centroCosto: this.seleccion.centro_costo_entrevista || '',
+        cargo: this.seleccion.cargo || '',
+        fechaPruebaEntrevista: this.seleccion.fecha_prueba_entrevista || '',
+        horaPruebaEntrevista: this.seleccion.hora_prueba_entrevista || '',
+        porQuienPregunta: '',  // Campo vacío que debe ser llenado por el usuario
+        retroalimentacionFinal: ''  // Campo vacío que debe ser llenado por el usuario
+      });
+    }
   }
 
   async verificarSeleccion() {
-    console.log(this.seleccion);
     // Si existe un proceso de selección, llenar el formulario con los datos
     if (this.seleccion) {
       // Mostrar el diálogo de confirmación
@@ -277,7 +563,6 @@ export class SeleccionComponent implements OnInit {
         cancelButtonText: 'Seguir con este'
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log('Crear otro');
           this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
             this.codigoContrato = response.codigo_contrato;
             Swal.fire({
@@ -290,7 +575,51 @@ export class SeleccionComponent implements OnInit {
 
         } else {
           this.codigoContrato = this.seleccion.codigo_contrato;
-          console.log('Seguir con este');
+
+          console.log('Código de contrato:', this.codigoContrato);
+          // Ahora que ya se ha asignado this.codigoContrato, puedes llamar a obtenerDocumentosPorTipo
+          if (this.codigoContrato) {
+            this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 3)
+              .subscribe({
+                next: (infoGestionDocumentalAntecedentes: any[]) => {
+                  if (infoGestionDocumentalAntecedentes) {
+                    console.log('Antecedentes:', infoGestionDocumentalAntecedentes);
+
+                    // Iterar sobre los documentos y mapearlos a los campos correctos
+                    infoGestionDocumentalAntecedentes.forEach((documento: any) => {
+                      const typeKey = Object.keys(this.typeMap).find(key => this.typeMap[key] === documento.type);
+                      if (typeKey) {
+                        // Aquí almacenamos el archivo con su URL para visualizarlo luego
+                        this.uploadedFiles[typeKey] = {
+                          fileName: documento.title,
+                          file: documento.file_url // Guardar la URL para acceder al archivo más tarde
+                        };
+                      }
+                    });
+                  }
+                },
+                error: (err: any) => {
+                  if (err.error.error === "No se encontraron documentos") {
+                    Swal.fire({
+                      title: '¡Atención!',
+                      text: 'No se encontraron documentos de antecedentes',
+                      icon: 'warning',
+                      confirmButtonText: 'Ok'
+                    });
+                  } else {
+                    console.error('Error al obtener antecedentes:', err);
+                    Swal.fire({
+                      title: '¡Error!',
+                      text: 'No se pudieron obtener los documentos de antecedentes',
+                      icon: 'error',
+                      confirmButtonText: 'Ok'
+                    });
+                  }
+                }
+              });
+          }
+
+
 
           // Llenar los campos del formulario de Datos Generales (formGroup1)
           this.formGroup1.patchValue({
@@ -301,7 +630,7 @@ export class SeleccionComponent implements OnInit {
             contraloria: this.seleccion.contraloria || '',
             ramaJudicial: this.seleccion.rama_judicial || '',
             medidasCorrectivas: this.seleccion.medidas_correctivas || '',
-            areaAplica: this.seleccion.area_aplica || ''
+            area_aplica: this.seleccion.area_aplica || ''
           });
 
 
@@ -334,10 +663,6 @@ export class SeleccionComponent implements OnInit {
             auxMovilidad: this.seleccion.aux_movilidad || '',
             bonificacion: this.seleccion.bonificacion || ''
           });
-
-
-
-
         }
       });
 
@@ -362,25 +687,151 @@ export class SeleccionComponent implements OnInit {
     });
   }
 
-  // Método para imprimir los datos de los formularios
-  imprimirVerificacionesAplicacion(): void {
-    console.log('Verificaciones y Área de Aplicación:', this.formGroup1.value);
+  verArchivo(campo: string) {
+    const archivo = this.uploadedFiles[campo];
 
-    this.seleccionService.crearSeleccionParteUnoCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
-      response => {
-        console.log('Respuesta exitosa Parte 1:', response);
-      },
-      error => {
-        console.error('Error en la solicitud Parte 1:', error);
+    if (archivo && archivo.file) {
+      if (archivo.file instanceof File) {
+        // Crear una URL temporal para el archivo si es un objeto File
+        const fileUrl = URL.createObjectURL(archivo.file);
+
+        // Abrir el archivo en una nueva pestaña
+        window.open(fileUrl);
+
+        // Revocar la URL después de que el archivo ha sido abierto para liberar memoria
+        setTimeout(() => {
+          URL.revokeObjectURL(fileUrl);
+        }, 100);
+      } else if (typeof archivo.file === 'string') {
+        // Si archivo.file es una URL, simplemente ábrela
+        window.open(archivo.file);
       }
-    );
+    } else {
+      Swal.fire('Error', 'No se pudo encontrar el archivo para este campo', 'error');
+    }
   }
+
+
+
+
+
+
+  // Método que se ejecuta cuando se selecciona un archivo
+  subirArchivo(event: any, campo: string) {
+    const file = event.target.files[0]; // Obtén el archivo seleccionado
+    if (file) {
+      // Verificar si el nombre del archivo tiene más de 100 caracteres
+      if (file.name.length > 100) {
+        Swal.fire('Error', 'El nombre del archivo no debe exceder los 100 caracteres', 'error');
+        return; // Salir de la función si la validación falla
+      }
+
+      // Si la validación es exitosa, almacenar el archivo
+      this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
+      //Swal.fire('Archivo subido', `Archivo ${file.name} subido para ${campo}`, 'success');
+    }
+  }
+
+  // Método para imprimir los datos del formulario y subir todos los archivos
+  imprimirVerificacionesAplicacion(): void {
+    // Mostrar Swal de cargando
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Estamos guardando los datos y subiendo los archivos.',
+      icon: 'info',
+      allowOutsideClick: false,
+      showConfirmButton: false, // No mostrar botón hasta que termine el proceso
+      willOpen: () => {
+        Swal.showLoading(); // Mostrar el indicador de carga
+      }
+    });
+
+    // Llamar al servicio para guardar los datos del formulario (Parte 1)
+    this.seleccionService
+      .crearSeleccionParteUnoCandidato(this.formGroup1.value, this.cedula, this.codigoContrato)
+      .subscribe(
+        (response) => {
+          // Si la respuesta es exitosa, proceder a subir los archivos
+          this.subirTodosLosArchivos().then((allFilesUploaded) => {
+            if (allFilesUploaded) {
+              // Cerrar el Swal de carga y mostrar el mensaje de éxito
+              Swal.fire({
+                title: '¡Éxito!',
+                text: 'Datos y archivos guardados exitosamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+            }
+          }).catch((error) => {
+            // Cerrar el Swal de carga y mostrar el mensaje de error en caso de fallo al subir archivos
+            Swal.fire({
+              title: 'Error',
+              text: `Hubo un error al subir los archivos: ${error}`,
+              icon: 'error',
+              confirmButtonText: 'Ok'
+            });
+          });
+        },
+        (error) => {
+          // Cerrar el Swal de carga y mostrar el mensaje de error en caso de fallo al guardar los datos
+          Swal.fire({
+            title: 'Error',
+            text: 'Hubo un error al guardar los datos del formulario',
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
+      );
+  }
+
+
+
+  // Método para subir todos los archivos almacenados en uploadedFiles
+  subirTodosLosArchivos(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      console.log('Subiendo archivos...', this.uploadedFiles);
+      const totalFiles = Object.keys(this.uploadedFiles).length; // Total de archivos a subir
+      let filesUploaded = 0; // Contador de archivos subidos
+
+      Object.keys(this.uploadedFiles).forEach((campo) => {
+        const { file, fileName } = this.uploadedFiles[campo]; // Obtén el archivo y su nombre
+        const title = fileName; // El título será el nombre del archivo PDF
+
+        // Obtener los tags correspondientes del mapa
+        const tags = this.tagsMap[campo] || []; // Si no hay tags definidos para el campo, se usa un array vacío
+
+        // Obtener el tipo correspondiente del mapa
+        const type = this.typeMap[campo] || 3; // Si no hay tipo definido para el campo, se usa 3 como valor predeterminado
+
+        // Llamar al servicio para subir cada archivo
+        this.gestionDocumentalService
+          .guardarDocumento(title, this.cedula, this.codigoContrato, type, tags, file)
+          .subscribe(
+            (response) => {
+              filesUploaded += 1;
+
+              // Si todos los archivos se han subido, resolvemos la promesa
+              if (filesUploaded === totalFiles) {
+                resolve(true); // Todos los archivos se subieron correctamente
+              }
+            },
+            (error) => {
+              console.error(error);
+              reject(`Error al subir el archivo para ${campo}`);
+            }
+          );
+      });
+    });
+  }
+
+
+
+
+
+
 
   // Método para imprimir los datos de los formularios
   imprimirEntrevistaPrueba(): void {
-    console.log('Entrevista o Prueba Técnica:', this.formGroup2.value);
-    console.log('Cedula:', this.cedula);
-    console.log('Codigo Contrato:', this.codigoContrato);
     this.seleccionService.crearSeleccionParteDosCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
       response => {
         console.log('Respuesta exitosa Parte 2:', response);
@@ -459,6 +910,9 @@ export class SeleccionComponent implements OnInit {
       return '#66ff66'; // Fondo verde intenso (100% completo)
     }
   }
+
+
+
 
 
 }

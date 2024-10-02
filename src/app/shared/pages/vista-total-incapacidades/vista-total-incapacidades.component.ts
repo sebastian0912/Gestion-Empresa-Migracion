@@ -56,6 +56,14 @@ interface ColumnTitle {
 })
 export class VistaTotalIncapacidadesComponent implements OnInit {
   query: string = '';
+
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+  
   [key: string]: any;
   columnTitlesTable1excel: Record<string, string> = {
     marcaTemporal: 'Marca Temporal',

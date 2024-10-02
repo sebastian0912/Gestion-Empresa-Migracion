@@ -47,6 +47,13 @@ interface Archivo {
 })
 export class SubidaArchivosIncapacidadesComponent {
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+
   constructor(private incapacidadService: IncapacidadService, private router: Router) {
   }
   resultsincapacidades: any[] = [];

@@ -50,6 +50,12 @@ export interface ColumnConfig {
 export class BuscarIncapacidadComponent implements OnInit {
   query: string = '';
   columnFilters: { [key: string]: string[] } = {};
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 
   ColumnsTable1 = [
     'Tipo_de_documento',

@@ -5,8 +5,8 @@
   <div class="custom-loader"></div>
 </div>
 <div class="app-layout">
-  <app-navbar-lateral></app-navbar-lateral>
-  <div class="contenedor">
+  <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
+  <div class="contenedor" [class.minimized]="!isMenuVisible">
     <mat-card>
       <div class="ficha-container">
         <mat-card>

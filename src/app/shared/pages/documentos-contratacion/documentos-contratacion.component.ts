@@ -82,6 +82,12 @@ export class DocumentosContratacionComponent implements OnInit {
     });
   }
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 
   ngOnInit(): void {
     this.formFicha = this.fb.group({

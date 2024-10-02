@@ -8,21 +8,24 @@
 
 
 
-<div class="navbar">
 
-
-  <ul class="nav-links" [class.active]="isMenuVisible">
+<div class="navbar" [class.minimized]="!isMenuVisible">
+  <!--
+    <button class="toggle-btn" (click)="toggleMenu()">☰</button> 
+    -->
+  
+  <ul class="nav-links" [class.minimized]="!isMenuVisible">
 
     <div class="sidebar-header titulo-header">
       <h3>Gestión Empresa</h3>
-      
+
     </div>
 
     <div class="sidebar-header servicios-header">
       <h3>Menu</h3>
     </div>
 
-    <div class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home" *ngIf="hasPermission('home')">
+    <div class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home" >
       <img src="navbar/home-button.png" alt="Dashboard" class="icon">
       <li> Home </li>
     </div>
@@ -65,7 +68,7 @@
 
     <div class="blockLink" *ngIf="hasPermission('arl')" (click)="selectFile('arl')">
       <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
-      <li> Arl </li>
+      <li> ARL </li>
     </div>
 
     <div class="blockLink" *ngIf="hasPermission('adres')" (click)="selectFile('adres')">
@@ -113,7 +116,7 @@
     <div class="blockLink" [class.active]="currentRoute === '/ver-reporte'" routerLink="/ver-reporte"
       *ngIf="hasPermission('ver-reporte')">
       <img src="navbar/reporte.png" alt="Dashboard" class="icon">
-      <li>Ver reporte contratacion</li>
+      <li>Ver reporte contratación</li>
     </div>
 
     <div class="blockLink" *ngIf="hasPermission('personal-activo')" (click)="selectFile('personalActivo')">
@@ -158,7 +161,7 @@
       <li>Contratacion Archivos</li>
     </div>
     -->
-    
+
     <div class="blockLink" [class.active]="currentRoute === '/auditoria'" routerLink="/auditoria"
       *ngIf="hasPermission('auditoria')">
       <img src="navbar/documento.png" alt="Dashboard" class="icon">
@@ -176,6 +179,21 @@
       <img src="navbar/recibir-documentacion.png" alt="Dashboard" class="icon">
       <li>Recibir paquete de documentación</li>
     </div>
+
+    <!--reporte-vetado-->
+    <div class="blockLink" [class.active]="currentRoute === '/reporte-vetado'" routerLink="/reporte-vetado"
+      *ngIf="hasPermission('reporte-vetado')">
+      <img src="navbar/confidencialidad.png" alt="Dashboard" class="icon">
+      <li>Reporte Vetado</li>
+    </div>
+
+    <!--vetados-gerencia-->
+    <div class="blockLink" [class.active]="currentRoute === '/vetados-gerencia'" routerLink="/vetados-gerencia"
+      *ngIf="hasPermission('vetados-gerencia')">
+      <img src="navbar/confidencial.png" alt="Dashboard" class="icon">
+      <li>Vetados Gerencia</li>
+    </div>
+
 
     <!-- Dropdown para incapacidades -->
     <div class="dropdown blockLink">

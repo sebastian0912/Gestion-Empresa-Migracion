@@ -46,6 +46,12 @@ import { catchError, of } from 'rxjs';
 export class VacantesComponent implements OnInit {
   vacantes: any[] = [];
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 
   constructor(
     private dialog: MatDialog,
@@ -91,6 +97,7 @@ export class VacantesComponent implements OnInit {
             zonaquenoestaTrabajador: '',
 
             localizacionDeLaPersona: result.oficina.join(', '),
+            finca : result.finca,
             zonaquenoestaPostulante: '',
             lugarPrueba: cargo.lugarPrueba || null,
             experiencia: cargo.requiereExperiencia,
@@ -168,6 +175,7 @@ export class VacantesComponent implements OnInit {
             CargovacanteOtros: '',
 
             Localizaciondelavacante: result.empresa,
+            finca : result.finca,
             zonaquenoestaTrabajador: '',
 
             localizacionDeLaPersona: result.oficina.join(', '),
@@ -258,5 +266,94 @@ export class VacantesComponent implements OnInit {
     localStorage.setItem('vacanteSeleccionada', JSON.stringify(vacante));
     Swal.fire('Vacante seleccionada', 'La vacante ha sido almacenada para ejecutarla en su proceso de seleccion', 'success');
   }
+
+
+
+
+  // ------------------ Métodos para exportar a Excel ------------------
+  
+// Función para manejar la subida del archivo Excel
+subirArchivoExcel(event: any): void {
+  // Dispara el input oculto para seleccionar archivo
+  const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+  fileInput.click();
+}
+
+// Función para manejar la selección del archivo Excel
+onFileSelected(event: any): void {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+
+      // Suponemos que el primer sheet contiene los datos
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      // Convertir el Excel a JSON
+      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      // Excluir la primera fila (encabezados) y procesar el resto
+      const datosProcesados = this.procesarDatosExcel(jsonData);
+
+      // Llamar al servicio para subir los datos
+      this.enviarDatosExcel(datosProcesados);
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
+
+  // Reiniciar el input para permitir la selección de un nuevo archivo
+  event.target.value = '';
+}
+
+// Función para procesar los datos del Excel
+procesarDatosExcel(jsonData: any[]): any[] {
+  const datosProcesados = [];
+
+  // Iterar sobre las filas, comenzando en la segunda (índice 1)
+  for (let i = 1; i < jsonData.length; i++) {
+    const fila = jsonData[i];
+
+    if (fila && fila.length > 0) {
+      const vacante = {
+        empresa_usuaria: fila[0] || '',
+        finca: fila[1] || '',
+        centro_costos: fila[2] || '',
+        subcentro: fila[3] || '',
+        grupo: fila[4] || '',
+        categoria: fila[5] || '',
+        operacion: fila[6] || '',
+        sublabor: fila[7] || '',
+        salario: fila[8] || 0,
+        auxilio_transporte: fila[9] || 0,
+        ruta: fila[10] || '',
+        valor_transporte: fila[11] || 0,
+        horas_extras: fila[12] || 0,
+        porcentaje_arl: fila[13] || 0
+      };
+
+      datosProcesados.push(vacante);
+    }
+  }
+  return datosProcesados;
+}
+
+// Función para enviar los datos procesados al backend
+enviarDatosExcel(datos: any[]): void {
+  this.vacantesService.crearDetalleLaboral(datos).subscribe(
+    (response: any) => {
+      Swal.fire('Éxito', 'Datos subidos correctamente', 'success');
+      this.loadData();
+    },
+    (error: any) => {
+      console.error('Error en el servicio:', error);
+      Swal.fire('Error', 'Ocurrió un error al subir los datos', 'error');
+    }
+  );
+}
+
 
 }

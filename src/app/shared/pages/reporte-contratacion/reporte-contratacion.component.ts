@@ -68,9 +68,16 @@ export class ReporteContratacionComponent implements OnInit {
   numeroContratosAlianza: number = 0;
   numeroContratosApoyoLaboral: number = 0;
   isArlValidado: boolean = true;
-
+  nombre: string = '';
   processingErrors: string[] = [];
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+  
   constructor(
     private fb: FormBuilder,
     private jefeAreaService: ContratacionService,
@@ -81,6 +88,9 @@ export class ReporteContratacionComponent implements OnInit {
       cantidadContratosTuAlianza: [0],
       cantidadContratosApoyoLaboral: [0]
     });
+
+    
+
   }
 
   async ngOnInit() {
@@ -99,7 +109,16 @@ export class ReporteContratacionComponent implements OnInit {
       cantidadContratosApoyoLaboral: [null],
       notas: ['']
     });
-
+    
+    
+    this.jefeAreaService.getUser().then((data: any) => {
+      if (data) {
+        this.nombre = data.primer_nombre + ' ' + data.primer_apellido;
+      }
+    }).catch((error) => {
+      Swal.fire('Error', 'No se pudo obtener el nombre del usuario', 'error');
+    });
+    
 
     // Validación inicial del campo 'fecha' según el valor de 'esDeHoy'
     await this.manageFechaValidation();
@@ -737,7 +756,7 @@ export class ReporteContratacionComponent implements OnInit {
 
           let payload = {
             errores: erroresFormateados,
-            responsable: 'Nombre del Responsable', // Puedes obtener esto dinámicamente
+            responsable: this.nombre,
             tipo: 'Documento de Contratación'
           };
 
@@ -1290,7 +1309,7 @@ export class ReporteContratacionComponent implements OnInit {
           if (index < 195) {
             if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
               completeRow[index] = '-';
-            } else if (index === 11 || index === 1) {
+            } else if (index === 11 || index === 1 ) {
               completeRow[index] = this.removeSpecialCharacters(
                 cell.toString()
                   .replace(/,/g, '')      // Elimina comas
@@ -1299,7 +1318,7 @@ export class ReporteContratacionComponent implements OnInit {
                   .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
               );
             }
-            else if (index === 4) {
+            else if (index === 3) {
               completeRow[index] = this.removeSpecialCharacters(
                 cell.toString()
                   .replace(/,/g, '')      // Elimina comas

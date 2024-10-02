@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { catchError, filter } from 'rxjs/operators';
@@ -42,7 +42,7 @@ export class NavbarLateralComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
-  
+
   angelaVisible = false;
   currentRole: string = '';
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
@@ -70,12 +70,13 @@ export class NavbarLateralComponent implements OnInit {
       'forma-pago', 'desprendibles-pago',
       'arl', 'ausentismos', 'publicidad', 'vacantes',
       'seguimiento-auditoria', 'estadisticas-auditoria',
-      'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo',
-      'reporte-contratacion', 'seguimiento-auditoria', 'envio-paquete-documentacion',
-      'recibir-paquete-documentacion', 'formulario-incapacicades', 'subida-archivos-incapacidades',
+      'personal-activo',
+      'reporte-contratacion', 'seguimiento-auditoria',
+      'formulario-incapacicades', 'subida-archivos-incapacidades',
       'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
       'contratacion',
-      'archivos-contratacion', 'ver-reporte', 'adres'
+      'archivos-contratacion', 'ver-reporte', 'adres',
+      'reporte-vetado', 'vetados-gerencia',
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos'
@@ -106,13 +107,28 @@ export class NavbarLateralComponent implements OnInit {
       'ver-reporte', 'reporte-contratacion',
     ],
 
-    
+
   };
+
+  isMinimized: boolean = false;
+
+
 
   empleadosProblemas: any[] = [];
   empleadosSinProblemas: any[] = [];
 
-  public isMenuVisible = false;
+  public isMenuVisible = true;
+  // Crear un Output Event para emitir el cambio de estado
+  @Output() menuToggle = new EventEmitter<boolean>();
+
+  toggleMenu(): void {
+    this.isMenuVisible = !this.isMenuVisible;
+    this.menuToggle.emit(this.isMenuVisible); // Emitir el estado del menú
+
+    // Guardar el estado en localStorage
+    localStorage.setItem('menuVisible', JSON.stringify(this.isMenuVisible));
+  }
+
   currentRoute: string | undefined;
 
   constructor(
@@ -128,6 +144,10 @@ export class NavbarLateralComponent implements OnInit {
     ).subscribe((event: NavigationEnd) => {
       this.currentRoute = event.urlAfterRedirects;
     });
+
+    //const savedState = localStorage.getItem('menuVisible');
+    //this.isMenuVisible = savedState !== null ? JSON.parse(savedState) : true;
+
   }
 
   async ngOnInit(): Promise<void> {
@@ -149,7 +169,7 @@ export class NavbarLateralComponent implements OnInit {
         'contratacionnorte.ts@gmail.com'
       ];
 
-      if (user.correo_electronico === "tuafiliacion@tsservicios.co") {
+      if (user.correo_electronico === "tuafiliacion@tsservicios.co" || user.correo_electronico === "a.seguridad.ts@gmail.com") {
         this.currentRole = "CAROL";
       } else if (reporteIncapacidadEmails.includes(user.correo_electronico.toLowerCase())) {
         this.currentRole = "reporteIncapacidad";
@@ -167,9 +187,7 @@ export class NavbarLateralComponent implements OnInit {
 
 
 
-  toggleMenu(): void {
-    this.isMenuVisible = !this.isMenuVisible;
-  }
+
 
   async getUser(): Promise<any> {
     if (isPlatformBrowser(this.platformId)) {

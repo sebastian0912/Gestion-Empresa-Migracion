@@ -35,5 +35,10 @@ import { NgIf } from '@angular/common';
   styleUrl: './crear-estructura-documental.component.css'
 })
 export class CrearEstructuraDocumentalComponent {
+  public isMenuVisible = true;
 
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 }

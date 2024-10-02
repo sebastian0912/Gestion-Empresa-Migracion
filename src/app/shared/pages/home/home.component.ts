@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { InfoCardComponent } from '../../components/info-card/info-card.component';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -29,5 +29,10 @@ import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  public isMenuVisible = true;
 
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 }

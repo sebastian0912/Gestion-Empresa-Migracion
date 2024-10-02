@@ -35,5 +35,10 @@ import { NgIf } from '@angular/common';
   styleUrl: './auditoria.component.css'
 })
 export class AuditoriaComponent {
+  public isMenuVisible = true;
 
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 }

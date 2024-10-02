@@ -112,6 +112,7 @@ body {
     align-items: center;
 }
 
+
 .titulo {
     margin-bottom: 20px;
     font-size: 16pt;
@@ -189,16 +190,16 @@ mat-card {
     background-color: #f2f2f2;
 }
 
-td button {
-    background-color: red;
-}
+
 
 .filtro {
     width: 50%;
 }
 
-
-
+mat-icon{
+    cursor: pointer;
+    margin-left: 5px;
+}
 
 .tabla {
     margin-top: 10px;

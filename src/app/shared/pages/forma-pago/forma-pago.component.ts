@@ -45,6 +45,12 @@ export class FormaPagoComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 
   constructor(private pagosService: PagosService) {
 

@@ -60,6 +60,13 @@ export class AusentismosComponent implements OnInit {
   loaderVisible = false;
   counterVisible = false;
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+
   constructor(
     private pagosService: PagosService,
     private contratacionService: ContratacionService
@@ -224,7 +231,7 @@ export class AusentismosComponent implements OnInit {
                   .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
               );
             }
-            else if (index === 4) {
+            else if (index === 3) {
               completeRow[index] = this.removeSpecialCharacters(
                 cell.toString()
                   .replace(/,/g, '')      // Elimina comas

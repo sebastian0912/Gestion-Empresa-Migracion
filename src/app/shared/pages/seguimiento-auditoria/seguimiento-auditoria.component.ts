@@ -59,6 +59,13 @@ export class SeguimientoAuditoriaComponent implements OnInit {
 
   dataSource = new MatTableDataSource<any>([]);
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+  
   constructor(
     private pagosService: PagosService,
     private seguimientoHvService: SeguimientoHvService,

@@ -32,6 +32,13 @@ import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar
 export class RecibirPaqueteDocumentacionComponent {
   myForm!: FormGroup;
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+
   constructor(
     private fb: FormBuilder,    
 

@@ -19,30 +19,39 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: flex-start; /* Alineación superior para evitar movimiento */
+    align-items: flex-start;
+    /* Alineación superior para evitar movimiento */
 }
 
 mat-card:nth-child(1) {
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     width: 30%;
     margin: 10px;
-    position: sticky; /* Mantener el card 1 en su lugar al hacer scroll */
-    top: 10px; /* Definir una distancia desde la parte superior */
+    position: sticky;
+    /* Mantener el card 1 en su lugar al hacer scroll */
+    top: 10px;
+    /* Definir una distancia desde la parte superior */
 }
 
 .example-full-width {
-    width: 45%;
+    width: 100%;
 }
 
 .example-full-width2 {
     width: 100%;
 }
 
+.example-full-width3 {
+    width: 30%;
+    margin: 5px;
+}
+
 mat-card:nth-child(2) {
     width: 60%;
     margin: 10px;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-    overflow-y: auto; /* Permitir desplazamiento si el contenido se expande */
+    overflow-y: auto;
+    /* Permitir desplazamiento si el contenido se expande */
 }
 
 
@@ -50,6 +59,8 @@ mat-card:nth-child(2) {
 
 .opcionesVer {
     width: 72vw;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 p {
@@ -64,7 +75,7 @@ mat-card-subtitle {
     font-size: 13pt;
 }
 
-mat-card-subtitle{
+mat-card-subtitle {
     margin-bottom: 10px;
 }
 
@@ -75,17 +86,65 @@ mat-card-subtitle{
 }
 
 .vacante-card {
-    position: relative; /* Added to ensure absolute positioning works inside the card */
+    position: relative;
+    /* Added to ensure absolute positioning works inside the card */
 }
 
 .actions-wrapper {
-    position: absolute; /* Ensures the button is positioned absolutely inside the card */
-    top: 10px; /* Adjust the top padding as needed */
-    right: 10px; /* Ensures it stays on the right side */
-    z-index: 1; /* Brings the button on top of other elements */
+    position: absolute;
+    /* Ensures the button is positioned absolutely inside the card */
+    top: 10px;
+    /* Adjust the top padding as needed */
+    right: 10px;
+    /* Ensures it stays on the right side */
+    z-index: 1;
+    /* Brings the button on top of other elements */
 }
 
 .fixed-button {
-    background-color: white; /* Optional: to give the button a background */
-    box-shadow: none; /* Remove default shadow if present */
+    background-color: white;
+    /* Optional: to give the button a background */
+    box-shadow: none;
+    /* Remove default shadow if present */
+}
+
+
+
+
+/*-----------------------------------*/
+
+.seccion {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* Dos columnas de igual tamaño */
+    gap: 16px;
+    /* Espacio entre los elementos */
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    /* Para permitir que el nombre del archivo se acomode debajo del input */
+}
+
+.input-container mat-form-field {
+    flex: 1;
+}
+
+.input-container button {
+    margin-right: 8px;
+}
+
+.uploaded-file-name {
+    display: block;
+    width: 100%;
+    /* Ocupa todo el ancho del contenedor */
+    margin-top: -16px;
+    /* Añade un pequeño margen superior para separarlo del input */
+    font-size: 0.85rem;
+    color: #666;
+    /* Color más suave para el nombre del archivo */
+    word-wrap: break-word;
+    font-style: italic;
 }

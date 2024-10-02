@@ -1,13 +1,24 @@
 <div class="app-layout">
-    <app-navbar-lateral></app-navbar-lateral>
-    <div class="contenedor">
+    <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
+    <div class="contenedor" [class.minimized]="!isMenuVisible">
         <app-navbar-superior></app-navbar-superior>
         <div class="anadir">
             <button mat-flat-button class="add-button" (click)="openModal()">
                 <mat-icon>add</mat-icon>
                 <span>Añadir Vacante</span>
             </button>
+
+            <!-- Botón para subir el archivo Excel -->
+            <button mat-flat-button class="add-button" (click)="subirArchivoExcel($event)">
+                <mat-icon>upload_file</mat-icon>
+                <span>Subir Excel Vacantes</span>
+            </button>
+
+            <!-- Input para seleccionar el archivo Excel, oculto -->
+            <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden>
+
         </div>
+
 
         <div class="vacantes-container">
             <mat-card class="vacante-card" *ngFor="let vacante of vacantes">

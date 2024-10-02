@@ -13,6 +13,19 @@
             </mat-autocomplete>
         </mat-form-field>
 
+        <!-- Finca correspondiente a la empresa seleccionada -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Finca</mat-label>
+            <input type="text" placeholder="Seleccionar finca" matInput [matAutocomplete]="autoFinca"
+                formControlName="finca">
+            <mat-autocomplete #autoFinca="matAutocomplete">
+                <mat-option *ngFor="let finca of fincas" [value]="finca">
+                    {{ finca }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+
         <!-- Temporal que necesita -->
         <mat-form-field class="example-full-width">
             <mat-label>Temporal que necesita</mat-label>
@@ -47,8 +60,8 @@
                     <input type="text" placeholder="Filtrar cargo" matInput [matAutocomplete]="autoCargo"
                         formControlName="cargo">
                     <mat-autocomplete #autoCargo="matAutocomplete">
-                        <mat-option *ngFor="let cargos of cargosFiltrados | async" [value]="cargos.nombredelavacante">
-                            {{ cargos.nombredelavacante }}
+                        <mat-option *ngFor="let cargos of cargosFiltrados | async" [value]="cargos">
+                            {{ cargos }}
                         </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
@@ -77,7 +90,7 @@
                         <mat-label>Hora de Prueba Técnica</mat-label>
                         <input matInput type="time" formControlName="horaPrueba">
                     </mat-form-field>
-                    
+
 
                     <mat-form-field class="example-full-width">
                         <mat-label>Lugar de Prueba Técnica</mat-label>

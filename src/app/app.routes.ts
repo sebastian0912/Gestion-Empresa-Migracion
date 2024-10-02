@@ -29,7 +29,8 @@ import { VistaTotalIncapacidadesComponent } from './shared/pages/vista-total-inc
 import { SubidaArchivosIncapacidadesComponent } from './shared/pages/subida-archivos-incapacidades/subida-archivos-incapacidades.component';
 import { DocumentosContratacionComponent } from './shared/pages/documentos-contratacion/documentos-contratacion.component';
 import { VerReporteComponent } from './shared/pages/ver-reporte/ver-reporte.component';
-
+import { ReporteVetadoComponent } from './shared/pages/reporte-vetado/reporte-vetado.component';
+import { VetadosGerenciaComponent } from './shared/pages/vetados-gerencia/vetados-gerencia.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -62,5 +63,8 @@ export const routes: Routes = [
   { path: 'formulario-reporte/:cedula', component: FormularioReporteComponent },
   { path: 'subida-archivos-incapacidades', component: SubidaArchivosIncapacidadesComponent },
   { path: 'archivos-contratacion', component: DocumentosContratacionComponent },
-  { path: 'ver-reporte', component: VerReporteComponent }
+  { path: 'ver-reporte', component: VerReporteComponent },
+  { path: 'reporte-vetado', component: ReporteVetadoComponent },
+  { path: 'vetados-gerencia', component: VetadosGerenciaComponent }
+  
 ];

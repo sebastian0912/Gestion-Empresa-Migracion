@@ -68,9 +68,11 @@ export class SeleccionService {
       contraloria: formData.contraloria,
       rama_judicial: formData.ramaJudicial,   // Nombre mapeado
       medidas_correctivas: formData.medidasCorrectivas, // Nombre mapeado
-      area_aplica: formData.areaAplica,
+      area_aplica: formData.area_aplica,
       jwt: this.getToken()
     };
+
+    console.log('Data:', requestData);
 
     // Realizar la solicitud POST al backend
     return this.http.post(`${this.apiUrl}/Seleccion/crearSeleccionParteUnoCandidato`, requestData, { headers }).pipe(

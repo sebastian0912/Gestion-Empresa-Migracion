@@ -35,6 +35,14 @@ import { NgIf } from '@angular/common';
   styleUrl: './subir-documentacion.component.css'
 })
 export class SubirDocumentacionComponent implements OnInit {
+
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+  
   constructor() { }
 
 

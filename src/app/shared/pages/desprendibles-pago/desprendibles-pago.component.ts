@@ -46,6 +46,12 @@ export class DesprendiblesPagoComponent implements OnInit {
   user: any
   correo: any;
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
 
   overlayVisible = false;
   loaderVisible = false;

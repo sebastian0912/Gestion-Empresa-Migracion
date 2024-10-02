@@ -61,6 +61,13 @@ export class FormularioReporteComponent implements OnInit {
     'respuesta_final_incapacidad'
   ];
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+
   fieldMap: { [key: string]: string } = {
     'Número de consecutivo del sistema': 'consecutivoSistema_id',
     'Fecha de confirmación de radicación': 'confirmacion_fecha_de_radicacion',

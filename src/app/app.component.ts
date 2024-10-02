@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
   updateAvailable: boolean = false;
   updateDownloaded: boolean = false;
   downloadProgress: number = 0;
+  
 
   async ngOnInit() {
     if (typeof window !== 'undefined' && window.electron) {

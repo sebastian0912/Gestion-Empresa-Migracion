@@ -30,6 +30,13 @@ import { MatCardModule } from '@angular/material/card';
 export class EnvioPaqueteDocumentacionComponent {
   myForm: FormGroup;
 
+  public isMenuVisible = true;
+
+  // Método para manejar el evento del menú
+  onMenuToggle(isMenuVisible: boolean): void {
+    this.isMenuVisible = isMenuVisible;
+  }
+  
   sedes = [
     "FACA_PRINCIPAL",
     "FACA_CENTRO",

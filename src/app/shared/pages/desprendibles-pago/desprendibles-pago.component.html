@@ -9,8 +9,8 @@
 <input type="file" id="fileInput" (change)="cargarExcel($event)" accept=".xlsx, .xls" style="display: none;">
 
 <div class="app-layout">
-  <app-navbar-lateral></app-navbar-lateral>
-  <div class="contenedor">
+  <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
+  <div class="contenedor" [class.minimized]="!isMenuVisible">
     <app-navbar-superior></app-navbar-superior>
     <mat-card>
       <mat-card-content>
