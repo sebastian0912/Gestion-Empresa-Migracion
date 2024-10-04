@@ -34,7 +34,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatInputModule,
     MatMenuModule,
     NgIf
-    
+
   ],
   templateUrl: './ver-reporte.component.html',
   styleUrl: './ver-reporte.component.css'
@@ -76,15 +76,15 @@ export class VerReporteComponent implements OnInit {
     if (user) {
       this.userCorreo = user.correo_electronico;
       this.userNombre = user.primer_nombre + ' ' + user.primer_apellido;
-    }    
-    //this.obtenerReportes();    
+    }
+    this.obtenerReportes();
     this.dataSource.filterPredicate = this.createFilter(); // Ensure filter applies to the first table
   }
 
   trackByIndex(index: number, item: any): any {
     return index;
   }
-  
+
 
   async obtenerReportes(): Promise<void> {
     // Mostrar el swal de cargando
@@ -97,8 +97,8 @@ export class VerReporteComponent implements OnInit {
         Swal.showLoading();
       }
     });
-   
-    if (this.userCorreo != "tuafiliacion@tsservicios.co" && this.userCorreo != "programador.ts@gmail.com" && this.userCorreo != "a.seguridad.ts@gmail.com" ) {
+
+    if (this.userCorreo != "tuafiliacion@tsservicios.co" && this.userCorreo != "programador.ts@gmail.com" && this.userCorreo != "a.seguridad.ts@gmail.com") {
       // Llamar al servicio para obtener los reportes
       this.contratacionService.obtenerTodosLosReportes(this.userNombre).subscribe(
         async (response) => {
@@ -362,7 +362,7 @@ export class VerReporteComponent implements OnInit {
         // Llama al servicio para descargar el archivo Excel
         this.contratacionService.obtenerBaseContratacionPorFechas(start, end).subscribe(
           (response: Blob) => {
-            
+
             const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const fileName = `reporte_contratacion_${start}_a_${end}.xlsx`;
 
@@ -453,36 +453,36 @@ export class VerReporteComponent implements OnInit {
   }
 
 
-// Función para formatear los datos y ordenar las fechas de mayor a menor
-formatData(data: any): any[] {
-  const formattedData = [];
+  // Función para formatear los datos y ordenar las fechas de mayor a menor
+  formatData(data: any): any[] {
+    const formattedData = [];
 
-  // Obtener las fechas y ordenarlas de mayor a menor
-  const fechas = Object.keys(data).sort((a, b) => {
-    // Convertir 'dd/mm/yyyy' a objetos Date para compararlas
-    const dateA = new Date(a.split('/').reverse().join('-'));
-    const dateB = new Date(b.split('/').reverse().join('-'));
-    return dateB.getTime() - dateA.getTime(); // Orden descendente
-  });
+    // Obtener las fechas y ordenarlas de mayor a menor
+    const fechas = Object.keys(data).sort((a, b) => {
+      // Convertir 'dd/mm/yyyy' a objetos Date para compararlas
+      const dateA = new Date(a.split('/').reverse().join('-'));
+      const dateB = new Date(b.split('/').reverse().join('-'));
+      return dateB.getTime() - dateA.getTime(); // Orden descendente
+    });
 
-  // Iterar sobre las fechas ya ordenadas
-  for (const fecha of fechas) {
-    const detalles = data[fecha];
-    let isFirstRow = true;
-    
-    // Para cada fecha, iterar sobre los centros de costo
-    for (const item of detalles) {
-      formattedData.push({
-        fechaIngreso: isFirstRow ? fecha : '', // Solo muestra la fecha en la primera fila
-        centroCosto: item.centro_costo,
-        total: item.total
-      });
-      isFirstRow = false; // Para las siguientes filas de la misma fecha, la fecha queda vacía
+    // Iterar sobre las fechas ya ordenadas
+    for (const fecha of fechas) {
+      const detalles = data[fecha];
+      let isFirstRow = true;
+
+      // Para cada fecha, iterar sobre los centros de costo
+      for (const item of detalles) {
+        formattedData.push({
+          fechaIngreso: isFirstRow ? fecha : '', // Solo muestra la fecha en la primera fila
+          centroCosto: item.centro_costo,
+          total: item.total
+        });
+        isFirstRow = false; // Para las siguientes filas de la misma fecha, la fecha queda vacía
+      }
     }
-  }
 
-  return formattedData;
-}
+    return formattedData;
+  }
 
 
 
