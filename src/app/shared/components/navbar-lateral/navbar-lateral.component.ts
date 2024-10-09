@@ -69,7 +69,7 @@ export class NavbarLateralComponent implements OnInit {
     ADMIN: [
       'forma-pago', 'desprendibles-pago',
       'arl', 'ausentismos', 'publicidad', 'vacantes',
-      'seguimiento-auditoria', 'estadisticas-auditoria',
+      'seguimiento-auditoria', 'estadisticas-auditoria', 'seguimiento-auditoria-archivo',
       'personal-activo',
       'reporte-contratacion', 'seguimiento-auditoria',
       'formulario-incapacicades', 'subida-archivos-incapacidades',

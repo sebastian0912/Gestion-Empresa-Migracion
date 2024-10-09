@@ -1,0 +1,156 @@
+.title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.example-full-width {
+    width: 40%;
+}
+
+.buscar {
+    width: 100%;
+}
+
+input[readonly] {
+    border: none;
+    background: transparent;
+    text-align: center;
+    pointer-events: none;
+    width: 130px;
+}
+
+.especial {
+    width: 150px;
+    min-width: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.editado {
+    width: 50px;
+    min-width: 50px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+input[readonly]:focus {
+    outline: none;
+
+}
+
+input.editable {
+    border: 1px solid #ccc;
+    padding: 4px;
+    text-align: left;
+    width: 130px;
+    min-width: 130px;
+}
+
+.mat-cell .editable {
+    width: 130px;
+    min-width: 130px;
+    /* Ajusta este valor según sea necesario */
+}
+
+
+
+.filtro{
+    margin-top: 10px;
+}
+
+.caja{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Container for the cards within each group */
+
+mat-expansion-panel {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+mat-expansion-panel-header {
+    position: sticky;
+    top: 0;
+    z-index: 400;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    margin: 10px;
+
+}
+
+.card-container>div {
+    width: calc(32% - 10px);
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    margin: 10px;
+}
+
+/* Styling for the cards */
+.group-card {
+    width: calc(100%);
+
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #ffffff;
+    padding: 16px;
+    position: relative;
+    /* Ensures the card's position doesn't shift */
+    will-change: transform, box-shadow;
+    /* Optimization for smoother hover transitions */
+}
+
+.group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Title styling inside the cards */
+.group-card mat-card-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+/* Content styling inside the cards */
+.group-card mat-card-content p {
+    margin: 5px 0;
+    font-size: 1em;
+    color: #495057;
+}
+
+/* Prevents layout shift on hover */
+.group-card:before {
+    content: '';
+    display: block;
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+.highlight-red {
+    background-color: #ffcccc; /* Fondo rojo claro */
+    color: red; /* Texto rojo */
+  }
+  

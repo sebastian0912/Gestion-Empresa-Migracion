@@ -1,0 +1,220 @@
+<div class="app-layout">
+  <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
+  <div class="contenedor" [class.minimized]="!isMenuVisible">
+    <app-navbar-superior></app-navbar-superior>
+    <mat-card>
+      <mat-card-content>
+
+        <div class="caja">
+          <h1 class="title">Seguimientos HV</h1>
+        
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openDateRangeDialog()">
+              <mat-icon>event</mat-icon>
+              <span>Calendario</span>
+            </button>
+        
+            <button mat-menu-item (click)="descargarSinRevisar()">
+              <mat-icon>file_download</mat-icon>
+              <span>Descargar Excel de las personas sin revisar</span>
+            </button>
+        
+            <button mat-menu-item (click)="seleccionarArchivo()">
+              <mat-icon>upload_file</mat-icon>
+              <span>Subir Archivo</span>
+            </button>
+
+            <!--generar excel-->
+            <button mat-menu-item (click)="generarExcel()">
+              <mat-icon>file_download</mat-icon>
+              <span>Descargar Excel</span>
+            </button>
+
+          </mat-menu>
+        
+          <input type="file" id="inputFile" style="display: none;" (change)="cargarArchivo($event)" accept=".xlsx, .xls">
+        </div>
+        
+
+        <!-- Filtro Global -->
+        <mat-form-field class="filtro-global">
+          <mat-label>Global Filter</mat-label>
+          <input matInput (keyup)="applyGlobalFilter($event)" placeholder="Filter All" #globalInput>
+        </mat-form-field>
+
+        <ng-container *ngIf="groupedData">
+          <mat-accordion>
+            <!-- SIN_REVISAR -->
+            <mat-expansion-panel *ngIf="filteredSIN_REVISAR.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  SIN_REVISAR ({{filteredSIN_REVISAR.length}})
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para SIN_REVISAR -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'SIN_REVISAR')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredSIN_REVISAR" class="card-wrapper">
+                  <mat-card class="group-card">
+                    <div class="audit-icon" (click)="openAuditDialog(item)">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- REVISADO -->
+            <mat-expansion-panel *ngIf="filteredREVISADO.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  REVISADO ({{filteredREVISADO.length}})
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para REVISADO -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'REVISADO')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredREVISADO">
+                  <mat-card class="group-card"
+                    [ngClass]="{'highlight-red': item.zero_count > 0 || item.error_fechas?.length > 0 || item.error_salarios?.length > 0}">
+                    <div class="audit-icon" (click)="openAuditEditDialog(item)"
+                      *ngIf="correo === 'archivotualianza@gmail.com' || correo === 'programador.ts@gmail.com' || rol === 'GERENCIA'">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                      <p><strong>Número de 0:</strong> {{ item.zero_count }}</p>
+                      <p><strong>Responsable:</strong> {{ item.responsable }}</p>
+
+                      <!-- Mini Accordion for Error Fechas -->
+                      <mat-accordion *ngIf="item.error_fechas?.length">
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>
+                              Errores de Fechas ({{ item.error_fechas.length }})
+                            </mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <ul>
+                            <li *ngFor="let error of item.error_fechas">{{ error }}</li>
+                          </ul>
+                        </mat-expansion-panel>
+                      </mat-accordion>
+
+                      <!-- Mini Accordion for Error Salarios -->
+                      <mat-accordion *ngIf="item.error_salarios?.length">
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>
+                              Errores de Salarios ({{ item.error_salarios.length }})
+                            </mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <ul>
+                            <li *ngFor="let error of item.error_salarios">{{ error }}</li>
+                          </ul>
+                        </mat-expansion-panel>
+                      </mat-accordion>
+
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+
+            <!-- ARCHIVOEDITADO -->
+            <mat-expansion-panel *ngIf="filteredARCHIVOEDITADO.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  ARCHIVOEDITADO ({{filteredARCHIVOEDITADO.length}})
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para ARCHIVOEDITADO -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'ARCHIVOEDITADO')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredARCHIVOEDITADO">
+                  <mat-card class="group-card">
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- ARCHIVOREVISADO -->
+            <mat-expansion-panel *ngIf="filteredARCHIVOREVISADO.length > 0 ">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  ARCHIVOREVISADO ({{filteredARCHIVOREVISADO.length}})
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+              <!-- Filtro específico para ARCHIVOREVISADO -->
+              <mat-form-field class="filtro">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyGroupFilter($event, 'ARCHIVOREVISADO')" placeholder="Filter" #input>
+              </mat-form-field>
+
+              <div class="card-container">
+                <div *ngFor="let item of filteredARCHIVOREVISADO">
+                  <mat-card class="group-card">
+                    <mat-card-title>{{ item.apellidos_y_nombres }}</mat-card-title>
+                    <mat-card-content>
+                      <p><strong>Cédula:</strong> {{ item.cedula }}</p>
+                      <p><strong>Fecha de Ingreso:</strong> {{ item.fecha_de_ingreso }}</p>
+                      <p><strong>Centro de Costo:</strong> {{ item.centro_de_costo }}</p>
+                      <p><strong>Código Contratación:</strong> {{ item.codigo_contratacion }}</p>
+                      <p><strong>Temporal:</strong> {{ item.tipo }}</p>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-expansion-panel>
+
+          </mat-accordion>
+        </ng-container>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

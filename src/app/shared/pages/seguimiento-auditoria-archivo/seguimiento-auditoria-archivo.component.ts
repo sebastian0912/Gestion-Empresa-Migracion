@@ -21,9 +21,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { SeguimientoHvComponent } from '../../components/seguimiento-hv/seguimiento-hv.component';
 import { lastValueFrom } from 'rxjs';
+import { SeguimientoHvArchivoService } from '../../services/seguimiento-hv-archivo/seguimiento-hv-archivo.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
-  selector: 'app-seguimiento-auditoria',
+  selector: 'app-seguimiento-auditoria-archivo',
   standalone: true,
   imports: [
     NavbarLateralComponent,
@@ -42,12 +44,13 @@ import { lastValueFrom } from 'rxjs';
     DateRangeDialogComponent,
     MatDialogModule,
     MatExpansionModule,
-    SeguimientoHvComponent
+    SeguimientoHvComponent,
+    MatMenuModule
   ],
-  templateUrl: './seguimiento-auditoria.component.html',
-  styleUrls: ['./seguimiento-auditoria.component.css']
+  templateUrl: './seguimiento-auditoria-archivo.component.html',
+  styleUrl: './seguimiento-auditoria-archivo.component.css'
 })
-export class SeguimientoAuditoriaComponent implements OnInit {
+export class SeguimientoAuditoriaArchivoComponent implements OnInit {
   correo: string | null = null;
   rol: string | null = null;
 
@@ -68,13 +71,14 @@ export class SeguimientoAuditoriaComponent implements OnInit {
 
   constructor(
     private pagosService: PagosService,
-    private seguimientoHvService: SeguimientoHvService,
+    private seguimientoHvService: SeguimientoHvArchivoService,
     private dialog: MatDialog,
   ) { }
 
   isLoading = true; // Add a loading state
 
   async ngOnInit(): Promise<void> {
+
     try {
       this.isLoading = true;
       const user = await this.pagosService.getUser();
@@ -84,21 +88,6 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       await this.loadData();
 
       this.applyAllFilters(); // Aplicar filtros después de cargar datos
-      /*
-          this.seguimientoHvService.buscarSeguimientoHv("todos").subscribe(
-            (response: any) => {
-              this.dataSource.data = response;
-              this.isLoading = false; // Loading complete
-            },
-            (error: any) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ha ocurrido un error al obtener la información'
-              });
-              this.isLoading = false; // Loading failed
-            }
-          );*/
 
     } catch (error) {
       Swal.fire({
@@ -108,6 +97,98 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       });
       this.isLoading = false; // Loading failed
     }
+
+  }
+
+  descargarSinRevisar(): void {
+    // Define el arreglo de datos con las columnas requeridas
+    const datosParaExcel = this.filteredSIN_REVISAR.map((item: any) => {
+      return {
+        Cedula: item.cedula,
+        'Codigo Archivo': '', // Columna vacía
+        'Apellidos y Nombres': item.apellidos_y_nombres,
+        'Fecha de Ingreso': item.fecha_de_ingreso,
+        'Centro de Costo': item.centro_de_costo,
+        'Codigo de Contrato': item.codigo_contratacion,
+        Temporal: item.tipo,
+      };
+    });
+    console.log(datosParaExcel);
+
+    // Crear una nueva hoja de trabajo (worksheet)
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+
+    // Crear un libro de trabajo (workbook) que contenga la hoja
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sin Revisar');
+
+    // Generar y descargar el archivo Excel
+    XLSX.writeFile(workbook, 'sin_revisar.xlsx');
+  }
+
+  seleccionarArchivo(): void {
+    const inputFile = document.getElementById('inputFile') as HTMLInputElement;
+    inputFile.click();
+  }
+
+  cargarArchivo(event: any): void {
+    const file = event.target.files[0]; // Obtener el archivo seleccionado
+    const reader: FileReader = new FileReader();
+
+    reader.onload = (e: any) => {
+      const data: Uint8Array = new Uint8Array(e.target.result);
+      const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'array' });
+
+      // Seleccionar la primera hoja de trabajo (worksheet)
+      const sheetName: string = workbook.SheetNames[0];
+      const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+
+      // Convertir la hoja de trabajo en JSON a partir de la fila 3 (índice 2)
+      const datos: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      // Procesar las filas desde la tercera en adelante (índice 2)
+      const filas = datos.slice(2).map((fila, index) => {
+        return fila.reduce((obj: any, valor: any, i: number) => {
+          obj[`${i}`] = valor;
+          return obj;
+        }, {});
+      });
+
+      console.log(filas); // Aquí tienes los datos desde la fila 3 en adelante, con índices de columnas
+      this.seguimientoHvService.enviarSeguimientoHvArchivo(filas)
+      .then(observable => {
+        observable.subscribe({
+          next: (response: any) => {
+            console.log(response);
+            Swal.fire({
+              icon: 'success',
+              title: 'Éxito',
+              text: 'Se ha cargado el archivo correctamente'
+            });
+          },
+          error: (error: any) => {
+            console.error(error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ha ocurrido un error al cargar el archivo'
+            });
+          },
+          complete: () => {
+            this.loadData(); // Recargar los datos después de cargar el archivo
+          }
+        });
+      });
+    
+    
+      
+      
+
+      // Limpiar el input de archivo
+      (document.getElementById('inputFile') as HTMLInputElement).value = '';
+    };
+
+    reader.readAsArrayBuffer(file); // Leer el archivo como array buffer
   }
 
   async loadData(): Promise<void> {
@@ -120,12 +201,34 @@ export class SeguimientoAuditoriaComponent implements OnInit {
       this.groupedData = response;
       this.applyAllFilters(); // Asegurarse de que los filtros se apliquen después de cargar datos
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Ha ocurrido un error al mostrar la información3'
       });
     }
+  }
+
+  generarExcel(): void {
+    this.seguimientoHvService.generarComparacion().subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'comparacion.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error: any) => {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al generar el archivo Excel'
+        });
+      }
+    });
   }
 
   applyAllFilters(): void {

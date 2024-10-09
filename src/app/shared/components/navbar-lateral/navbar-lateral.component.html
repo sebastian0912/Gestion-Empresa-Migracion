@@ -11,8 +11,8 @@
 
 <div class="navbar" [class.minimized]="!isMenuVisible">
   <!--
-    -->
     <button class="toggle-btn" (click)="toggleMenu()">☰</button> 
+    -->
   
   <ul class="nav-links" [class.minimized]="!isMenuVisible">
 
@@ -128,6 +128,13 @@
       routerLink="/seguimiento-auditoria" *ngIf="hasPermission('seguimiento-auditoria')">
       <img src="navbar/archivos.png" alt="Dashboard" class="icon">
       <li>Seguimiento HV</li>
+    </div>
+
+    <!-- seguimiento-auditoria-archivo -->
+    <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria-archivo'"
+      routerLink="/seguimiento-auditoria-archivo" *ngIf="hasPermission('seguimiento-auditoria-archivo')">
+      <img src="navbar/archivo.png" alt="Dashboard" class="icon">
+      <li>Seguimiento HV Archivo</li>
     </div>
 
     <div class="blockLink" [class.active]="currentRoute === '/estadisticas-auditoria'"

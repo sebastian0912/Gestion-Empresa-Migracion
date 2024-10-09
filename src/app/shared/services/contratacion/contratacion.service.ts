@@ -310,7 +310,6 @@ export class ContratacionService {
 
 
   public obtenerTodosLosReportes(nombre: string): Observable<any> {
-    console.log(nombre);
     const headers = this.createAuthorizationHeader();
     
     // Usar una sola ruta para obtener todos o filtrar por nombre

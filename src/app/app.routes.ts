@@ -31,6 +31,7 @@ import { DocumentosContratacionComponent } from './shared/pages/documentos-contr
 import { VerReporteComponent } from './shared/pages/ver-reporte/ver-reporte.component';
 import { ReporteVetadoComponent } from './shared/pages/reporte-vetado/reporte-vetado.component';
 import { VetadosGerenciaComponent } from './shared/pages/vetados-gerencia/vetados-gerencia.component';
+import { SeguimientoAuditoriaArchivoComponent } from './shared/pages/seguimiento-auditoria-archivo/seguimiento-auditoria-archivo.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -65,6 +66,6 @@ export const routes: Routes = [
   { path: 'archivos-contratacion', component: DocumentosContratacionComponent },
   { path: 'ver-reporte', component: VerReporteComponent },
   { path: 'reporte-vetado', component: ReporteVetadoComponent },
-  { path: 'vetados-gerencia', component: VetadosGerenciaComponent }
-  
+  { path: 'vetados-gerencia', component: VetadosGerenciaComponent },
+  { path: 'seguimiento-auditoria-archivo', component: SeguimientoAuditoriaArchivoComponent }  
 ];
