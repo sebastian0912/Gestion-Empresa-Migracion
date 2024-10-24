@@ -36,6 +36,7 @@ export class IncapacidadService {
     const token = this.getToken();
     return token ? new HttpHeaders().set('Authorization', token) : new HttpHeaders();
   }
+  
   createIncapacidad(incapacidad: Incapacidad): Observable<Incapacidad> {
     const urlcompleta = `${this.apiUrl}/Incapacidades/crearIncapacidad`;
     const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
@@ -193,6 +194,7 @@ export class IncapacidadService {
   deleteIncapacidad(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
   async subirExcelSST(
     datos: any
   ): Promise<any> {
@@ -220,6 +222,7 @@ export class IncapacidadService {
       throw error;
     }
   }
+
   async subirExcelARL(
     datos: any
   ): Promise<any> {

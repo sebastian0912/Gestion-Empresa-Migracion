@@ -157,7 +157,8 @@ mat-card {
     width: 100%;
     max-width: 75vw;
     padding: 20px;
-    margin: 0 auto; /* Centra el mat-card */
+    margin: 0 auto;
+    /* Centra el mat-card */
 }
 
 .example-full-width {
@@ -248,7 +249,8 @@ mat-card {
     }
 
     .table-container table {
-        font-size: 12px; /* Reduce el tamaño de fuente para móviles */
+        font-size: 12px;
+        /* Reduce el tamaño de fuente para móviles */
     }
 
     .informacion .titulo {
@@ -260,14 +262,15 @@ mat-card {
         font-size: 12pt;
     }
 
-    .search-container{
+    .search-container {
         flex-direction: column;
     }
 }
 
 @media (max-width: 480px) {
     .table-container table {
-        font-size: 10px; /* Aún más pequeño para pantallas muy pequeñas */
+        font-size: 10px;
+        /* Aún más pequeño para pantallas muy pequeñas */
     }
 
     .boton {
@@ -275,7 +278,7 @@ mat-card {
         width: 100%;
     }
 
-    .search-container{
+    .search-container {
         flex-direction: column;
     }
 
@@ -348,7 +351,7 @@ mat-card {
     flex-wrap: wrap;
     gap: 20px;
     justify-content: flex-start;
-    width: 100%;    
+    width: 100%;
 }
 
 .vacante-card {
@@ -359,7 +362,7 @@ mat-card {
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     transition: transform 0.3s;
-    min-width: 80vw;
+    min-width: 353px;
     max-width: 353px;
 }
 
@@ -417,4 +420,14 @@ mat-card-content p {
     display: flex;
     justify-content: flex-end;
     padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .vacantes-container {
+        width: 100%;
+    }
+
+    .vacante-card {
+        width: 90vw;
+    }
 }

@@ -242,9 +242,8 @@
       </div>
     </li>
 
-
-
-
+    <!-- Hidden file input to handle file selection -->
+    <input type="file" id="fileInput2" style="display: none" (change)="onFileSelected($event)">
 
     <li class="blockLink cerrar-sesion" routerLink="" (click)="cerrarSesion()">
       <img src="navbar/cerrar-sesion.png" alt="Cerrar Sesión" class="icon">
