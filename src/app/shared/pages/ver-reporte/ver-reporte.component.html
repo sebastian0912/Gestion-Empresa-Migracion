@@ -13,19 +13,21 @@
         
                     <div class="filter-container"
                         *ngIf="userCorreo == 'tuafiliacion@tsservicios.co' || userCorreo == 'programador.ts@gmail.com' || userCorreo == 'a.seguridad.ts@gmail.com'">
-                        <mat-form-field appearance="fill" class="example-full-width">
+                        
+                        <mat-form-field class="example-full-width">
                             <mat-label>Buscar por Nombre</mat-label>
                             <input matInput (keyup)="applyFilter('nombre', $event)" placeholder="Ej. Sebastian">
                         </mat-form-field>
         
-                        <mat-form-field appearance="fill" class="example-full-width">
+                        <mat-form-field  class="example-full-width">
                             <mat-label>Buscar por Sede</mat-label>
                             <input matInput (keyup)="applyFilter('sede', $event)" placeholder="Ej. Facatativa">
                         </mat-form-field>
         
-                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" class="menu">
                             <img src="comun/calendario.png" style="width: 200px;">
                         </button>
+
                         <mat-menu #menu="matMenu">
                             <button mat-menu-item (click)="openDateRangeDialog()" class="submenu">
                                 <span>Filtrar tablas por fecha</span>

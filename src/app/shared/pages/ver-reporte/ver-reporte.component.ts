@@ -179,6 +179,7 @@ export class VerReporteComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
     });
+
   }
 
   // PDF/Excel Document viewing and downloading

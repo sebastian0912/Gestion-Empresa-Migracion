@@ -119,6 +119,8 @@ input:focus {
   border: 2px solid #1157fb;
 }
 
+
+
 .form-container {
   position: absolute;
   top: 0;
@@ -263,4 +265,95 @@ input:focus {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+}
+
+
+@media (max-width: 1024px) {
+  .overlay-container {
+    display: none; /* Oculta el overlay en tabletas y móviles */
+  }
+
+  .container {
+    width: 70vw; /* Ajusta el tamaño del contenedor en tabletas */
+  }
+
+  .sign-up-container {
+    display: none; /* Oculta el formulario de registro en tabletas */
+  }
+
+  .sign-in-container {
+    width: 100%; /* Asegura que el formulario de inicio de sesión ocupe todo el espacio */
+    transform: translateX(0); /* Evita que se deslice */
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 90vw; /* Reduce el ancho del contenedor en pantallas pequeñas */
+    min-height: 90vh; /* Aumenta la altura mínima para cubrir más en móvil */
+  }
+
+  .sign-up-container {
+    display: none; /* Oculta el formulario de registro en móviles */
+  }
+
+  mat-icon{
+    margin-top: -5px;
+  }
+
+  .sign-in-container {
+    width: 100%; /* Asegúrate de que el formulario de inicio de sesión ocupe el ancho completo */
+    transform: translateX(0); /* Evita el deslizamiento de lado a lado */
+    border-top: 62px solid #1157fb; /* Agrega una línea superior para separar los formularios */
+    border-bottom:  62px solid #1157fb; /* Agrega una línea inferior para separar los formularios */
+  }
+
+  h1 {
+    font-size: 24pt; /* Ajusta el tamaño de los títulos */
+  }
+
+  p {
+    font-size: 12pt; /* Reduce el tamaño del texto */
+    line-height: 18px;
+  }
+
+  .password-container {
+    width: 100%; /* Asegura que el campo de la contraseña ocupe el ancho completo */
+  }
+
+  .toggle-password {
+    right: 5px; /* Ajusta la posición del ícono de visibilidad */
+  }
+}
+
+@media (max-width: 480px) {
+  .contenedor {
+    padding: 20px; /* Agrega un poco de espacio alrededor para evitar que el contenido quede pegado al borde */
+  }
+
+  .container {
+    border-radius: 15px; /* Reduce el radio de los bordes para una apariencia más ajustada */
+  }
+
+  input {
+    padding: 10px; /* Ajusta el padding para que los campos no se vean demasiado grandes */
+  }
+
+  button {
+    padding: 10px 30px; /* Ajusta el tamaño de los botones */
+    font-size: 10px; /* Reduce el tamaño de la fuente de los botones */
+  }
+
+  h1 {
+    font-size: 20pt; /* Reduce el tamaño del título para móviles pequeños */
+  }
+
+  .sign-up-container {
+    display: none; /* Oculta el formulario de registro en móviles pequeños */
+  }
+
+  .sign-in-container {
+    width: 100%; /* Asegúrate de que el formulario de inicio de sesión ocupe todo el espacio */
+    transform: translateX(0); /* Evita el deslizamiento */
+  }
 }
