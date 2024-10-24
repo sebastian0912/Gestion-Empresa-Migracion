@@ -46,11 +46,10 @@ import { catchError, of } from 'rxjs';
 export class VacantesComponent implements OnInit {
   vacantes: any[] = [];
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   constructor(
@@ -78,7 +77,7 @@ export class VacantesComponent implements OnInit {
 
   openModalEdit(vacante?: any): void {
     const dialogRef = this.dialog.open(CrearEditarVacanteComponent, {
-      minWidth: '1000px',
+      minWidth: '80vw',
       data: vacante ? vacante : null // Si existe vacante, se pasa como data, si no, se abre vacío
     });
 
@@ -159,7 +158,7 @@ export class VacantesComponent implements OnInit {
 
   openModal(vacante?: any): void {
     const dialogRef = this.dialog.open(CrearEditarVacanteComponent, {
-      minWidth: '1000px',
+      minWidth: '80vw',
       data: vacante ? vacante : null // Si existe vacante, se pasa como data, si no, se abre vacío
     });
 

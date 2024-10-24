@@ -3,8 +3,8 @@
   margin-bottom: 10px;
   font-size: 20pt;
   font-weight: bold;
+  line-height: 1;
 }
-
 
 .filter-container {
   display: flex;
@@ -140,4 +140,20 @@ button.mat-button:focus {
   margin-left: auto;
   display: flex;
   align-items: center;
+}
+
+
+@media (max-width: 768px) {
+  .filter-header {
+    flex-direction: column;
+  }
+
+  .filter-form {
+    flex-direction: column;
+  }
+
+  .download-button {
+    margin-top: 20px;
+    margin-left: 0;
+  }
 }

@@ -47,11 +47,10 @@ interface Archivo {
 })
 export class SubidaArchivosIncapacidadesComponent {
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   constructor(private incapacidadService: IncapacidadService, private router: Router) {

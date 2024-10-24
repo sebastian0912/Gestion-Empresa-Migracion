@@ -71,13 +71,12 @@ export class ReporteContratacionComponent implements OnInit {
   nombre: string = '';
   processingErrors: string[] = [];
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
-  
+
   constructor(
     private fb: FormBuilder,
     private jefeAreaService: ContratacionService,
@@ -89,7 +88,7 @@ export class ReporteContratacionComponent implements OnInit {
       cantidadContratosApoyoLaboral: [0]
     });
 
-    
+
 
   }
 
@@ -109,8 +108,8 @@ export class ReporteContratacionComponent implements OnInit {
       cantidadContratosApoyoLaboral: [null],
       notas: ['']
     });
-    
-    
+
+
     this.jefeAreaService.getUser().then((data: any) => {
       if (data) {
         this.nombre = data.primer_nombre + ' ' + data.primer_apellido;
@@ -118,7 +117,7 @@ export class ReporteContratacionComponent implements OnInit {
     }).catch((error) => {
       Swal.fire('Error', 'No se pudo obtener el nombre del usuario', 'error');
     });
-    
+
 
     // Validación inicial del campo 'fecha' según el valor de 'esDeHoy'
     await this.manageFechaValidation();
@@ -299,6 +298,8 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async processTraslados(files: File[]) {
+    const validEPS = ['NUEVA EPS', 'SALUD TOTAL', 'FAMISANAR']; // Lista de EPS válidas
+
     for (const file of files) {
       let cedula = '';
       let eps = '';
@@ -312,13 +313,22 @@ export class ReporteContratacionComponent implements OnInit {
         continue; // Salta este archivo si no cumple con el formato esperado
       }
 
+      eps = eps.replace('.pdf', '').trim().toUpperCase(); // Eliminar '.pdf', espacios adicionales y convertir a mayúsculas
+
+      // Validar si la EPS es válida (NUEVA EPS o SALUD TOTAL)
+      if (!validEPS.includes(eps)) {
+        Swal.fire('Error', `La EPS "${eps}" no es válida. Solo se permiten NUEVA EPS, SALUD TOTAL o FAMISANAR, corrija los nombres`, 'error');
+        this.isCruceValidado = false;
+        return;
+      }
+
       const base64 = await this.convertToBase64(file);
 
       // Añadir a la lista de traslados en base64 con el nombre original
       this.trasladosBase64.push({ file_name: file.name, file_base64: base64 });
       const data = {
         numero_cedula: cedula.trim(), // Eliminar espacios adicionales
-        eps_a_trasladar: eps.replace('.pdf', '').trim(), // Eliminar '.pdf' y espacios adicionales
+        eps_a_trasladar: eps, // EPS ya está en el formato correcto
         solicitud_traslado: base64
       };
 
@@ -326,6 +336,7 @@ export class ReporteContratacionComponent implements OnInit {
       await this.delay(100); // Espera de 100 ms
     }
   }
+
 
   corregirFecha(fecha: string): string {
     const dateParts = fecha.split(/\/|-/);
@@ -1032,19 +1043,19 @@ export class ReporteContratacionComponent implements OnInit {
       const datosMapeados = this.datoscruced.map((cruceRow: any[], index: number) => {
         let cedulaCruce = cruceRow[1];
         const comparativoCruce = cruceRow[8];
-      
+
         cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
-      
+
         const filaArl = rowsArl.find(arlRow => {
           const cedulaArl = (arlRow[3] || '').toString().replace(/\s|\./g, '');
           return cedulaArl === cedulaCruce;
         });
-      
+
         let estadoCedula = 'ALERTA NO ESTA EN ARL';
         let estadoFechas = 'ALERTA NO COINCIDEN';
         let fechaIngresoArl = 'NO DISPONIBLE';
         let fechaIngresoCruce = comparativoCruce || 'NO DISPONIBLE';
-      
+
         if (filaArl) {
           estadoCedula = 'SATISFACTORIO';
           const comparativoArl = filaArl[9];
@@ -1053,10 +1064,10 @@ export class ReporteContratacionComponent implements OnInit {
             const [day, month, year] = normalizedDateStr.split('/').map(Number);
             return new Date(year, month - 1, day);
           };
-      
+
           const fechaArl = formatDate(comparativoArl);
           const fechaCruce = formatDate(comparativoCruce);
-      
+
           if (fechaCruce.getTime() !== fechaArl.getTime()) {
             estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
             console.log(`Fechas no coinciden para la cédula: ${cedulaCruce}`);
@@ -1065,7 +1076,7 @@ export class ReporteContratacionComponent implements OnInit {
         } else {
           console.log(`Cédula no encontrada en ARL: ${cedulaCruce}`);
         }
-      
+
         const resultado: { [key: string]: any } = {
           "Numero de Cedula": cedulaCruce,
           "Arl": estadoCedula,
@@ -1074,20 +1085,20 @@ export class ReporteContratacionComponent implements OnInit {
           "FECHA INGRESO SUBIDA CONTRATACION": fechaIngresoCruce,
           "Errores": "OK"  // Inicializamos con "OK" por defecto
         };
-      
+
         headers.forEach((header, index) => {
           resultado[header] = cruceRow[index] || 'NO DISPONIBLE';
         });
-        
+
         const registroErrores = this.erroresValidacion.data.find((err: any) => err.registro == (index + 1));
         if (registroErrores && registroErrores.errores.length > 0) {
           confirmarErrores = false;
           resultado["Errores"] = registroErrores.errores.join(', ');
         }
-      
+
         return resultado;
       });
-      
+
 
 
 
@@ -1309,7 +1320,7 @@ export class ReporteContratacionComponent implements OnInit {
           if (index < 195) {
             if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
               completeRow[index] = '-';
-            } else if (index === 11 || index === 1 ) {
+            } else if (index === 11 || index === 1) {
               completeRow[index] = this.removeSpecialCharacters(
                 cell.toString()
                   .replace(/,/g, '')      // Elimina comas
@@ -1485,19 +1496,19 @@ export class ReporteContratacionComponent implements OnInit {
           // Enviar reporte
           try {
             await this.jefeAreaService.cargarReporte(reporteData);
-              Swal.fire({
-                icon: 'success',
-                title: 'Reporte enviado',
-                text: 'El reporte ha sido enviado correctamente.',
-                confirmButtonText: 'Aceptar'
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
-                    this.router.navigate(['/reporte-contratacion']);
-                  });
-                }
-              });
-            
+            Swal.fire({
+              icon: 'success',
+              title: 'Reporte enviado',
+              text: 'El reporte ha sido enviado correctamente.',
+              confirmButtonText: 'Aceptar'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
+                  this.router.navigate(['/reporte-contratacion']);
+                });
+              }
+            });
+
           } catch (error) {
             Swal.fire({
               icon: 'error',

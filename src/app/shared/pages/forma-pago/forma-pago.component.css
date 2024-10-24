@@ -5,20 +5,6 @@
     font-weight: bold;
 }
 
-.search-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.example-full-width {
-    width: 40%;
-}
-
-.buscar {
-    width: 100%;
-}
 
 .hidden-file-input {
     display: none;
@@ -55,4 +41,6 @@ input.editable {
     width: 130px;
     min-width: 130px;
 }
+
+
 

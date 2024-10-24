@@ -61,11 +61,10 @@ export class FormularioReporteComponent implements OnInit {
     'respuesta_final_incapacidad'
   ];
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   fieldMap: { [key: string]: string } = {

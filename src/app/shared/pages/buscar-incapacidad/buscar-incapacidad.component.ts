@@ -50,11 +50,10 @@ export interface ColumnConfig {
 export class BuscarIncapacidadComponent implements OnInit {
   query: string = '';
   columnFilters: { [key: string]: string[] } = {};
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   ColumnsTable1 = [

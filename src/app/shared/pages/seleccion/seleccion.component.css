@@ -33,6 +33,8 @@ mat-card:nth-child(1) {
     /* Definir una distancia desde la parte superior */
 }
 
+
+
 .example-full-width {
     width: 100%;
 }
@@ -61,6 +63,7 @@ mat-card:nth-child(2) {
     width: 72vw;
     max-height: 400px;
     overflow-y: auto;
+    margin-top: 10px;
 }
 
 p {
@@ -147,4 +150,39 @@ mat-card-subtitle {
     /* Color más suave para el nombre del archivo */
     word-wrap: break-word;
     font-style: italic;
+}
+
+
+
+@media (max-width: 768px) {
+    mat-card:nth-child(1) {
+        width: 80vw;
+        margin: 10px;
+        position: static;
+        /* Eliminar la posición fija */
+    }
+
+    .opcionesVer {
+        width: 90vw;
+    }
+
+    mat-card:nth-child(2) {
+        width: 80vw;
+        margin: 10px;
+        position: static;
+        /* Eliminar la posición fija */
+    }
+
+    mat-panel-title {
+        line-height: 1;
+    }
+
+    mat-expansion-panel{
+        margin-bottom: 1px;
+    }
+
+
+    .seccion {
+        grid-template-columns: 1fr;
+    }
 }

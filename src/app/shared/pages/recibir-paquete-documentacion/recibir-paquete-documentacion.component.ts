@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-recibir-paquete-documentacion',
@@ -24,7 +25,8 @@ import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar
     MatButtonModule,
     MatCardModule,
     MatTableModule,
-    NavbarSuperiorComponent
+    NavbarSuperiorComponent,
+    MatIconModule
   ],
   templateUrl: './recibir-paquete-documentacion.component.html',
   styleUrl: './recibir-paquete-documentacion.component.css'
@@ -32,11 +34,10 @@ import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar
 export class RecibirPaqueteDocumentacionComponent {
   myForm!: FormGroup;
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   constructor(

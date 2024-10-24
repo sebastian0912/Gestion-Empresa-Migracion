@@ -86,31 +86,56 @@ body {
 
 /* Estilos generales de tabla y inputs */
 
-.app-layout {
+.dashboard-container {
     display: flex;
     height: 100vh;
-    width: 100%;
 }
 
-.app-layout app-navbar-lateral {
-    flex: 0 0 280px; /* Ancho fijo para el navbar lateral */
-}
-
-.app-layout .contenedor {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow-y: auto;
-    margin-left: 0px;
-}
-
-.contenedor {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
+.navbar {
+    background-color: #404040;
+    display: none;
     align-items: center;
+    height: 70px;
+    width: 100%;
+    padding: 0 16px;
+    z-index: 4;
 }
+
+.sidebar-toggle {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+app-navbar-lateral {
+    width: 260px;
+}
+
+.dashboard-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        display: flex;
+        /* Muestra solo en dispositivos pequeños */
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+        /* Ajusta el contenido en columna */
+    }
+
+    app-navbar-lateral {
+        width: 100%;
+        /* Ocupa todo el ancho en dispositivos móviles */
+    }
+}
+
+/*--------------------------------------------------------------------*/
 
 
 .titulo {
@@ -118,36 +143,34 @@ body {
     font-size: 16pt;
 }
 
-mat-card {
-    width: 75vw;
-    padding: 20px;
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
+.buscar {
+    width: 100%;
+}
+
+mat-card {
+    width: 100%;
+    max-width: 75vw;
+    padding: 20px;
+    margin: 0 auto; /* Centra el mat-card */
+}
 
 .example-full-width {
-    width: 30%;
+    width: 100%;
+    max-width: 30%;
     height: 80px;
     margin: 3px 10px -5px 10px;
-
 }
-
 
 .boton {
     margin-top: -20px;
-    margin-left: 30px;
-}
+    margin-left: 10px;
 
-.nombre {
-    margin-top: 0;
-    margin-left: 20px;
-    font-size: 14pt;
-    width: 50%;
-}
-
-
-.encabezado {
-    display: flex;
-    align-items: center;
 }
 
 .table-container {
@@ -155,13 +178,14 @@ mat-card {
     flex-direction: column;
     width: 100%;
     overflow: auto;
-    max-height: 50vh;
+    max-height: 60vh;
     overflow-y: auto;
 }
 
 .table-container table {
     width: 100%;
     text-align: center;
+    font-size: 14px;
 }
 
 .table-container th {
@@ -190,24 +214,73 @@ mat-card {
     background-color: #f2f2f2;
 }
 
-
-
 .filtro {
-    width: 50%;
+    width: 100%;
+    max-width: 30%;
+    margin-bottom: 10px;
 }
 
-mat-icon{
-    cursor: pointer;
-    margin-left: 5px;
+@media (max-width: 768px) {
+    mat-card {
+        width: 90vw;
+        padding: 15px;
+        margin: 0 auto;
+    }
+
+    .example-full-width {
+        width: 100%;
+        max-width: 90%;
+    }
+
+    .boton {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .filtro {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .table-container {
+        max-height: 70vh;
+    }
+
+    .table-container table {
+        font-size: 12px; /* Reduce el tamaño de fuente para móviles */
+    }
+
+    .informacion .titulo {
+        font-size: 10pt;
+    }
+
+    .nombre {
+        width: 100%;
+        font-size: 12pt;
+    }
+
+    .search-container{
+        flex-direction: column;
+    }
 }
 
-.tabla {
-    margin-top: 10px;
-    padding: 20px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    margin-left: 20px;
+@media (max-width: 480px) {
+    .table-container table {
+        font-size: 10px; /* Aún más pequeño para pantallas muy pequeñas */
+    }
+
+    .boton {
+        margin-top: 5px;
+        width: 100%;
+    }
+
+    .search-container{
+        flex-direction: column;
+    }
+
 }
+
 
 
 
@@ -275,18 +348,18 @@ mat-icon{
     flex-wrap: wrap;
     gap: 20px;
     justify-content: flex-start;
-    width: 100%;
+    width: 100%;    
 }
 
 .vacante-card {
-    width: 30%;
+    width: 30vw;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     transition: transform 0.3s;
-    min-width: 353px;
+    min-width: 80vw;
     max-width: 353px;
 }
 
@@ -345,4 +418,3 @@ mat-card-content p {
     justify-content: flex-end;
     padding: 10px;
 }
-

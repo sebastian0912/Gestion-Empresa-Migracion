@@ -13,13 +13,17 @@
 <!-- Input oculto para carga de archivos -->
 <input id="fileInput" type="file" (change)="cargarExcel($event)" accept=".xlsx, .xls" multiple style="display: none;" />
 
-<div class="app-layout">
-  <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
-  <div class="contenedor" [class.minimized]="!isMenuVisible">
-
+<div class="dashboard-container">
+  <div class="navbar">
+    <button class="sidebar-toggle" (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+  <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+  <div class="dashboard-content">
     <app-navbar-superior></app-navbar-superior>
     <mat-card>
-      <h3>Carga de archivos para incapacidades</h3>
+      <h3 class="title">Carga de archivos para incapacidades</h3>
       <mat-card-content>
         <!-- Botones para cargar archivos -->
         <ng-container *ngFor="let file of fileList">
@@ -29,9 +33,11 @@
           </app-info-card>
 
           <!-- Botón para descargar archivo asociado -->
-<button mat-raised-button color="primary" (click)="downloadFile(file.filename)">
-  <mat-icon>download</mat-icon> Descargar {{ file.title }}
-</button>
+          <button mat-flat-button (click)="downloadFile(file.filename)">
+            <mat-icon>download</mat-icon>
+            Descargar {{ file.title }}
+          </button>
+
         </ng-container>
       </mat-card-content>
     </mat-card>

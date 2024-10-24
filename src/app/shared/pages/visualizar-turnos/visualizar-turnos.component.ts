@@ -35,10 +35,10 @@ import { NgIf } from '@angular/common';
   styleUrl: './visualizar-turnos.component.css'
 })
 export class VisualizarTurnosComponent {
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
+  
 }

@@ -1,15 +1,22 @@
-<div class="app-layout">
-  <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
-  <div class="contenedor" [class.minimized]="!isMenuVisible">
+<div class="dashboard-container">
+  <div class="navbar">
+    <button class="sidebar-toggle" (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+  <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+  <div class="dashboard-content">
     <app-navbar-superior></app-navbar-superior>
     <mat-card>
       <mat-card-content>
 
         <div class="caja">
           <h1 class="title">Seguimientos HV</h1>
+          
           <img src="comun/calendario.png" class="excel"
             style="cursor: pointer; width: 50px; margin-left: 50px; margin-bottom: 20px;"
             (click)="openDateRangeDialog()">
+
         </div>
 
         <!-- Filtro Global -->

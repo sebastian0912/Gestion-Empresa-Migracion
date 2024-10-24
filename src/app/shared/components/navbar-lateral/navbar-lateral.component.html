@@ -1,245 +1,254 @@
-<div class="navbar-wrapper" style="position: relative; z-index: 1002;">
-  <div class="hamburger" (click)="toggleMenu()">&#9776;</div>
-</div>
+<!-- Botón de menú para dispositivos móviles -->
+<button class="sidebar-toggle" (click)="toggleSidebar()">
+  <mat-icon>menu</mat-icon>
+</button>
 
-<div class="navbar-wrapper" style="position: relative; z-index: 1002;">
-  <div class="hamburger" (click)="toggleMenu()">&#9776;</div>
-</div>
+<!-- Barra lateral -->
+<aside class="sidebar" [ngClass]="{'sidebar-hidden': isSidebarHidden}">
+  <div class="sidebar-header titulo-header">
+    <h3>Gestión Empresa</h3>
 
+  </div>
 
-
-
-<div class="navbar" [class.minimized]="!isMenuVisible">
+  <div class="sidebar-header servicios-header">
+    <h3>Menu</h3>
+  </div>
   <!--
-    <button class="toggle-btn" (click)="toggleMenu()">☰</button> 
+    <header>
+      <img src="toros.png" />
+      <h1>Finca Los Toros</h1>
+    </header>
     -->
-  
-  <ul class="nav-links" [class.minimized]="!isMenuVisible">
 
-    <div class="sidebar-header titulo-header">
-      <h3>Gestión Empresa</h3>
-
-    </div>
-
-    <div class="sidebar-header servicios-header">
-      <h3>Menu</h3>
-    </div>
-
-    <div class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home" >
+  <ul>
+    <li class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home">
       <img src="navbar/home-button.png" alt="Dashboard" class="icon">
-      <li> Home </li>
-    </div>
+      <p>Home</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/solicitar-turno'" routerLink="/solicitar-turno"
+    <li class="blockLink" [class.active]="currentRoute === '/solicitar-turno'" routerLink="/solicitar-turno"
       *ngIf="hasPermission('solicitar-turno')">
-      <img src="navbar/mostrador-de-informacion.png" alt="Dashboard" class="icon">
-      <li>Solicitar turno</li>
-    </div>
+      <img src="navbar/mostrador-de-informacion.png" alt="Solicitar turno" class="icon">
+      <p>Solicitar turno</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/atender-turno'" routerLink="/atender-turno"
+    <li class="blockLink" [class.active]="currentRoute === '/atender-turno'" routerLink="/atender-turno"
       *ngIf="hasPermission('atender-turno')">
-      <img src="navbar/turno-nocturno.png" alt="Dashboard" class="icon">
-      <li>Atender turno</li>
-    </div>
+      <img src="navbar/turno-nocturno.png" alt="Atender turno" class="icon">
+      <p>Atender turno</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/estadisticas-turnero'" routerLink="/estadisticas-turnero"
+    <li class="blockLink" [class.active]="currentRoute === '/estadisticas-turnero'" routerLink="/estadisticas-turnero"
       *ngIf="hasPermission('estadisticas-turnero')">
-      <img src="navbar/estadisticas.png" alt="Dashboard" class="icon">
-      <li>Estadisticas turnero</li>
-    </div>
+      <img src="navbar/estadisticas.png" alt="Estadísticas" class="icon">
+      <p>Estadísticas turnero</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/visualizar-turnos'" routerLink="/visualizar-turnos"
+    <li class="blockLink" [class.active]="currentRoute === '/visualizar-turnos'" routerLink="/visualizar-turnos"
       *ngIf="hasPermission('visualizar-turnos')">
-      <img src="navbar/televisor.png" alt="Dashboard" class="icon">
-      <li>Visualizar turno</li>
-    </div>
+      <img src="navbar/televisor.png" alt="Visualizar turno" class="icon">
+      <p>Visualizar turno</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/forma-pago'" routerLink="/forma-pago"
+    <li class="blockLink" [class.active]="currentRoute === '/forma-pago'" routerLink="/forma-pago"
       *ngIf="hasPermission('forma-pago')">
-      <img src="navbar/tarjeta-de-dinero.png" alt="Dashboard" class="icon">
-      <li> Forma de pago </li>
-    </div>
+      <img src="navbar/tarjeta-de-dinero.png" alt="Forma de pago" class="icon">
+      <p>Forma de pago</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/desprendibles-pago'" routerLink="/desprendibles-pago"
+    <li class="blockLink" [class.active]="currentRoute === '/desprendibles-pago'" routerLink="/desprendibles-pago"
       *ngIf="hasPermission('desprendibles-pago')">
-      <img src="navbar/recibo.png" alt="Dashboard" class="icon">
-      <li> Desprendibles de pago </li>
-    </div>
+      <img src="navbar/recibo.png" alt="Desprendibles de pago" class="icon">
+      <p>Desprendibles de pago</p>
+    </li>
 
-    <div class="blockLink" *ngIf="hasPermission('arl')" (click)="selectFile('arl')">
-      <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
-      <li> ARL </li>
-    </div>
+    <li class="blockLink" *ngIf="hasPermission('arl')" (click)="selectFile('arl')">
+      <img src="navbar/evaluacion.png" alt="ARL" class="icon">
+      <p>ARL</p>
+    </li>
 
-    <div class="blockLink" *ngIf="hasPermission('adres')" (click)="selectFile('adres')">
-      <img src="navbar/ai.png" alt="Dashboard" class="icon">
-      <li> Adress Robots </li>
-    </div>
+    <li class="blockLink" *ngIf="hasPermission('adres')" (click)="selectFile('adres')">
+      <img src="navbar/ai.png" alt="Adress Robots" class="icon">
+      <p>Adress Robots</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/ausentismos'" routerLink="/ausentismos"
+    <li class="blockLink" [class.active]="currentRoute === '/ausentismos'" routerLink="/ausentismos"
       *ngIf="hasPermission('ausentismos')">
-      <img src="navbar/person.png" alt="Dashboard" class="icon">
-      <li>Ausentismos </li>
-    </div>
+      <img src="navbar/person.png" alt="Ausentismos" class="icon">
+      <p>Ausentismos</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/publicidad'" routerLink="/publicidad"
+    <li class="blockLink" [class.active]="currentRoute === '/consulta-formulario'" routerLink="/consulta-formulario"
+      *ngIf="hasPermission('consulta-formulario')">
+      <img src="navbar/consulta.png" alt="Formulario Consulta" class="icon">
+      <p>Formulario Consulta</p>
+    </li>
+
+    <li class="blockLink" [class.active]="currentRoute === '/antecedentes-robots'" routerLink="/antecedentes-robots"
+      *ngIf="hasPermission('antecedentes-robots')">
+      <img src="navbar/robot.png" alt="Antecedentes Robots" class="icon">
+      <p>Antecedentes Robots</p>
+    </li>
+
+    <li class="blockLink" [class.active]="currentRoute === '/publicidad'" routerLink="/publicidad"
       *ngIf="hasPermission('publicidad')">
-      <img src="navbar/publicidad-digital.png" alt="Dashboard" class="icon">
-      <li>Publicidad</li>
-    </div>
+      <img src="navbar/publicidad-digital.png" alt="Publicidad" class="icon">
+      <p>Publicidad</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/vacantes'" routerLink="/vacantes"
+    <li class="blockLink" [class.active]="currentRoute === '/vacantes'" routerLink="/vacantes"
       *ngIf="hasPermission('vacantes')">
-      <img src="navbar/trabajos.png" alt="Dashboard" class="icon">
-      <li> Vacantes </li>
-    </div>
+      <img src="navbar/trabajos.png" alt="Vacantes" class="icon">
+      <p>Vacantes</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/seleccion'" routerLink="/seleccion"
+    <li class="blockLink" [class.active]="currentRoute === '/seleccion'" routerLink="/seleccion"
       *ngIf="hasPermission('seleccion')">
-      <img src="navbar/delegar.png" alt="Dashboard" class="icon">
-      <li>Selección</li>
-    </div>
+      <img src="navbar/delegar.png" alt="Selección" class="icon">
+      <p>Selección</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/contratacion'" routerLink="/contratacion"
+    <li class="blockLink" [class.active]="currentRoute === '/contratacion'" routerLink="/contratacion"
       *ngIf="hasPermission('contratacion')">
-      <img src="navbar/contratacion.png" alt="Dashboard" class="icon">
-      <li>Contratación</li>
-    </div>
+      <img src="navbar/contratacion.png" alt="Contratación" class="icon">
+      <p>Contratación</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/reporte-contratacion'" routerLink="/reporte-contratacion"
+    <li class="blockLink" [class.active]="currentRoute === '/reporte-contratacion'" routerLink="/reporte-contratacion"
       *ngIf="hasPermission('reporte-contratacion')">
-      <img src="navbar/informe-de-venta.png" alt="Dashboard" class="icon">
-      <li>Reporte de contratación</li>
-    </div>
+      <img src="navbar/informe-de-venta.png" alt="Reporte de contratación" class="icon">
+      <p>Reporte de contratación</p>
+    </li>
 
-
-    <div class="blockLink" [class.active]="currentRoute === '/ver-reporte'" routerLink="/ver-reporte"
+    <li class="blockLink" [class.active]="currentRoute === '/ver-reporte'" routerLink="/ver-reporte"
       *ngIf="hasPermission('ver-reporte')">
-      <img src="navbar/reporte.png" alt="Dashboard" class="icon">
-      <li>Ver reporte contratación</li>
-    </div>
+      <img src="navbar/reporte.png" alt="Ver reporte contratación" class="icon">
+      <p>Ver reporte contratación</p>
+    </li>
 
-    <div class="blockLink" *ngIf="hasPermission('personal-activo')" (click)="selectFile('personalActivo')">
-      <img src="navbar/evaluacion.png" alt="Dashboard" class="icon">
-      <li> Personal activo </li>
-    </div>
+    <li class="blockLink" *ngIf="hasPermission('personal-activo')" (click)="selectFile('personalActivo')">
+      <img src="navbar/evaluacion.png" alt="Personal activo" class="icon">
+      <p>Personal activo</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria'"
-      routerLink="/seguimiento-auditoria" *ngIf="hasPermission('seguimiento-auditoria')">
-      <img src="navbar/archivos.png" alt="Dashboard" class="icon">
-      <li>Seguimiento HV</li>
-    </div>
+    <li class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria'" routerLink="/seguimiento-auditoria"
+      *ngIf="hasPermission('seguimiento-auditoria')">
+      <img src="navbar/archivos.png" alt="Seguimiento HV" class="icon">
+      <p>Seguimiento HV</p>
+    </li>
 
-    <!-- seguimiento-auditoria-archivo -->
-    <div class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria-archivo'"
+    <li class="blockLink" [class.active]="currentRoute === '/seguimiento-auditoria-archivo'"
       routerLink="/seguimiento-auditoria-archivo" *ngIf="hasPermission('seguimiento-auditoria-archivo')">
-      <img src="navbar/archivo.png" alt="Dashboard" class="icon">
-      <li>Seguimiento HV Archivo</li>
-    </div>
+      <img src="navbar/archivo.png" alt="Seguimiento HV Archivo" class="icon">
+      <p>Seguimiento HV Archivo</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/estadisticas-auditoria'"
+    <li class="blockLink" [class.active]="currentRoute === '/estadisticas-auditoria'"
       routerLink="/estadisticas-auditoria" *ngIf="hasPermission('estadisticas-auditoria')">
-      <img src="navbar/reporte-de-negocios.png" alt="Dashboard" class="icon">
-      <li>Estadisticas HV</li>
-    </div>
+      <img src="navbar/reporte-de-negocios.png" alt="Estadísticas HV" class="icon">
+      <p>Estadísticas HV</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/crear-estructura-documental'"
+    <li class="blockLink" [class.active]="currentRoute === '/crear-estructura-documental'"
       routerLink="/crear-estructura-documental" *ngIf="hasPermission('crear-estructura-documental')">
-      <img src="navbar/documentation.png" alt="Dashboard" class="icon">
-      <li>Estructura documental</li>
-    </div>
+      <img src="navbar/documentation.png" alt="Estructura documental" class="icon">
+      <p>Estructura documental</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/subir-documentacion'" routerLink="/subir-documentacion"
+    <li class="blockLink" [class.active]="currentRoute === '/subir-documentacion'" routerLink="/subir-documentacion"
       *ngIf="hasPermission('subir-documentacion')">
-      <img src="navbar/cargando.png" alt="Dashboard" class="icon">
-      <li>Subir documentación</li>
-    </div>
+      <img src="navbar/cargando.png" alt="Subir documentación" class="icon">
+      <p>Subir documentación</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/buscar-documentacion'" routerLink="/buscar-documentacion"
+    <li class="blockLink" [class.active]="currentRoute === '/buscar-documentacion'" routerLink="/buscar-documentacion"
       *ngIf="hasPermission('buscar-documentacion')">
-      <img src="navbar/buscar.png" alt="Dashboard" class="icon">
-      <li>Buscar documentación</li>
-    </div>
+      <img src="navbar/buscar.png" alt="Buscar documentación" class="icon">
+      <p>Buscar documentación</p>
+    </li>
 
     <!--
-      <div class="blockLink" [class.active]="currentRoute === '/archivos-contratacion'"
-      routerLink="/archivos-contratacion" *ngIf="hasPermission('archivos-contratacion')">
-      <img src="navbar/buscar.png" alt="Dashboard" class="icon">
-      <li>Contratacion Archivos</li>
-    </div>
-    -->
+<li class="blockLink" [class.active]="currentRoute === '/archivos-contratacion'" routerLink="/archivos-contratacion"
+    *ngIf="hasPermission('archivos-contratacion')">
+    <img src="navbar/buscar.png" alt="Contratacion Archivos" class="icon">
+    <p>Contratacion Archivos</p>
+</li>
+-->
 
-    <div class="blockLink" [class.active]="currentRoute === '/auditoria'" routerLink="/auditoria"
+    <li class="blockLink" [class.active]="currentRoute === '/auditoria'" routerLink="/auditoria"
       *ngIf="hasPermission('auditoria')">
-      <img src="navbar/documento.png" alt="Dashboard" class="icon">
-      <li>Auditoria</li>
-    </div>
+      <img src="navbar/documento.png" alt="Auditoria" class="icon">
+      <p>Auditoria</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/envio-paquete-documentacion'"
+    <li class="blockLink" [class.active]="currentRoute === '/envio-paquete-documentacion'"
       routerLink="/envio-paquete-documentacion" *ngIf="hasPermission('envio-paquete-documentacion')">
-      <img src="navbar/material-de-oficina.png" alt="Dashboard" class="icon">
-      <li>Envio paquete de documentación</li>
-    </div>
+      <img src="navbar/material-de-oficina.png" alt="Envio paquete de documentación" class="icon">
+      <p>Envio paquete de documentación</p>
+    </li>
 
-    <div class="blockLink" [class.active]="currentRoute === '/recibir-paquete-documentacion'"
+    <li class="blockLink" [class.active]="currentRoute === '/recibir-paquete-documentacion'"
       routerLink="/recibir-paquete-documentacion" *ngIf="hasPermission('recibir-paquete-documentacion')">
-      <img src="navbar/recibir-documentacion.png" alt="Dashboard" class="icon">
-      <li>Recibir paquete de documentación</li>
-    </div>
+      <img src="navbar/recibir-documentacion.png" alt="Recibir paquete de documentación" class="icon">
+      <p>Recibir paquete de documentación</p>
+    </li>
 
-    <!--reporte-vetado-->
-    <div class="blockLink" [class.active]="currentRoute === '/reporte-vetado'" routerLink="/reporte-vetado"
+    <li class="blockLink" [class.active]="currentRoute === '/reporte-vetado'" routerLink="/reporte-vetado"
       *ngIf="hasPermission('reporte-vetado')">
-      <img src="navbar/confidencialidad.png" alt="Dashboard" class="icon">
-      <li>Reporte Vetado</li>
-    </div>
+      <img src="navbar/confidencialidad.png" alt="Reporte Vetado" class="icon">
+      <p>Reporte Vetado</p>
+    </li>
 
-    <!--vetados-gerencia-->
-    <div class="blockLink" [class.active]="currentRoute === '/vetados-gerencia'" routerLink="/vetados-gerencia"
+    <li class="blockLink" [class.active]="currentRoute === '/vetados-gerencia'" routerLink="/vetados-gerencia"
       *ngIf="hasPermission('vetados-gerencia')">
-      <img src="navbar/confidencial.png" alt="Dashboard" class="icon">
-      <li>Vetados Gerencia</li>
-    </div>
+      <img src="navbar/confidencial.png" alt="Vetados Gerencia" class="icon">
+      <p>Vetados Gerencia</p>
+    </li>
 
-
-    <!-- Dropdown para incapacidades -->
-    <div class="dropdown blockLink">
-      <img src="navbar/documentation.png" alt="Dashboard" class="icon">
-      <li>Incapacidades</li>
-      <div class="dropdown-content">
-        <div class="blockLink" [class.active]="currentRoute === '/subida-archivos-incapacidades'"
-          routerLink="/subida-archivos-incapacidades" *ngIf="hasPermission('subida-archivos-incapacidades')">
-          <img src="navbar/documentation.png" alt="Subir Incapacidades" class="icon">
-          <li>Subida de archivos</li>
-        </div>
-        <div class="blockLink" [class.active]="currentRoute === '/busqueda-incapacidades'"
-          routerLink="/busqueda-incapacidades" *ngIf="hasPermission('buscar-incapacicades')">
-          <img src="navbar/documentation.png" alt="Buscar Incapacidades" class="icon">
-          <li>Buscar incapacidades</li>
-        </div>
-        <div class="blockLink" [class.active]="currentRoute === '/formulario-incapacicades'"
-          routerLink="/formulario-incapacicades" *ngIf="hasPermission('formulario-incapacicades')">
-          <img src="navbar/documentation.png" alt="Subir Incapacidades" class="icon">
-          <li>Subir incapacidades</li>
-        </div>
-        <div class="blockLink" [class.active]="currentRoute === '/incapacidades-totales'"
-          routerLink="/incapacidades-totales" *ngIf="hasPermission('incapacidades-totales')">
-          <img src="navbar/documentation.png" alt="Tabla Incapacidades" class="icon">
-          <li>Listar incapacidades</li>
-        </div>
+    <li>
+      <a (click)="toggleMenu('incapacidades')" [ngClass]="{'active': menuState['incapacidades']}">
+        <img src="navbar/documentation.png" alt="Incapacidades" class="icon">
+        <p>Incapacidades</p>
+        <mat-icon>{{ menuState['incapacidades'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </a>
+      <div class="sub-menu" [ngClass]="{'open': menuState['incapacidades']}">
+        <ul>
+          <li>
+            <a routerLink="/subida-archivos-incapacidades"
+              [ngClass]="{'active': isActive('/subida-archivos-incapacidades')}" (click)="closeSidebar()"
+              *ngIf="hasPermission('subida-archivos-incapacidades')">
+              Subida de archivos
+            </a>
+          </li>
+          <li>
+            <a routerLink="/busqueda-incapacidades" [ngClass]="{'active': isActive('/busqueda-incapacidades')}"
+              (click)="closeSidebar()" *ngIf="hasPermission('buscar-incapacicades')">
+              Buscar incapacidades
+            </a>
+          </li>
+          <li>
+            <a routerLink="/formulario-incapacicades" [ngClass]="{'active': isActive('/formulario-incapacicades')}"
+              (click)="closeSidebar()" *ngIf="hasPermission('formulario-incapacicades')">
+              Subir incapacidades
+            </a>
+          </li>
+          <li>
+            <a routerLink="/incapacidades-totales" [ngClass]="{'active': isActive('/incapacidades-totales')}"
+              (click)="closeSidebar()" *ngIf="hasPermission('incapacidades-totales')">
+              Listar incapacidades
+            </a>
+          </li>
+        </ul>
       </div>
-    </div>
+    </li>
 
 
-    <!-- Hidden file input to handle file selection -->
-    <input type="file" id="fileInput2" style="display: none" (change)="onFileSelected($event)">
 
 
-    <div class="blockLink cerrar-sesion" routerLink="" (click)="cerrarSesion()">
-      <img src="navbar/cerrar-sesion.png" alt="Dashboard" class="icon">
-      <li>Cerrar Sesión</li>
-    </div>
 
+    <li class="blockLink cerrar-sesion" routerLink="" (click)="cerrarSesion()">
+      <img src="navbar/cerrar-sesion.png" alt="Cerrar Sesión" class="icon">
+      <p>Cerrar Sesión</p>
+    </li>
   </ul>
-
-</div>
+</aside>

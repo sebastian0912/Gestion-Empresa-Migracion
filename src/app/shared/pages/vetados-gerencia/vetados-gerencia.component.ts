@@ -52,11 +52,10 @@ export class VetadosGerenciaComponent implements OnInit {
     this.getVetados();
   }
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   // Obtener los datos de los vetados

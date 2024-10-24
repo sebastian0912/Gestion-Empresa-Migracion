@@ -60,11 +60,10 @@ export class EstadisticasAuditoriaComponent implements OnInit, AfterViewInit, On
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   ngOnInit(): void {

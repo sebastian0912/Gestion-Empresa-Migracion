@@ -36,11 +36,10 @@ import { NgIf } from '@angular/common';
 })
 export class SubirDocumentacionComponent implements OnInit {
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
   
   constructor() { }

@@ -65,11 +65,11 @@ input.editable {
 
 
 
-.filtro{
+.filtro {
     margin-top: 10px;
 }
 
-.caja{
+.caja {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -150,7 +150,26 @@ mat-expansion-panel-header {
 }
 
 .highlight-red {
-    background-color: #ffcccc; /* Fondo rojo claro */
-    color: red; /* Texto rojo */
-  }
-  
+    background-color: #ffcccc;
+    /* Fondo rojo claro */
+    color: red;
+    /* Texto rojo */
+}
+
+
+@media (max-width: 768px) {
+    .card-container>div {
+        width: calc(100% - 5px);
+    }
+
+    .excel {
+        margin-left: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    mat-expansion-panel{
+        z-index: 2 !important;
+    }
+
+
+}

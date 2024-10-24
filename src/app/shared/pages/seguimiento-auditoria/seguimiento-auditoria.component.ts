@@ -58,14 +58,12 @@ export class SeguimientoAuditoriaComponent implements OnInit {
   filteredARCHIVOREVISADO: any[] = [];
 
   dataSource = new MatTableDataSource<any>([]);
+  isSidebarHidden = false;
 
-  public isMenuVisible = true;
-
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
-
+  
   constructor(
     private pagosService: PagosService,
     private seguimientoHvService: SeguimientoHvService,

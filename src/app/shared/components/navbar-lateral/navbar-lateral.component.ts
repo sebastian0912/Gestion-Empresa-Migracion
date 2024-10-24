@@ -16,9 +16,10 @@ import * as ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
 
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
-import { isPlatformBrowser, NgIf } from '@angular/common';
+import { isPlatformBrowser, NgClass, NgIf } from '@angular/common';
 import moment from 'moment';
 import { RobotsService } from '../../services/robots/robots.service';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
@@ -33,38 +34,77 @@ import { RobotsService } from '../../services/robots/robots.service';
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    NgIf
+    NgIf,
+    MatIconModule,
+    NgClass
   ],
   templateUrl: './navbar-lateral.component.html',
   styleUrls: ['./navbar-lateral.component.css']
 })
 export class NavbarLateralComponent implements OnInit {
+  isSidebarHidden = false;
+
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
+  activeRoute: string = '';
 
   angelaVisible = false;
   currentRole: string = '';
   //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
+
+  menuState: Record<string, boolean> = {
+    salud: false,
+    produccion: false,
+    genealogia: false,
+    ventas: false,
+    inventario: false,
+    animales: false,
+  };
+
+  isActive(path: string): boolean {
+    return this.activeRoute === path;
+  }
+  
+  toggleMenu(menu: string): void {
+    this.menuState[menu] = !this.menuState[menu];
+    this.isMenuVisible = !this.isMenuVisible;
+    this.menuToggle.emit(this.isMenuVisible); // Emitir el estado del menú
+
+    // Guardar el estado en localStorage
+    localStorage.setItem('menuVisible', JSON.stringify(this.isMenuVisible));
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarHidden = !this.isSidebarHidden;
+  }
+
+  closeSidebar(): void {
+    this.isSidebarHidden = true;
+    setTimeout(() => {
+      this.isSidebarHidden = false;
+    }, 400);
+  }
+
 
   rolePermissions: any = {
     GERENCIA: [
       'forma-pago', 'desprendibles-pago', 'arl',
       'ausentismos', 'reporte-contratacion', 'seguimiento-auditoria',
       'estadisticas-auditoria', 'envio-paquete-documentacion', 'recibir-paquete-documentacion',
-      'personal-activo'
+      'personal-activo', 'consulta-formulario'
     ],
     RECEPCION: [
       'forma-pago', 'desprendibles-pago', 'ausentismos'
     ],
     COORDINADOR: [
       'forma-pago', 'desprendibles-pago', 'ausentismos',
-      'seguimiento-auditoria',
+      'seguimiento-auditoria', 'consulta-formulario'
     ],
     JEFE_DE_AREA: [
       'forma-pago', 'desprendibles-pago',
       'ausentismos', 'seguimiento-auditoria', 'estadisticas-auditoria',
-      'ver-reporte', 'reporte-contratacion',
+      'ver-reporte', 'reporte-contratacion', 'consulta-formulario'
     ],
     ADMIN: [
       'forma-pago', 'desprendibles-pago',
@@ -76,15 +116,16 @@ export class NavbarLateralComponent implements OnInit {
       'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
       'contratacion',
       'archivos-contratacion', 'ver-reporte', 'adres',
-      'reporte-vetado', 'vetados-gerencia',
+      'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
+      'antecedentes-robots'
     ],
     TESORERIA: [
-      'forma-pago', 'desprendibles-pago', 'ausentismos'
+      'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'
     ],
     CAROL: [
       'forma-pago', 'desprendibles-pago', 'arl',
       'ausentismos', 'reporte-contratacion', 'personal-activo',
-      'reporte-contratacion', 'ver-reporte'
+      'reporte-contratacion', 'ver-reporte', 'consulta-formulario'
     ],
     INCAPACIDADADMIN: [
       'forma-pago', 'desprendibles-pago', 'ausentismos',
@@ -93,18 +134,18 @@ export class NavbarLateralComponent implements OnInit {
     ],
     INCAPACIDADSUBIDA: [
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
-      'ausentismos'
+      'ausentismos', 'consulta-formulario'
     ],
     AUX_CONTRATACION: [
       'reporte-contratacion',
       'ver-reporte',
       'forma-pago', 'desprendibles-pago',
-      'ausentismos', 'seguimiento-auditoria'
+      'ausentismos', 'seguimiento-auditoria', 'consulta-formulario'
     ],
     reporteIncapacidad: [
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
       'ausentismos',
-      'ver-reporte', 'reporte-contratacion',
+      'ver-reporte', 'reporte-contratacion','consulta-formulario'
     ],
 
 
@@ -121,13 +162,7 @@ export class NavbarLateralComponent implements OnInit {
   // Crear un Output Event para emitir el cambio de estado
   @Output() menuToggle = new EventEmitter<boolean>();
 
-  toggleMenu(): void {
-    this.isMenuVisible = !this.isMenuVisible;
-    this.menuToggle.emit(this.isMenuVisible); // Emitir el estado del menú
 
-    // Guardar el estado en localStorage
-    localStorage.setItem('menuVisible', JSON.stringify(this.isMenuVisible));
-  }
 
   currentRoute: string | undefined;
 

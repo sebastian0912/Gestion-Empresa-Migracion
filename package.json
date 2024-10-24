@@ -1,6 +1,6 @@
 {
   "name": "gestion-empresa-migracion",
-  "version": "1.0.83",
+  "version": "1.1.4",
   "description": "Programa para gestionar los procesos de la empresa",
   "author": "SebastianGuarnizoCampos",
   "license": "Uso Interno en TuAlianza, Apoyo Laboral, Comercializadora, prohibida su distribucion",
@@ -44,6 +44,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "dist": "ng build --configuration production && electron-builder -p always",
+    "dist2": "ng build --configuration production && electron-builder",
     "serve:ssr:Gestion-Empresa-Migracion": "node dist/gestion-empresa-migracion/server/server.mjs"
   },
   "private": true,
@@ -86,6 +87,7 @@
     "ng2-charts": "^6.0.1",
     "ngx-mat-select-search": "^7.0.6",
     "ngx-signaturepad": "^0.0.10",
+    "puppeteer": "^22.15.0",
     "rimraf": "^6.0.1",
     "rxjs": "~7.8.0",
     "signature_pad": "^5.0.3",
@@ -114,6 +116,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "^4.0.2",
     "karma-jasmine-html-reporter": "^1.7.0",
+    "ts-node": "^10.9.2",
     "typescript": "~5.4.2",
     "wait-on": "^7.2.0"
   }

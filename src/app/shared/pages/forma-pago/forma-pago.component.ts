@@ -45,12 +45,13 @@ export class FormaPagoComponent implements OnInit {
   overlayVisible = false;
   loaderVisible = false;
   counterVisible = false;
-  public isMenuVisible = true;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  isSidebarHidden = false;
+
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
+
 
   constructor(private pagosService: PagosService) {
 
@@ -255,7 +256,7 @@ export class FormaPagoComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: 'Los datos han sidsfdsfdso cargados correctamente'
+            text: 'Los datos han sido cargados correctamente'
           });
         } else {
           Swal.fire({

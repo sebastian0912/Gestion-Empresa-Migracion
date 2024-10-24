@@ -39,6 +39,15 @@ export class ContratacionService {
     );
   }
 
+  // 
+  public buscarEnContratacionFormulario(): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/contratacion/buscarPorMarcaTemporal/`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
   // Buscar datos seleccion  /Seleccion/traerDatosSeleccion/{cedula}
   public traerDatosSeleccion(cedula: string): Observable<any> {
     const headers = this.createAuthorizationHeader();

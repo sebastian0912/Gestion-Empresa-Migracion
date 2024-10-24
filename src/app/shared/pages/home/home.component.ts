@@ -10,6 +10,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-home',
@@ -24,15 +25,15 @@ import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,    
+    MatIconModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 }

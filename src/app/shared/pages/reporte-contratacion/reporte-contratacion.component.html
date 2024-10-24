@@ -1,6 +1,9 @@
-<div class="app-layout">
-    <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
-    <div class="contenedor" [class.minimized]="!isMenuVisible">
+<div class="dashboard-container">
+    <div class="navbar">
+
+    </div>
+    <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+    <div class="dashboard-content">
         <app-navbar-superior></app-navbar-superior>
 
         <mat-card>

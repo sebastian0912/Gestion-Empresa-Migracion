@@ -35,10 +35,9 @@ import { NgIf } from '@angular/common';
   styleUrl: './auditoria.component.css'
 })
 export class AuditoriaComponent {
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 }

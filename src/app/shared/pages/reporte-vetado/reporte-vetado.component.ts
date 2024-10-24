@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';  // Importar operadores de rxjs
 import Swal from 'sweetalert2';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-reporte-vetado',
@@ -27,7 +28,8 @@ import Swal from 'sweetalert2';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    NgFor
+    NgFor,
+    MatIconModule
   ],
   templateUrl: './reporte-vetado.component.html',
   styleUrls: ['./reporte-vetado.component.css']
@@ -49,11 +51,10 @@ export class ReporteVetadoComponent implements OnInit {
 
   }
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
 
   async ngOnInit(): Promise<void> {

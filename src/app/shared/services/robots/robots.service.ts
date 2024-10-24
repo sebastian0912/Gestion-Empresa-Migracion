@@ -61,4 +61,19 @@ export class RobotsService {
       catchError(this.handleError)
     );
   }
+
+  // EstadosRobots
+  consultarEstadosRobots(cedula: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/EstadosRobots/sin_consultar`, {
+      headers,
+      params: { cedula }
+    }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+  
+
+
 }

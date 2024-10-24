@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-envio-paquete-documentacion',
@@ -23,6 +24,7 @@ import { MatCardModule } from '@angular/material/card';
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
+    MatIconModule
   ],
   templateUrl: './envio-paquete-documentacion.component.html',
   styleUrl: './envio-paquete-documentacion.component.css'
@@ -30,11 +32,10 @@ import { MatCardModule } from '@angular/material/card';
 export class EnvioPaqueteDocumentacionComponent {
   myForm: FormGroup;
 
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
   
   sedes = [

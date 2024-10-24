@@ -91,11 +91,10 @@ export class FormularioIncapacidadComponent implements OnInit {
   counterVisible = false;
   incapacidadForm: FormGroup = this.fb.group({});
   cedula: string = '';
-  public isMenuVisible = true;
+  isSidebarHidden = false;
 
-  // Método para manejar el evento del menú
-  onMenuToggle(isMenuVisible: boolean): void {
-    this.isMenuVisible = isMenuVisible;
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
   }
   
   fields: string[] = [

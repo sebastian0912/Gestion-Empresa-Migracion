@@ -1,13 +1,18 @@
-<div class="app-layout">
-  <app-navbar-lateral (menuToggle)="onMenuToggle($event)"></app-navbar-lateral>
-  <div class="contenedor" [class.minimized]="!isMenuVisible">
+<div class="dashboard-container">
+  <div class="navbar">
+    <button class="sidebar-toggle" (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+  <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+  <div class="dashboard-content">
     <app-navbar-superior></app-navbar-superior>
 
 
     <!---- !-- Tarjeta para búsqueda de cédula
-    <mat-accordion *ngIf="procesoValido">
-    -->
     <mat-accordion>
+    -->
+    <mat-accordion *ngIf="procesoValido">
 
       <mat-expansion-panel class="opcionesVer">
         <mat-expansion-panel-header>
@@ -59,12 +64,16 @@
       </mat-expansion-panel>
     </mat-accordion>
 
-    <!-- Nueva tarjeta para la información adicional -->
-    <mat-card style="margin-top: 20px; margin-bottom: 10px;">
-      <h1 class="titulo" style="margin-right: 10px; width: 100%;">
-        Información de ayuda
-      </h1>
-      <mat-card-content>
+    <!-- Acordeón principal que contiene todos los sub-acordeones -->
+    <mat-accordion *ngIf="procesoValido">
+
+      <!-- Acordeón principal: Información Adicional -->
+      <mat-expansion-panel class="opcionesVer">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Información de Ayuda
+          </mat-panel-title>
+        </mat-expansion-panel-header>
 
         <mat-accordion>
 
@@ -302,12 +311,13 @@
 
         </mat-accordion>
 
-      </mat-card-content>
-    </mat-card>
+      </mat-expansion-panel>
+    </mat-accordion>
 
 
     <!-- Tarjeta para búsqueda de cédula -->
     <div class="seleccion">
+      
       <mat-card>
         <mat-card-content>
           <h1 class="titulo" style="margin-right: 10px; width: 100%;">
@@ -322,17 +332,40 @@
           <button mat-flat-button (click)="buscarCedula()" class="example-full-width" style="margin-top: -5px;">
             Buscar
           </button>
-          <!-- Imagen informativa -->
+          <!-- Imagen informativa 
           <img src="comun/image.png" (click)="abrirModal()" alt="info" class="info" *ngIf="infoGeneral">
+          -->
+
+          <br> <br>
+          <!-- Boton para reportar -->
+          <!-- Botón para reportar -->
+          <button mat-flat-button (click)="mostrarCampoObservacion()" class="example-full-width"
+            style="margin-top: -5px;" *ngIf="!mostrarObservacion && procesoValido">
+            Reportar
+          </button>
+
+
+          <!-- Campo de texto y botón para enviar observación -->
+          <div *ngIf="mostrarObservacion">
+            <mat-form-field appearance="fill" class="example-full-width2" style="margin-left: 0;">
+              <mat-label>Escriba su observación</mat-label>
+              <textarea matInput [(ngModel)]="observacion" placeholder="Escriba su observación aquí"></textarea>
+            </mat-form-field>
+
+            <button mat-flat-button (click)="enviarObservacion()" class="example-full-width" style="margin-top: -5px;">
+              Enviar Observación
+            </button>
+          </div>
+
 
         </mat-card-content>
       </mat-card>
 
 
       <!--
-  <mat-card *ngIf="procesoValido">
-      -->
-      <mat-card>
+        <mat-card>
+        -->
+      <mat-card *ngIf="procesoValido">
 
         <h1 class="titulo" style="margin-right: 10px; width: 100%;">
           Diligencie los campos correspondientes:
@@ -585,25 +618,43 @@
                   Examen de Salud Ocupacional ({{ getPercentage(formGroup3) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
+            
               <div class="seccion" [formGroup]="formGroup3">
+                <!-- Campos fijos del formulario -->
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Examen Salud Ocupacional</mat-label>
                   <input matInput formControlName="examenSaludOcupacional" placeholder="Examen Salud Ocupacional">
                 </mat-form-field>
+            
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>IPS</mat-label>
-                  <input matInput formControlName="ips" placeholder="IPS">
+                  <mat-select formControlName="ips" placeholder="IPS">
+                    <mat-option value="JAVAP">JAVAP</mat-option>
+                    <mat-option value="ESTRATEGO">ESTRATEGO</mat-option>
+                    <mat-option value="HELSEN">HELSEN</mat-option>
+                    <mat-option value="ASISTIR">ASISTIR</mat-option>
+                    <mat-option value="SIGMEDICAL">SIGMEDICAL</mat-option>
+                    <mat-option value="PORSALUD">PORSALUD</mat-option>
+                  </mat-select>
                 </mat-form-field>
+            
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Laboratorios</mat-label>
                   <input matInput formControlName="laboratorios" placeholder="Laboratorios">
                 </mat-form-field>
+            
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>IPSLAB</mat-label>
-                  <input matInput formControlName="ipsLab" placeholder="IPSLAB">
+                  <mat-select formControlName="ipsLab" placeholder="IPSLAB">
+                    <mat-option value="JAVAP">JAVAP</mat-option>
+                    <mat-option value="ESTRATEGO">ESTRATEGO</mat-option>
+                    <mat-option value="HELSEN">HELSEN</mat-option>
+                    <mat-option value="ASISTIR">ASISTIR</mat-option>
+                    <mat-option value="SIGMEDICAL">SIGMEDICAL</mat-option>
+                    <mat-option value="PORSALUD">PORSALUD</mat-option>
+                  </mat-select>
                 </mat-form-field>
-
-                <!-- aPTO COMO UN SELECT-->
+            
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Apto para el cargo</mat-label>
                   <mat-select formControlName="aptoCargo">
@@ -611,10 +662,33 @@
                     <mat-option value="No">No es apto</mat-option>
                   </mat-select>
                 </mat-form-field>
-
+            
+                <!-- Select múltiple para elegir exámenes -->
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Seleccione los exámenes</mat-label>
+                  <mat-select formControlName="selectedExams" multiple>
+                    <mat-option *ngFor="let exam of examOptions" [value]="exam">{{ exam }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            
+                <!-- Campos dinámicos para cada examen seleccionado -->
+                <div formArrayName="selectedExamsArray">
+                  <div *ngFor="let exam of selectedExamsArray.controls; let i = index" [formGroupName]="i">
+                    <mat-form-field appearance="fill" class="example-full-width">
+                      <mat-label>{{ examOptions[i] }}</mat-label>
+                      <mat-select formControlName="aptoStatus">
+                        <mat-option value="APTO">APTO</mat-option>
+                        <mat-option value="NO APTO">NO APTO</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+            
                 <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
+            
+
 
             <!-- Contratación -->
             <mat-expansion-panel>

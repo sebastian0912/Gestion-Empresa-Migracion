@@ -32,6 +32,9 @@ import { VerReporteComponent } from './shared/pages/ver-reporte/ver-reporte.comp
 import { ReporteVetadoComponent } from './shared/pages/reporte-vetado/reporte-vetado.component';
 import { VetadosGerenciaComponent } from './shared/pages/vetados-gerencia/vetados-gerencia.component';
 import { SeguimientoAuditoriaArchivoComponent } from './shared/pages/seguimiento-auditoria-archivo/seguimiento-auditoria-archivo.component';
+import { ConsultaFormularioComponent } from './shared/pages/consulta-formulario/consulta-formulario.component';
+import { AntecedentesRobotsComponent } from './shared/pages/antecedentes-robots/antecedentes-robots.component';
+
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -67,5 +70,7 @@ export const routes: Routes = [
   { path: 'ver-reporte', component: VerReporteComponent },
   { path: 'reporte-vetado', component: ReporteVetadoComponent },
   { path: 'vetados-gerencia', component: VetadosGerenciaComponent },
-  { path: 'seguimiento-auditoria-archivo', component: SeguimientoAuditoriaArchivoComponent }  
+  { path: 'seguimiento-auditoria-archivo', component: SeguimientoAuditoriaArchivoComponent },
+  { path: 'consulta-formulario', component: ConsultaFormularioComponent },
+  { path: 'antecedentes-robots', component: AntecedentesRobotsComponent }
 ];
