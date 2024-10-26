@@ -50,6 +50,12 @@ export class VetadosService {
     return this.http.get(`${this.apiUrl}/vetados/vetados`, { headers });
   }
 
+  // listar reportes de candidatos vetados por cedula
+  listarReportesVetadosPorCedula(cedula: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/vetados/vetados/${cedula}`, { headers });
+  }
+
   // Traer datos de nombre completo de candidato
   traerNombreCompletoCandidato(cedula: string): Observable<any> {
     const headers = this.createAuthorizationHeader();

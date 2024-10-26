@@ -45,7 +45,8 @@
     "e2e": "ng e2e",
     "dist": "ng build --configuration production && electron-builder -p always",
     "dist2": "ng build --configuration production && electron-builder",
-    "serve:ssr:Gestion-Empresa-Migracion": "node dist/gestion-empresa-migracion/server/server.mjs"
+    "serve:ssr:Gestion-Empresa-Migracion": "node dist/gestion-empresa-migracion/server/server.mjs",
+    "generate-icons": "node ./node_modules/@capacitor/assets/dist/index.js generate --icon ./public/Tu_Apo_Icono.png"
   },
   "private": true,
   "overrides": {
@@ -68,6 +69,8 @@
     "@angular/router": "^18.0.0",
     "@angular/ssr": "^18.0.4",
     "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
     "@types/chart.js": "^2.9.41",
     "app-builder-bin": "^4.2.0",
     "chart.js": "^4.4.3",
@@ -102,6 +105,7 @@
     "@angular-devkit/build-angular": "^18.0.4",
     "@angular/cli": "^18.0.4",
     "@angular/compiler-cli": "^18.0.0",
+    "@capacitor/assets": "^3.0.5",
     "@types/express": "^4.17.17",
     "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",

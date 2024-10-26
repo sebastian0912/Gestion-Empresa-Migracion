@@ -39,24 +39,20 @@ export class GestionDocumentalService {
   guardarDocumento(
     title: string,
     owner_id: string,
-    contract_number: string,
     type: number,
-    tags: number[],
-    file: File
+    file: File,
+    contract_number?: string  // Hacer que el número de contrato sea opcional
   ): Observable<any> {
-
     const formData = new FormData();
     formData.append('title', title); // Nombre del archivo
     formData.append('owner_id', owner_id); // Cédula
-    formData.append('contract_number', contract_number); // Número de contrato
     formData.append('type', type.toString()); // Tipo de documento (entero)
-
-    // Agregar los tags como múltiples campos de array
-    tags.forEach(tag => {
-      formData.append('tags[]', tag.toString());
-    });
-
     formData.append('file', file); // Archivo PDF
+
+    // Solo agregar el número de contrato si está presente
+    if (contract_number) {
+      formData.append('contract_number', contract_number);
+    }
 
     const headers = this.createAuthorizationHeader();
 
@@ -64,6 +60,7 @@ export class GestionDocumentalService {
       headers
     });
   }
+
 
 
 

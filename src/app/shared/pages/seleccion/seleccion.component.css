@@ -1,7 +1,6 @@
 .titulo {
     font-size: 1.2rem;
     font-weight: bold;
-    /* quitar espacio entre palabras en la altura */
     line-height: 1;
 }
 
@@ -14,13 +13,13 @@
     margin-right: auto;
 }
 
+
 .seleccion {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    /* Alineación superior para evitar movimiento */
 }
 
 mat-card:nth-child(1) {
@@ -28,15 +27,11 @@ mat-card:nth-child(1) {
     width: 30%;
     margin: 10px;
     position: sticky;
-    /* Mantener el card 1 en su lugar al hacer scroll */
     top: 10px;
-    /* Definir una distancia desde la parte superior */
 }
 
-
-
 .example-full-width {
-    width: 100%;
+    min-width: 80%;
 }
 
 .example-full-width2 {
@@ -53,7 +48,6 @@ mat-card:nth-child(2) {
     margin: 10px;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     overflow-y: auto;
-    /* Permitir desplazamiento si el contenido se expande */
 }
 
 
@@ -63,7 +57,9 @@ mat-card:nth-child(2) {
     width: 72vw;
     max-height: 400px;
     overflow-y: auto;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin: 0 auto;
+    margin-bottom: 10pt;
 }
 
 p {
@@ -88,28 +84,42 @@ mat-card-subtitle {
     padding: 5px;
 }
 
+.vacantes-scroll-container {
+    overflow-x: auto;
+    /* Permite el scroll horizontal */
+    padding: 10px;
+}
+
+.vacantes-container {
+    display: flex;
+    gap: 16px;
+    /* Espacio entre las tarjetas */
+    flex-wrap: nowrap;
+    /* Evita que las tarjetas se envuelvan a la siguiente línea */
+}
+
 .vacante-card {
-    position: relative;
-    /* Added to ensure absolute positioning works inside the card */
+    min-width: 300px;
+    max-width: 350px;
+    /* Ancho mínimo de cada tarjeta */
+    flex-shrink: 0;
+    /* Evita que se reduzcan las tarjetas */
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
 
 .actions-wrapper {
     position: absolute;
-    /* Ensures the button is positioned absolutely inside the card */
     top: 10px;
-    /* Adjust the top padding as needed */
     right: 10px;
-    /* Ensures it stays on the right side */
     z-index: 1;
-    /* Brings the button on top of other elements */
 }
 
 .fixed-button {
     background-color: white;
-    /* Optional: to give the button a background */
     box-shadow: none;
-    /* Remove default shadow if present */
 }
+
+
 
 
 
@@ -119,20 +129,26 @@ mat-card-subtitle {
 .seccion {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    /* Dos columnas de igual tamaño */
     gap: 16px;
-    /* Espacio entre los elementos */
 }
 
 .input-container {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    /* Alinea el contenido a la izquierda para mejorar la apariencia */
     flex-wrap: wrap;
-    /* Para permitir que el nombre del archivo se acomode debajo del input */
+    width: 100%;
+    gap: 8px;
+    /* Añade un pequeño espacio entre los elementos para mayor claridad */
 }
 
 .input-container mat-form-field {
-    flex: 1;
+    flex: 1 1 200px;
+    /* Permite que el campo de formulario crezca pero tenga un tamaño mínimo */
+    min-width: 200px;
+    max-width: 100%;
+    /* Asegura que no se desborde en pantallas más pequeñas */
 }
 
 .input-container button {
@@ -142,47 +158,71 @@ mat-card-subtitle {
 .uploaded-file-name {
     display: block;
     width: 100%;
-    /* Ocupa todo el ancho del contenedor */
-    margin-top: -16px;
-    /* Añade un pequeño margen superior para separarlo del input */
+    margin-top: -8px;
+    /* Ajusta el espacio para una mejor alineación */
     font-size: 0.85rem;
     color: #666;
-    /* Color más suave para el nombre del archivo */
     word-wrap: break-word;
     font-style: italic;
 }
 
 
 
+
+/* Media Query para pantallas pequeñas */
 @media (max-width: 768px) {
-    mat-card:nth-child(1) {
-        width: 80vw;
+
+    .seccion {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .input-container {
+        justify-content: center;
+        /* Centra el contenido en pantallas pequeñas */
+        gap: 5px;
+    }
+
+    .input-container mat-form-field {
+        flex: 1 1 150px;
+        /* Reduce el tamaño mínimo en pantallas pequeñas */
+        min-width: 150px;
+    }
+
+    mat-card:nth-child(1),
+    mat-card:nth-child(2) {
+        width: 90vw;
         margin: 10px;
         position: static;
-        /* Eliminar la posición fija */
+        /* Permite que los elementos sean más fluidos en móviles */
     }
 
     .opcionesVer {
         width: 90vw;
     }
 
-    mat-card:nth-child(2) {
-        width: 80vw;
-        margin: 10px;
-        position: static;
-        /* Eliminar la posición fija */
+    .uploaded-file-name {
+        font-size: 0.75rem;
+        /* Ajusta el tamaño del texto para que se vea mejor en pantallas pequeñas */
     }
 
-    mat-panel-title {
-        line-height: 1;
+    mat-expansion-panel-header {
+        min-height: 35pt;
+        height: auto;
     }
 
-    mat-expansion-panel{
-        margin-bottom: 1px;
+    mat-expansion-panel {
+        margin-bottom: 5pt;
+        height: auto;
     }
 
-
-    .seccion {
-        grid-template-columns: 1fr;
+    .vacante-card {
+        min-width: 70vw;
     }
+
+    .example-full-width3 {
+        width: 100%;
+        margin: 5px;
+    }
+
 }

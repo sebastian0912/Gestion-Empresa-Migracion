@@ -79,182 +79,160 @@ export class SeleccionComponent implements OnInit {
   mostrarObservacion: boolean = false; // Controla la visibilidad del campo de observación
   observacion: string = ''; // Almacena la observación escrita por el usuario
 
-  // Mapeo de campos a sus correspondientes tags
-  tagsMap: { [key: string]: number[] } = {
-    afp: [3],
-    eps: [3],
-    policivos: [3],
-    procuraduria: [3],
-    contraloria: [3],
-    medidasCorrectivas: [3],
-    ramaJudicial: [3]
-  };
-
   typeMap: { [key: string]: number } = {
-    afp: 5,
-    eps: 6,
-    policivos: 8,
-    procuraduria: 9,
-    contraloria: 10,
-    medidasCorrectivas: 11,
-    ramaJudicial: 12
+    eps: 7,
+    policivos: 6,
+    procuraduria: 3,
+    contraloria: 4,
+    medidasCorrectivas: 10,
+    afp: 19,
+    ramaJudicial: 20
   };
 
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
 
   laborExams = [
+
     { labor: 'ADMINISTRACIÓN', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'RECEPCIONISTA', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'SST, JEFE,EJECUTVOS,', exams: ['Exámen Ingreso', 'Visiometria'] },
+    { labor: 'SST, JEFE, EJECUTIVOS', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'SERVICIOS GENERALES (MANIPULADORES DE ALIMENTOS)', exams: ['Exámen Ingreso', 'Visiometria', 'Frotis de uñas', 'Frotis de garganta', 'Coprológico'] },
     { labor: 'MENSAJERO MOTORIZADO', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría'] },
-    { labor: 'ORNATOS (LABORES EN PISO)', exams: ['Exámen Ingreso', 'Audiometría'] },
-    { labor: 'ORNATOS (LABORES EN ALTURAS)', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Perfil lípidico', 'Audiometría', 'Espirometría'] },
+    { labor: 'ORNATOS (LABORES EN PISO)', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'ORNATOS (LABORES EN ALTURAS)', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
     { labor: 'ORNATOS ASPERSION', exams: ['Exámen Ingreso', 'Colinesterasa'] },
     { labor: 'ALMACENISTA SIN EXPOSICION A AGROQUIMICOS', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'ALMACENISTA TRABAJO ALTURA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Perfil lípidico', 'Audiometría', 'Espirometría'] },
-    { labor: 'ALMACENISTA CON EXPOSICION A AGROQUIMICOS', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'CASINO', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Frotis de uñas', 'Frotis de garganta', 'Creatinina', 'Coprológico'] },
+    { labor: 'ALMACENISTA TRABAJO ALTURA', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'ALMACENISTA CON EXPOSICION A AGROQUIMICOS', exams: ['Exámen Ingreso', 'Colinesterasa'] },
+    { labor: 'CASINO', exams: ['Exámen Ingreso', 'Visiometria', 'Frotis de uñas', 'Frotis de garganta', 'Coprológico'] },
     { labor: 'JEFE Y AUXILIARES', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'OPERARIO DE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Audiometría', 'Espirometría'] },
-    { labor: 'ADMINISTRACIÓN', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'RECEPCIONISTA', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'SST, JEFE,EJECUTVOS,', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'SERVICIOS GENERALES (MANIPULADORES DE ALIMENTOS)', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Frotis de uñas', 'Frotis de garganta', 'Creatinina', 'Coprológico'] },
-    { labor: 'MENSAJERO MOTORIZADO', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría'] },
-    { labor: 'ORNATOS (LABORES EN PISO)', exams: ['Exámen Ingreso', 'Audiometría'] },
-    { labor: 'ORNATOS (LABORES EN ALTURAS)', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Perfil lípidico', 'Audiometría', 'Espirometría'] },
-    { labor: 'ORNATOS ASPERSION', exams: ['Exámen Ingreso', 'Colinesterasa'] },
-    { labor: 'ALMACENISTA SIN EXPOSICION A AGROQUIMICOS', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'ALMACENISTA TRABAJO ALTURA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Perfil lípidico', 'Audiometría', 'Espirometría'] },
-    { labor: 'ALMACENISTA CON EXPOSICION A AGROQUIMICOS', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'CASINO', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Frotis de uñas', 'Frotis de garganta', 'Creatinina', 'Coprológico'] },
-    { labor: 'JEFE Y AUXILIARES', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'OPERARIO DE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Audiometría', 'Espirometría'] },
-    { labor: 'ASISTENTE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Espirometría', 'Cuadro hematico'] },
-    { labor: 'JEFE DE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Espirometría', 'Cuadro hematico', 'Creatinina', 'TGO', 'Coprológico'] },
-    { labor: 'OPERARIO DE MICROBIOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Cuadro hematico'] },
-    { labor: 'SUPERVISOR DE MICROBIOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'JEFE DE MICROBIOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Creatinina', 'TGO'] },
-    { labor: 'DIRECCIÓN DE INVESTIGACIÓN Y DESARROLLO', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Espirometría', 'Cuadro hematico'] },
-    { labor: 'ASISTENTE DE INVESTIGACIÓN Y DESARROLLO', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
-    { labor: 'JEDE DE INVESTIGACIÓN Y DESARROLLO', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'EJECUTIVO DE ENTOMOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'EJECUTIVO DE PROYECTOS ESPECIALES', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'PASANTE PROFESIONAL', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'PASANTE SENA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'EJECUTIVO DE PCR', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Espirometría', 'Cuadro hematico'] },
+    { labor: 'OPERARIO DE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'ASISTENTE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'JEFE DE PRUEBAS DE EFICACIA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Optometría', 'Audiometría', 'Espirometría', 'Cuadro hematico', 'Creatinina', 'TGO'] },
+    { labor: 'OPERARIO DE MICROBIOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'SUPERVISOR DE MICROBIOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'JEFE DE MICROBIOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Optometría', 'Espirometría'] },
+    { labor: 'DIRECCIÓN DE INVESTIGACIÓN Y DESARROLLO', exams: ['Exámen Ingreso', 'Colinesterasa', 'Optometría', 'Espirometría', 'Cuadro hematico', 'Creatinina', 'TGO'] },
+    { labor: 'ASISTENTE DE INVESTIGACIÓN Y DESARROLLO', exams: ['Exámen Ingreso', 'Visiometria', 'Espirometría'] },
+    { labor: 'JEFE DE INVESTIGACIÓN Y DESARROLLO', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'EJECUTIVO DE ENTOMOLOGÍA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'EJECUTIVO DE PROYECTOS ESPECIALES', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'PASANTE PROFESIONAL', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'PASANTE SENA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría'] },
+    { labor: 'EJECUTIVO DE PCR', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Espirometría', 'Cuadro hematico', 'Creatinina', 'TGO'] },
     { labor: 'DIRECTOR DE LABORATORIO INVITRO', exams: ['Exámen Ingreso', 'Colinesterasa'] },
-    { labor: 'LABORATORIO(BLOQUE EXPERIMENTAL ACAROS)', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
-    { labor: 'ACAROS(FUMIGADORES)', exams: ['Exámen Ingreso', 'Colinesterasa'] },
-    { labor: 'PRODUCCION DE BIOCONTROLADORES(TRABAJO ALTURAS- ESCALERAS > 1,5 METROS)', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Visiometria'] },
-    { labor: 'PRODUCCION DE BIOCONTROLADORES', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría'] },
-    { labor: 'FUMIGACION UNIDAD EXPERIMENTAL ACAROS', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'CALDERA (OPERARIO Y AYUDANTE)', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'ELECTRICISTAS Y AYUDANTES', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Visiometria', 'Audiometría', 'Creatinina'] },
-    { labor: 'MANTENIMIENTO EN PISO', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
-    { labor: 'MECÁNICO', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría', 'Espirometría', 'Cuadro hematico', 'Creatinina'] },
-    { labor: 'MECATRÓNICO', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Visiometria', 'Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'OBRAS CIVILES Y AYUDANTES', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Visiometria', 'Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'OP. SIERRA ELÉCTRICA', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'SOLDADORES, AYUDANTES Y TRONZADORA.', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Visiometria', 'Optometría', 'Audiometría', 'Espirometría', 'Sicometrico', 'Frotis de uñas', 'Frotis de garganta', 'Cuadro hematico', 'Creatinina', 'TGO', 'Coprológico'] },
-    { labor: 'SUPERVISOR DE MANTENIMIENTO', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría', 'Espirometría', 'Sicometrico', 'Creatinina'] },
-    { labor: 'SUPERVISOR DE MANTENIMIENTO ALTURAS', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'TRABAJO EN ALTURAS', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Visiometria', 'Optometría', 'Audiometría', 'Espirometría', 'Sicometrico', 'Creatinina'] },
-    { labor: 'TRACTORISTA', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'CONDUCTORES', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'BOMBERO GASOLINA', exams: ['Optometría', 'Audiometría', 'Creatinina'] },
-    { labor: 'ENVASE DE AGUA POTABLE', exams: ['Exámen Ingreso', 'Visiometria', 'Creatinina'] },
-    { labor: 'PLANTA DE AGUA POTABLE', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Visiometria', 'Optometría', 'Audiometría', 'Espirometría', 'Sicometrico', 'Creatinina'] },
-    { labor: 'ING CIVIL', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Visiometria', 'Optometría', 'Creatinina'] },
-    { labor: 'COORDINADOR MANTENIMIENTO', exams: ['Exámen Ingreso'] },
-    { labor: 'EJECUTIVO ING RIEGO', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Perfil lípidico', 'Visiometria', 'Optometría', 'Audiometría', 'Sicometrico', 'Cuadro hematico', 'Creatinina'] },
-    { labor: 'SOLDADORES PISO', exams: ['Exámen Ingreso'] },
-    { labor: 'ELECTRICISTAS PISO', exams: [] },
+    { labor: 'LABORATORIO (BLOQUE EXPERIMENTAL ACAROS)', exams: ['Exámen Ingreso', 'Optometría', 'Espirometría'] },
+    { labor: 'ACAROS (FUMIGADORES)', exams: ['Exámen Ingreso', 'Colinesterasa', 'Optometría'] },
+    { labor: 'PRODUCCIÓN DE BIOCONTROLADORES (TRABAJO ALTURAS- ESCALERAS > 1,5 METROS)', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'PRODUCCIÓN DE BIOCONTROLADORES', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'FUMIGACIÓN UNIDAD EXPERIMENTAL ACAROS', exams: ['Exámen Ingreso', 'Colinesterasa'] },
+    { labor: 'CALDERA (OPERARIO Y AYUDANTE)', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'ELECTRICISTAS Y AYUDANTES', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'MANTENIMIENTO EN PISO', exams: ['Exámen Ingreso', 'Visiometria'] },
+    { labor: 'MECÁNICO', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'MECATRÓNICO', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'OBRAS CIVILES Y AYUDANTES', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'OP. SIERRA ELÉCTRICA', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'SOLDADORES, AYUDANTES Y TRONZADORA', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'SUPERVISOR DE MANTENIMIENTO', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'SUPERVISOR DE MANTENIMIENTO ALTURAS', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'TRABAJO EN ALTURAS', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'TRACTORISTA', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría'] },
+    { labor: 'CONDUCTORES', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría'] },
+    { labor: 'BOMBERO GASOLINA', exams: ['Exámen Ingreso', 'Audiometría', 'Espirometría'] },
+    { labor: 'ENVASE DE AGUA POTABLE', exams: ['Exámen Ingreso', 'Visiometria', 'Frotis de uñas', 'Frotis de garganta', 'Coprológico'] },
+    { labor: 'PLANTA DE AGUA POTABLE', exams: ['Exámen Ingreso', 'Perfil lípidico', 'Visiometria', 'Optometría', 'Audiometría', 'Frotis de uñas', 'Frotis de garganta', 'Coprológico'] },
+    { labor: 'ING CIVIL', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'COORDINADOR MANTENIMIENTO', exams: ['Exámen Ingreso', 'Optometría'] },
+    { labor: 'EJECUTIVO ING RIEGO', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'SOLDADORES PISO', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'ELECTRICISTAS PISO', exams: ['Exámen Ingreso'] },
     { labor: 'DEVITALIZACION (FOSFINA)', exams: ['Exámen Ingreso'] },
-    { labor: 'DEVITALIZACION', exams: ['Exámen Ingreso', 'Optometría'] },
+    { labor: 'DEVITALIZACION', exams: ['Exámen Ingreso', 'Audiometría'] },
     { labor: 'DESINFECCION POSCOSECHAS', exams: ['Exámen Ingreso'] },
     { labor: 'FUMIGACION UNIDAD EXPERIMENTAL ACAROS', exams: ['Exámen Ingreso', 'Colinesterasa'] },
-    { labor: 'RIESGO QUÍMICO(AGROQUIMICOS),ASPERJADORES, SUPERVISORES,BOMBEROS, ALMACENISTA,', exams: ['Exámen Ingreso', 'Colinesterasa'] },
-    { labor: 'RIESGO QUÍMICO(AGROQUIMICOS)BOMBEROS', exams: ['Exámen Ingreso', 'Colinesterasa', 'Optometría', 'Audiometría'] },
+    { labor: 'RIESGO QUÍMICO (AGROQUIMICOS), ASPERJADORES, SUPERVISORES, BOMBEROS, ALMACENISTA', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria'] },
+    { labor: 'RIESGO QUÍMICO (AGROQUIMICOS) BOMBEROS', exams: ['Exámen Ingreso', 'Colinesterasa', 'Visiometria', 'Audiometría'] },
     { labor: 'JEFATURA MIPE', exams: ['Exámen Ingreso', 'Colinesterasa'] },
     { labor: 'RIEGO', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'RIEGO(BOMBERO)', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría'] },
-    { labor: 'MONTACARGAS', exams: ['Exámen Ingreso', 'Creatinina'] },
-    { labor: 'MONTACARGA - TRABAJO EN ALTURAS', exams: ['Exámen Ingreso', 'Colinesterasa', 'Glicemia Basal', 'Perfil lípidico', 'Audiometría', 'Espirometría', 'Sicometrico', 'Creatinina'] },
-    { labor: 'MONTACARGA ELECTRICO', exams: ['Exámen Ingreso', 'Creatinina'] },
+    { labor: 'RIEGO (BOMBERO)', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'MONTACARGAS', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría'] },
+    { labor: 'MONTACARGA - TRABAJO EN ALTURAS', exams: ['Exámen Ingreso', 'Glicemia Basal', 'Perfil lípidico', 'Optometría', 'Audiometría'] },
+    { labor: 'MONTACARGA ELECTRICO', exams: ['Exámen Ingreso', 'Optometría'] },
     { labor: 'OPERARIO POSCOSECHA', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'TINTURADO', exams: ['Exámen Ingreso', 'Visiometria', 'Optometría', 'Audiometría', 'Espirometría', 'Creatinina', 'TGO'] },
-    { labor: 'OP ASPIRADORA Y/O SOPLADORA', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'ACAROS', exams: ['Exámen Ingreso', 'Visiometria', 'Creatinina'] },
-    { labor: 'CABLE MOTOR', exams: ['Exámen Ingreso', 'Visiometria', 'Creatinina'] },
-    { labor: 'CALIDAD', exams: ['Exámen Ingreso'] },
-    { labor: 'CHAMANEO Y/O SAHUMERIO', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'GUADAÑADORES', exams: ['Exámen Ingreso', 'Visiometria'] },
-    { labor: 'HORMONADO', exams: ['Exámen Ingreso'] },
+    { labor: 'TINTURADO', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'OP ASPIRADORA Y/O SOPLADORA', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'ACAROS', exams: ['Exámen Ingreso', 'Optometría', 'Espirometría'] },
+    { labor: 'CABLE MOTOR', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'CALIDAD', exams: ['Exámen Ingreso', 'Optometría'] },
+    { labor: 'CHAMANEO Y/O SAHUMERIO', exams: ['Exámen Ingreso', 'Visiometria', 'Espirometría'] },
+    { labor: 'GUADAÑADORES', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'HORMONADO', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'MONITORES', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'MOTONIVELADORA', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'OPERARIO CULTIVO', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'TERMONEBULIZADORA', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'OP. TRABAJO DE SUELOS - COMPOST', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'TRABAJO DE SUELOS', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'TRABAJO DE SUELOS-MOTOCULTOR', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'TRABAJO DE SUELOS-DESBROZADORA', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría', 'Creatinina', 'TGO', 'Coprológico'] },
-    { labor: 'OP MAQUINA PLANA', exams: ['Exámen Ingreso', 'Optometría'] },
-    { labor: 'SEGURIDAD FISICA Y ESCOLTAS', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría'] },
+    { labor: 'MOTONIVELADORA', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'OPERARIO CULTIVO', exams: ['Exámen Ingreso', 'Visiometria'] },
+    { labor: 'TERMONEBULIZADORA', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'OP. TRABAJO DE SUELOS - COMPOST', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'TRABAJO DE SUELOS', exams: ['Exámen Ingreso', 'Visiometria'] },
+    { labor: 'TRABAJO DE SUELOS-MOTOCULTOR', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría'] },
+    { labor: 'TRABAJO DE SUELOS-DESBROZADORA', exams: ['Exámen Ingreso', 'Visiometria', 'Audiometría', 'Espirometría'] },
+    { labor: 'OP MAQUINA PLANA', exams: ['Exámen Ingreso', 'Visiometria'] },
+    { labor: 'SEGURIDAD FISICA Y ESCOLTAS', exams: ['Exámen Ingreso', 'Optometría', 'Audiometría', 'Sicometrico'] },
 
+    //--------------------------------------------------------------------------------
 
-    { labor: 'AGRICULTOR Y VARIOS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Trabajo en alturas'] },
-    { labor: 'BRIGADISTAS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'OPERARIO APLICADOR DE FOSFINAS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Trabajo en alturas', 'Espirometría', 'Cuadro Hemático', 'Colinesterasa', 'Electrocardiograma', 'Glicemia'] },
-    { labor: 'OPERARIO PLANTA TRATAMIENTO DE AGUA POTABLE', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Colinesterasa', 'Glicemia', 'PT  PTT (Prueba de coagulación)', 'ALT (Alanina Trasaminasa)', 'AST (Aspartato Trasaminasa)', 'Hemograma'] },
-    { labor: 'OPERARIO TERMONEBULIZADORA', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático'] },
-    { labor: 'OPERARIO TRABAJO EN ALTURAS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Colinesterasa', 'Glicemia', 'PT  PTT (Prueba de coagulación)', 'ALT (Alanina Trasaminasa)', 'AST (Aspartato Trasaminasa)', 'Hemograma'] },
-    { labor: 'OPERARIO DE ASPIRADORA', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Visiometría', 'Audiometría'] },
-    { labor: 'OPERARIO DE SOPLADO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Visiometría', 'Audiometría'] },
-    { labor: 'OPERARIO FOGONEO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'AUXILIAR DE INVENTARIOS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático'] },
-    { labor: 'JEFE DE RIEGO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'JEFE DE FUMIGACIÓN', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'FUMIGADOR O ASPERJADOR', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'BOMBERO DE FUMIGACION', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'BOMBERO DE RIEGO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'AUDITOR MIPE', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'AUDITOR MIRFE', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'OPERARIO VALVULERO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'HORMONERO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)'] },
-    { labor: 'OPERARIO DESINFECCIÓN SUELOS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático'] },
-    { labor: 'OPERARIO APLICADOR DE HERBICIDA', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'OPERARIO PREPARACIÓN STS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'PREPARACIÓN HIDRATACIÓN', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'OPERARIO ARMADO Y COSIDO DE CARTON', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'AUXILIAR DE BODEGA CARTON', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'JEFE DE ALMACEN', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma', 'Glicemia', 'PT  PTT (Prueba de coagulación)', 'ALT (Alanina Trasaminasa)', 'AST (Aspartato Trasaminasa)', 'Hemograma', 'Frotis de Garganta'] },
-    { labor: 'ALMACENISTA DE PRODUCTOS QUIMICOS / DOSIFICADOR DE QUIMICOS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'PLOMERO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'SOLDADOR Y ORNAMENTADOR', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'ELECTRICISTA / TÉCNICO ELÉCTRICO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'OPERARIO DE COMPOST', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'OPERARIO DE MUESTRAS POZOS SEPTICOS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'OPERARIO DE RESPEL', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'CONDUCTOR TODO TIPO DE VEHICULOS: TRACTOR, RETRO ESCABADORA, CAMIONES, TRACTOR', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma'] },
-    { labor: 'OPERARIO DE MONTACARGAS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma', 'Glicemia'] },
-    { labor: 'ANALISTA', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'AUXILIAR ADMINISTRATIVO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'COORDINADOR RIESGO QUIMICO / ASEGURAMIENTO RIESGO QUIMICO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'COORDINADOR', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'DIRECTOR', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'GERENTE', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'JEFE', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'TECNICOS', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'OPERARIO MEZCLADOR DE TROMPO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'PINTADO / TINTURADO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'COORDINADOR MIPE', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'ESTIBADOR NO TRIPULADO', exams: ['Exámen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Electrocardiograma'] },
-    { labor: 'MANTENIMIENTO DE CABINAS DE PINTADO', exams: [] }
-  
+    { labor: 'AGRICULTOR Y VARIOS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular'] },
+    { labor: 'BRIGADISTAS', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'OPERARIO APLICADOR DE FOSFINAS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Cuadro Hemático'] },
+    { labor: 'OPERARIO PLANTA TRATAMIENTO DE AGUA POTABLE', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma (Sólo aplica para mayores de 45 años)', 'Glicemia'] },
+    { labor: 'OPERARIO TERMONEBULIZADORA', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Visiometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'OPERARIO TRABAJO EN ALTURAS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma (Sólo aplica para mayores de 45 años)', 'Glicemia'] },
+    { labor: 'OPERARIO DE ASPIRADORA', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Audiometría'] },
+    { labor: 'OPERARIO DE SOPLADO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Audiometría'] },
+    { labor: 'OPERARIO FOGONEO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría'] },
+    { labor: 'AUXILIAR DE INVENTARIOS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma (Sólo aplica para mayores de 45 años)', 'Glicemia'] },
+    { labor: 'JEFE DE RIEGO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Colinesterasa'] },
+    { labor: 'JEFE DE FUMIGACIÓN', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'FUMIGADOR O ASPERJADOR', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'BOMBERO DE FUMIGACION', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'BOMBERO DE RIEGO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Colinesterasa'] },
+    { labor: 'AUDITOR MIPE', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'AUDITOR MIRFE', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Espirometría', 'Colinesterasa'] },
+    { labor: 'OPERARIO VALVULERO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'HORMONERO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'OPERARIO DESINFECCIÓN SUELOS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Tegumentaria', 'Cardiovascular', 'Espirometría', 'Hemograma'] },
+    { labor: 'OPERARIO APLICADOR DE HERBICIDA', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Cuadro Hemático'] },
+    { labor: 'OPERARIO PREPARACIÓN STS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular'] },
+    { labor: 'PREPARACIÓN HIDRATACIÓN', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría'] },
+    { labor: 'OPERARIO ARMADO Y COSIDO DE CARTON', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Audiometría'] },
+    { labor: 'AUXILIAR DE BODEGA CARTON', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma (Sólo aplica para mayores de 45 años)', 'Glicemia'] },
+    { labor: 'JEFE DE ALMACEN', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Colinesterasa', 'ALT (Alanina Trasaminasa)', 'AST (Aspartato Trasaminasa)', 'Hemograma'] },
+    { labor: 'ALMACENISTA DE PRODUCTOS QUIMICOS / DOSIFICADOR DE QUIMICOS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Colinesterasa', 'ALT (Alanina Trasaminasa)', 'AST (Aspartato Trasaminasa)', 'Hemograma'] },
+    { labor: 'PLOMERO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Audiometría'] },
+    { labor: 'SOLDADOR Y ORNAMENTADOR', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Visiometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'ELECTRICISTA / TÉCNICO ELÉCTRICO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Electrocardiograma (Sólo aplica para mayores de 45 años)', 'Glicemia'] },
+    { labor: 'OPERARIO DE COMPOST', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular'] },
+    { labor: 'OPERARIO DE MUESTRAS POZOS SEPTICOS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'HEPATITIS A Y B', 'TETANO VACUNA T-D'] },
+    { labor: 'OPERARIO DE RESPEL', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Espirometría', 'Colinesterasa'] },
+    { labor: 'CONDUCTOR TODO TIPO DE VEHICULOS: TRACTOR, RETRO ESCABADORA, CAMIONES, TRACTOR', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Visiometría', 'Audiometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Glicemia', 'Exámen médico integral definido para conductores'] },
+    { labor: 'OPERARIO DE MONTACARGAS', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)', 'Visiometría', 'Audiometría', 'Espirometría', 'Perfil Lipídico', 'Cuadro Hemático', 'Glicemia', 'Exámen médico integral definido para conductores'] },
+    { labor: 'ANALISTA', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'AUXILIAR ADMINISTRATIVO', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'COORDINADOR RIESGO QUIMICO / ASEGURAMIENTO RIESGO QUIMICO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular', 'Colinesterasa'] },
+    { labor: 'COORDINADOR', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'DIRECTOR', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'GERENTE', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'JEFE', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Cardiovascular'] },
+    { labor: 'TECNICOS', exams: ['Examen Médico', 'Osteomuscular', 'Cardiovascular'] },
+    { labor: 'OPERARIO MEZCLADOR DE TROMPO', exams: ['Examen Médico', 'Osteomuscular', 'Audiometría', 'Espirometría'] },
+    { labor: 'PINTADO / TINTURADO', exams: ['Examen Médico', 'Osteomuscular', 'Quimico (Respiratorio - Dermatologico)', 'Tegumentaria', 'Visiometría', 'Audiometría', 'Espirometría'] },
+    { labor: 'COORDINADOR MIPE', exams: ['Examen Médico', 'Osteomuscular'] },
+    { labor: 'ESTIBADOR NO TRIPULADO', exams: ['Examen Médico', 'Visiometría'] },
+    { labor: 'MANTENIMIENTO DE CABINAS DE PINTADO', exams: ['Examen Médico', 'Osteomuscular', 'Tegumentaria', 'Cardiovascular', 'Visiometría', 'Audiometría', 'Espirometría'] }
   ];
-  
+  filteredExamOptions: string[] = [];
+
+
 
   epsList: string[] = [
     'ALIANSALUD',
@@ -343,11 +321,8 @@ export class SeleccionComponent implements OnInit {
     });
 
     this.formGroup3 = this.fb.group({
-      examenSaludOcupacional: [''],
       ips: [''],
-      laboratorios: [''],
       ipsLab: [''],
-      aptoCargo: [''],
       selectedExams: [[]], // Lista de exámenes seleccionados
       selectedExamsArray: this.fb.array([]) // FormArray dinámico para apto/no apto
     });
@@ -442,10 +417,22 @@ export class SeleccionComponent implements OnInit {
       }
     });
 
+    // Suscribirse a los cambios en el campo "cargo"
+    this.formGroup2.get('cargo')?.valueChanges.subscribe(cargo => {
+      this.updateExamOptions(cargo);
+    });
+
     // Suscripción para actualizar el array de selects dinámicos cuando cambia el valor
     this.formGroup3.get('selectedExams')?.valueChanges.subscribe(selectedExams => {
       this.updateSelectedExamsArray(selectedExams);
     });
+
+  }
+
+  updateExamOptions(cargo: string): void {
+    const labor = this.laborExams.find(l => l.labor === cargo);
+    this.filteredExamOptions = labor ? labor.exams : [];
+    this.formGroup3.get('selectedExams')?.setValue([]); // Limpiar la selección actual de exámenes
   }
 
   get selectedExamsArray() {
@@ -507,11 +494,26 @@ export class SeleccionComponent implements OnInit {
         return of([]); // Retorna un arreglo vacío para manejar el error y continuar
       })
     ).subscribe((response: any) => {
-      this.vacantes = response.publicacion.map((vacante: any) => ({
+      if (!response || !response.publicacion) {
+        Swal.fire('Error', 'No se encontraron vacantes', 'error');
+        return;
+      }
+
+      // Filtrar las vacantes basadas en la ubicación y la sedeLogin
+      this.vacantes = response.publicacion.filter((vacante: any) => {
+        // Extrae la lista de ubicaciones de la vacante y conviértela a un array
+        const localizacion = vacante.localizacionDeLaPersona?.split(',').map((loc: string) => loc.trim().toLowerCase()) || [];
+
+        // Verifica si this.sedeLogin está presente en la lista de localizaciones
+        const sedeMatch = localizacion.includes(this.sedeLogin.toLowerCase());
+
+        return sedeMatch;
+      }).map((vacante: any) => ({
         ...vacante,
       }));
     });
   }
+
 
   // Función para escoger una vacante y actualizar los campos del formulario con los datos de la vacante
   escogerVacante(vacante: any): void {
@@ -600,6 +602,7 @@ export class SeleccionComponent implements OnInit {
       ['Cargovacante_id', 'localizacionDeLaPersona', 'empresaQueSolicita_id']
         .some(key => vacante[key]?.toLowerCase().includes(filtroLower))
     );
+
   }
 
 
@@ -607,8 +610,9 @@ export class SeleccionComponent implements OnInit {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
+      vetado: this.vetadosService.listarReportesVetadosPorCedula(this.cedula)
     }).subscribe(
-      async ({ seleccion, infoGeneral }) => {
+      async ({ seleccion, infoGeneral, vetado }) => {
         if (seleccion && seleccion.procesoSeleccion && Array.isArray(seleccion.procesoSeleccion)) {
           this.seleccion = seleccion.procesoSeleccion.reduce((prev: { id: number; }, current: { id: number; }) =>
             current.id > prev.id ? current : prev, { id: 0 });
@@ -638,6 +642,10 @@ export class SeleccionComponent implements OnInit {
 
         await this.infoGeneralCandidato();
         this.procesoValido = true;
+
+        if (vetado) {
+          console.log('Vetado:', vetado);
+        }
       },
       (err) => {
         console.error(err);
@@ -780,6 +788,7 @@ export class SeleccionComponent implements OnInit {
   async verificarSeleccion() {
     // Si existe un proceso de selección, llenar el formulario con los datos
     if (this.seleccion) {
+      console.log('Proceso de selección encontrado:', this.seleccion);
       // Mostrar el diálogo de confirmación
       Swal.fire({
         title: '¡Atención!',
@@ -805,7 +814,7 @@ export class SeleccionComponent implements OnInit {
 
           // Ahora que ya se ha asignado this.codigoContrato, puedes llamar a obtenerDocumentosPorTipo
           if (this.codigoContrato) {
-            this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 3)
+            this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 2)
               .subscribe({
                 next: (infoGestionDocumentalAntecedentes: any[]) => {
                   if (infoGestionDocumentalAntecedentes) {
@@ -870,12 +879,30 @@ export class SeleccionComponent implements OnInit {
 
           // Llenar los campos del formulario de Examen de Salud Ocupacional (formGroup3)
           this.formGroup3.patchValue({
-            examenSaludOcupacional: this.seleccion.examen_salud_ocupacional || '',
             ips: this.seleccion.ips || '',
-            laboratorios: this.seleccion.delaboratorios || '',
             ipsLab: this.seleccion.ipslab || '',
-            aptoCargo: this.seleccion.apto_para_el_cargo || ''
+            selectedExams: this.seleccion.examenes ? this.seleccion.examenes.split(', ') : [],
           });
+
+          // Obtener los valores de los exámenes seleccionados y los estados de aptitud
+          const selectedExamsArray: string[] = this.formGroup3.get('selectedExams')?.value || [];
+          const aptosExamenesArray: string[] = this.seleccion.aptosExamenes ? this.seleccion.aptosExamenes.split(', ') : [];
+
+          // Crear el FormArray para los estados de aptitud
+          const formArray = this.fb.array(
+            selectedExamsArray.map((_, index) =>
+              this.fb.group({
+                aptoStatus: [aptosExamenesArray[index] || '', Validators.required]
+              })
+            )
+          );
+
+          // Establecer el FormArray en el formulario
+          this.formGroup3.setControl('selectedExamsArray', formArray);
+
+
+
+
 
           // Llenar los campos del formulario de Contratación (formGroup4)
           this.formGroup4.patchValue({
@@ -911,24 +938,25 @@ export class SeleccionComponent implements OnInit {
     });
   }
 
+  // Método para abrir un archivo en una nueva pestaña
   verArchivo(campo: string) {
     const archivo = this.uploadedFiles[campo];
 
     if (archivo && archivo.file) {
-      if (archivo.file instanceof File) {
+      if (typeof archivo.file === 'string') {
+        // Asegurarse de que la URL esté correctamente codificada para evitar problemas
+        const fileUrl = encodeURI(archivo.file);
+        // Abrir el archivo en una nueva pestaña
+        window.open(fileUrl, '_blank');
+      } else if (archivo.file instanceof File) {
         // Crear una URL temporal para el archivo si es un objeto File
         const fileUrl = URL.createObjectURL(archivo.file);
-
-        // Abrir el archivo en una nueva pestaña
-        window.open(fileUrl);
+        window.open(fileUrl, '_blank');
 
         // Revocar la URL después de que el archivo ha sido abierto para liberar memoria
         setTimeout(() => {
           URL.revokeObjectURL(fileUrl);
         }, 100);
-      } else if (typeof archivo.file === 'string') {
-        // Si archivo.file es una URL, simplemente ábrela
-        window.open(archivo.file);
       }
     } else {
       Swal.fire('Error', 'No se pudo encontrar el archivo para este campo', 'error');
@@ -975,26 +1003,43 @@ export class SeleccionComponent implements OnInit {
       .crearSeleccionParteUnoCandidato(this.formGroup1.value, this.cedula, this.codigoContrato)
       .subscribe(
         (response) => {
-          // Si la respuesta es exitosa, proceder a subir los archivos
-          this.subirTodosLosArchivos().then((allFilesUploaded) => {
-            if (allFilesUploaded) {
-              // Cerrar el Swal de carga y mostrar el mensaje de éxito
+          console.log('Respuesta exitosa Parte 1:', response);
+          console.log('Archivos a subir:', this.uploadedFiles);
+          if (response.message === 'success') {
+            // si this.uploadedFiles esta vacio
+            if (Object.keys(this.uploadedFiles).length === 0) {
+              Swal.close(); // Cerrar el Swal de carga
               Swal.fire({
                 title: '¡Éxito!',
-                text: 'Datos y archivos guardados exitosamente',
+                text: 'Datos guardados exitosamente',
                 icon: 'success',
                 confirmButtonText: 'Ok'
               });
             }
-          }).catch((error) => {
-            // Cerrar el Swal de carga y mostrar el mensaje de error en caso de fallo al subir archivos
-            Swal.fire({
-              title: 'Error',
-              text: `Hubo un error al subir los archivos: ${error}`,
-              icon: 'error',
-              confirmButtonText: 'Ok'
-            });
-          });
+            else {
+              // Si la respuesta es exitosa, proceder a subir los archivos
+              this.subirTodosLosArchivos().then((allFilesUploaded) => {
+                if (allFilesUploaded) {
+                  Swal.close();
+                  // Cerrar el Swal de carga y mostrar el mensaje de éxito
+                  Swal.fire({
+                    title: '¡Éxito!',
+                    text: 'Datos y archivos guardados exitosamente',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                  });
+                }
+              }).catch((error) => {
+                // Cerrar el Swal de carga y mostrar el mensaje de error en caso de fallo al subir archivos
+                Swal.fire({
+                  title: 'Error',
+                  text: `Hubo un error al subir los archivos: ${error}`,
+                  icon: 'error',
+                  confirmButtonText: 'Ok'
+                });
+              });
+            }
+          }
         },
         (error) => {
           // Cerrar el Swal de carga y mostrar el mensaje de error en caso de fallo al guardar los datos
@@ -1011,6 +1056,7 @@ export class SeleccionComponent implements OnInit {
 
 
   // Método para subir todos los archivos almacenados en uploadedFiles
+  // Método para subir todos los archivos almacenados en uploadedFiles
   subirTodosLosArchivos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       console.log('Subiendo archivos...', this.uploadedFiles);
@@ -1021,15 +1067,13 @@ export class SeleccionComponent implements OnInit {
         const { file, fileName } = this.uploadedFiles[campo]; // Obtén el archivo y su nombre
         const title = fileName; // El título será el nombre del archivo PDF
 
-        // Obtener los tags correspondientes del mapa
-        const tags = this.tagsMap[campo] || []; // Si no hay tags definidos para el campo, se usa un array vacío
 
         // Obtener el tipo correspondiente del mapa
         const type = this.typeMap[campo] || 3; // Si no hay tipo definido para el campo, se usa 3 como valor predeterminado
 
         // Llamar al servicio para subir cada archivo
         this.gestionDocumentalService
-          .guardarDocumento(title, this.cedula, this.codigoContrato, type, tags, file)
+          .guardarDocumento(title, this.cedula, type, file)
           .subscribe(
             (response) => {
               filesUploaded += 1;
@@ -1058,19 +1102,42 @@ export class SeleccionComponent implements OnInit {
   imprimirEntrevistaPrueba(): void {
     this.seleccionService.crearSeleccionParteDosCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
       response => {
-        console.log('Respuesta exitosa Parte 2:', response);
+        if (response.message === 'success') {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Datos guardados exitosamente',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
       error => {
-        console.error('Error en la solicitud Parte 2:', error);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Error al guardar los datos',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     );
   }
 
   // Método para imprimir los datos de los formularios
   imprimirSaludOcupacional(): void {
-    console.log('Examen de Salud Ocupacional:', this.formGroup3.value);
+    // Clonar el valor del formulario para no modificar el original
+    const formData = { ...this.formGroup3.value };
 
-    this.seleccionService.crearSeleccionParteTresCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
+    // Convertir los arrays a cadenas de texto separadas por comas
+    formData.selectedExams = formData.selectedExams.join(', ');
+
+    // Convertir selectedExamsArray a una cadena, extrayendo los valores de la propiedad que necesites
+    formData.selectedExamsArray = formData.selectedExamsArray
+      .map((item: { aptoStatus: any; }) => item.aptoStatus || 'Sin especificar') // Ajusta a la propiedad que desees
+      .join(', ');
+
+    console.log('Examen de Salud Ocupacional:', formData);
+
+    this.seleccionService.crearSeleccionParteTresCandidato(formData, this.cedula, this.codigoContrato).subscribe(
       response => {
         console.log('Respuesta exitosa Parte 3:', response);
         if (response.message === 'success') {
@@ -1083,16 +1150,23 @@ export class SeleccionComponent implements OnInit {
         }
       },
       error => {
-        console.error('Error en la solicitud Parte 3:', error);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Error al guardar los datos',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     );
   }
+
+
 
   // Método para imprimir los datos de los formularios
   imprimirContratacion(): void {
     console.log('Contratación:', this.formGroup4.value);
 
-    this.seleccionService.crearSeleccionParteCuatroCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
+    this.seleccionService.crearSeleccionParteCuatroCandidato(this.formGroup4.value, this.cedula, this.codigoContrato).subscribe(
       response => {
         console.log('Respuesta exitosa Parte 4:', response);
       },
@@ -1113,9 +1187,21 @@ export class SeleccionComponent implements OnInit {
   // Método para calcular el porcentaje de llenado de un FormGroup
   getPercentage(formGroup: FormGroup): number {
     const totalFields = Object.keys(formGroup.controls).length;
-    const filledFields = Object.values(formGroup.controls).filter(control => control.value).length;
+    const filledFields = Object.values(formGroup.controls).filter(control => {
+      const value = control.value;
+
+      // Ignorar campos vacíos y arreglos vacíos
+      if (Array.isArray(value)) {
+        return value.length > 0; // Solo contar como lleno si el arreglo tiene elementos
+      }
+
+      return value !== null && value !== undefined && value !== ''; // Considerar los valores no vacíos
+    }).length;
+
     return Math.round((filledFields / totalFields) * 100);
   }
+
+
 
 
   // Método para determinar el color de fondo del encabezado según el porcentaje

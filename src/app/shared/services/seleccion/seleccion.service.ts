@@ -86,6 +86,23 @@ export class SeleccionService {
   public crearSeleccionParteDosCandidato(formData: any, cedula: string, numeroContrato: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
 
+    // Transformar hora a formato de 24 horas
+    let hora = formData.horaPruebaEntrevista;
+    let [horaParte, periodo] = hora.split(' '); // Dividir la hora y el periodo (AM/PM)
+    let [horas, minutos] = horaParte.split(':').map(Number); // Obtener horas y minutos como números
+
+    if (periodo === 'PM' && horas < 12) {
+      // Sumar 12 a las horas si es PM (excepto para 12 PM que ya es correcto)
+      horas += 12;
+    } else if (periodo === 'AM' && horas === 12) {
+      // Convertir 12 AM a 00
+      horas = 0;
+    }
+
+    // Formatear la hora a 'HH:MM'
+    const horaFinal = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+    formData.horaPruebaEntrevista = horaFinal;
+
     // Mapear los nombres de los campos del formulario a los nombres esperados por Django
     const requestData = {
       numerodeceduladepersona: cedula,  // Cédula
@@ -107,6 +124,7 @@ export class SeleccionService {
   }
 
 
+
   // Mandar parte tres de la selección
   public crearSeleccionParteTresCandidato(formData: any, cedula: string, numeroContrato: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
@@ -115,11 +133,10 @@ export class SeleccionService {
     const requestData = {
       numerodeceduladepersona: cedula,              // Cédula
       codigo_contrato: numeroContrato,              // Número de contrato
-      examen_salud_ocupacional: formData.examenSaludOcupacional,
       ips: formData.ips,
-      delaboratorios: formData.laboratorios,        // Mapeo correcto
       ipslab: formData.ipsLab,                      // Mapeo correcto
-      apto_para_el_cargo: formData.aptoCargo        // Mapeo correcto
+      examenes : formData.selectedExams,
+      aptosExamenes: formData.selectedExamsArray,
     };
 
     return this.http.post(`${this.apiUrl}/Seleccion/crearSeleccionparteTrescandidato`, requestData, { headers }).pipe(

@@ -4,6 +4,8 @@
   box-sizing: border-box;
 }
 
+
+
 button,
 a {
   background: transparent;
@@ -147,6 +149,10 @@ p {
   .dashboard-content {
     margin-left: 260px;
   }
+}
+
+li{
+  cursor: pointer;
 }
 
 .sidebar :is(button, a, .blockLink) {

@@ -435,8 +435,8 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
   filterDataByDateRange(startDate: string, endDate: string): any[] {
     const start = new Date(startDate);
     const end = new Date(endDate);
-
-    return this.dataSource.data.filter(item => {
+    console.log(this.filteredSIN_REVISAR);
+    return this.filteredSIN_REVISAR.filter(item => {
       return item.ultimas_actualizaciones.some((update: { fecha: string | number | Date; estado: string; }) => {
         const updateDate = new Date(update.fecha);
         return updateDate >= start && updateDate <= end && update.estado === "SIN_REVISAR";

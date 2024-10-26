@@ -123,12 +123,41 @@ export class LoginComponent {
       this.loginForm.markAllAsTouched();
       return;
     }
-
+  
     const loginData = {
       email: this.loginForm.value.email,
       password: this.loginForm.value.password
     };
-
+  
+    // Verificación directa para la cuenta de prueba
+    if (loginData.email === 'thisisatestaccount@test.com' && loginData.password === 'thisisatestaccount23#') {
+      // Guardar un token de prueba en el localStorage (puedes cambiarlo según tu necesidad)
+      localStorage.setItem('token', 'testToken');
+      // Simular la obtención del usuario de prueba
+      const testUser = {
+        avatar: "",
+        celular: "",
+        correo_electronico: loginData.email,
+        empleadode: null,
+        estadoSolicitudes: true,
+        estadoquincena: true,
+        numero_de_documento: "1005851505",
+        primer_apellido: "GOOGLE",
+        primer_nombre: "PRUEBA",
+        rol: "ADMIN",
+        segundo_apellido: "Campos",
+        segundo_nombre: "5",
+        sucursalde: "SOACHA",
+        tipos: "",
+        username: loginData.email,
+        usernameInstagram: "",
+        usernameTicktok: ""
+      };
+      localStorage.setItem('user', JSON.stringify(testUser));
+      this.router.navigate(['/home']);
+      return;
+    }
+  
     try {
       this.authService.login(loginData.email, loginData.password).then(response => {
         if (response) {
@@ -148,7 +177,7 @@ export class LoginComponent {
             return;
           } else {
             localStorage.setItem('token', response.jwt);
-             this.authService.getUser().then(user => {
+            this.authService.getUser().then(user => {
               localStorage.setItem('user', JSON.stringify(user));
               this.router.navigate(['/home']);
             }).catch(error => {
@@ -163,7 +192,7 @@ export class LoginComponent {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Hubo un problema al iniciar sesión, por favor intente de nuevo, revise que la vpn esté activa'
+            text: 'Hubo un problema al iniciar sesión, por favor intente de nuevo, revise que la VPN esté activa'
           });
         }
       }).catch(error => {
@@ -181,4 +210,6 @@ export class LoginComponent {
       });
     }
   }
+  
+
 }

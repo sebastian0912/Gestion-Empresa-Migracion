@@ -356,6 +356,7 @@ mat-card {
 
 .vacante-card {
     width: 30vw;
+    max-width: 353px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -363,7 +364,6 @@ mat-card {
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     transition: transform 0.3s;
     min-width: 353px;
-    max-width: 353px;
 }
 
 .vacante-card:hover {
@@ -428,6 +428,6 @@ mat-card-content p {
     }
 
     .vacante-card {
-        width: 90vw;
+        min-width: 80vw ;
     }
 }

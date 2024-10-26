@@ -62,7 +62,9 @@
       </mat-expansion-panel>
     </mat-accordion>
 
-    <!-- Acordeón principal que contiene todos los sub-acordeones -->
+    <!-- Acordeón principal que contiene todos los sub-acordeones 
+    <mat-accordion>
+    -->
     <mat-accordion *ngIf="procesoValido">
 
       <!-- Acordeón principal: Información Adicional -->
@@ -315,7 +317,7 @@
 
     <!-- Tarjeta para búsqueda de cédula -->
     <div class="seleccion">
-      
+
       <mat-card>
         <mat-card-content>
           <h1 class="titulo" style="margin-right: 10px; width: 100%;">
@@ -616,14 +618,11 @@
                   Examen de Salud Ocupacional ({{ getPercentage(formGroup3) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
-            
+
               <div class="seccion" [formGroup]="formGroup3">
-                <!-- Campos fijos del formulario -->
-                <mat-form-field appearance="fill" class="example-full-width">
-                  <mat-label>Examen Salud Ocupacional</mat-label>
-                  <input matInput formControlName="examenSaludOcupacional" placeholder="Examen Salud Ocupacional">
-                </mat-form-field>
-            
+
+
+
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>IPS</mat-label>
                   <mat-select formControlName="ips" placeholder="IPS">
@@ -635,12 +634,7 @@
                     <mat-option value="PORSALUD">PORSALUD</mat-option>
                   </mat-select>
                 </mat-form-field>
-            
-                <mat-form-field appearance="fill" class="example-full-width">
-                  <mat-label>Laboratorios</mat-label>
-                  <input matInput formControlName="laboratorios" placeholder="Laboratorios">
-                </mat-form-field>
-            
+
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>IPSLAB</mat-label>
                   <mat-select formControlName="ipsLab" placeholder="IPSLAB">
@@ -652,23 +646,17 @@
                     <mat-option value="PORSALUD">PORSALUD</mat-option>
                   </mat-select>
                 </mat-form-field>
-            
-                <mat-form-field appearance="fill" class="example-full-width">
-                  <mat-label>Apto para el cargo</mat-label>
-                  <mat-select formControlName="aptoCargo">
-                    <mat-option value="Si">Si es apto</mat-option>
-                    <mat-option value="No">No es apto</mat-option>
-                  </mat-select>
-                </mat-form-field>
-            
+
+
                 <!-- Select múltiple para elegir exámenes -->
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Seleccione los exámenes</mat-label>
                   <mat-select formControlName="selectedExams" multiple>
-                    <mat-option *ngFor="let exam of examOptions" [value]="exam">{{ exam }}</mat-option>
+                    <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">{{ exam }}</mat-option>
                   </mat-select>
                 </mat-form-field>
-            
+
+
                 <!-- Campos dinámicos para cada examen seleccionado -->
                 <div formArrayName="selectedExamsArray">
                   <div *ngFor="let exam of selectedExamsArray.controls; let i = index" [formGroupName]="i">
@@ -681,11 +669,15 @@
                     </mat-form-field>
                   </div>
                 </div>
-            
+
+
+
+
+
                 <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
-            
+
 
 
             <!-- Contratación -->
