@@ -134,7 +134,8 @@ export class NavbarLateralComponent implements OnInit {
     ],
     INCAPACIDADSUBIDA: [
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
-      'ausentismos', 'consulta-formulario'
+      'ausentismos', 'consulta-formulario',       'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades',
+      'formulario-incapacicades', 'reporte-contratacion', 'ver-reporte'
     ],
     AUX_CONTRATACION: [
       'reporte-contratacion',
