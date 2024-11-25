@@ -37,7 +37,7 @@ export class GestionDocumentalService {
 
   // Método para subir un documento
   guardarDocumento(
-    title: string,
+    title: any,
     owner_id: string,
     type: number,
     file: File,

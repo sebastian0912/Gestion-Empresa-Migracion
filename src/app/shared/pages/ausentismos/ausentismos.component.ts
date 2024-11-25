@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { NgIf } from '@angular/common';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
-
+MatCardModule
 @Component({
   selector: 'app-ausentismos',
   standalone: true,

@@ -84,6 +84,28 @@ mat-card-subtitle {
     padding: 5px;
 }
 
+.vacantes-scroll-container {
+    overflow-x: auto;
+    /* Permite el scroll horizontal */
+    padding: 10px;
+}
+
+.vacantes-container {
+    display: flex;
+    gap: 16px;
+    /* Espacio entre las tarjetas */
+    flex-wrap: nowrap;
+    /* Evita que las tarjetas se envuelvan a la siguiente línea */
+}
+
+.vacante-card {
+    min-width: 300px;
+    max-width: 350px;
+    /* Ancho mínimo de cada tarjeta */
+    flex-shrink: 0;
+    /* Evita que se reduzcan las tarjetas */
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
 
 .actions-wrapper {
     position: absolute;
@@ -194,7 +216,9 @@ mat-card-subtitle {
         height: auto;
     }
 
-
+    .vacante-card {
+        min-width: 70vw;
+    }
 
     .example-full-width3 {
         width: 100%;

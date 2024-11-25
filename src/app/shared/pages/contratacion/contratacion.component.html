@@ -709,7 +709,7 @@
                                     <input type="file" id="fileInputEps" style="display: none;"
                                         (change)="subirArchivo($event, 'eps')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>EPS</mat-label>
                                     <mat-select formControlName="eps" placeholder="EPS">
                                         <mat-option *ngFor="let eps of epsList" [value]="eps">{{ eps }}</mat-option>
@@ -733,7 +733,7 @@
                                     <input type="file" id="fileInputAfp" style="display: none;"
                                         (change)="subirArchivo($event, 'afp')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>AFP</mat-label>
                                     <mat-select formControlName="afp" placeholder="AFP">
                                         <mat-option *ngFor="let afp of afpList" [value]="afp">{{ afp }}</mat-option>
@@ -757,7 +757,7 @@
                                     <input type="file" id="fileInputPolicivos" style="display: none;"
                                         (change)="subirArchivo($event, 'policivos')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>Policivos</mat-label>
                                     <mat-select formControlName="policivos">
                                         <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
@@ -784,7 +784,7 @@
                                     <input type="file" id="fileInputProcuraduria" style="display: none;"
                                         (change)="subirArchivo($event, 'procuraduria')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>Procuraduría</mat-label>
                                     <mat-select formControlName="procuraduria">
                                         <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
@@ -811,7 +811,7 @@
                                     <input type="file" id="fileInputContraloria" style="display: none;"
                                         (change)="subirArchivo($event, 'contraloria')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>Contraloría</mat-label>
                                     <mat-select formControlName="contraloria">
                                         <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
@@ -838,7 +838,7 @@
                                     <input type="file" id="fileInputRamaJudicial" style="display: none;"
                                         (change)="subirArchivo($event, 'ramaJudicial')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>Rama Judicial</mat-label>
                                     <mat-select formControlName="ramaJudicial">
                                         <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
@@ -866,7 +866,7 @@
                                     <input type="file" id="fileInputMedidasCorrectivas" style="display: none;"
                                         (change)="subirArchivo($event, 'medidasCorrectivas')">
                                 </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>Medidas Correctivas</mat-label>
                                     <mat-select formControlName="medidasCorrectivas">
                                         <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
@@ -880,11 +880,61 @@
 
                             </div>
 
+                            <!-- Sisben -->
+                            <div class="input-container">
+                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuSisben" aria-label="PDF options">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #pdfMenuSisben="matMenu">
+                                    <button mat-menu-item (click)="verArchivo('sisben')">Ver PDF</button>
+                                    <button mat-menu-item>
+                                        <label for="fileInputSisben" style="cursor: pointer;">Subir PDF</label>
+                                    </button>
+                                    <input type="file" id="fileInputSisben" style="display: none;"
+                                        (change)="subirArchivo($event, 'sisben')">
+                                </mat-menu>
+                                <mat-form-field appearance="fill" class="example-full-width">
+                                    <mat-label>Sisben</mat-label>
+                                    <mat-select formControlName="sisben">
+                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                                            estado }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <small *ngIf="uploadedFiles['sisben']" class="uploaded-file-name">
+                                    {{ uploadedFiles['sisben'].fileName }}
+                                </small>
+                            </div>
+
+                            <!-- OFAC -->
+                            <div class="input-container">
+                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuOfac" aria-label="PDF options">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #pdfMenuOfac="matMenu">
+                                    <button mat-menu-item (click)="verArchivo('ofac')">Ver PDF</button>
+                                    <button mat-menu-item>
+                                        <label for="fileInputOfac" style="cursor: pointer;">Subir PDF</label>
+                                    </button>
+                                    <input type="file" id="fileInputOfac" style="display: none;"
+                                        (change)="subirArchivo($event, 'ofac')">
+                                </mat-menu>
+                                <mat-form-field appearance="fill" class="example-full-width">
+                                    <mat-label>OFAC</mat-label>
+                                    <mat-select formControlName="ofac">
+                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                                            estado }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <small *ngIf="uploadedFiles['ofac']" class="uploaded-file-name">
+                                    {{ uploadedFiles['ofac'].fileName }}
+                                </small>
+                            </div>
+
 
                             <!-- Área para la que Aplica -->
                             <div class="input-container">
 
-                                <mat-form-field appearance="fill" class="example-full-width">
+                                <mat-form-field class="example-full-width3" class="example-full-width">
                                     <mat-label>Área para la que Aplica</mat-label>
                                     <input matInput formControlName="area_aplica" placeholder="Área para la que Aplica">
                                 </mat-form-field>
@@ -905,34 +955,34 @@
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <div class="seccion" [formGroup]="formGroup2">
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Centro de Costo</mat-label>
                                 <input matInput formControlName="centroCosto"
                                     placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
                             </mat-form-field>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Cargo</mat-label>
                                 <input matInput formControlName="cargo" placeholder="CARGO">
                             </mat-form-field>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Área en la que presentará la entrevista</mat-label>
                                 <input matInput formControlName="areaEntrevista"
                                     placeholder="ÁREA EN LA QUE PRESENTARA LA ENTREVISTA">
                             </mat-form-field>
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Fecha de la Prueba o Entrevista</mat-label>
                                 <input matInput [matDatepicker]="picker" formControlName="fechaPruebaEntrevista">
                                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                 <mat-datepicker #picker></mat-datepicker>
                             </mat-form-field>
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Hora de la Prueba o Entrevista</mat-label>
                                 <input matInput type="time" formControlName="horaPruebaEntrevista">
                             </mat-form-field>
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Dirección o indicación para llegar a la empresa</mat-label>
                                 <input matInput formControlName="direccionEmpresa"
                                     placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
@@ -955,7 +1005,7 @@
 
 
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>IPS</mat-label>
                                 <mat-select formControlName="ips" placeholder="IPS">
                                     <mat-option value="JAVAP">JAVAP</mat-option>
@@ -967,7 +1017,7 @@
                                 </mat-select>
                             </mat-form-field>
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>IPSLAB</mat-label>
                                 <mat-select formControlName="ipsLab" placeholder="IPSLAB">
                                     <mat-option value="JAVAP">JAVAP</mat-option>
@@ -981,7 +1031,7 @@
 
 
                             <!-- Select múltiple para elegir exámenes -->
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Seleccione los exámenes</mat-label>
                                 <mat-select formControlName="selectedExams" multiple>
                                     <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">{{ exam
@@ -994,7 +1044,7 @@
                             <div formArrayName="selectedExamsArray">
                                 <div *ngFor="let exam of selectedExamsArray.controls; let i = index"
                                     [formGroupName]="i">
-                                    <mat-form-field appearance="fill" class="example-full-width">
+                                    <mat-form-field class="example-full-width3" class="example-full-width">
                                         <mat-label>{{ examOptions[i] }}</mat-label>
                                         <mat-select formControlName="aptoStatus">
                                             <mat-option value="APTO">APTO</mat-option>
@@ -1022,12 +1072,12 @@
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <div class="seccion" [formGroup]="formGroup4">
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Empresa Usuaria</mat-label>
                                 <input matInput formControlName="empresaUsuaria" placeholder="EMPRESA USUARIA">
                             </mat-form-field>
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Fecha de Ingreso</mat-label>
                                 <input matInput [matDatepicker]="pickerFechaIngreso" formControlName="fechaIngreso">
                                 <mat-datepicker-toggle matSuffix [for]="pickerFechaIngreso"></mat-datepicker-toggle>
@@ -1036,23 +1086,23 @@
 
 
 
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Salario</mat-label>
                                 <input matInput formControlName="salario" placeholder="SALARIO">
                             </mat-form-field>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Auxilio de Transporte</mat-label>
                                 <input matInput formControlName="auxTransporte" placeholder="AUXTRANSPORTE">
                             </mat-form-field>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Rodamiento</mat-label>
                                 <input matInput formControlName="rodamiento" placeholder="RODAMIENTO">
                             </mat-form-field>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Auxilio de Movilidad</mat-label>
                                 <input matInput formControlName="auxMovilidad" placeholder="AUX MOVILIDAD">
                             </mat-form-field>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field class="example-full-width3" class="example-full-width">
                                 <mat-label>Bonificación</mat-label>
                                 <input matInput formControlName="bonificacion" placeholder="BONIFICACION">
                             </mat-form-field>
@@ -1077,7 +1127,7 @@
                         Ingrese la cédula del usuario a buscar:
                     </h1>
                     <!-- Campo de texto para cédula -->
-                    <mat-form-field appearance="fill" class="example-full-width2" style="margin-left: 0;">
+                    <mat-form-field class="example-full-width3" class="example-full-width2" style="margin-left: 0;">
                         <mat-label>Cédula</mat-label>
                         <input matInput type="text" [(ngModel)]="cedula" placeholder="Cédula">
                     </mat-form-field>
@@ -1101,6 +1151,202 @@
 
 
 
+            <mat-card>
+                <mat-card-content>
+                    <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+                        Complete la información de contratación
+                    </h1>
+                    <mat-accordion>
+
+                        <!-- Acordeón 1: Información de Pago y Transporte -->
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Información de Pago y Transporte</mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <div [formGroup]="pagoTransporteForm">
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Semanas Cotizadas</mat-label>
+                                    <input matInput formControlName="semanasCotizadas" type="number">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Forma de Pago</mat-label>
+                                    <input matInput formControlName="formaPago">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Número para Pagos</mat-label>
+                                    <input matInput formControlName="numeroPagos">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Validación Número de Cuenta</mat-label>
+                                    <input matInput formControlName="validacionNumeroCuenta">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Seguro Funerario</mat-label>
+                                    <input matInput formControlName="seguroFunerario">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Ccostos</mat-label>
+                                    <input matInput formControlName="Ccostos">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Salario</mat-label>
+                                    <input matInput formControlName="salario">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Auxilio de Transporte</mat-label>
+                                    <input matInput formControlName="auxilioTransporte" type="number">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Porcentaje ARL</mat-label>
+                                    <input matInput formControlName="porcentajeARL" type="number" step="0.01">
+                                </mat-form-field>
+
+                                <button mat-flat-button
+                                    (click)="cargarPagoTransporte()">Cargar</button>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <!-- Acordeón 2: Referencias Personales -->
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Referencias Personales</mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <div [formGroup]="referenciasForm">
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Parentesco Referencia 1</mat-label>
+                                    <input matInput formControlName="parentescoReferencia1">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Hace Cuánto lo Conoce 1</mat-label>
+                                    <input matInput formControlName="conoceReferencia1">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Cómo lo Refiere 1</mat-label>
+                                    <input matInput formControlName="refiereReferencia1">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Parentesco Referencia 2</mat-label>
+                                    <input matInput formControlName="parentescoReferencia2">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Hace Cuánto lo Conoce 2</mat-label>
+                                    <input matInput formControlName="conoceReferencia2">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Cómo lo Refiere 2</mat-label>
+                                    <input matInput formControlName="refiereReferencia2">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Referenciaron Laboral</mat-label>
+                                    <input matInput formControlName="referenciaronLaboral">
+                                </mat-form-field>
+
+                                <button mat-flat-button (click)="cargarReferencias()">Cargar</button>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <!-- Acordeón 3: Información Personal -->
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Información Personal</mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <div [formGroup]="informacionPersonalForm">
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Fecha de Expedición</mat-label>
+                                    <input matInput [matDatepicker]="expedicionPicker"
+                                        formControlName="validacionFechaExpedicion" (focus)="expedicionPicker.open()">
+                                    <mat-datepicker-toggle matSuffix [for]="expedicionPicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #expedicionPicker></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Fecha de Nacimiento</mat-label>
+                                    <input matInput [matDatepicker]="nacimientoPicker"
+                                        formControlName="validacionFechaNacimiento" (focus)="nacimientoPicker.open()">
+                                    <mat-datepicker-toggle matSuffix [for]="nacimientoPicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #nacimientoPicker></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Primer Apellido</mat-label>
+                                    <input matInput formControlName="primerApellido">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Segundo Apellido</mat-label>
+                                    <input matInput formControlName="segundoApellido">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Primer Nombre</mat-label>
+                                    <input matInput formControlName="primerNombre">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>Segundo Nombre</mat-label>
+                                    <input matInput formControlName="segundoNombre">
+                                </mat-form-field>
+
+                                <button mat-flat-button
+                                    (click)="cargarInformacionPersonal()">Cargar</button>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <!-- Acordeón 4: Traslados -->
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Traslados</mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <div [formGroup]="trasladosForm">
+                                <mat-form-field class="example-full-width3">
+                                    <mat-label>¿Desea Trasladarse?</mat-label>
+                                    <mat-select formControlName="deseaTrasladarse"
+                                        (selectionChange)="onTrasladoChange($event)">
+                                        <mat-option value="no" selected>No</mat-option>
+                                        <mat-option value="si">Sí</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <!-- Campo de EPS solo visible si se selecciona "Sí" en deseaTrasladarse -->
+                                <div *ngIf="trasladosForm.get('deseaTrasladarse')?.value === 'si'">
+                                    <mat-form-field class="example-full-width3">
+                                        <mat-label>Seleccione EPS</mat-label>
+                                        <mat-select formControlName="epsDestino">
+                                            <mat-option value="famisanar">Famisanar</mat-option>
+                                            <mat-option value="salud_total">Salud Total</mat-option>
+                                            <mat-option value="nueva_eps">Nueva EPS</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <button mat-flat-button (click)="cargarTraslados()">Cargar</button>
+                            </div>
+                        </mat-expansion-panel>
+
+
+                    </mat-accordion>
+                </mat-card-content>
+            </mat-card>
+
         </div>
+
     </div>
 </div>

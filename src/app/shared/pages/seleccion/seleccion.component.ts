@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
-import { NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { catchError, elementAt, forkJoin, of } from 'rxjs';
@@ -33,7 +33,6 @@ import { VetadosService } from '../../services/vetados/vetados.service';
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -45,6 +44,7 @@ import { VetadosService } from '../../services/vetados/vetados.service';
     NgFor,
     NgForOf,
     NgStyle,
+    NgClass,
     MatExpansionModule,
     MatMenuModule,
     ReactiveFormsModule,
@@ -86,10 +86,24 @@ export class SeleccionComponent implements OnInit {
     contraloria: 4,
     medidasCorrectivas: 10,
     afp: 19,
-    ramaJudicial: 20
+    ramaJudicial: 20,
+    sisben: 8,
+    ofac: 5,
   };
 
-  uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
+  uploadedFiles: { [key: string]: { file?: File; fileName?: string } } = {
+    eps: { fileName: 'No disponible, falta cargar' },
+    afp: { fileName: 'No disponible, falta cargar' },
+    policivos: { fileName: 'No disponible, falta cargar' },
+    procuraduria: { fileName: 'No disponible, falta cargar' },
+    contraloria: { fileName: 'No disponible, falta cargar' },
+    ramaJudicial: { fileName: 'No disponible, falta cargar' },
+    medidasCorrectivas: { fileName: 'No disponible, falta cargar' },
+    sisben: { fileName: 'No disponible, falta cargar' },
+    ofac: { fileName: 'No disponible, falta cargar' }
+  };
+
+
 
   laborExams = [
 
@@ -286,6 +300,8 @@ export class SeleccionComponent implements OnInit {
   ];
 
   isSidebarHidden = false;
+  dataSource: any;
+  displayedColumns!: string[];
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
@@ -307,6 +323,8 @@ export class SeleccionComponent implements OnInit {
       procuraduria: [''],
       contraloria: [''],
       ramaJudicial: [''],
+      sisben: [''],
+      ofac: [''],
       medidasCorrectivas: [''],
       area_aplica: ['']
     });
@@ -644,7 +662,23 @@ export class SeleccionComponent implements OnInit {
         this.procesoValido = true;
 
         if (vetado) {
-          console.log('Vetado:', vetado);
+          // Filtrar elementos que tengan una categoría no nula
+          const vetadoFiltrado = vetado.filter((item: any) => item.categoria !== null);
+
+          // Mapear los datos para extraer clasificación y descripción
+          const data = vetadoFiltrado.map((item: any) => ({
+            cedula: item.cedula,
+            nombre_completo: item.nombre_completo,
+            clasificacion: item.categoria?.clasificacion || 'N/A',
+            descripcion: item.categoria?.descripcion || 'N/A',
+            observacion: item.observacion,
+            estado: item.estado,
+            sede: item.sede,
+            autorizado_por: item.autorizado_por
+          }));
+
+          this.dataSource = new MatTableDataSource(data);
+          this.displayedColumns = ['cedula', 'nombre_completo', 'clasificacion', 'descripcion', 'observacion', 'estado', 'sede'];
         }
       },
       (err) => {
@@ -671,6 +705,10 @@ export class SeleccionComponent implements OnInit {
     );
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
 
   // Obtener el nombre completo
@@ -819,15 +857,24 @@ export class SeleccionComponent implements OnInit {
                 next: (infoGestionDocumentalAntecedentes: any[]) => {
                   if (infoGestionDocumentalAntecedentes) {
                     // Iterar sobre los documentos y mapearlos a los campos correctos
-                    infoGestionDocumentalAntecedentes.forEach((documento: any) => {
+                    infoGestionDocumentalAntecedentes.forEach(async (documento: any) => {
                       const typeKey = Object.keys(this.typeMap).find(key => this.typeMap[key] === documento.type);
                       if (typeKey) {
-                        // Aquí almacenamos el archivo con su URL para visualizarlo luego
+                        const file = await this.urlToFile(documento.file_url, documento.title || 'Documento sin título');
                         this.uploadedFiles[typeKey] = {
-                          fileName: documento.title,
-                          file: documento.file_url // Guardar la URL para acceder al archivo más tarde
+                          fileName: documento.title || 'Documento sin título',
+                          file // Asigna el archivo descargado
                         };
                       }
+                    });
+                  }
+
+                  else {
+                    Swal.fire({
+                      title: '¡Atención!',
+                      text: 'No se encontraron documentos de antecedentes',
+                      icon: 'warning',
+                      confirmButtonText: 'Ok'
                     });
                   }
                 },
@@ -923,6 +970,16 @@ export class SeleccionComponent implements OnInit {
   }
 
 
+  urlToFile(url: string, fileName: string): Promise<File> {
+    return fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        // Obtén la extensión del archivo desde el nombre o URL (opcional)
+        const extension = fileName.split('.').pop() || 'txt';
+        const mimeType = blob.type || `application/${extension}`;
+        return new File([blob], fileName, { type: mimeType });
+      });
+  }
 
 
 
@@ -941,6 +998,7 @@ export class SeleccionComponent implements OnInit {
   // Método para abrir un archivo en una nueva pestaña
   verArchivo(campo: string) {
     const archivo = this.uploadedFiles[campo];
+    console.log('Ver archivo:', archivo);
 
     if (archivo && archivo.file) {
       if (typeof archivo.file === 'string') {
@@ -962,11 +1020,6 @@ export class SeleccionComponent implements OnInit {
       Swal.fire('Error', 'No se pudo encontrar el archivo para este campo', 'error');
     }
   }
-
-
-
-
-
 
   // Método que se ejecuta cuando se selecciona un archivo
   subirArchivo(event: any, campo: string) {
@@ -1053,50 +1106,49 @@ export class SeleccionComponent implements OnInit {
       );
   }
 
-
-
-  // Método para subir todos los archivos almacenados en uploadedFiles
   // Método para subir todos los archivos almacenados en uploadedFiles
   subirTodosLosArchivos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      console.log('Subiendo archivos...', this.uploadedFiles);
-      const totalFiles = Object.keys(this.uploadedFiles).length; // Total de archivos a subir
-      let filesUploaded = 0; // Contador de archivos subidos
-
-      Object.keys(this.uploadedFiles).forEach((campo) => {
-        const { file, fileName } = this.uploadedFiles[campo]; // Obtén el archivo y su nombre
-        const title = fileName; // El título será el nombre del archivo PDF
-
-
-        // Obtener el tipo correspondiente del mapa
-        const type = this.typeMap[campo] || 3; // Si no hay tipo definido para el campo, se usa 3 como valor predeterminado
-
-        // Llamar al servicio para subir cada archivo
-        this.gestionDocumentalService
-          .guardarDocumento(title, this.cedula, type, file)
-          .subscribe(
-            (response) => {
-              filesUploaded += 1;
-
-              // Si todos los archivos se han subido, resolvemos la promesa
-              if (filesUploaded === totalFiles) {
-                resolve(true); // Todos los archivos se subieron correctamente
-              }
-            },
-            (error) => {
-              console.error(error);
-              reject(`Error al subir el archivo para ${campo}`);
-            }
+      const archivosAEnviar = Object.keys(this.uploadedFiles)
+        .filter(key => {
+          const fileData = this.uploadedFiles[key];
+          return (
+            fileData && // Asegura que el dato exista
+            (fileData.fileName === 'No disponible, falta cargar' || fileData.file) // Condición: no estaba disponible o se ha actualizado
           );
+        })
+        .map(key => ({ key, ...this.uploadedFiles[key] })); // Agrega la clave (tipo) al objeto
+
+      if (archivosAEnviar.length === 0) {
+        // No hay archivos que enviar
+        resolve(true);
+        return;
+      }
+
+      let filesUploaded = 0;
+      const totalFiles = archivosAEnviar.length;
+
+      archivosAEnviar.forEach(({ key, file, fileName }) => {
+        const typeId = this.typeMap[key];
+        if (file && typeId) {
+          this.gestionDocumentalService
+            .guardarDocumento(fileName, this.cedula, typeId, file)
+            .subscribe({
+              next: () => {
+                filesUploaded += 1;
+                if (filesUploaded === totalFiles) {
+                  resolve(true); // Todos los archivos se subieron correctamente
+                }
+              },
+              error: (error) => {
+                console.error(`Error al subir archivo ${fileName} (${key}):`, error);
+                reject(`Error al subir archivo ${key}`);
+              }
+            });
+        }
       });
     });
   }
-
-
-
-
-
-
 
   // Método para imprimir los datos de los formularios
   imprimirEntrevistaPrueba(): void {

@@ -8,10 +8,10 @@
 
 
     <!---- !-- Tarjeta para búsqueda de cédula
-    <mat-accordion>
-    -->
     <mat-accordion *ngIf="procesoValido">
+    -->
 
+    <mat-accordion>
       <mat-expansion-panel class="opcionesVer">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -63,9 +63,9 @@
     </mat-accordion>
 
     <!-- Acordeón principal que contiene todos los sub-acordeones 
-    <mat-accordion>
-    -->
     <mat-accordion *ngIf="procesoValido">
+    -->
+    <mat-accordion>
 
       <!-- Acordeón principal: Información Adicional -->
       <mat-expansion-panel class="opcionesVer">
@@ -363,9 +363,9 @@
 
 
       <!--
-        <mat-card>
+        <mat-card *ngIf="procesoValido">
         -->
-      <mat-card *ngIf="procesoValido">
+      <mat-card>
 
         <h1 class="titulo" style="margin-right: 10px; width: 100%;">
           Diligencie los campos correspondientes:
@@ -402,9 +402,11 @@
                       <mat-option *ngFor="let eps of epsList" [value]="eps">{{ eps }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['eps']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['eps']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['eps'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['eps'].fileName }}
                   </small>
+
                 </div>
 
                 <!-- AFP -->
@@ -425,7 +427,8 @@
                       <mat-option *ngFor="let afp of afpList" [value]="afp">{{ afp }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['afp']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['afp']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['afp'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['afp'].fileName }}
                   </small>
                 </div>
@@ -449,7 +452,8 @@
                       <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['policivos']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['policivos']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['policivos'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['policivos'].fileName }}
                   </small>
                 </div>
@@ -473,7 +477,8 @@
                       <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['procuraduria']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['procuraduria']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['procuraduria'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['procuraduria'].fileName }}
                   </small>
                 </div>
@@ -497,7 +502,8 @@
                       <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['contraloria']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['contraloria']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['contraloria'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['contraloria'].fileName }}
                   </small>
                 </div>
@@ -521,7 +527,8 @@
                       <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['ramaJudicial']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['ramaJudicial']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['ramaJudicial'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['ramaJudicial'].fileName }}
                   </small>
                 </div>
@@ -545,11 +552,62 @@
                       <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <small *ngIf="uploadedFiles['medidasCorrectivas']" class="uploaded-file-name">
+                  <small *ngIf="uploadedFiles['medidasCorrectivas']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['medidasCorrectivas'].fileName === 'No disponible, falta cargar' }">
                     {{ uploadedFiles['medidasCorrectivas'].fileName }}
                   </small>
-
                 </div>
+
+                <!-- Sisben -->
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuSisben" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuSisben="matMenu">
+                    <button mat-menu-item (click)="verArchivo('sisben')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputSisben" style="cursor: pointer;">Subir PDF</label>
+                    </button>
+                    <input type="file" id="fileInputSisben" style="display: none;"
+                      (change)="subirArchivo($event, 'sisben')">
+                  </mat-menu>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Sisben</mat-label>
+                    <mat-select formControlName="sisben">
+                      <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <small *ngIf="uploadedFiles['sisben']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['sisben'].fileName === 'No disponible, falta cargar' }">
+                    {{ uploadedFiles['sisben'].fileName }}
+                  </small>
+                </div>
+
+                <!-- OFAC -->
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuOfac" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuOfac="matMenu">
+                    <button mat-menu-item (click)="verArchivo('ofac')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputOfac" style="cursor: pointer;">Subir PDF</label>
+                    </button>
+                    <input type="file" id="fileInputOfac" style="display: none;"
+                      (change)="subirArchivo($event, 'ofac')">
+                  </mat-menu>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>OFAC</mat-label>
+                    <mat-select formControlName="ofac">
+                      <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{ estado }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <small *ngIf="uploadedFiles['ofac']" class="uploaded-file-name"
+                    [ngClass]="{ 'text-danger': uploadedFiles['ofac'].fileName === 'No disponible, falta cargar' }">
+                    {{ uploadedFiles['ofac'].fileName }}
+                  </small>
+                </div>
+
 
 
                 <!-- Área para la que Aplica -->
@@ -728,6 +786,68 @@
           </mat-accordion>
         </mat-card-content>
       </mat-card>
+
+
+      <!--
+        <mat-card *ngIf="procesoValido">
+      -->
+      <mat-card>
+        <mat-card-content>
+          <div class="tabla">
+            <h1 class="titulo">Reportes 901</h1>
+            <mat-form-field class="filtro">
+              <mat-label>Filter</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Filter" #input>
+            </mat-form-field>
+            <div class="table-container">
+              <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <ng-container matColumnDef="cedula">
+                  <th mat-header-cell *matHeaderCellDef> Cédula </th>
+                  <td mat-cell *matCellDef="let element"> {{element.cedula}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre_completo">
+                  <th mat-header-cell *matHeaderCellDef> Nombre Completo </th>
+                  <td mat-cell *matCellDef="let element"> {{element.nombre_completo}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="clasificacion">
+                  <th mat-header-cell *matHeaderCellDef> Clasificación </th>
+                  <td mat-cell *matCellDef="let element"> {{element.clasificacion}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="descripcion">
+                  <th mat-header-cell *matHeaderCellDef> Descripción </th>
+                  <td mat-cell *matCellDef="let element"> {{element.descripcion}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="observacion">
+                  <th mat-header-cell *matHeaderCellDef> Observación </th>
+                  <td mat-cell *matCellDef="let element"> {{element.observacion}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="estado">
+                  <th mat-header-cell *matHeaderCellDef> Estado </th>
+                  <td mat-cell *matCellDef="let element"> {{element.estado}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="sede">
+                  <th mat-header-cell *matHeaderCellDef> Sede </th>
+                  <td mat-cell *matCellDef="let element"> {{element.sede}} </td>
+                </ng-container>
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="8">No hay datos "{{input.value}}"</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
 
 
 

@@ -60,12 +60,14 @@ export const routes: Routes = [
   { path: 'subir-documentacion', component: SubirDocumentacionComponent },
   { path: 'envio-paquete-documentacion', component: EnvioPaqueteDocumentacionComponent },
   { path: 'recibir-paquete-documentacion', component: RecibirPaqueteDocumentacionComponent },
+
   { path: 'subir-documentacion', component: SubirDocumentacionComponent },
   { path: 'formulario-incapacicades', component: FormularioIncapacidadComponent },
   { path: 'busqueda-incapacidades', component: BuscarIncapacidadComponent },
   { path: 'incapacidades-totales', component: VistaTotalIncapacidadesComponent },
   { path: 'formulario-reporte/:cedula', component: FormularioReporteComponent },
   { path: 'subida-archivos-incapacidades', component: SubidaArchivosIncapacidadesComponent },
+  
   { path: 'archivos-contratacion', component: DocumentosContratacionComponent },
   { path: 'ver-reporte', component: VerReporteComponent },
   { path: 'reporte-vetado', component: ReporteVetadoComponent },

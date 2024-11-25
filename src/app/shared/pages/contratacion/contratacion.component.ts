@@ -33,7 +33,6 @@ import { VetadosService } from '../../services/vetados/vetados.service';
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -81,9 +80,13 @@ export class ContratacionComponent implements OnInit {
   datosParte3Seccion1!: FormGroup;
   datosParte3Seccion2!: FormGroup;
   datosParte4!: FormGroup;
-
+  pagoTransporteForm!: FormGroup;
+  referenciasForm!: FormGroup;
+  informacionPersonalForm!: FormGroup;
   // Variables de ayuda
   filteredExamOptions: string[] = [];
+
+  trasladosForm!: FormGroup;
 
   seleccion: any;
   infoGeneralC: any;
@@ -280,7 +283,9 @@ export class ContratacionComponent implements OnInit {
     contraloria: 4,
     medidasCorrectivas: 10,
     afp: 11,
-    ramaJudicial: 12
+    ramaJudicial: 12,
+    sisben : 8,
+    ofac : 5,
   };
 
   antecedentesEstados: string[] = [
@@ -465,6 +470,8 @@ export class ContratacionComponent implements OnInit {
       procuraduria: [''],
       contraloria: [''],
       ramaJudicial: [''],
+      sisben : [''],
+      ofac : [''],
       medidasCorrectivas: [''],
       area_aplica: ['']
     });
@@ -494,6 +501,51 @@ export class ContratacionComponent implements OnInit {
       auxMovilidad: [''],
       bonificacion: ['']
     });
+
+    this.pagoTransporteForm = this.fb.group({
+      semanasCotizadas: [''],
+      formaPago: [''],
+      numeroPagos: [''],
+      validacionNumeroCuenta: [''],
+      seguroFunerario: [''],
+      Ccostos: [''],
+      subcentro: [''],
+      grupo: [''],
+      categoria: [''],
+      operacion: [''],
+      sublabor: [''],
+      salario: [''],
+      auxilioTransporte: [''],
+      ruta: [''],
+      valorTransporte: [''],
+      horasExtras: [''],
+      porcentajeARL: ['']
+    });
+
+    this.referenciasForm = this.fb.group({
+      parentescoReferencia1: [''],
+      conoceReferencia1: [''],
+      refiereReferencia1: [''],
+      parentescoReferencia2: [''],
+      conoceReferencia2: [''],
+      refiereReferencia2: [''],
+      referenciaronLaboral: ['']
+    });
+
+    this.informacionPersonalForm = this.fb.group({
+      validacionFechaExpedicion: [''],
+      validacionFechaNacimiento: [''],
+      primerApellido: [''],
+      segundoApellido: [''],
+      primerNombre: [''],
+      segundoNombre: ['']
+    });
+
+        // Inicializar el FormGroup de traslados
+        this.trasladosForm = this.fb.group({
+          deseaTrasladarse: ['no'],
+          epsDestino: ['']
+        });
 
   }
 
@@ -799,6 +851,8 @@ export class ContratacionComponent implements OnInit {
     return age;
   }
 
+
+
   async verificarSeleccion() {
     // Si existe un proceso de selección, llenar el formulario con los datos
     if (this.seleccion) {
@@ -950,30 +1004,30 @@ export class ContratacionComponent implements OnInit {
   }
 
 
-// Método para abrir un archivo en una nueva pestaña
-verArchivo(campo: string) {
-  const archivo = this.uploadedFiles[campo];
+  // Método para abrir un archivo en una nueva pestaña
+  verArchivo(campo: string) {
+    const archivo = this.uploadedFiles[campo];
 
-  if (archivo && archivo.file) {
-    if (typeof archivo.file === 'string') {
-      // Asegurarse de que la URL esté correctamente codificada para evitar problemas
-      const fileUrl = encodeURI(archivo.file);
-      // Abrir el archivo en una nueva pestaña
-      window.open(fileUrl, '_blank');
-    } else if (archivo.file instanceof File) {
-      // Crear una URL temporal para el archivo si es un objeto File
-      const fileUrl = URL.createObjectURL(archivo.file);
-      window.open(fileUrl, '_blank');
+    if (archivo && archivo.file) {
+      if (typeof archivo.file === 'string') {
+        // Asegurarse de que la URL esté correctamente codificada para evitar problemas
+        const fileUrl = encodeURI(archivo.file);
+        // Abrir el archivo en una nueva pestaña
+        window.open(fileUrl, '_blank');
+      } else if (archivo.file instanceof File) {
+        // Crear una URL temporal para el archivo si es un objeto File
+        const fileUrl = URL.createObjectURL(archivo.file);
+        window.open(fileUrl, '_blank');
 
-      // Revocar la URL después de que el archivo ha sido abierto para liberar memoria
-      setTimeout(() => {
-        URL.revokeObjectURL(fileUrl);
-      }, 100);
+        // Revocar la URL después de que el archivo ha sido abierto para liberar memoria
+        setTimeout(() => {
+          URL.revokeObjectURL(fileUrl);
+        }, 100);
+      }
+    } else {
+      Swal.fire('Error', 'No se pudo encontrar el archivo para este campo', 'error');
     }
-  } else {
-    Swal.fire('Error', 'No se pudo encontrar el archivo para este campo', 'error');
   }
-}
 
 
   // Método para imprimir los datos del formulario y subir todos los archivos
@@ -1205,4 +1259,30 @@ verArchivo(campo: string) {
   }
 
 
+
+  cargarPagoTransporte() {
+    console.log('Información de Pago y Transporte:', this.pagoTransporteForm.value);
+  }
+  
+  cargarReferencias() {
+    console.log('Referencias Personales:', this.referenciasForm.value);
+  }
+  
+  cargarInformacionPersonal() {
+    console.log('Información Personal:', this.informacionPersonalForm.value);
+  }
+
+  onTrasladoChange(event: any) {
+    const trasladoSeleccionado = event.value;
+    if (trasladoSeleccionado === 'no') {
+      // Si el usuario selecciona "No", reseteamos el campo de EPS
+      this.trasladosForm.get('epsDestino')?.reset();
+    }
+  }
+
+  cargarTraslados() {
+    console.log('Información de Traslados:', this.trasladosForm.value);
+  }
+
+  
 }
