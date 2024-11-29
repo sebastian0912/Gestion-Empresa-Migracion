@@ -41,6 +41,9 @@ import { MatListModule } from '@angular/material/list'; // Módulo de MatList
 import { SignaturePadModule } from '../signature-pad/signature-pad.module'; // Importa el componente standalone
 import e from 'express';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -95,12 +98,12 @@ export class DocumentosContratacionComponent implements OnInit {
   pruebaSSTForm: FormGroup;
   autorizacionDatosForm: FormGroup;
   trasladosForm: FormGroup;
-  iscontratocomplete = true;
-  isfichacomplete = true;
-  isEntregaDocumentosComplete = true;
-  isHojaVidaComplete = true;
-  isPruebaLecturaComplete = false;
-  isPruebaSSTComplete = false;
+  iscontratocomplete = false;
+  isfichacomplete = false;
+  isEntregaDocumentosComplete = false;
+  isHojaVidaComplete = false;
+  isPruebaLecturaComplete = true;
+  isPruebaSSTComplete = true;
   isAutorizacionDatosComplete = false;
   isTrasladosComplete = false;
   counterVisible = false;
@@ -111,6 +114,7 @@ export class DocumentosContratacionComponent implements OnInit {
     canvasWidth: 500,
     canvasHeight: 200
   };
+
   FieldsfichaTecnica = [
     'primerApellido',
     'segundoApellido',
@@ -420,11 +424,6 @@ export class DocumentosContratacionComponent implements OnInit {
     telefonoReferencia2: 'Teléfono Referencia 2',
     autorizoPedirInformacionDeMiHojaDeVida: 'Autorizo Pedir Información de mi Hoja de Vida sin ninguna restriccion',
     firmaSolicitante: 'Firma Solicitante',
-
-
-
-
-
   }
 
   fieldMapFichaTecnica: { [key: string]: string } = {
@@ -549,6 +548,7 @@ export class DocumentosContratacionComponent implements OnInit {
     otroPadreTrabajaenLaCompaniaHijo1: 'El otro padre trabaja en la compañía hijo 1',
     esHijastroHijo1: 'Es hijastro hijo 1',
     custodiaLegalHijo1: 'Custodia legal hijo 1',
+
     apellidosynombresHijos2: 'Apellidos y nombres hijo 2',
     fechaNacimientoHijos2: 'Fecha de nacimiento hijo 2',
     numerodeIdentificacionHijos2: 'Número de identificación hijo 2',
@@ -760,7 +760,7 @@ export class DocumentosContratacionComponent implements OnInit {
       this.autorizacionDatosForm.addControl(key, this.fb.control(''));
     });
   }
-  
+
   ngOnInit() {
     // Asegurar que TypeScript sepa que DigitalPersonaSDK tiene un tipo específico
 
@@ -799,7 +799,8 @@ export class DocumentosContratacionComponent implements OnInit {
           if (result.success) {
             this.message = 'Huella capturada exitosamente.';
             this.fingerprintImageID = `data:image/png;base64,${result.data}`;
-
+            this.fichaTecnicaForm.get('huella')?.setValue(this.fingerprintImageID);
+            this.contratoForm.get('huella')?.setValue(this.fingerprintImageID);
 
           } else {
             this.message = `Error al capturar huella: ${result.error || 'Error desconocido.'}`;
@@ -816,6 +817,17 @@ export class DocumentosContratacionComponent implements OnInit {
       this.message = errorMessage;
     }
   }
+  convertbase64toimage(textBase: string) {
+    var byteCharacters = atob(textBase);
+    var byteNumbers = new Array(byteCharacters.length);
+    for (var i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    var byteArray = new Uint8Array(byteNumbers);
+    var blob = new Blob([byteArray], { type: 'image/png' });
+    var url = URL.createObjectURL(blob);
+    return url;
+  }
 
   captureFingerprintPD() {
     // Verifica si window.myElectron y window.myElectron.fingerprint están disponibles
@@ -825,8 +837,7 @@ export class DocumentosContratacionComponent implements OnInit {
           if (result.success) {
             this.message = 'Huella capturada exitosamente.';
             this.fingerprintImagePD = `data:image/png;base64,${result.data}`;
-
-
+            this.entregaDeDocumentosForm.get('huellaPulgarDerecho')?.setValue(this.fingerprintImagePD);
           } else {
             this.message = `Error al capturar huella: ${result.error || 'Error desconocido.'}`;
             console.error(this.message);
@@ -896,227 +907,679 @@ export class DocumentosContratacionComponent implements OnInit {
       alert('Por favor, asegúrese de firmar antes de enviar.');
       return;
     }
+
+    if (nombredelfocumento == 'fichatecnica') {
     this.generateFichaTecnicaPDF();
+    }
+    if(nombredelfocumento == 'contrato'){
+      this.generateContratoPDF();
+    }
+    if (nombredelfocumento == 'entregaDocumentos'){
+      this.generateEntregaDeDocumentacionPDF();
+    }
+    if (nombredelfocumento == 'hojadevida'){
+    this.generateHojaDeVidaPDF();
+    }
+
+
     // Aquí puedes manejar el envío del formulario, incluyendo la firma
     console.log('Formulario enviado:', this.fichaTecnicaForm.value);
   }
+
+
   generateFichaTecnicaPDF() {
     const doc = new jsPDF();
 
     // Título del documento
-    doc.setFontSize(10);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
     doc.text('FICHA TÉCNICA DEL TRABAJADOR', 10, 15);
 
-    let finalY = 30;  // Posición inicial para la primera tabla
+    let finalY = 30;
 
     // Sección: Información Personal
-    doc.setFontSize(9);
+    doc.setFontSize(11);
     doc.text('INFORMACIÓN PERSONAL', 10, finalY - 5);
+    finalY += 5;
 
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },  // Color de fondo
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 35 },
+        2: { cellWidth: 60 },
+        3: { cellWidth: 40 }
+      },
       head: [['1er Apellido', '2do Apellido', 'Nombres', 'No. de Identificación']],
       body: [
         [this.fichaTecnicaForm.get('primerApellido')?.value, this.fichaTecnicaForm.get('segundoApellido')?.value, this.fichaTecnicaForm.get('nombres')?.value, this.fichaTecnicaForm.get('numerodeIdentificacion')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Otra fila de información personal
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
       head: [['Fecha y Lugar de Expedición', 'Fecha y Lugar de Nacimiento', 'Celular', 'Email']],
       body: [
         [this.fichaTecnicaForm.get('fechaExpedicionylugardeexpedicion')?.value, this.fichaTecnicaForm.get('fechaNacimientoylugardenacimiento')?.value, this.fichaTecnicaForm.get('celular')?.value, this.fichaTecnicaForm.get('correoelectronico')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Tercera fila de información personal
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
       head: [['Dirección', 'Mun/Bar.', 'Estado Civil', 'RH']],
       body: [
         [this.fichaTecnicaForm.get('direccion')?.value, this.fichaTecnicaForm.get('municipioBarrio')?.value, this.fichaTecnicaForm.get('estadoCivil')?.value, this.fichaTecnicaForm.get('rh')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Sección EPS, AFP, AFC y Caja de Compensación
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
       head: [['EPS', 'AFP', 'AFC', 'Caja de Compensación']],
       body: [
         [this.fichaTecnicaForm.get('eps')?.value, this.fichaTecnicaForm.get('afp')?.value, this.fichaTecnicaForm.get('afc')?.value, this.fichaTecnicaForm.get('cajaCompensacion')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY + 5;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Nota
-    doc.setFontSize(7);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
     doc.text('*Dejo constancia de que elegí voluntariamente la afiliación...', 10, finalY);
 
     finalY += 10;
 
     // Sección: Información Académica
-    doc.setFontSize(9);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
     doc.text('INFORMACIÓN ACADÉMICA', 10, finalY - 5);
+    finalY += 5;
 
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      columnStyles: {
+        0: { cellWidth: 40 },
+        1: { cellWidth: 20 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 20 }
+      },
       head: [['Grado Escolar', 'Técnico', 'Universidad', 'Especialización', 'Otros']],
       body: [
         [this.fichaTecnicaForm.get('gradoEscolaridad')?.value, this.fichaTecnicaForm.get('isTecnologo')?.value ? 'Sí' : 'No', this.fichaTecnicaForm.get('isUniversidad')?.value ? 'Sí' : 'No', this.fichaTecnicaForm.get('isEspecializacion')?.value ? 'Sí' : 'No', this.fichaTecnicaForm.get('isOtros')?.value ? 'Sí' : 'No']
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Sección: Información Familiar
+    doc.setFontSize(11);
     doc.text('INFORMACIÓN FAMILIAR', 10, finalY - 5);
+    finalY += 5;
 
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
       head: [['Nombre y Apellido (Padre)', 'Teléfono', 'Ocupación', 'Barrio/Municipio']],
       body: [
         [this.fichaTecnicaForm.get('nombreapellidoPadre')?.value, this.fichaTecnicaForm.get('telefonoPadre')?.value, this.fichaTecnicaForm.get('ocupacionPadre')?.value, this.fichaTecnicaForm.get('barrioMunicipioPadre')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Sección: Información de Hijos
+    doc.setFontSize(11);
     doc.text('INFORMACIÓN DE HIJOS', 10, finalY - 5);
+    finalY += 5;
 
-    doc.autoTable({
-      startY: finalY,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
-      head: [['Apellidos y Nombres', 'Fecha Nacimiento', 'Identificación', 'Sexo', 'Edad', 'Estudia/Trabaja', 'Curso']],
-      body: [
-        [this.fichaTecnicaForm.get('apellidosynombresHijos1')?.value, this.fichaTecnicaForm.get('fechaNacimientoHijos1')?.value, this.fichaTecnicaForm.get('numerodeIdentificacionHijos1')?.value, this.fichaTecnicaForm.get('sexoHijo1')?.value, this.fichaTecnicaForm.get('edadHijo1')?.value, this.fichaTecnicaForm.get('estudiaTrabajaHijo1')?.value, this.fichaTecnicaForm.get('cursoHijo1')?.value]
-        // Puedes agregar más hijos aquí de manera similar.
-      ]
-    });
+    // Agregando información de los hijos de manera dinámica (hasta 6 hijos)
+    let hijosDataBasica = [];
+    let hijosDataVinculacion = [];
+    let hijosDataAdicional = [];
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    // Recolectando información de los hijos en diferentes categorías
+    for (let i = 1; i <= 6; i++) {
+      const nombreHijo = this.fichaTecnicaForm.get(`apellidosynombresHijos${i}`)?.value;
+      const fechaNacimientoHijo = this.fichaTecnicaForm.get(`fechaNacimientoHijos${i}`)?.value;
+      const identificacionHijo = this.fichaTecnicaForm.get(`numerodeIdentificacionHijos${i}`)?.value;
+      const sexoHijo = this.fichaTecnicaForm.get(`sexoHijo${i}`)?.value;
+      const edadHijo = this.fichaTecnicaForm.get(`edadHijo${i}`)?.value;
+      const estudiaTrabajaHijo = this.fichaTecnicaForm.get(`estudiaTrabajaHijo${i}`)?.value;
+      const cursoHijo = this.fichaTecnicaForm.get(`cursoHijo${i}`)?.value;
+      const viveconeltrabajadorhijo = this.fichaTecnicaForm.get(`viveconeltrabajadorhijo${i}`)?.value;
+      const estudiaenlafundacionhijo = this.fichaTecnicaForm.get(`estudiaenlafundacionhijo${i}`)?.value;
+      const poseeAlgunaDiscapacidadHijo = this.fichaTecnicaForm.get(`poseeAlgunaDiscapacidadHijo${i}`)?.value;
+      const esEmpleadoDelasEmpresasHijo = this.fichaTecnicaForm.get(`esEmpleadoDelasEmpresasHijo${i}`)?.value;
+      const nombreOtroPadreHijo = this.fichaTecnicaForm.get(`nombreOtroPadreHijo${i}`)?.value;
+      const documentoIdentidadOtroPadreHijo = this.fichaTecnicaForm.get(`documentoIdentidadOtroPadreHijo${i}`)?.value;
+      const otroPadreTrabajaenLaCompaniaHijo = this.fichaTecnicaForm.get(`otroPadreTrabajaenLaCompaniaHijo${i}`)?.value;
+      const esHijastroHijo = this.fichaTecnicaForm.get(`esHijastroHijo${i}`)?.value;
+      const custodiaLegalHijo = this.fichaTecnicaForm.get(`custodiaLegalHijo${i}`)?.value;
+
+      if (nombreHijo) {
+        // Datos básicos del hijo
+        hijosDataBasica.push([nombreHijo, fechaNacimientoHijo, identificacionHijo, sexoHijo, edadHijo, estudiaTrabajaHijo, cursoHijo]);
+
+        // Datos de vinculación del hijo con el trabajador
+        hijosDataVinculacion.push([viveconeltrabajadorhijo, estudiaenlafundacionhijo, poseeAlgunaDiscapacidadHijo, esEmpleadoDelasEmpresasHijo]);
+
+        // Datos adicionales sobre el otro padre o la custodia
+        hijosDataAdicional.push([nombreOtroPadreHijo, documentoIdentidadOtroPadreHijo, otroPadreTrabajaenLaCompaniaHijo, esHijastroHijo, custodiaLegalHijo]);
+      }
+    }
+
+    // Tabla 1: Información básica de los hijos
+    if (hijosDataBasica.length > 0) {
+      doc.autoTable({
+        startY: finalY,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 1 },
+        headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+        head: [['Apellidos y Nombres', 'Fecha Nacimiento', 'Identificación', 'Sexo', 'Edad', 'Estudia/Trabaja', 'Curso']],
+        body: hijosDataBasica
+      });
+
+      finalY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // Tabla 2: Información de vinculación de los hijos con el trabajador
+    if (hijosDataVinculacion.length > 0) {
+      doc.setFontSize(11);
+      doc.text('VINCULACIÓN DE LOS HIJOS', 10, finalY - 5);
+      finalY += 5;
+
+      doc.autoTable({
+        startY: finalY,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 1 },
+        headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+        head: [['Vive con el Trabajador', 'Estudia en la Fundación', 'Posee Discapacidad', 'Es Empleado de las Empresas']],
+        body: hijosDataVinculacion
+      });
+
+      finalY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // Tabla 3: Información adicional del otro padre o custodia
+    if (hijosDataAdicional.length > 0) {
+      doc.setFontSize(11);
+      doc.text('INFORMACIÓN ADICIONAL SOBRE LOS PADRES', 10, finalY - 5);
+      finalY += 5;
+
+      doc.autoTable({
+        startY: finalY,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 1 },
+        headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+        head: [['Nombre del Otro Padre', 'Documento de Identidad', 'El Otro Padre Trabaja en la Compañía', 'Es Hijastro', 'Custodia Legal']],
+        body: hijosDataAdicional
+      });
+
+      finalY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
     // Sección: Información de Dotación
+    doc.setFontSize(11);
     doc.text('INFORMACIÓN DE DOTACIÓN', 10, finalY - 5);
+    finalY += 5;
 
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
       head: [['Talla Chaqueta', 'Talla Pantalón', 'Talla Overol', 'No. Calzado', 'No. Botas Cuacho', 'No. Zapatones', 'No. Botas Material']],
       body: [
         [this.fichaTecnicaForm.get('tallachaqueta')?.value, this.fichaTecnicaForm.get('tallaPantalon')?.value, this.fichaTecnicaForm.get('tallaOverol')?.value, this.fichaTecnicaForm.get('noCalzado')?.value, this.fichaTecnicaForm.get('noBotasCuacho')?.value, this.fichaTecnicaForm.get('noZapatones')?.value, this.fichaTecnicaForm.get('noBotasMaterial')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    finalY = (doc as any).lastAutoTable.finalY + 10;
 
-    // Sección: Referencias Personales
-    doc.text('REFERENCIAS PERSONALES', 10, finalY - 5);
-
+    doc.setFontSize(11);
+    doc.text('REFERENCIAS EMPRESA', 10, finalY - 5);
+    finalY += 5;
+    let referenciasempresa = [];
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
-      head: [['Nombre', 'Teléfono', 'Ocupación']],
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Nombre empresa 1', 'Dirección empresa 1', 'Talla Overol', 'No. Calzado', 'No. Botas Cuacho', 'No. Zapatones', 'No. Botas Material']],
       body: [
-        [this.fichaTecnicaForm.get('nombreReferenciapersonal1')?.value, this.fichaTecnicaForm.get('telefonoReferenciapersonal1')?.value, this.fichaTecnicaForm.get('ocupacionReferenciapersonal1')?.value],
-        [this.fichaTecnicaForm.get('nombreReferenciapersonal2')?.value, this.fichaTecnicaForm.get('telefonoReferenciapersonal2')?.value, this.fichaTecnicaForm.get('ocupacionReferenciapersonal2')?.value]
+        [this.fichaTecnicaForm.get('tallachaqueta')?.value, this.fichaTecnicaForm.get('tallaPantalon')?.value, this.fichaTecnicaForm.get('tallaOverol')?.value, this.fichaTecnicaForm.get('noCalzado')?.value, this.fichaTecnicaForm.get('noBotasCuacho')?.value, this.fichaTecnicaForm.get('noZapatones')?.value, this.fichaTecnicaForm.get('noBotasMaterial')?.value]
       ]
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
+    // firma de documento
 
-    // Sección: Referencias Familiares
-    doc.text('REFERENCIAS FAMILIARES', 10, finalY - 5);
+    // Signature and Fingerprint side by side
+    finalY = (doc as any).lastAutoTable.finalY + 10;
+    doc.setFontSize(12);
+    doc.text('FIRMA Y HUELLAS', 10, finalY);
+    finalY += 10;
 
+    // Draw a table-like structure for signature and fingerprint
+    doc.text('Firma del Trabajador:', 10, finalY + 5);
+    doc.addImage(this.signatureDataURLTrabajador, 'PNG', 10, finalY + 10, 50, 30);
+
+    doc.text('Huella Índice Derecho:', 80, finalY + 5);
+    doc.addImage(this.fichaTecnicaForm.get('huella')?.value, 'PNG', 80, finalY + 10, 30, 30);
+
+
+    finalY += 50;
+
+    // Nota final
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text('*Dejo constancia de que elegí voluntariamente la afiliación a los servicios indicados.', 10, finalY);
+
+    // Guardar el PDF
+    doc.save('Ficha_Tecnica.pdf');
+  }
+  generateContratoPDF() {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    // Encabezado principal
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PROCESO DE CONTRATACIÓN', 10, 10);
+    doc.text('CONTRATO DE TRABAJO POR OBRA O LABOR', 10, 15);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Código: AL CO-RE-1', 150, 10);
+    doc.text('Versión: 07', 150, 15);
+    doc.text('Página: 1 de 3', 150, 20);
+
+    let finalY = 25;
+
+    // Información general
+    doc.setFont('helvetica', 'bold');
+    doc.text('Representado por:', 10, finalY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.contratoForm.get('representadoPor')?.value, 50, finalY);
+
+    finalY += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Nombre del Trabajador:', 10, finalY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.contratoForm.get('NombredelTrabajador')?.value, 50, finalY);
+
+    finalY += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Fecha de Nacimiento:', 10, finalY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.contratoForm.get('fechaDeNacimiento')?.value, 50, finalY);
+
+    finalY += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Domicilio del Trabajador:', 10, finalY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.contratoForm.get('domicilioDelTrabajador')?.value, 50, finalY);
+
+    finalY += 10;
+
+    // Tabla resumen
     doc.autoTable({
       startY: finalY,
       theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
-      head: [['Nombre', 'Teléfono', 'Ocupación']],
+      styles: { fontSize: 9, cellPadding: 1 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Campo', 'Valor']],
       body: [
-        [this.fichaTecnicaForm.get('nombreReferenciaFamiliar1')?.value, this.fichaTecnicaForm.get('telefonoReferenciaFamiliar1')?.value, this.fichaTecnicaForm.get('ocupacionReferenciaFamiliar1')?.value],
-        [this.fichaTecnicaForm.get('nombreReferenciaFamiliar2')?.value, this.fichaTecnicaForm.get('telefonoReferenciaFamiliar2')?.value, this.fichaTecnicaForm.get('ocupacionReferenciaFamiliar2')?.value]
-      ]
-    });
-
-    finalY = (doc as any).lastAutoTable.finalY;
-
-    // Sección: Referencias Laborales
-    doc.text('REFERENCIAS LABORALES', 10, finalY - 5);
-
-    doc.autoTable({
-      startY: finalY,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 0.5 },
-      headStyles: { fillColor: [0, 150, 136], textColor: 255 },
-      head: [['Nombre Empresa', 'Teléfono Empresa', 'Fecha Retiro']],
-      body: [
-        [this.fichaTecnicaForm.get('nombreEmpresa1')?.value, this.fichaTecnicaForm.get('telefonoEmpresa1')?.value, this.fichaTecnicaForm.get('fechaRetiro1')?.value],
-        [this.fichaTecnicaForm.get('nombreEmpresa2')?.value, this.fichaTecnicaForm.get('telefonoEmpresa2')?.value, this.fichaTecnicaForm.get('fechaRetiro2')?.value]
+        ['Fecha de Iniciación', this.contratoForm.get('fechaDeInciacion')?.value],
+        ['Salario Mensual Ordinario', this.contratoForm.get('salarioMensualOrdinario')?.value],
+        ['Periodo de Pago', this.contratoForm.get('periodoDePagoSalario')?.value],
+        ['Subsidio de Transporte', this.contratoForm.get('subsidioDeTransporte')?.value],
+        ['Forma de Pago', this.contratoForm.get('formaDePago')?.value],
+        ['Cargo', this.contratoForm.get('cargo')?.value],
+        ['Nombre Empresa Usuaria', this.contratoForm.get('nombreEmpresaUsuarioa')?.value],
+        ['Descripción de la Obra/Motivo Temporal', this.contratoForm.get('descripciondelaObraMotivotemporal')?.value],
       ]
     });
 
     finalY = (doc as any).lastAutoTable.finalY + 10;
 
-    // Sección: Firma y Huella
-    doc.text('Firma:', 10, finalY);
-    const firma = this.fichaTecnicaForm.get('firma')?.value;
-    if (firma) {
-      const firmaBase64 = firma.replace(/^data:image\/(png|jpg);base64,/, '');
-      doc.addImage(firmaBase64, 'PNG', 10, finalY + 5, 40, 15);
-    }
+    // Clausulado del contrato
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CLÁUSULAS DEL CONTRATO', 10, finalY);
+    finalY += 5;
 
-    doc.text('Huella:', 80, finalY);
-    const huella = this.fingerprintImagePD;
-    if (huella) {
-      const huellaBase64 = huella.replace(/^data:image\/(png|jpg);base64,/, '');
-      doc.addImage(huellaBase64, 'PNG', 80, finalY + 5, 40, 15);
-    }
+    doc.setFont('helvetica', 'normal');
+    const clausulas = [
+      'PRIMERA: El empleador y el trabajador acuerdan que el presente contrato se celebrará conforme a las disposiciones legales vigentes y en base a los términos expresamente descritos en este documento.',
+      'SEGUNDA: El trabajador se compromete a cumplir con las obligaciones inherentes a su cargo, siguiendo las instrucciones y políticas establecidas por el empleador.',
+      'TERCERA: El salario pactado será pagado conforme a las condiciones estipuladas en este contrato, siendo responsabilidad del empleador respetar las disposiciones legales aplicables.',
+      'CUARTA: Ambas partes acuerdan que cualquier modificación a este contrato deberá realizarse por escrito y con la aprobación de ambas partes.',
+      'QUINTA: Este contrato podrá ser terminado bajo las condiciones establecidas por la ley, incluyendo pero no limitándose a incumplimientos graves de cualquiera de las partes.',
+      'SEXTA: El empleador se reserva el derecho de asignar tareas adicionales al trabajador que sean compatibles con las funciones propias de su cargo.',
+      'SÉPTIMA: El trabajador declara haber recibido copia de este contrato y manifiesta su aceptación de los términos aquí descritos.'
+    ];
 
-    finalY += 20;
+    clausulas.forEach((clausula, index) => {
+      const lines = doc.splitTextToSize(`${index + 1}. ${clausula}`, 180);
+      doc.text(lines, 10, finalY);
+      finalY += lines.length * 5;
+      if (finalY > 270) {
+        doc.addPage();
+        finalY = 10;
+      }
+    });
 
-    // Sección: Firma del Responsable
-    doc.text('NOMBRE Y CÉDULA DE QUIEN CONTRATA:', 10, finalY);
-    doc.text(`${this.fichaTecnicaForm.get('nombreContrata')?.value} C.C. ${this.fichaTecnicaForm.get('cedulaContrata')?.value}`, 10, finalY + 5);
+    finalY += 10;
+
+    // Firmas
+    doc.setFont('helvetica', 'bold');
+    doc.text('FIRMAS', 10, finalY);
+    finalY += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.text('Firma del Trabajador:', 10, finalY);
+    doc.text(this.contratoForm.get('firmaDelTrabajador')?.value, 50, finalY);
+
+    finalY += 10;
+    doc.text('Testigo 1 (Nombre y cédula):', 10, finalY);
+    doc.text(this.contratoForm.get('testigo1NombreYcedula')?.value, 50, finalY);
+
+    finalY += 5;
+    doc.text('Firma Testigo 1:', 10, finalY);
+    doc.text(this.contratoForm.get('firmaTestigo1')?.value, 50, finalY);
+
+    finalY += 10;
+    doc.text('Testigo 2 (Nombre y cédula):', 10, finalY);
+    doc.text(this.contratoForm.get('testigo2NombreYcedula')?.value, 50, finalY);
+
+    finalY += 5;
+    doc.text('Firma Testigo 2:', 10, finalY);
+    doc.text(this.contratoForm.get('firmaTestigo2')?.value, 50, finalY);
+
+    finalY += 10;
+
+    // Texto largo (contenido adicional del contrato)
+    doc.setFontSize(9);
+    const textoLargo = `Entre el EMPLEADOR y el TRABAJADOR arriba indicados, se ha celebrado el contrato regido por las cláusulas que se detallan a continuación. Este contrato regula la relación laboral de acuerdo con la legislación vigente y respetando los derechos y deberes de ambas partes. El TRABAJADOR se compromete a ejecutar las tareas asignadas de manera eficiente, acatando las normas y políticas del EMPLEADOR. Así mismo, se deja constancia de que el salario acordado será de acuerdo con las condiciones especificadas en este contrato y que cualquier modificación al presente documento deberá realizarse por escrito y con el consentimiento de ambas partes. El TRABAJADOR acepta cumplir con las normas de seguridad y conducta establecidas por el EMPLEADOR, además de reportar cualquier incidente o irregularidad que pueda afectar el desarrollo de sus labores. Por último, este contrato podrá darse por terminado bajo las condiciones especificadas en la legislación laboral y conforme a lo pactado por las partes.`;
+
+    const textoLargoLineas = doc.splitTextToSize(textoLargo, 180);
+    doc.text(textoLargoLineas, 10, finalY);
 
     // Guardar el PDF
-    doc.save('Ficha_Tecnica.pdf');
+    doc.save('Contrato_Trabajo.pdf');
   }
 
+  generateHojaDeVidaPDF() {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
+    // Encabezado principal
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('HOJA DE VIDA', 10, 15);
 
+    let finalY = 25;
+
+    // Sección: Información General
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN GENERAL', 10, finalY);
+    finalY += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.autoTable({
+      startY: finalY,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Apellido del Aspirante', this.HojaVidaForm.get('apellidoDelAspirante')?.value],
+        ['Nombre del Aspirante', this.HojaVidaForm.get('nombreDelAspirante')?.value],
+        ['Fecha de Nacimiento', this.HojaVidaForm.get('fechadeNacimiento')?.value],
+        ['Lugar de Nacimiento', this.HojaVidaForm.get('lugarDeNacimiento')?.value],
+        ['Dirección de Domicilio', this.HojaVidaForm.get('direccionDeDomicilio')?.value],
+        ['Barrio', this.HojaVidaForm.get('barrio')?.value],
+        ['Ciudad', this.HojaVidaForm.get('ciudad')?.value],
+        ['Correo Electrónico', this.HojaVidaForm.get('correoElectronico')?.value],
+        ['Nacionalidad', this.HojaVidaForm.get('nacionalidad')?.value],
+        ['Profesión/Ocupación', this.HojaVidaForm.get('profesionOcupacion')?.value],
+        ['Estado Civil', this.HojaVidaForm.get('estadoCivil')?.value],
+        ['Años de Experiencia', this.HojaVidaForm.get('anosDeExperiencia')?.value],
+        ['Tipo de Documento', this.HojaVidaForm.get('tipoDeDocumento')?.value],
+        ['Número de Documento', this.HojaVidaForm.get('numeroDeDocumento')?.value],
+        ['Expedido en', this.HojaVidaForm.get('expedidoEn')?.value],
+        ['Tiene Vehículo', this.HojaVidaForm.get('tieneVehiculo')?.value],
+      ]
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    // Sección: Información Laboral
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN LABORAL', 10, finalY);
+    finalY += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.autoTable({
+      startY: finalY,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Estudios Realizados', this.HojaVidaForm.get('estidiosRealizados')?.value],
+        ['Experiencia Laboral', this.HojaVidaForm.get('experioenciaLaboral')?.value],
+        ['Habilidades que Posee', this.HojaVidaForm.get('habilidadesQuePosee')?.value],
+      ]
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    // Sección: Información Familiar
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN FAMILIAR', 10, finalY);
+    finalY += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.autoTable({
+      startY: finalY,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Nombre del Padre', this.HojaVidaForm.get('nombreDelPadre')?.value],
+        ['Profesión/Ocupación (Padre)', this.HojaVidaForm.get('profesionOcupacionPadre')?.value],
+        ['Teléfonos del Padre', this.HojaVidaForm.get('telefonosDelPadre')?.value],
+        ['Nombre de la Madre', this.HojaVidaForm.get('nombreDelamadre')?.value],
+        ['Profesión/Ocupación (Madre)', this.HojaVidaForm.get('profesionOcupacionMadre')?.value],
+        ['Teléfonos de la Madre', this.HojaVidaForm.get('telefonosDeLaMadre')?.value],
+        ['Nombres de Hermanos', this.HojaVidaForm.get('nombresHermanos')?.value],
+        ['Profesión/Ocupación (Hermanos)', this.HojaVidaForm.get('profesionOcupacionHermanos')?.value],
+        ['Teléfonos (Hermanos)', this.HojaVidaForm.get('telefonosHermanos')?.value],
+      ]
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    // Sección: Educación y Aptitudes
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('EDUCACIÓN Y APTITUDES', 10, finalY);
+    finalY += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.autoTable({
+      startY: finalY,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Sistemas que Domina', this.HojaVidaForm.get('sistemasQueDomina')?.value],
+        ['Programas que Domina', this.HojaVidaForm.get('programasQueDomina')?.value],
+        ['Idiomas que Habla', this.HojaVidaForm.get('idiomasQueHabla')?.value],
+      ]
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    // Sección: Referencias Personales
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('REFERENCIAS PERSONALES', 10, finalY);
+    finalY += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.autoTable({
+      startY: finalY,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Nombre Referencia 1', this.HojaVidaForm.get('nombreReferencia1')?.value],
+        ['Ocupación Referencia 1', this.HojaVidaForm.get('ocupacionReferencia1')?.value],
+        ['Teléfono Referencia 1', this.HojaVidaForm.get('telefonoReferencia1')?.value],
+        ['Nombre Referencia 2', this.HojaVidaForm.get('nombreReferencia2')?.value],
+        ['Ocupación Referencia 2', this.HojaVidaForm.get('ocupacionReferencia2')?.value],
+        ['Teléfono Referencia 2', this.HojaVidaForm.get('telefonoReferencia2')?.value],
+      ]
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    // Firma y Autorización
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Autorizo Pedir Información de mi Hoja de Vida sin ninguna restricción.', 10, finalY);
+
+    finalY += 10;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Firma del Solicitante:', 10, finalY
+    );
+    doc.text(this.HojaVidaForm.get('firmaSolicitante')?.value, 50, finalY);
+
+    // Guardar el PDF
+    doc.save('Hoja_De_Vida.pdf');
+  }
+
+generateEntregaDeDocumentacionPDF() {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  // Encabezado principal
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FORMATO DE ENTREGA DE DOCUMENTOS', 10, 15);
+
+  let finalY = 25;
+
+  // Sección: Información General
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('INFORMACIÓN GENERAL', 10, finalY);
+  finalY += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.autoTable({
+    startY: finalY,
+    theme: 'grid',
+    styles: { fontSize: 10, cellPadding: 2 },
+    headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+    head: [['Campo', 'Valor']],
+    body: [
+      ['Descuento Casino', this.entregaDeDocumentosForm.get('descuentoCasino')?.value],
+      ['Forma de Pago', this.entregaDeDocumentosForm.get('formadepago')?.value],
+      ['Número de Cuenta o Celular', this.entregaDeDocumentosForm.get('numerodecuenta')?.value],
+      ['Código Tarjeta', this.entregaDeDocumentosForm.get('codigoTarjeta')?.value],
+      ['Acepto Cambio Sin Previo Aviso', this.entregaDeDocumentosForm.get('aceptoCambioSinPrevioAviso')?.value],
+      ['Plan Funeral', this.entregaDeDocumentosForm.get('planFuneral')?.value],
+    ]
+  });
+
+  finalY = (doc as any).lastAutoTable.finalY + 10;
+
+  // Sección: Firmas y Responsables
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FIRMAS Y RESPONSABLES', 10, finalY);
+  finalY += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.autoTable({
+    startY: finalY,
+    theme: 'grid',
+    styles: { fontSize: 10, cellPadding: 2 },
+    headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+    head: [['Campo', 'Valor']],
+    body: [
+      ['Firma de Aceptación', this.entregaDeDocumentosForm.get('FirmadeAceptacion')?.value],
+      ['Número de Identificación', this.entregaDeDocumentosForm.get('numeroDeIndentificacion')?.value],
+      ['Fecha de Recibido', this.entregaDeDocumentosForm.get('fechadeRecibido')?.value],
+      ['Firma de Responsable de Socialización', this.entregaDeDocumentosForm.get('firmadeResponsabledeSocializacion')?.value],
+      ['Nombre de Responsable', this.entregaDeDocumentosForm.get('nombreDeResponsable')?.value],
+    ]
+  });
+
+  finalY = (doc as any).lastAutoTable.finalY + 10;
+
+  // Sección: Huellas
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('HUELLAS', 10, finalY);
+  finalY += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.autoTable({
+    startY: finalY,
+    theme: 'grid',
+    styles: { fontSize: 10, cellPadding: 2 },
+    headStyles: { fillColor: [0, 120, 215], textColor: 255 },
+    head: [['Campo', 'Valor']],
+    body: [
+      ['Huella Índice Derecho', this.entregaDeDocumentosForm.get('huellaIndiceDerecho')?.value],
+      ['Huella Pulgar Derecho', this.entregaDeDocumentosForm.get('huellaPulgarDerecho')?.value],
+    ]
+  });
+
+  finalY = (doc as any).lastAutoTable.finalY + 20;
+
+  // Nota final
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'italic');
+  doc.text('Declaro que he recibido y aceptado los documentos y condiciones indicados en este formato.', 10, finalY);
+
+  // Guardar el PDF
+  doc.save('Entrega_Documentos.pdf');
+
+}
 
 }
