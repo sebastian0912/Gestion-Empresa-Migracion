@@ -710,16 +710,18 @@
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Seleccione los exámenes</mat-label>
                   <mat-select formControlName="selectedExams" multiple>
-                    <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">{{ exam }}</mat-option>
+                    <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">
+                      {{ exam }}
+                    </mat-option>
                   </mat-select>
                 </mat-form-field>
 
 
                 <!-- Campos dinámicos para cada examen seleccionado -->
                 <div formArrayName="selectedExamsArray">
-                  <div *ngFor="let exam of selectedExamsArray.controls; let i = index" [formGroupName]="i">
+                  <div *ngFor="let exam of formGroup3.get('selectedExams')?.value; let i = index" [formGroupName]="i">
                     <mat-form-field appearance="fill" class="example-full-width">
-                      <mat-label>{{ examOptions[i] }}</mat-label>
+                      <mat-label>{{ exam }}</mat-label> <!-- Usa el nombre del examen seleccionado directamente -->
                       <mat-select formControlName="aptoStatus">
                         <mat-option value="APTO">APTO</mat-option>
                         <mat-option value="NO APTO">NO APTO</mat-option>
@@ -727,6 +729,7 @@
                     </mat-form-field>
                   </div>
                 </div>
+                
 
 
 

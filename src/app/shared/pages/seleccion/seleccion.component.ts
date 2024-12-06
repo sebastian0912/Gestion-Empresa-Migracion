@@ -78,15 +78,15 @@ export class SeleccionComponent implements OnInit {
   vacantesForm: FormGroup;
   mostrarObservacion: boolean = false; // Controla la visibilidad del campo de observación
   observacion: string = ''; // Almacena la observación escrita por el usuario
-
+  idvacante = '';
   typeMap: { [key: string]: number } = {
     eps: 7,
     policivos: 6,
     procuraduria: 3,
     contraloria: 4,
     medidasCorrectivas: 10,
-    afp: 19,
-    ramaJudicial: 20,
+    afp: 11,
+    ramaJudicial: 12,
     sisben: 8,
     ofac: 5,
   };
@@ -406,7 +406,7 @@ export class SeleccionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
-
+  
     this.seleccionService.getUser().then(user => {
       if (user) {
         const abreviaciones: { [key: string]: string } = {
@@ -427,36 +427,70 @@ export class SeleccionComponent implements OnInit {
           'TOCANCIPÁ': 'TOC',
           'USME': 'USM',
         };
-
-        // Asegurarte de que user.sucursalde es string
+  
+        // Asegurar que `user.sucursalde` es string
         const sede: string = user.sucursalde;
         this.sedeLogin = sede;
         this.sede = abreviaciones[sede] || sede;
       }
     });
-
+  
+    // Cargar lista completa de exámenes disponibles
+    this.filteredExamOptions = [
+      'Exámen Ingreso',
+      'Colinesterasa',
+      'Glicemia Basal',
+      'Perfil lípidico',
+      'Visiometria',
+      'Optometría',
+      'Audiometría',
+      'Espirometría',
+      'Sicometrico',
+      'Frotis de uñas',
+      'Frotis de garganta',
+      'Cuadro hematico',
+      'Creatinina',
+      'TGO',
+      'Coprológico',
+      'Osteomuscular',
+      'Quimico (Respiratorio - Dermatologico)',
+      'Tegumentaria',
+      'Cardiovascular',
+      'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)',
+      'Electrocardiograma (Sólo aplica para mayores de 45 años)',
+      'Examen Médico',
+      'HEPATITIS A Y B',
+      'TETANO VACUNA T-D',
+      'Exámen médico integral definido para conductores'
+    ];
+  
     // Suscribirse a los cambios en el campo "cargo"
     this.formGroup2.get('cargo')?.valueChanges.subscribe(cargo => {
       this.updateExamOptions(cargo);
     });
-
-    // Suscripción para actualizar el array de selects dinámicos cuando cambia el valor
-    this.formGroup3.get('selectedExams')?.valueChanges.subscribe(selectedExams => {
-      this.updateSelectedExamsArray(selectedExams);
-    });
-
+  
+    // Inicializar con el primer cargo (si aplica)
+    const cargoInicial = this.formGroup2.get('cargo')?.value;
+    if (cargoInicial) {
+      this.updateExamOptions(cargoInicial);
+    }
   }
 
   updateExamOptions(cargo: string): void {
     const labor = this.laborExams.find(l => l.labor === cargo);
-    this.filteredExamOptions = labor ? labor.exams : [];
-    this.formGroup3.get('selectedExams')?.setValue([]); // Limpiar la selección actual de exámenes
+    const preselectedExams = labor ? labor.exams : [];
+    
+    // Preseleccionar los exámenes correspondientes al cargo
+    this.formGroup3.get('selectedExams')?.setValue(preselectedExams);
+  
+    // Actualizar el FormArray
+    this.updateSelectedExamsArray(preselectedExams);
   }
-
+  
   get selectedExamsArray() {
     return this.formGroup3.get('selectedExamsArray') as FormArray;
   }
-
+  
   // Método para actualizar el FormArray de acuerdo a los exámenes seleccionados
   updateSelectedExamsArray(selectedExams: string[]): void {
     this.selectedExamsArray.clear(); // Limpiar el array antes de agregar los nuevos controles
@@ -540,7 +574,8 @@ export class SeleccionComponent implements OnInit {
 
     // Si los datos de la vacante existen, actualizar el formulario directamente
     if (vacante) {
-      console.log('Vacante seleccionada:', vacante);
+      this.idvacante = vacante.id;
+      console.log('Vacante seleccionada:', this.idvacante);
       // imprimir hora de prueba tecnica
       this.formGroup2.patchValue({
         centroCosto: vacante.Localizaciondelavacante || '',
@@ -553,8 +588,6 @@ export class SeleccionComponent implements OnInit {
 
       this.vacantesService.obtenerDetalleLaboral(vacante.Localizaciondelavacante, vacante.finca, vacante.Cargovacante_id).subscribe((response: any) => {
         if (response) {
-          console.log('Detalle laboral:', vacante.fechaIngreso);
-
           let valorT = 0;
 
           // Verificar si auxilio_transporte NO es "No" ni "NO"
@@ -1152,6 +1185,8 @@ export class SeleccionComponent implements OnInit {
 
   // Método para imprimir los datos de los formularios
   imprimirEntrevistaPrueba(): void {
+    this.formGroup2.value.vacante = this.idvacante;
+    console.log('Formulario de Examen de Salud Ocupacional:', this.idvacante);
     this.seleccionService.crearSeleccionParteDosCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
       response => {
         if (response.message === 'success') {
@@ -1220,10 +1255,22 @@ export class SeleccionComponent implements OnInit {
 
     this.seleccionService.crearSeleccionParteCuatroCandidato(this.formGroup4.value, this.cedula, this.codigoContrato).subscribe(
       response => {
-        console.log('Respuesta exitosa Parte 4:', response);
+        if (response.message === 'success') {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Datos guardados exitosamente',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
       error => {
-        console.error('Error en la solicitud Parte 4:', error);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Error al guardar los datos',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     );
   }

@@ -43,6 +43,13 @@ mat-card:nth-child(1) {
     margin: 5px;
 }
 
+.example-full-width4 {
+    width: 47%;
+    margin: 5px;
+}
+
+
+
 mat-card:nth-child(2) {
     width: 60%;
     margin: 10px;
@@ -225,4 +232,12 @@ mat-card-subtitle {
         margin: 5px;
     }
 
+}
+
+
+
+.campo-validar {
+    background-color: yellow; /* Fondo amarillo */
+    padding: 10px; /* Opcional: Espaciado para mejor apariencia */
+    border-radius: 5px; /* Opcional: Bordes redondeados */
 }

@@ -113,7 +113,9 @@ export class SeleccionService {
       area_entrevista: formData.areaEntrevista,
       cargo: formData.cargo,
       centro_costo_entrevista: formData.centroCosto,
-      jwt: this.getToken()
+      jwt: this.getToken(),
+      vacante: formData.vacante,
+
     };
     console.log('Data:', requestData);
 

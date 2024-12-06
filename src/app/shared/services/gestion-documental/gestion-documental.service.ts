@@ -48,11 +48,14 @@ export class GestionDocumentalService {
     formData.append('owner_id', owner_id); // Cédula
     formData.append('type', type.toString()); // Tipo de documento (entero)
     formData.append('file', file); // Archivo PDF
-
     // Solo agregar el número de contrato si está presente
     if (contract_number) {
       formData.append('contract_number', contract_number);
     }
+    // imprimir el formData para ver que se está enviando
+    formData.forEach((value, key) => {
+      console.log('key : ' + key + ', value : ' + value);
+    });
 
     const headers = this.createAuthorizationHeader();
 

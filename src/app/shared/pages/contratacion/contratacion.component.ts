@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
-import { NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { catchError, elementAt, forkJoin, of } from 'rxjs';
@@ -25,7 +25,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { GestionDocumentalService } from '../../services/gestion-documental/gestion-documental.service';
-import { VetadosService } from '../../services/vetados/vetados.service';
 
 @Component({
   selector: 'app-contratacion',
@@ -61,6 +60,7 @@ export class ContratacionComponent implements OnInit {
   sede: string = '';
   sedeLogin: string = '';
   cedula: string = ''; // Variable to store the cedula input
+  nombreEmpresa: string = ''; // Variable to store the company name
   // Formularios 
   formGroup1!: FormGroup;
   formGroup2!: FormGroup;
@@ -82,7 +82,6 @@ export class ContratacionComponent implements OnInit {
   datosParte4!: FormGroup;
   pagoTransporteForm!: FormGroup;
   referenciasForm!: FormGroup;
-  informacionPersonalForm!: FormGroup;
   // Variables de ayuda
   filteredExamOptions: string[] = [];
 
@@ -284,8 +283,13 @@ export class ContratacionComponent implements OnInit {
     medidasCorrectivas: 10,
     afp: 11,
     ramaJudicial: 12,
-    sisben : 8,
-    ofac : 5,
+    sisben: 8,
+    ofac: 5,
+    personal1: 16,
+    personal2: 16,
+    familiar1: 17,
+    familiar2: 17,
+    traslado: 18,
   };
 
   antecedentesEstados: string[] = [
@@ -297,6 +301,45 @@ export class ContratacionComponent implements OnInit {
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
 
   ngOnInit(): void {
+    // Cargar lista completa de exámenes disponibles
+    this.filteredExamOptions = [
+      'Exámen Ingreso',
+      'Colinesterasa',
+      'Glicemia Basal',
+      'Perfil lípidico',
+      'Visiometria',
+      'Optometría',
+      'Audiometría',
+      'Espirometría',
+      'Sicometrico',
+      'Frotis de uñas',
+      'Frotis de garganta',
+      'Cuadro hematico',
+      'Creatinina',
+      'TGO',
+      'Coprológico',
+      'Osteomuscular',
+      'Quimico (Respiratorio - Dermatologico)',
+      'Tegumentaria',
+      'Cardiovascular',
+      'Trabajo en alturas (Incluye test para detección de fobia a las alturas: El AQ (Acrophobia Questionnaire) de Cohen)',
+      'Electrocardiograma (Sólo aplica para mayores de 45 años)',
+      'Examen Médico',
+      'HEPATITIS A Y B',
+      'TETANO VACUNA T-D',
+      'Exámen médico integral definido para conductores'
+    ];
+
+    // Suscribirse a los cambios en el campo "cargo"
+    this.formGroup2.get('cargo')?.valueChanges.subscribe(cargo => {
+      this.updateExamOptions(cargo);
+    });
+
+    // Inicializar con el primer cargo (si aplica)
+    const cargoInicial = this.formGroup2.get('cargo')?.value;
+    if (cargoInicial) {
+      this.updateExamOptions(cargoInicial);
+    }
 
   }
 
@@ -313,7 +356,6 @@ export class ContratacionComponent implements OnInit {
     private vacantesService: VacantesService,
     private seleccionService: SeleccionService,
     private gestionDocumentalService: GestionDocumentalService,
-    private vetadosService: VetadosService
   ) {
 
     this.datosPersonales = this.fb.group({
@@ -470,8 +512,8 @@ export class ContratacionComponent implements OnInit {
       procuraduria: [''],
       contraloria: [''],
       ramaJudicial: [''],
-      sisben : [''],
-      ofac : [''],
+      sisben: [''],
+      ofac: [''],
       medidasCorrectivas: [''],
       area_aplica: ['']
     });
@@ -523,30 +565,118 @@ export class ContratacionComponent implements OnInit {
     });
 
     this.referenciasForm = this.fb.group({
-      parentescoReferencia1: [''],
-      conoceReferencia1: [''],
-      refiereReferencia1: [''],
-      parentescoReferencia2: [''],
-      conoceReferencia2: [''],
-      refiereReferencia2: [''],
-      referenciaronLaboral: ['']
+      familiar1: [''],
+      familiar2: [''],
+      personal1: [''],
+      personal2: [''],
     });
 
-    this.informacionPersonalForm = this.fb.group({
-      validacionFechaExpedicion: [''],
-      validacionFechaNacimiento: [''],
-      primerApellido: [''],
-      segundoApellido: [''],
-      primerNombre: [''],
-      segundoNombre: ['']
+    // Inicializar el FormGroup de traslados
+    this.trasladosForm = this.fb.group({
+      opcion_traslado_eps: ['no'],
+      eps_a_trasladar: [''],
+      traslado: [''],
     });
 
-        // Inicializar el FormGroup de traslados
-        this.trasladosForm = this.fb.group({
-          deseaTrasladarse: ['no'],
-          epsDestino: ['']
-        });
+  }
 
+  descargarArchivo() {
+    let archivo: string;
+    console.log('Empresa:', this.nombreEmpresa);
+
+    if (this.nombreEmpresa === 'APOYO LABORAL TS SAS') {
+      console.log('Descargando archivo de APOYO LABORAL TS SAS');
+      archivo = 'APOYO_LABORAL_CARTA_AUTORIZACION_TRASLADO_2024.pdf';
+    } else if (this.nombreEmpresa === 'TU ALIANZA SAS') {
+      console.log('Descargando archivo de TU ALIANZA SAS');
+      archivo = 'TU_ALIANZA_CARTA_AUTORIZACION_TRASLADO_2024.pdf';
+    } else {
+      Swal.fire({
+        title: '¡Error!',
+        text: 'Sucedio un problema.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+      });
+      return;
+    }
+
+    const url = `./public/comun/Docs/${archivo}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = archivo;
+    link.click();
+  }
+
+  onFileSelected(event: Event, key: string) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.uploadedFiles[key] = { file, fileName: file.name };
+    }
+  }
+
+  async validarCampos() {
+    // Helper para formatear fechas en dd/mm/yyyy
+    const formatFecha = (fecha: string | Date | null): string => {
+      if (!fecha) return '';
+      const dateObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
+      const dia = String(dateObj.getDate()).padStart(2, '0');
+      const mes = String(dateObj.getMonth() + 1).padStart(2, '0'); // Meses comienzan en 0
+      const anio = dateObj.getFullYear();
+      return `${dia}/${mes}/${anio}`;
+    };
+
+    // Helper para formatear fecha y hora local en dd/mm/yyyy hh:mm:ss
+    const formatFechaHora = (fecha: string | Date): string => {
+      const dateObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
+      const dia = String(dateObj.getDate()).padStart(2, '0');
+      const mes = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const anio = dateObj.getFullYear();
+      const horas = String(dateObj.getHours()).padStart(2, '0');
+      const minutos = String(dateObj.getMinutes()).padStart(2, '0');
+      const segundos = String(dateObj.getSeconds()).padStart(2, '0');
+      return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
+    };
+
+    // Obtener datos del local storage
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const nombreQuienValidoInformacion = `${userData.primer_nombre || ''} ${userData.primer_apellido || ''}`.trim();
+
+    // Obtén los valores del formulario y formatea las fechas
+    const payload = {
+      numeroCedula: this.cedula, // Asegúrate de obtener la cédula del formulario o componente
+      codigoContrato: this.codigoContrato, // Asegúrate de obtener el código de contrato
+      nombreQuienValidoInformacion, // Usa el nombre completo obtenido del local storage
+      fechaHoraValidacion: formatFechaHora(new Date()), // Formatea la fecha con hora local
+      primerApellido: this.datosPersonales.get('primer_apellido')?.value,
+      segundoApellido: this.datosPersonales.get('segundo_apellido')?.value,
+      primerNombre: this.datosPersonales.get('primer_nombre')?.value,
+      segundoNombre: this.datosPersonales.get('segundo_nombre')?.value,
+      fechaNacimiento: formatFecha(this.datosPersonales.get('fecha_nacimiento')?.value),
+      fechaExpedicionCC: formatFecha(this.datosPersonales.get('fecha_expedicion_cc')?.value),
+    };
+
+    console.log('Payload:', payload);
+
+    // Llama al servicio
+    try {
+      const response = await this.contratacionService.validarInformacionContratacion(payload);
+      console.log('Respuesta del servidor:', response);
+      Swal.fire({
+        title: '¡Información validada!',
+        text: 'La información ha sido validada correctamente.',
+        icon: 'success',
+        confirmButtonText: 'Ok',
+      });
+    } catch (error) {
+      console.error('Error al enviar la información:', error);
+      Swal.fire({
+        title: '¡Error!',
+        text: 'Hubo un error al enviar la información.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+      });
+    }
   }
 
   get hijosArray(): FormArray {
@@ -859,25 +989,25 @@ export class ContratacionComponent implements OnInit {
       // Mostrar el diálogo de confirmación
       Swal.fire({
         title: '¡Atención!',
-        html: 'Este usuario ya tiene un proceso de selección con el código de contrato <b>' + this.seleccion.codigo_contrato + '</b>. ¿Deseas crear otro o seguir con este?',
+        html: 'Se procedera con el codigo de contrato <b>' + this.seleccion.codigo_contrato + '</b>. de este usuario',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Crear otro',
-        cancelButtonText: 'Seguir con este'
+        confirmButtonText: 'Continuar', // Texto del único botón
       }).then((result) => {
         if (result.isConfirmed) {
-          this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
-            this.codigoContrato = response.codigo_contrato;
-            Swal.fire({
-              title: '¡Código de contrato generado!',
-              text: 'El código de contrato generado es ' + response.codigo_contrato,
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
+          this.codigoContrato = this.seleccion.codigo_contrato;
+          this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((vacante: any) => {
+            this.nombreEmpresa = vacante.publicacion[0].empresaQueSolicita_id;
+            console.log('Nombre de la empresa:', this.nombreEmpresa);
           });
 
-        } else {
-          this.codigoContrato = this.seleccion.codigo_contrato;
+          this.contratacionService.traerDatosContratacion(this.cedula, this.codigoContrato).subscribe((datosContratacion: any) => {
+            if (datosContratacion) {
+              console.log(datosContratacion);
+            } else {
+              console.error('No se encontraron datos de contratación');
+            }
+          });
+
 
           // Ahora que ya se ha asignado this.codigoContrato, puedes llamar a obtenerDocumentosPorTipo
           if (this.codigoContrato) {
@@ -919,8 +1049,6 @@ export class ContratacionComponent implements OnInit {
               });
           }
 
-
-
           // Llenar los campos del formulario de Datos Generales (formGroup1)
           this.formGroup1.patchValue({
             eps: this.seleccion.eps || '',
@@ -932,7 +1060,6 @@ export class ContratacionComponent implements OnInit {
             medidasCorrectivas: this.seleccion.medidas_correctivas || '',
             area_aplica: this.seleccion.area_aplica || ''
           });
-
 
           // Llenar los campos del formulario con los datos de la selección
           this.formGroup2.patchValue({
@@ -966,7 +1093,6 @@ export class ContratacionComponent implements OnInit {
 
           // Establecer el FormArray en el formulario
           this.formGroup3.setControl('selectedExamsArray', formArray);
-
 
           // Llenar los campos del formulario de Contratación (formGroup4)
           this.formGroup4.patchValue({
@@ -1002,7 +1128,6 @@ export class ContratacionComponent implements OnInit {
       //Swal.fire('Archivo subido', `Archivo ${file.name} subido para ${campo}`, 'success');
     }
   }
-
 
   // Método para abrir un archivo en una nueva pestaña
   verArchivo(campo: string) {
@@ -1103,13 +1228,70 @@ export class ContratacionComponent implements OnInit {
   subirTodosLosArchivos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       console.log('Subiendo archivos...', this.uploadedFiles);
-      const totalFiles = Object.keys(this.uploadedFiles).length; // Total de archivos a subir
+
+      // Filtrar los archivos, ignorando la clave "traslado"
+      const filteredFiles = Object.keys(this.uploadedFiles)
+        .filter((key) => key !== 'traslado')
+        .map((key) => ({ campo: key, ...this.uploadedFiles[key] })); // Crea un array de archivos a subir
+
+      if (filteredFiles.length === 0) {
+        console.log('No hay archivos para subir.');
+        resolve(true); // No hay archivos, se resuelve la promesa inmediatamente
+        return;
+      }
+
+      // Crear un array de promesas para subir los archivos
+      const uploadPromises = filteredFiles.map(({ campo, file, fileName }) => {
+        const title = fileName; // El título será el nombre del archivo PDF
+        const type = this.typeMap[campo] || 3; // Si no hay tipo definido, usar 3 como predeterminado
+
+        // Llamar al servicio de subida
+        return this.gestionDocumentalService
+          .guardarDocumento(title, this.cedula, type, file)
+          .toPromise() // Convertir el Observable en una Promesa
+          .then((response) => {
+            console.log(`Archivo ${fileName} subido con éxito.`);
+            return response; // Devuelve la respuesta para posibles usos
+          })
+          .catch((error) => {
+            console.error(`Error al subir el archivo para ${campo}`, error);
+            throw new Error(`Error al subir el archivo para ${campo}`); // Propaga el error
+          });
+      });
+
+      // Manejar todas las promesas
+      Promise.all(uploadPromises)
+        .then(() => {
+          console.log('Todos los archivos se han subido con éxito.');
+          resolve(true); // Resolución exitosa de la promesa
+        })
+        .catch((error) => {
+          console.error('Error al subir los archivos:', error);
+          reject(error.message || 'Error al subir los archivos.'); // Rechaza la promesa en caso de error
+        });
+    });
+  }
+
+  // Método para subir solo los archivos de referencias personales y familiares
+  subirReferenciasArchivos(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      console.log('Subiendo archivos de referencias...', this.uploadedFiles);
+
+      // Filtrar los campos relevantes: personal1, personal2, familiar1, familiar2
+      const referenciasKeys = ['personal1', 'personal2', 'familiar1', 'familiar2'];
+      const archivosFiltrados = Object.keys(this.uploadedFiles).filter(key => referenciasKeys.includes(key));
+
+      const totalFiles = archivosFiltrados.length; // Total de archivos relevantes a subir
       let filesUploaded = 0; // Contador de archivos subidos
 
-      Object.keys(this.uploadedFiles).forEach((campo) => {
+      if (totalFiles === 0) {
+        resolve(true); // No hay archivos relevantes que subir, resolver inmediatamente
+        return;
+      }
+
+      archivosFiltrados.forEach((campo) => {
         const { file, fileName } = this.uploadedFiles[campo]; // Obtén el archivo y su nombre
         const title = fileName; // El título será el nombre del archivo PDF
-
 
         // Obtener el tipo correspondiente del mapa
         const type = this.typeMap[campo] || 3; // Si no hay tipo definido para el campo, se usa 3 como valor predeterminado
@@ -1135,11 +1317,49 @@ export class ContratacionComponent implements OnInit {
     });
   }
 
+  subirArchivoTraslados(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      console.log('Subiendo archivos de referencias...', this.uploadedFiles);
 
+      // Filtrar los campos relevantes: personal1, personal2, familiar1, familiar2
+      const referenciasKeys = ['traslado'];
+      const archivosFiltrados = Object.keys(this.uploadedFiles).filter(key => referenciasKeys.includes(key));
 
+      const totalFiles = archivosFiltrados.length; // Total de archivos relevantes a subir
+      let filesUploaded = 0; // Contador de archivos subidos
 
+      if (totalFiles === 0) {
+        resolve(true); // No hay archivos relevantes que subir, resolver inmediatamente
+        return;
+      }
 
+      archivosFiltrados.forEach((campo) => {
+        const { file, fileName } = this.uploadedFiles[campo]; // Obtén el archivo y su nombre
+        const title = fileName; // El título será el nombre del archivo PDF
 
+        // Obtener el tipo correspondiente del mapa
+        const type = this.typeMap[campo] || 3; // Si no hay tipo definido para el campo, se usa 3 como valor predeterminado
+
+        // Llamar al servicio para subir cada archivo
+        this.gestionDocumentalService
+          .guardarDocumento(title, this.cedula, type, file, this.codigoContrato)
+          .subscribe(
+            (response) => {
+              filesUploaded += 1;
+
+              // Si todos los archivos se han subido, resolvemos la promesa
+              if (filesUploaded === totalFiles) {
+                resolve(true); // Todos los archivos se subieron correctamente
+              }
+            },
+            (error) => {
+              console.error(error);
+              reject(`Error al subir el archivo para ${campo}`);
+            }
+          );
+      });
+    });
+  }
 
   // Método para imprimir los datos de los formularios
   imprimirEntrevistaPrueba(): void {
@@ -1254,23 +1474,79 @@ export class ContratacionComponent implements OnInit {
     return Math.round((filledFields / totalFields) * 100);
   }
 
+  updateExamOptions(cargo: string): void {
+    const labor = this.laborExams.find(l => l.labor === cargo);
+    const preselectedExams = labor ? labor.exams : [];
+
+    // Preseleccionar los exámenes correspondientes al cargo
+    this.formGroup3.get('selectedExams')?.setValue(preselectedExams);
+
+    // Actualizar el FormArray
+    this.updateSelectedExamsArray(preselectedExams);
+  }
+
   get selectedExamsArray() {
     return this.formGroup3.get('selectedExamsArray') as FormArray;
   }
+
+  // Método para actualizar el FormArray de acuerdo a los exámenes seleccionados
+  updateSelectedExamsArray(selectedExams: string[]): void {
+    this.selectedExamsArray.clear(); // Limpiar el array antes de agregar los nuevos controles
+    selectedExams.forEach(() => {
+      this.selectedExamsArray.push(this.fb.group({
+        aptoStatus: ['', Validators.required]
+      }));
+    });
+  }
+
 
 
 
   cargarPagoTransporte() {
     console.log('Información de Pago y Transporte:', this.pagoTransporteForm.value);
   }
-  
+
   cargarReferencias() {
     console.log('Referencias Personales:', this.referenciasForm.value);
+
+    // Mostrar Swal de carga
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Estamos procesando las referencias y subiendo los archivos. Por favor, espera.',
+      icon: 'info',
+      allowOutsideClick: false, // Evitar que el usuario cierre el Swal
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el indicador de carga
+      }
+    });
+
+    // Llamar al método para subir solo los archivos relevantes
+    this.subirReferenciasArchivos()
+      .then((allFilesUploaded) => {
+        if (allFilesUploaded) {
+          Swal.close(); // Cerrar el Swal de carga
+          // Mostrar mensaje de éxito
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Referencias y archivos guardados exitosamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
+      })
+      .catch((error) => {
+        Swal.close(); // Cerrar el Swal de carga
+        // Mostrar mensaje de error si algo falla
+        Swal.fire({
+          title: 'Error',
+          text: `Hubo un error al subir los archivos: ${error}`,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+      });
   }
-  
-  cargarInformacionPersonal() {
-    console.log('Información Personal:', this.informacionPersonalForm.value);
-  }
+
+
 
   onTrasladoChange(event: any) {
     const trasladoSeleccionado = event.value;
@@ -1282,7 +1558,57 @@ export class ContratacionComponent implements OnInit {
 
   cargarTraslados() {
     console.log('Información de Traslados:', this.trasladosForm.value);
+    const cedula = this.cedula;
+    const codigoContrato = this.codigoContrato;
+    // agregar this.cedula y this.codigoContrato a la información del traslado
+    this.trasladosForm.value.numerodeceduladepersona = cedula;
+    this.trasladosForm.value.codigo_contrato = codigoContrato;
+    (async () => {
+      try {
+        const response = await this.contratacionService.actualizarProcesoContratacion(this.trasladosForm.value);
+        console.log('Respuesta exitosa:', response);
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+      }
+    })();
+    
+
+    // Mostrar Swal de carga
+    Swal.fire({
+      title: 'Cargando...',
+      icon: 'info',
+      text: 'Estamos procesando la solicitud de traslado y subiendo el archivo. Por favor, espera.',
+      allowOutsideClick: false, // Evitar que el usuario cierre el Swal
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el indicador de carga
+      }
+    });
+
+    // Llamar al método para subir solo los archivos relevantes
+    this.subirArchivoTraslados()
+      .then((allFilesUploaded) => {
+        if (allFilesUploaded) {
+          Swal.close(); // Cerrar el Swal de carga
+          // Mostrar mensaje de éxito
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Solicitud de traslado guardado exitosamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
+      })
+      .catch((error) => {
+        Swal.close(); // Cerrar el Swal de carga
+        // Mostrar mensaje de error si algo falla
+        Swal.fire({
+          title: 'Error',
+          text: `Hubo un error al subir los archivos: ${error}`,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+      });
   }
 
-  
+
 }

@@ -57,6 +57,22 @@ export class ContratacionService {
     );
   }
 
+  // Servicio para traer datos de contratación
+  public traerDatosContratacion(cedula: string, contrato: string): Observable<any> {
+    // Crear el encabezado con la autorización
+    const headers = this.createAuthorizationHeader();
+
+    // Construir la URL con los parámetros
+    const url = `${this.apiUrl}/contratacion/traerDatosContratacion/${cedula}/${contrato}`;
+
+    // Realizar la solicitud GET
+    return this.http.get(url, { headers }).pipe(
+      map((response: any) => response), // Mapear la respuesta directamente
+      catchError(this.handleError) // Manejar errores
+    );
+  }
+
+
 
 
 
@@ -286,6 +302,36 @@ export class ContratacionService {
     }
   }
 
+  // actualizarProcesoContratacion (data)
+  async actualizarProcesoContratacion(data: any): Promise<any> {
+    const token = this.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const urlcompleta = `${this.apiUrl}/contratacion/actualizarProcesoContratacion/`;
+
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+
+    const data2 = {
+      ...data,
+      jwt: token
+    };
+    delete data2.traslado; // Eliminar campo innecesario
+    console.log(data2);
+
+    try {
+      const response = await firstValueFrom(this.http.post<string>(urlcompleta, data2, { headers }).pipe(
+        catchError(this.handleError)
+      ));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
   // --------------------------------------------------------------------------------------------
   // ------------------------- Métodos para el módulo de reportes --------------------------------
 
@@ -320,18 +366,18 @@ export class ContratacionService {
 
   public obtenerTodosLosReportes(nombre: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
-    
+
     // Usar una sola ruta para obtener todos o filtrar por nombre
-    const url = nombre === 'todos' 
-      ? `${this.apiUrl}/reportes/obtenerReportes` 
+    const url = nombre === 'todos'
+      ? `${this.apiUrl}/reportes/obtenerReportes`
       : `${this.apiUrl}/reportes/obtenerReportes/${nombre}`;
-    
+
     return this.http.get(url, { headers }).pipe(
       map((response: any) => response),  // Mapea la respuesta
       catchError(this.handleError)       // Manejo de errores
     );
   }
-  
+
 
   public obtenerReportesPorFechas(start: string, end: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
@@ -431,6 +477,45 @@ export class ContratacionService {
       map((response: Blob) => response),  // Mapea la respuesta a Blob
       catchError(this.handleError)        // Manejo de errores
     );
+  }
+
+
+
+  //--------------------------------------------------------------------------------------------
+  // ------------------------- Métodos para validar informacion contratacion --------------------------------
+  // --------------------------------------------------------------------------------------------
+
+
+  // Validar información de contratación
+  async validarInformacionContratacion(payload: {
+    numeroCedula: string;
+    codigoContrato: string;
+    nombreQuienValidoInformacion: string;
+    fechaHoraValidacion: string;
+    primerApellido: string;
+    segundoApellido: string;
+    primerNombre: string;
+    segundoNombre: string;
+    fechaNacimiento: string;
+    fechaExpedicionCC: string;
+  }): Promise<any> {
+    const urlcompleta = `${this.apiUrl}/contratacion/datosCandidatoYProceso/`; // Endpoint correcto de tu API
+
+    const headers = this.createAuthorizationHeader();
+
+    try {
+      const response = await firstValueFrom(
+        this.http.post(urlcompleta, payload, { headers }).pipe(
+          catchError((error) => {
+            console.error('Error en la solicitud:', error);
+            return throwError(() => new Error('Error al validar información de contratación'));
+          })
+        )
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
 

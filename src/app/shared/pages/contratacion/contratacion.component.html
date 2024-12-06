@@ -26,9 +26,11 @@
                             <mat-panel-title>
                                 Datos Personales
                             </mat-panel-title>
+                            <button mat-flat-button (click)="validarCampos()">Validar</button>
                         </mat-expansion-panel-header>
                         <form [formGroup]="datosPersonales">
                             <div class="info-personal">
+
                                 <mat-form-field class="example-full-width3">
                                     <mat-label>Tipo de Documento</mat-label>
                                     <input matInput formControlName="tipodedocumento" readonly />
@@ -39,24 +41,24 @@
                                     <input matInput formControlName="numerodeceduladepersona" readonly />
                                 </mat-form-field>
 
-                                <mat-form-field class="example-full-width3">
+                                <mat-form-field class="example-full-width3 campo-validar">
                                     <mat-label>Primer Apellido</mat-label>
-                                    <input matInput formControlName="primer_apellido" readonly />
+                                    <input matInput formControlName="primer_apellido" />
                                 </mat-form-field>
 
-                                <mat-form-field class="example-full-width3">
+                                <mat-form-field class="example-full-width3 campo-validar">
                                     <mat-label>Segundo Apellido</mat-label>
-                                    <input matInput formControlName="segundo_apellido" readonly />
+                                    <input matInput formControlName="segundo_apellido" />
                                 </mat-form-field>
 
-                                <mat-form-field class="example-full-width3">
+                                <mat-form-field class="example-full-width3 campo-validar">
                                     <mat-label>Primer Nombre</mat-label>
-                                    <input matInput formControlName="primer_nombre" readonly />
+                                    <input matInput formControlName="primer_nombre" />
                                 </mat-form-field>
 
-                                <mat-form-field class="example-full-width3">
+                                <mat-form-field class="example-full-width3 campo-validar">
                                     <mat-label>Segundo Nombre</mat-label>
-                                    <input matInput formControlName="segundo_nombre" readonly />
+                                    <input matInput formControlName="segundo_nombre" />
                                 </mat-form-field>
 
                                 <mat-form-field class="example-full-width3">
@@ -104,9 +106,12 @@
                                     <input matInput formControlName="barrio" readonly />
                                 </mat-form-field>
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Fecha de Expedición de la Cédula</mat-label>
-                                    <input matInput formControlName="fecha_expedicion_cc" readonly />
+                                <mat-form-field class="example-full-width3 campo-validar">
+                                    <mat-label>Fecha de Nacimiento</mat-label>
+                                    <input matInput [matDatepicker]="pickerNacimiento"
+                                        formControlName="fecha_nacimiento" />
+                                    <mat-datepicker-toggle matSuffix [for]="pickerNacimiento"></mat-datepicker-toggle>
+                                    <mat-datepicker #pickerNacimiento></mat-datepicker>
                                 </mat-form-field>
 
                                 <mat-form-field class="example-full-width3">
@@ -164,9 +169,12 @@
                                     <input matInput formControlName="donde_le_gustaria_vivir" readonly />
                                 </mat-form-field>
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Fecha de Nacimiento</mat-label>
-                                    <input matInput formControlName="fecha_nacimiento" readonly />
+                                <mat-form-field class="example-full-width3 campo-validar">
+                                    <mat-label>Fecha de Expedición de la Cédula</mat-label>
+                                    <input matInput [matDatepicker]="pickerExpedicion"
+                                        formControlName="fecha_expedicion_cc" />
+                                    <mat-datepicker-toggle matSuffix [for]="pickerExpedicion"></mat-datepicker-toggle>
+                                    <mat-datepicker #pickerExpedicion></mat-datepicker>
                                 </mat-form-field>
 
                                 <mat-form-field class="example-full-width3">
@@ -1031,21 +1039,23 @@
 
 
                             <!-- Select múltiple para elegir exámenes -->
-                            <mat-form-field class="example-full-width3" class="example-full-width">
+                            <mat-form-field appearance="fill" class="example-full-width">
                                 <mat-label>Seleccione los exámenes</mat-label>
                                 <mat-select formControlName="selectedExams" multiple>
-                                    <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">{{ exam
-                                        }}</mat-option>
+                                    <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">
+                                        {{ exam }}
+                                    </mat-option>
                                 </mat-select>
                             </mat-form-field>
 
 
                             <!-- Campos dinámicos para cada examen seleccionado -->
                             <div formArrayName="selectedExamsArray">
-                                <div *ngFor="let exam of selectedExamsArray.controls; let i = index"
+                                <div *ngFor="let exam of formGroup3.get('selectedExams')?.value; let i = index"
                                     [formGroupName]="i">
-                                    <mat-form-field class="example-full-width3" class="example-full-width">
-                                        <mat-label>{{ examOptions[i] }}</mat-label>
+                                    <mat-form-field appearance="fill" class="example-full-width">
+                                        <mat-label>{{ exam }}</mat-label>
+                                        <!-- Usa el nombre del examen seleccionado directamente -->
                                         <mat-select formControlName="aptoStatus">
                                             <mat-option value="APTO">APTO</mat-option>
                                             <mat-option value="NO APTO">NO APTO</mat-option>
@@ -1210,102 +1220,109 @@
                                     <input matInput formControlName="porcentajeARL" type="number" step="0.01">
                                 </mat-form-field>
 
-                                <button mat-flat-button
-                                    (click)="cargarPagoTransporte()">Cargar</button>
+                                <button mat-flat-button (click)="cargarPagoTransporte()">Cargar</button>
                             </div>
                         </mat-expansion-panel>
 
-                        <!-- Acordeón 2: Referencias Personales -->
+
+
+                        <!-- Referencias Personales -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
-                                <mat-panel-title>Referencias Personales</mat-panel-title>
+                                <mat-panel-title>Referencias Familiares y Personales</mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="referenciasForm">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Parentesco Referencia 1</mat-label>
-                                    <input matInput formControlName="parentescoReferencia1">
-                                </mat-form-field>
+                                <div class="input-container">
+                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar1"
+                                        aria-label="PDF options">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #pdfMenuFamiliar1="matMenu">
+                                        <button mat-menu-item (click)="verArchivo('familiar1')">Ver PDF</button>
+                                        <button mat-menu-item>
+                                            <label for="fileInputFamiliar1" style="cursor: pointer;">Subir PDF</label>
+                                        </button>
+                                        <input type="file" id="fileInputFamiliar1" style="display: none;"
+                                            (change)="subirArchivo($event, 'familiar1')" />
+                                    </mat-menu>
+                                    <mat-form-field appearance="fill" class="example-full-width">
+                                        <mat-label>Familiar 1</mat-label>
+                                        <input matInput formControlName="familiar1"
+                                            [value]="uploadedFiles['familiar1'] ? uploadedFiles['familiar1'].fileName : ''"
+                                            readonly />
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Hace Cuánto lo Conoce 1</mat-label>
-                                    <input matInput formControlName="conoceReferencia1">
-                                </mat-form-field>
+                                    </mat-form-field>
+                                </div>
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Cómo lo Refiere 1</mat-label>
-                                    <input matInput formControlName="refiereReferencia1">
-                                </mat-form-field>
+                                <!-- Referencia Familiar 2 -->
+                                <div class="input-container">
+                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar2"
+                                        aria-label="PDF options">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #pdfMenuFamiliar2="matMenu">
+                                        <button mat-menu-item (click)="verArchivo('familiar2')">Ver PDF</button>
+                                        <button mat-menu-item>
+                                            <label for="fileInputFamiliar2" style="cursor: pointer;">Subir PDF</label>
+                                        </button>
+                                        <input type="file" id="fileInputFamiliar2" style="display: none;"
+                                            (change)="subirArchivo($event, 'familiar2')" />
+                                    </mat-menu>
+                                    <mat-form-field appearance="fill" class="example-full-width">
+                                        <mat-label>Familiar 2</mat-label>
+                                        <input matInput formControlName="familiar1"
+                                            [value]="uploadedFiles['familiar2'] ? uploadedFiles['familiar2'].fileName : ''"
+                                            readonly />
+                                    </mat-form-field>
+                                </div>
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Parentesco Referencia 2</mat-label>
-                                    <input matInput formControlName="parentescoReferencia2">
-                                </mat-form-field>
+                                <!-- Referencia Personal 1 -->
+                                <div class="input-container">
+                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuPersonal1"
+                                        aria-label="PDF options">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #pdfMenuPersonal1="matMenu">
+                                        <button mat-menu-item (click)="verArchivo('personal1')">Ver PDF</button>
+                                        <button mat-menu-item>
+                                            <label for="fileInputPersonal1" style="cursor: pointer;">Subir PDF</label>
+                                        </button>
+                                        <input type="file" id="fileInputPersonal1" style="display: none;"
+                                            (change)="subirArchivo($event, 'personal1')" />
+                                    </mat-menu>
+                                    <mat-form-field appearance="fill" class="example-full-width">
+                                        <mat-label>Personal 1</mat-label>
+                                        <input matInput formControlName="familiar1"
+                                            [value]="uploadedFiles['personal1'] ? uploadedFiles['personal1'].fileName : ''"
+                                            readonly />
+                                    </mat-form-field>
+                                </div>
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Hace Cuánto lo Conoce 2</mat-label>
-                                    <input matInput formControlName="conoceReferencia2">
-                                </mat-form-field>
+                                <!-- Referencia Personal 2 -->
+                                <div class="input-container">
+                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuPersonal2"
+                                        aria-label="PDF options">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #pdfMenuPersonal2="matMenu">
+                                        <button mat-menu-item (click)="verArchivo('personal2')">Ver PDF</button>
+                                        <button mat-menu-item>
+                                            <label for="fileInputPersonal2" style="cursor: pointer;">Subir PDF</label>
+                                        </button>
+                                        <input type="file" id="fileInputPersonal2" style="display: none;"
+                                            (change)="subirArchivo($event, 'personal2')" />
+                                    </mat-menu>
+                                    <mat-form-field appearance="fill" class="example-full-width">
+                                        <mat-label>Personal 2</mat-label>
+                                        <input matInput formControlName="familiar1"
+                                            [value]="uploadedFiles['personal2'] ? uploadedFiles['personal2'].fileName : ''"
+                                            readonly />
+                                    </mat-form-field>
+                                </div>
 
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Cómo lo Refiere 2</mat-label>
-                                    <input matInput formControlName="refiereReferencia2">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Referenciaron Laboral</mat-label>
-                                    <input matInput formControlName="referenciaronLaboral">
-                                </mat-form-field>
 
                                 <button mat-flat-button (click)="cargarReferencias()">Cargar</button>
-                            </div>
-                        </mat-expansion-panel>
-
-                        <!-- Acordeón 3: Información Personal -->
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Información Personal</mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <div [formGroup]="informacionPersonalForm">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Fecha de Expedición</mat-label>
-                                    <input matInput [matDatepicker]="expedicionPicker"
-                                        formControlName="validacionFechaExpedicion" (focus)="expedicionPicker.open()">
-                                    <mat-datepicker-toggle matSuffix [for]="expedicionPicker"></mat-datepicker-toggle>
-                                    <mat-datepicker #expedicionPicker></mat-datepicker>
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Fecha de Nacimiento</mat-label>
-                                    <input matInput [matDatepicker]="nacimientoPicker"
-                                        formControlName="validacionFechaNacimiento" (focus)="nacimientoPicker.open()">
-                                    <mat-datepicker-toggle matSuffix [for]="nacimientoPicker"></mat-datepicker-toggle>
-                                    <mat-datepicker #nacimientoPicker></mat-datepicker>
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Primer Apellido</mat-label>
-                                    <input matInput formControlName="primerApellido">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Segundo Apellido</mat-label>
-                                    <input matInput formControlName="segundoApellido">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Primer Nombre</mat-label>
-                                    <input matInput formControlName="primerNombre">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Segundo Nombre</mat-label>
-                                    <input matInput formControlName="segundoNombre">
-                                </mat-form-field>
-
-                                <button mat-flat-button
-                                    (click)="cargarInformacionPersonal()">Cargar</button>
                             </div>
                         </mat-expansion-panel>
 
@@ -1316,30 +1333,58 @@
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="trasladosForm">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Desea Trasladarse?</mat-label>
-                                    <mat-select formControlName="deseaTrasladarse"
-                                        (selectionChange)="onTrasladoChange($event)">
-                                        <mat-option value="no" selected>No</mat-option>
-                                        <mat-option value="si">Sí</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-
-                                <!-- Campo de EPS solo visible si se selecciona "Sí" en deseaTrasladarse -->
-                                <div *ngIf="trasladosForm.get('deseaTrasladarse')?.value === 'si'">
-                                    <mat-form-field class="example-full-width3">
+                                <!-- Grupo para Desea Trasladarse -->
+                                <div class="form-group">
+                                    <mat-form-field class="example-full-width4">
+                                        <mat-label>¿Desea Trasladarse?</mat-label>
+                                        <mat-select formControlName="opcion_traslado_eps"
+                                            (selectionChange)="onTrasladoChange($event)">
+                                            <mat-option value="NO" selected>No</mat-option>
+                                            <mat-option value="SI">Sí</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <!-- Campo EPS visible solo si la respuesta es "Sí" -->
+                                    <mat-form-field class="example-full-width4"
+                                        *ngIf="trasladosForm.get('opcion_traslado_eps')?.value === 'SI'">
                                         <mat-label>Seleccione EPS</mat-label>
-                                        <mat-select formControlName="epsDestino">
-                                            <mat-option value="famisanar">Famisanar</mat-option>
-                                            <mat-option value="salud_total">Salud Total</mat-option>
-                                            <mat-option value="nueva_eps">Nueva EPS</mat-option>
+                                        <mat-select formControlName="eps_a_trasladar">
+                                            <mat-option value="FAMISANAR">Famisanar</mat-option>
+                                            <mat-option value="SALUD_TOTAL">Salud Total</mat-option>
+                                            <mat-option value="NUEVA_EPS">Nueva EPS</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
 
+
+                                <!-- Campo Traslado -->
+                                <div class="input-container">
+                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuTraslado"
+                                        aria-label="PDF options">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #pdfMenuTraslado="matMenu">
+                                        <button mat-menu-item (click)="verArchivo('traslado')">Ver PDF</button>
+                                        <button mat-menu-item>
+                                            <label for="fileInputTraslado" style="cursor: pointer;">Subir PDF</label>
+                                        </button>
+                                        <input type="file" id="fileInputTraslado" style="display: none;"
+                                            (change)="subirArchivo($event, 'traslado')" />
+                                        <button mat-menu-item (click)="descargarArchivo()">Descargar</button>
+                                    </mat-menu>
+                                    <mat-form-field appearance="fill" class="example-full-width">
+                                        <mat-label>Archivo Traslado</mat-label>
+                                        <input matInput formControlName="traslado"
+                                            [value]="uploadedFiles['traslado'] ? uploadedFiles['traslado'].fileName : ''"
+                                            readonly />
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- Botón para cargar los traslados -->
                                 <button mat-flat-button (click)="cargarTraslados()">Cargar</button>
                             </div>
+
                         </mat-expansion-panel>
+
 
 
                     </mat-accordion>

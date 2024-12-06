@@ -27,7 +27,6 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [
     RouterLink,
-    InfoCardComponent,
     MatTableModule,
     MatInputModule,
     MatFormFieldModule,

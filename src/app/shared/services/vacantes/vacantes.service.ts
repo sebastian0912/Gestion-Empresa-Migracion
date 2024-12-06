@@ -90,6 +90,15 @@ export class VacantesService {
     );
   }
 
+  // Obtener vacante por id
+  obtenerVacante(id: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/publicacion/publicaciones/${id}`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
   // -------------------------------------------------------------------
   // ----------------------- CENTROS DE COSTOS  ------------------------
   //--------------------------------------------------------------------
