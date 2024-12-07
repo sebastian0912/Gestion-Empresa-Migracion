@@ -1611,4 +1611,10 @@ export class ContratacionComponent implements OnInit {
   }
 
 
+  generacionDocumentos() {
+    console.log('Generación de documentos:');
+    window.location.href = "/generar-documentos"
+  }
+
+
 }

@@ -13,7 +13,6 @@
     margin-right: auto;
 }
 
-
 .seleccion {
     width: 100%;
     display: flex;
@@ -127,6 +126,31 @@ mat-card-subtitle {
 }
 
 
+.btn-with-arrow {
+    margin-top: 10pt;
+    float: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 180pt;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #1976d2; /* Color azul del botón */
+    color: white;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.text {
+    margin-right: auto; /* Empuja el texto hacia la izquierda */
+    text-align: left;
+}
+
+.arrow {
+    margin-left: 10px; /* Espaciado entre texto y flecha */
+    display: flex;
+    align-items: center;
+}
 
 
 
@@ -237,7 +261,10 @@ mat-card-subtitle {
 
 
 .campo-validar {
-    background-color: yellow; /* Fondo amarillo */
-    padding: 10px; /* Opcional: Espaciado para mejor apariencia */
-    border-radius: 5px; /* Opcional: Bordes redondeados */
+    background-color: yellow;
+    /* Fondo amarillo */
+    padding: 10px;
+    /* Opcional: Espaciado para mejor apariencia */
+    border-radius: 5px;
+    /* Opcional: Bordes redondeados */
 }

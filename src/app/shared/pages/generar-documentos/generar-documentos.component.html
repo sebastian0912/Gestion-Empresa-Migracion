@@ -1,0 +1,30 @@
+<div class="dashboard-container">
+    <div class="navbar">
+
+    </div>
+    <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+    <div class="dashboard-content">
+        <app-navbar-superior></app-navbar-superior>
+
+        <!-- Tarjeta para búsqueda de cédula -->
+        <div class="seleccion">
+            <mat-card>
+                <mat-card-content>
+                    <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+                        Documentos para generar
+                    </h1>
+                    <mat-accordion>
+
+
+                    </mat-accordion>
+                    <button mat-flat-button class="btn-with-arrow" (click)="devolvercontratacion()">
+                        <span class="text">Devolver a contratación</span>
+                        <mat-icon class="arrow">arrow_back</mat-icon>
+                    </button>
+
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+    </div>
+</div>

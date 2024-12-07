@@ -6,7 +6,6 @@
     <div class="dashboard-content">
         <app-navbar-superior></app-navbar-superior>
 
-
         <!-- Acordeón principal que contiene todos los sub-acordeones 
         <mat-accordion *ngIf="procesoValido">
         -->
@@ -214,7 +213,6 @@
                             </div>
                         </form>
                     </mat-expansion-panel>
-
 
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
@@ -563,7 +561,6 @@
                         </form>
                     </mat-expansion-panel>
 
-
                     <!-- Datos Parte 3 - Sección 1 -->
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
@@ -667,19 +664,7 @@
 
 
                 </mat-accordion>
-
-
-
-
             </mat-expansion-panel>
-
-
-
-
-
-
-
-
         </mat-accordion>
 
         <!-- Accordion Sections -->
@@ -1126,11 +1111,8 @@
 
         </mat-accordion>
 
-
-
         <!-- Tarjeta para búsqueda de cédula -->
         <div class="seleccion">
-
             <mat-card>
                 <mat-card-content>
                     <h1 class="titulo" style="margin-right: 10px; width: 100%;">
@@ -1146,20 +1128,8 @@
                         style="margin-top: -5px;">
                         Buscar
                     </button>
-
-
-
-
-
-
                 </mat-card-content>
             </mat-card>
-
-
-
-
-
-
 
             <mat-card>
                 <mat-card-content>
@@ -1167,7 +1137,6 @@
                         Complete la información de contratación
                     </h1>
                     <mat-accordion>
-
                         <!-- Acordeón 1: Información de Pago y Transporte -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
@@ -1223,8 +1192,6 @@
                                 <button mat-flat-button (click)="cargarPagoTransporte()">Cargar</button>
                             </div>
                         </mat-expansion-panel>
-
-
 
                         <!-- Referencias Personales -->
                         <mat-expansion-panel>
@@ -1384,12 +1351,16 @@
                             </div>
 
                         </mat-expansion-panel>
-
-
-
                     </mat-accordion>
+                    <button mat-flat-button class="btn-with-arrow" (click)="generacionDocumentos()">
+                        <span class="text">Generar documentación</span>
+                        <mat-icon class="arrow">arrow_forward</mat-icon>
+                    </button>
                 </mat-card-content>
             </mat-card>
+
+
+
 
         </div>
 

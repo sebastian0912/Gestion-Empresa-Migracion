@@ -34,6 +34,7 @@ import { VetadosGerenciaComponent } from './shared/pages/vetados-gerencia/vetado
 import { SeguimientoAuditoriaArchivoComponent } from './shared/pages/seguimiento-auditoria-archivo/seguimiento-auditoria-archivo.component';
 import { ConsultaFormularioComponent } from './shared/pages/consulta-formulario/consulta-formulario.component';
 import { AntecedentesRobotsComponent } from './shared/pages/antecedentes-robots/antecedentes-robots.component';
+import { GenerarDocumentosComponent } from './shared/pages/generar-documentos/generar-documentos.component';
 
 
 export const routes: Routes = [
@@ -74,5 +75,6 @@ export const routes: Routes = [
   { path: 'vetados-gerencia', component: VetadosGerenciaComponent },
   { path: 'seguimiento-auditoria-archivo', component: SeguimientoAuditoriaArchivoComponent },
   { path: 'consulta-formulario', component: ConsultaFormularioComponent },
-  { path: 'antecedentes-robots', component: AntecedentesRobotsComponent }
+  { path: 'antecedentes-robots', component: AntecedentesRobotsComponent },
+  { path: 'generar-documentos', component: GenerarDocumentosComponent }
 ];
