@@ -50,7 +50,7 @@ export class NavbarLateralComponent implements OnInit {
 
   angelaVisible = false;
   currentRole: string = '';
-  //'solicitar-turno', 'atender-turno', 'estadisticas-turnero', 'visualizar-turnos', 'publicidad', 'vacantes', 'seleccion', 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
+  //' 'contratacion', 'crear-estructura-documental', 'buscar-documentacion', 'auditoria', 'subir-documentacion',
 
   menuState: Record<string, boolean> = {
     salud: false,
@@ -116,7 +116,7 @@ export class NavbarLateralComponent implements OnInit {
       'contratacion',
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
-      'antecedentes-robots'
+      'antecedentes-robots','crear-estructura-documental', 'buscar-documentacion', 'subir-documentacion'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'

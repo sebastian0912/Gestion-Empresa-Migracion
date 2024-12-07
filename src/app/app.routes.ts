@@ -16,12 +16,7 @@ import { SeleccionComponent } from './shared/pages/seleccion/seleccion.component
 import { SolicitarTurnoComponent } from './shared/pages/solicitar-turno/solicitar-turno.component';
 import { VacantesComponent } from './shared/pages/vacantes/vacantes.component';
 import { VisualizarTurnosComponent } from './shared/pages/visualizar-turnos/visualizar-turnos.component';
-import { CrearEstructuraDocumentalComponent } from './shared/pages/crear-estructura-documental/crear-estructura-documental.component';
-import { BuscarDocumentacionComponent } from './shared/pages/buscar-documentacion/buscar-documentacion.component';
 import { AuditoriaComponent } from './shared/pages/auditoria/auditoria.component';
-import { SubirDocumentacionComponent } from './shared/pages/subir-documentacion/subir-documentacion.component';
-import { EnvioPaqueteDocumentacionComponent } from './shared/pages/envio-paquete-documentacion/envio-paquete-documentacion.component';
-import { RecibirPaqueteDocumentacionComponent } from './shared/pages/recibir-paquete-documentacion/recibir-paquete-documentacion.component';
 import { FormularioIncapacidadComponent } from './shared/pages/formulario-incapacidad/formulario-incapacidad.component';
 import { BuscarIncapacidadComponent } from './shared/pages/buscar-incapacidad/buscar-incapacidad.component';
 import { FormularioReporteComponent } from './shared/pages/formulario-reporte/formulario-reporte.component';
@@ -35,6 +30,12 @@ import { SeguimientoAuditoriaArchivoComponent } from './shared/pages/seguimiento
 import { ConsultaFormularioComponent } from './shared/pages/consulta-formulario/consulta-formulario.component';
 import { AntecedentesRobotsComponent } from './shared/pages/antecedentes-robots/antecedentes-robots.component';
 import { GenerarDocumentosComponent } from './shared/pages/generar-documentos/generar-documentos.component';
+import { CrearEstructuraDocumentalComponent } from './features/pages/crear-estructura-documental/crear-estructura-documental.component';
+
+import { BuscarDocumentacionComponent } from './features/pages/buscar-documentacion/buscar-documentacion.component';
+import { SubirDocumentacionComponent } from './features/pages/subir-documentacion/subir-documentacion.component';
+import { EnvioPaqueteDocumentacionComponent } from './shared/pages/envio-paquete-documentacion/envio-paquete-documentacion.component';
+import { RecibirPaqueteDocumentacionComponent } from './shared/pages/recibir-paquete-documentacion/recibir-paquete-documentacion.component';
 
 
 export const routes: Routes = [

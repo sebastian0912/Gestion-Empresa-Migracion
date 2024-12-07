@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
-import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
-import { InfoCardComponent } from '../../components/info-card/info-card.component';
-import { PagosService } from '../../services/pagos/pagos.service';
+import { NavbarLateralComponent } from '../../../shared/components/navbar-lateral/navbar-lateral.component';
+import { NavbarSuperiorComponent } from '../../../shared/components/navbar-superior/navbar-superior.component';
+import { InfoCardComponent } from '../../../shared/components/info-card/info-card.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,28 +15,35 @@ import * as XLSX from 'xlsx';
 import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-buscar-documentacion',
+  selector: 'app-subir-documentacion',
   standalone: true,
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
     FormsModule,
-    MatCardModule,
-    NgIf
+    MatCardModule,    
   ],
-  templateUrl: './buscar-documentacion.component.html',
-  styleUrl: './buscar-documentacion.component.css'
+  templateUrl: './subir-documentacion.component.html',
+  styleUrl: './subir-documentacion.component.css'
 })
-export class BuscarDocumentacionComponent {
+export class SubirDocumentacionComponent implements OnInit {
+
   isSidebarHidden = false;
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
   }
+  
+  constructor() { }
+
+
+  ngOnInit() {
+  }
+
+
 }

@@ -1613,8 +1613,35 @@ export class ContratacionComponent implements OnInit {
 
   generacionDocumentos() {
     console.log('Generación de documentos:');
-    window.location.href = "/generar-documentos"
+  
+    // Guarda el estado de los formularios en localStorage
+    const formStates = {
+      formGroup1: this.formGroup1.value,
+      formGroup2: this.formGroup2.value,
+      formGroup3: this.formGroup3.value,
+      formGroup4: this.formGroup4.value,
+      datosPersonales: this.datosPersonales.value,
+      datosTallas: this.datosTallas.value,
+      datosConyugue: this.datosConyugue.value,
+      datosPadre: this.datosPadre.value,
+      datosMadre: this.datosMadre.value,
+      datosReferencias: this.datosReferencias.value,
+      datosExperienciaLaboral: this.datosExperienciaLaboral.value,
+      datosParte3Seccion1: this.datosParte3Seccion1.value,
+      datosParte3Seccion2: this.datosParte3Seccion2.value,
+      datosParte4: this.datosParte4.value,
+      datosHijos: this.datosHijos.value,
+      pagoTransporteForm: this.pagoTransporteForm.value,
+      referenciasForm: this.referenciasForm.value,
+      // Agrega los demás formularios que necesites
+    };
+    
+    localStorage.setItem('formStates', JSON.stringify(formStates));
+  
+    // Redirige a la página de generación de documentos
+    window.location.href = "/generar-documentos";
   }
+  
 
 
 }
