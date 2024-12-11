@@ -129,58 +129,133 @@ export class VacanteComponent {
       const canvas = this.firmaCanvas.nativeElement;
       const context = canvas.getContext('2d');
       if (context) {
+        // Ajustar tamaño del canvas dinámicamente
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
 
+        // Configurar el estilo de dibujo
         context.lineWidth = 2;
         context.strokeStyle = '#000';
         context.lineCap = 'round';
 
         let isDrawing = false;
 
-        canvas.addEventListener('mousedown', (event) => {
+        // Funciones reutilizables para manejar el inicio, movimiento y fin del dibujo
+        const startDrawing = (x: number, y: number) => {
           isDrawing = true;
           context.beginPath();
-          context.moveTo(event.offsetX, event.offsetY);
+          context.moveTo(x, y);
+        };
+
+        const draw = (x: number, y: number) => {
+          if (isDrawing) {
+            context.lineTo(x, y);
+            context.stroke();
+          }
+        };
+
+        const stopDrawing = () => {
+          isDrawing = false;
+          context.closePath();
+        };
+
+        // Eventos de ratón
+        canvas.addEventListener('mousedown', (event) => {
+          startDrawing(event.offsetX, event.offsetY);
         });
 
         canvas.addEventListener('mousemove', (event) => {
-          if (isDrawing) {
-            context.lineTo(event.offsetX, event.offsetY);
-            context.stroke();
-          }
+          draw(event.offsetX, event.offsetY);
         });
 
-        canvas.addEventListener('mouseup', () => {
-          isDrawing = false;
-          context.closePath();
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        // Eventos táctiles
+        canvas.addEventListener('touchstart', (event) => {
+          const touch = event.touches[0];
+          const rect = canvas.getBoundingClientRect();
+          startDrawing(touch.clientX - rect.left, touch.clientY - rect.top);
+          event.preventDefault(); // Evitar desplazamiento
         });
 
-        canvas.addEventListener('mouseleave', () => {
-          isDrawing = false;
+        canvas.addEventListener('touchmove', (event) => {
+          const touch = event.touches[0];
+          const rect = canvas.getBoundingClientRect();
+          draw(touch.clientX - rect.left, touch.clientY - rect.top);
+          event.preventDefault(); // Evitar desplazamiento
         });
+
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
       } else {
         console.error('El contexto 2D no está disponible en el lienzo.');
       }
     }
   }
 
+
   abrirCamara() {
+    if (!isPlatformBrowser(this.platformId)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Disponible',
+        text: 'Esta funcionalidad no está disponible en el servidor.',
+      });
+      return;
+    }
+
     this.mostrarCamara = true;
     this.fotoBase64 = '';
 
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        const videoElement = this.video.nativeElement;
-        videoElement.srcObject = stream;
-        videoElement.play();
-      })
-      .catch((error) => {
-        console.error('Error al abrir la cámara:', error);
-        alert('No se pudo acceder a la cámara.');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Navegador no Compatible',
+        text: 'Tu navegador no soporta la captura de video. Por favor, usa un navegador más reciente.',
       });
+      return;
+    }
+
+    navigator.mediaDevices
+    .getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
+    .then((stream) => {
+      const videoElement = this.video.nativeElement as HTMLVideoElement;
+  
+      // Verifica si srcObject es soportado
+      if ('srcObject' in videoElement) {
+        videoElement.srcObject = stream; // Asigna el stream directamente al srcObject
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Navegador No Compatible',
+          text: 'Tu navegador no soporta la reproducción de video en vivo. Por favor, usa un navegador más reciente.',
+        });
+        return;
+      }
+  
+      videoElement.play();
+    })
+    .catch((error) => {
+      console.error('Error al abrir la cámara:', error);
+  
+      let errorMessage = 'No se pudo acceder a la cámara. Por favor, verifica los permisos.';
+      if (error.name === 'NotAllowedError') {
+        errorMessage = 'Permiso denegado para usar la cámara. Habilítalo en la configuración de tu navegador.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No se detectó una cámara en el dispositivo. Conéctala e inténtalo nuevamente.';
+      }
+  
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de Cámara',
+        text: errorMessage,
+      });
+    });
+  
   }
+
+
 
   capturarFoto() {
     const videoElement = this.video.nativeElement;
