@@ -69,6 +69,7 @@
     "@angular/router": "^18.0.0",
     "@angular/ssr": "^18.0.4",
     "@capacitor/android": "^6.1.2",
+    "@capacitor/camera": "^6.1.1",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@types/chart.js": "^2.9.41",
