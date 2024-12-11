@@ -149,6 +149,13 @@
       <p>Estadísticas HV</p>
     </li>
 
+    <!-- vacante-documentos -->
+    <li class="blockLink" [class.active]="currentRoute === '/vacante-documentos'" routerLink="/vacante-documentos"
+      *ngIf="hasPermission('vacante-documentos')">
+      <img src="navbar/contrato.png" alt="Vacante Documentos" class="icon">
+      <p>Vacante Documentos</p>
+    </li>
+
     <li class="blockLink" [class.active]="currentRoute === '/crear-estructura-documental'"
       routerLink="/crear-estructura-documental" *ngIf="hasPermission('crear-estructura-documental')">
       <img src="navbar/documentation.png" alt="Estructura documental" class="icon">

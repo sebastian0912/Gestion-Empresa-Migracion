@@ -1,0 +1,96 @@
+.titulo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.cajonFirma {
+    margin: 0 auto;
+}
+
+.firma {
+    border: 1px solid #ccc;
+    width: 70vw;
+    margin-bottom: 30px;
+}
+
+.boton{
+    width: 45%;
+    height: 40pt;
+    border-radius: 5pt;
+}
+
+.cajonFirma{
+    margin-bottom: 10pt;
+}
+
+.action-selection{
+    margin-top: 10pt;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50pt;
+}
+
+
+.camera-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.camera-trigger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.camera-trigger:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.camera-icon {
+    width: 100px;
+    height: auto;
+}
+
+.camera-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.camera-preview,
+.photo-preview {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    background-color: #fafafa;
+}
+
+.camera-preview video,
+.photo-preview img {
+    border-radius: 10px;
+}
+
+.camera-actions,
+.photo-actions {
+    margin-top: 30px;
+}
+
+.captured-photo {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+}

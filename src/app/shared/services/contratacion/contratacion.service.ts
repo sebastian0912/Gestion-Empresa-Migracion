@@ -31,7 +31,7 @@ export class ContratacionService {
   }
 
   // Buscar en contratacion por cedula para sacar los numeros
-  public buscarEncontratacion(cedula: string): Observable<any> {
+  public buscarEncontratacion(cedula: any): Observable<any> {
     const headers = this.createAuthorizationHeader();
     return this.http.get(`${this.apiUrl}/contratacion/buscarCandidato/${cedula}`, { headers }).pipe(
       map((response: any) => response),

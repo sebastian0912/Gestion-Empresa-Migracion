@@ -30,13 +30,12 @@ import { SeguimientoAuditoriaArchivoComponent } from './shared/pages/seguimiento
 import { ConsultaFormularioComponent } from './shared/pages/consulta-formulario/consulta-formulario.component';
 import { AntecedentesRobotsComponent } from './shared/pages/antecedentes-robots/antecedentes-robots.component';
 import { GenerarDocumentosComponent } from './shared/pages/generar-documentos/generar-documentos.component';
-import { CrearEstructuraDocumentalComponent } from './features/pages/crear-estructura-documental/crear-estructura-documental.component';
-
-import { BuscarDocumentacionComponent } from './features/pages/buscar-documentacion/buscar-documentacion.component';
-import { SubirDocumentacionComponent } from './features/pages/subir-documentacion/subir-documentacion.component';
 import { EnvioPaqueteDocumentacionComponent } from './shared/pages/envio-paquete-documentacion/envio-paquete-documentacion.component';
 import { RecibirPaqueteDocumentacionComponent } from './shared/pages/recibir-paquete-documentacion/recibir-paquete-documentacion.component';
-
+import { CrearEstructuraDocumentalComponent } from './features/gestion-documental/pages/crear-estructura-documental/crear-estructura-documental.component';
+import { BuscarDocumentacionComponent } from './features/gestion-documental/pages/buscar-documentacion/buscar-documentacion.component';
+import { SubirDocumentacionComponent } from './features/gestion-documental/pages/subir-documentacion/subir-documentacion.component';
+import { VacanteComponent } from './features/vacante/pages/vacante/vacante.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -77,5 +76,8 @@ export const routes: Routes = [
   { path: 'seguimiento-auditoria-archivo', component: SeguimientoAuditoriaArchivoComponent },
   { path: 'consulta-formulario', component: ConsultaFormularioComponent },
   { path: 'antecedentes-robots', component: AntecedentesRobotsComponent },
-  { path: 'generar-documentos', component: GenerarDocumentosComponent }
+  { path: 'generar-documentos', component: GenerarDocumentosComponent },
+
+  { path: 'vacante-documentos', component: VacanteComponent },
+  
 ];

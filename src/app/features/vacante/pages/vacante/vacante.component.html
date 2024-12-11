@@ -1,0 +1,74 @@
+<div class="dashboard-container">
+    <div class="navbar"></div>
+    <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+    <div class="dashboard-content">
+        <app-navbar-superior></app-navbar-superior>
+        <mat-card>
+            <mat-card-content>
+                <!-- Campo para número de documento -->
+                <form [formGroup]="form">
+                    <mat-form-field class="example-full-width3">
+                        <mat-label>Número de Documento</mat-label>
+                        <input matInput formControlName="numeroDocumento" placeholder="Ingrese el número de documento">
+                    </mat-form-field>
+                    <button mat-flat-button (click)="imprimirDocumento()" style="margin-left: 15pt;">
+                        Buscar
+                    </button>
+                </form>
+                <strong *ngIf="cedulaEncontrada">Nombre: </strong> {{nombreCompleto}}
+
+                <!-- Selección de acción -->
+                <div class="action-selection" *ngIf="cedulaEncontrada">
+                    <button mat-flat-button color="primary" (click)="seleccionarAccion('firma')" class="boton">Subir Firma</button>
+                    <button mat-flat-button color="accent" (click)="seleccionarAccion('foto')" class="boton">Capturar Foto</button>
+                </div>
+
+                <!-- Campo para la firma -->
+                <div class="cajonFirma" *ngIf="accionSeleccionada === 'firma' && cedulaEncontrada">
+                    <h1 class="titulo">Firma</h1>
+                    <canvas #firmaCanvas width="400" height="150" class="firma"></canvas>
+                    <button mat-flat-button (click)="guardarFirma()" class="boton">Guardar Firma</button>
+                    <button mat-flat-button color="warn" (click)="limpiarFirma()" class="boton">Limpiar Firma</button>
+                </div>
+
+                <!-- Captura de Foto -->
+                <div class="camera-container" *ngIf="accionSeleccionada === 'foto' && cedulaEncontrada">
+                    <!-- Imagen de la cámara como disparador -->
+                    <div class="camera-trigger" (click)="abrirCamara()" *ngIf="!mostrarCamara && !fotoBase64">
+                        <img src="navbar/camara-reflex-digital.png" alt="Abrir cámara" class="camera-icon">
+                        <p class="camera-text">Abrir Cámara</p>
+                    </div>
+
+                    <!-- Vista previa de la cámara -->
+                    <div class="camera-preview" *ngIf="mostrarCamara">
+                        <video #video width="400" height="300" autoplay></video>
+                        <div class="camera-actions">
+                            <button mat-flat-button color="primary" (click)="capturarFoto()" class="boton">Capturar
+                                Foto</button>
+                            <button mat-flat-button color="warn" (click)="cerrarCamara()"
+                                class="boton">Cancelar</button>
+                        </div>
+                    </div>
+
+                    <!-- Vista previa de la foto capturada -->
+                    <div class="photo-preview" *ngIf="fotoBase64">
+                        <h4 class="titulo">Foto Capturada</h4>
+                        <img [src]="'data:image/png;base64,' + fotoBase64" alt="Foto capturada" class="captured-photo">
+                        <div class="photo-actions">
+                            <button mat-flat-button color="primary" (click)="guardarFoto()"
+                                class="boton">Guardar</button>
+                            <button mat-flat-button color="warn" (click)="abrirCamara()" class="boton">Tomar Otra
+                                Foto</button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

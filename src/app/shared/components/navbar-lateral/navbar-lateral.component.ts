@@ -116,7 +116,8 @@ export class NavbarLateralComponent implements OnInit {
       'contratacion',
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
-      'antecedentes-robots','crear-estructura-documental', 'buscar-documentacion', 'subir-documentacion'
+      'antecedentes-robots','crear-estructura-documental', 'buscar-documentacion', 
+      'subir-documentacion', 'vacante-documentos'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'

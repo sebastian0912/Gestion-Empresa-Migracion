@@ -1,9 +1,9 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +47,25 @@ export class DocumentacionService {
       catchError(this.handleError)
     );
   }
+
+  // document-type/ put 
+  public editar_tipo_documento(id: number, data: any): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.put(`${this.apiUrl}/gestion_documental/document-types/${id}`, data, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
+  // Agregar un nuevo tipo de documento (POST)
+  public crear_tipo_documento(data: any): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    console.log('data', data);
+    return this.http.post(`${this.apiUrl}/gestion_documental/document-types-create/`, data, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
 
 }

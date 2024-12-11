@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { DocumentacionService } from '../../service/documentacion/documentacion.service';
-import { NavbarLateralComponent } from '../../../shared/components/navbar-lateral/navbar-lateral.component';
-import { NavbarSuperiorComponent } from '../../../shared/components/navbar-superior/navbar-superior.component';
+
 import { MatTreeModule, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { NgIf } from '@angular/common';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -12,7 +11,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { DocumentModalComponent, ModalData } from '../../components/document-modal.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-
+import { NavbarLateralComponent } from '../../../../shared/components/navbar-lateral/navbar-lateral.component';
+import { NavbarSuperiorComponent } from '../../../../shared/components/navbar-superior/navbar-superior.component';
 /** Nodo para el árbol plano */
 interface FlatNode {
   id: number;
@@ -91,82 +91,109 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
     this.documentacionService.mostrar_jerarquia_gestion_documental().subscribe((data) => {
       this.dataSource.data = data;
       console.log('Jerarquía de gestión documental:', data);
       this.documentTypes = data;
-    });
+    }); 
   }
 
   /** Agregar un nuevo nodo raíz */
-  addRootNode() {
-    const newNode: DocumentType = {
-      id: Date.now(), // Generar un ID único
-      name: 'Nuevo Tipo Documental',
-      estado: true,
-      tags: [],
-      subtypes: [],
-    };
-    this.documentTypes.push(newNode);
-    this.dataSource.data = [...this.documentTypes];
-    this.trackChange(newNode.id, newNode);
+  addRootNode(): void {
+    const dialogRef = this.dialog.open(DocumentModalComponent, {
+      width: '600px',
+      data: {
+        id: null, // Sin ID porque es un nuevo nodo
+        name: '',
+        expandable: false,
+        estado: true, // Estado inicial
+        tags: [],
+        isEdit: false, // Indica que es creación
+      },
+    });
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Resultado del modal:', result);
+      if (result) {
+        console.log('Creando nuevo nodo:', result);
+      }
+    });
   }
+  
 
-  openModal(node: FlatNode | null, isEdit: boolean) { 
+  openModal(node: FlatNode | null, isEdit: boolean): void {
+    // Configuración de datos iniciales para el modal
     const data: ModalData = node
       ? {
           id: node.id,
           name: node.name,
           estado: node.estado,
           expandable: node.expandable,
-          tags: node.tags || [], // Asegurar que los tags sean un array de IDs
+          tags: node.tags || [], // Asegura que los tags sean un array
           isEdit,
         }
       : {
-          id: Date.now(), // Generar un ID único
+          id: null, // Aquí aseguramos que no se intenta acceder a node.id cuando node es null
           name: '',
           expandable: false,
-          tags: [], // Array vacío para nuevos nodos
+          tags: [], // Tags iniciales vacíos
           estado: true,
           isEdit,
         };
-
-    console.log('Datos del modal:', data);
   
+    console.log('Datos enviados al modal:', data);
+  
+    // Abrir el modal con los datos proporcionados
     const dialogRef = this.dialog.open(DocumentModalComponent, {
       minWidth: '50vw',
       minHeight: '30vh',
-      data, // Pasar los datos al modal
+      data,
     });
   
+    // Procesar el resultado del modal
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Resultado del modal:', result);
       if (result) {
-        if (isEdit && node) {
-          // Actualizar el nodo existente
-          node.name = result.name;
-          node.expandable = result.expandable;
-          node.estado = result.estado; // Actualizar "estado"
-          node.tags = result.tags; // Actualizar tags como array de IDs
-        } else if (!isEdit) {
-          // Crear un nuevo nodo
-          const newNode: DocumentType = {
-            id: result.id,
-            name: result.name,
-            estado: result.estado, // Asignar "estado"
-            tags: result.tags, // Guardar tags como array de IDs
-            subtypes: [],
-          };
-          this.documentTypes.push(newNode);
-        }
+        console.log('Resultado del modal:', result);
   
-        // Actualizar la fuente de datos
-        this.dataSource.data = [...this.documentTypes];
+        if (isEdit && node) {
+          // Caso de edición
+          this.documentacionService.editar_tipo_documento(node.id, result).subscribe(
+            () => {
+              console.log('Tipo documental editado correctamente.');
+              this.loadData(); // Recargar los datos
+            },
+            (error) => {
+              console.error('Error al editar el tipo documental:', error);
+            }
+          );
+        } else if (!isEdit) {
+          if(data.id !== null){
+            result.parent = data.id;
+          }
+          console.log('Creando nuevo nodo sin editar:', result);
+          this.documentacionService.crear_tipo_documento(result).subscribe(
+            () => {
+              console.log('Tipo documental creado correctamente.');
+              this.loadData(); // Recargar los datos
+            },
+            (error) => {
+              console.error('Error al crear el tipo documental:', error);
+            }
+          );
+        }
+      } else {
+        console.log('Modal cerrado sin cambios.');
       }
     });
   }
   
   
+
+
 
 
 
@@ -204,4 +231,5 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
   }
+  
 }

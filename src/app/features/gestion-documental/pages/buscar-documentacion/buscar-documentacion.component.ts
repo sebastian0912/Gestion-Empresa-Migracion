@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { NavbarLateralComponent } from '../../../shared/components/navbar-lateral/navbar-lateral.component';
-import { NavbarSuperiorComponent } from '../../../shared/components/navbar-superior/navbar-superior.component';
-import { InfoCardComponent } from '../../../shared/components/info-card/info-card.component';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,9 +11,13 @@ import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { NgIf } from '@angular/common';
+import { DocumentacionService } from '../../service/documentacion/documentacion.service';
+import { NavbarLateralComponent } from '../../../../shared/components/navbar-lateral/navbar-lateral.component';
+import { NavbarSuperiorComponent } from '../../../../shared/components/navbar-superior/navbar-superior.component';
+
 
 @Component({
-  selector: 'app-subir-documentacion',
+  selector: 'app-buscar-documentacion',
   standalone: true,
   imports: [
     NavbarLateralComponent,
@@ -26,24 +28,25 @@ import { NgIf } from '@angular/common';
     MatButtonModule,
     MatIconModule,
     FormsModule,
-    MatCardModule,    
+    MatCardModule, 
   ],
-  templateUrl: './subir-documentacion.component.html',
-  styleUrl: './subir-documentacion.component.css'
+  templateUrl: './buscar-documentacion.component.html',
+  styleUrl: './buscar-documentacion.component.css'
 })
-export class SubirDocumentacionComponent implements OnInit {
+export class BuscarDocumentacionComponent implements OnInit {
 
   isSidebarHidden = false;
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
   }
-  
-  constructor() { }
+
+  constructor(
+    private documentacionService: DocumentacionService
+  ) { }
 
 
-  ngOnInit() {
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
   }
-
-
 }
