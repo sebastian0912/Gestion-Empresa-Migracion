@@ -217,43 +217,37 @@ export class VacanteComponent {
       return;
     }
 
+    // Solicitar acceso a la cámara
     navigator.mediaDevices
-    .getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
-    .then((stream) => {
-      const videoElement = this.video.nativeElement as HTMLVideoElement;
-  
-      // Verifica si srcObject es soportado
-      if ('srcObject' in videoElement) {
-        videoElement.srcObject = stream; // Asigna el stream directamente al srcObject
-      } else {
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        const videoElement = this.video.nativeElement as HTMLVideoElement;
+
+        // Asignar el stream al srcObject del elemento <video>
+        videoElement.srcObject = stream;
+
+        videoElement.play();
+      })
+      .catch((error) => {
+        console.error('Error al abrir la cámara:', error);
+
+        let errorMessage = 'No se pudo acceder a la cámara. Por favor, verifica los permisos.';
+        if (error.name === 'NotAllowedError') {
+          errorMessage = 'Permiso denegado para usar la cámara. Habilítalo en la configuración de tu navegador.';
+        } else if (error.name === 'NotFoundError') {
+          errorMessage = 'No se detectó una cámara en el dispositivo. Conéctala e inténtalo nuevamente.';
+        }
+
         Swal.fire({
           icon: 'error',
-          title: 'Navegador No Compatible',
-          text: 'Tu navegador no soporta la reproducción de video en vivo. Por favor, usa un navegador más reciente.',
+          title: 'Error de Cámara',
+          text: errorMessage,
         });
-        return;
-      }
-  
-      videoElement.play();
-    })
-    .catch((error) => {
-      console.error('Error al abrir la cámara:', error);
-  
-      let errorMessage = 'No se pudo acceder a la cámara. Por favor, verifica los permisos.';
-      if (error.name === 'NotAllowedError') {
-        errorMessage = 'Permiso denegado para usar la cámara. Habilítalo en la configuración de tu navegador.';
-      } else if (error.name === 'NotFoundError') {
-        errorMessage = 'No se detectó una cámara en el dispositivo. Conéctala e inténtalo nuevamente.';
-      }
-  
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de Cámara',
-        text: errorMessage,
       });
-    });
-  
+
   }
+
+
 
 
 
