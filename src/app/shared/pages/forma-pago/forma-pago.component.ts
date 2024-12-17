@@ -117,7 +117,8 @@ export class FormaPagoComponent implements OnInit {
 
   toggleEdit(element: any): void {
     if (this.correo === "contaduria.rtc@gmail.com" ||
-      this.correo === "ghumana.rtc@gmail.com") {
+      this.correo === "ghumana.rtc@gmail.com"||
+      this.correo === "antcontable5.ts@gmail.com") {
 
       element.editing = !element.editing;
 
@@ -168,7 +169,8 @@ export class FormaPagoComponent implements OnInit {
 
   eliminarFormaPago(element: any): void {
     if (this.correo === "contaduria.rtc@gmail.com" ||
-      this.correo === "ghumana.rtc@gmail.com") {
+      this.correo === "ghumana.rtc@gmail.com" ||
+      this.correo === "antcontable5.ts@gmail.com") {
 
       Swal.fire({
         title: '¿Estás seguro de eliminar esta información?',

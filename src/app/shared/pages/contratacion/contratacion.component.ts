@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
@@ -80,6 +81,7 @@ export class ContratacionComponent implements OnInit {
   datosParte3Seccion1!: FormGroup;
   datosParte3Seccion2!: FormGroup;
   datosParte4!: FormGroup;
+
   pagoTransporteForm!: FormGroup;
   referenciasForm!: FormGroup;
   // Variables de ayuda
@@ -124,7 +126,6 @@ export class ContratacionComponent implements OnInit {
   ];
 
   laborExams = [
-
     { labor: 'ADMINISTRACIÓN', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'RECEPCIONISTA', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'SST, JEFE, EJECUTIVOS', exams: ['Exámen Ingreso', 'Visiometria'] },
@@ -301,6 +302,22 @@ export class ContratacionComponent implements OnInit {
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
 
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Ejecutar el código relacionado con localStorage solo si estamos en un navegador
+      const cedula = localStorage.getItem('cedula');
+      console.log('Cédula en localStorage:', cedula);
+      if (cedula) {
+        // Asignar la cédula al campo del formulario
+        this.cedula = cedula;
+        // Llamar a la función buscarCedula con el valor de la cédula
+        this.buscarCedula();
+
+        // Limpiar la cédula del local storage
+        localStorage.removeItem('cedula');
+      }
+    }
+
+
     // Cargar lista completa de exámenes disponibles
     this.filteredExamOptions = [
       'Exámen Ingreso',
@@ -356,6 +373,7 @@ export class ContratacionComponent implements OnInit {
     private vacantesService: VacantesService,
     private seleccionService: SeleccionService,
     private gestionDocumentalService: GestionDocumentalService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
 
     this.datosPersonales = this.fb.group({
@@ -547,6 +565,7 @@ export class ContratacionComponent implements OnInit {
     this.pagoTransporteForm = this.fb.group({
       semanasCotizadas: [''],
       formaPago: [''],
+      otraFormaPago: [''],
       numeroPagos: [''],
       validacionNumeroCuenta: [''],
       seguroFunerario: [''],
@@ -702,23 +721,34 @@ export class ContratacionComponent implements OnInit {
     hijos.forEach(hijo => this.agregarHijo(hijo));
   }
 
-
-
   async buscarCedula() {
+    // Mostrar un Swal de carga
+    const loadingSwal = Swal.fire({
+      title: 'Cargando',
+      text: 'Por favor espera mientras se procesan los datos...',
+      icon: 'info',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(); // Muestra el spinner
+      },
+    });
+
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
     }).subscribe(
       async ({ seleccion, infoGeneral }) => {
+        Swal.close(); // Cierra el Swal de carga al completar
+
         if (seleccion && seleccion.procesoSeleccion && Array.isArray(seleccion.procesoSeleccion)) {
-          this.seleccion = seleccion.procesoSeleccion.reduce((prev: { id: number; }, current: { id: number; }) =>
+          this.seleccion = seleccion.procesoSeleccion.reduce((prev: { id: number }, current: { id: number }) =>
             current.id > prev.id ? current : prev, { id: 0 });
         } else {
           Swal.fire({
             title: '¡Error!',
             text: 'Datos de selección no válidos',
             icon: 'error',
-            confirmButtonText: 'Ok'
+            confirmButtonText: 'Ok',
           });
         }
 
@@ -731,41 +761,51 @@ export class ContratacionComponent implements OnInit {
             title: '¡Error!',
             text: 'Datos generales no válidos',
             icon: 'error',
-            confirmButtonText: 'Ok'
+            confirmButtonText: 'Ok',
           });
         }
 
-        // Mueve verificarSeleccion aquí para que luego de asignar código de contrato se haga la llamada
+        // Llamar las siguientes funciones
         await this.verificarSeleccion();
-
         await this.infoGeneralCandidato();
         this.procesoValido = true;
       },
-      (err) => {
-        console.error(err);
-        Swal.fire({
-          title: 'Atención',
-          text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
-          icon: 'warning',
-          confirmButtonText: 'Ok'
-        });
-
-        // Generar el código de contrato si no se encuentra la cédula
-        this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
-          this.codigoContrato = response.codigo_contrato;
-          this.procesoValido = true;
+      (err: any) => {
+        Swal.close(); // Cierra el Swal de carga si hay error
+        if (err.error.message === "No se encontró el proceso de selección para la cédula proporcionada") {
           Swal.fire({
-            title: '¡Código de contrato generado!',
-            text: 'El código de contrato generado es ' + response.codigo_contrato,
-            icon: 'success',
-            confirmButtonText: 'Ok'
+            title: 'Info',
+            text: 'El usuario no tiene ningun proceso con nosotros actualmente. Se procede a generar el código de contrato.',
+            icon: 'info',
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Generar el código de contrato si no se encuentra la cédula
+              this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
+                console.log('Código de contrato generado:', response);
+                this.codigoContrato = response.nuevo_codigo;
+                this.procesoValido = true;
+
+                Swal.fire({
+                  title: '¡Código de contrato generado!',
+                  text: 'El código de contrato generado es ' + response.nuevo_codigo,
+                  icon: 'success',
+                  confirmButtonText: 'Ok'
+                });
+              });
+            }
           });
-        });
+        } else {
+          Swal.fire({
+            title: 'Atención',
+            text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
+            icon: 'warning',
+            confirmButtonText: 'Ok',
+          });
+        }
       }
     );
   }
-
-
 
   async infoGeneralCandidato() {
     if (this.infoGeneralC) {
@@ -1503,6 +1543,9 @@ export class ContratacionComponent implements OnInit {
 
 
   cargarPagoTransporte() {
+    if (this.pagoTransporteForm.value.otraFormaPago !== '') {
+      this.pagoTransporteForm.get('otraFormaPago')?.setValue(this.pagoTransporteForm.value.otraFormaPago);
+    }
     console.log('Información de Pago y Transporte:', this.pagoTransporteForm.value);
   }
 
@@ -1571,7 +1614,7 @@ export class ContratacionComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     })();
-    
+
 
     // Mostrar Swal de carga
     Swal.fire({
@@ -1612,36 +1655,44 @@ export class ContratacionComponent implements OnInit {
 
 
   generacionDocumentos() {
-    console.log('Generación de documentos:');
-  
-    // Guarda el estado de los formularios en localStorage
-    const formStates = {
-      formGroup1: this.formGroup1.value,
-      formGroup2: this.formGroup2.value,
-      formGroup3: this.formGroup3.value,
-      formGroup4: this.formGroup4.value,
+    console.log('Generación de documentos:', this.cedula, this.codigoContrato);
+    // Guardar cedula y codigoContrato en el localStorage separados
+    localStorage.setItem('cedula', this.cedula);
+    localStorage.setItem('codigoContrato', this.codigoContrato);
+    // empresa 
+    this.guardarFormulariosEnLocalStorage();
+    // Redirige a la página de generación de documentos
+    window.location.href = "/generar-documentos";
+  }
+
+  guardarFormulariosEnLocalStorage() {
+    const formularios = {
       datosPersonales: this.datosPersonales.value,
+      datosPersonalesParte2: this.datosPersonalesParte2.value,
       datosTallas: this.datosTallas.value,
       datosConyugue: this.datosConyugue.value,
       datosPadre: this.datosPadre.value,
       datosMadre: this.datosMadre.value,
       datosReferencias: this.datosReferencias.value,
       datosExperienciaLaboral: this.datosExperienciaLaboral.value,
+      datosHijos: this.datosHijos.value,
       datosParte3Seccion1: this.datosParte3Seccion1.value,
       datosParte3Seccion2: this.datosParte3Seccion2.value,
       datosParte4: this.datosParte4.value,
-      datosHijos: this.datosHijos.value,
-      pagoTransporteForm: this.pagoTransporteForm.value,
-      referenciasForm: this.referenciasForm.value,
-      // Agrega los demás formularios que necesites
+      selecionparte1: this.formGroup1.value,
+      selecionparte2: this.formGroup2.value,
+      selecionparte3: this.formGroup3.value,
+      selecionparte4: this.formGroup4.value,
+      pagoTransporte: this.pagoTransporteForm.value,
+      empresa: this.nombreEmpresa,
     };
-    
-    localStorage.setItem('formStates', JSON.stringify(formStates));
-  
-    // Redirige a la página de generación de documentos
-    window.location.href = "/generar-documentos";
+
+    // Guardar en localStorage como un único objeto JSON
+    localStorage.setItem('formularios', JSON.stringify(formularios));
+    console.log('Formularios guardados en localStorage');
   }
-  
+
+
 
 
 }

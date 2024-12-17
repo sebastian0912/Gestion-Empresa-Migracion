@@ -1,30 +1,50 @@
 <div class="dashboard-container">
-    <div class="navbar">
-
-    </div>
+    <div class="navbar"> </div>
     <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
     <div class="dashboard-content">
         <app-navbar-superior></app-navbar-superior>
 
         <!-- Tarjeta para búsqueda de cédula -->
         <div class="seleccion">
+            <button mat-flat-button class="btn-with-arrow" (click)="devolvercontratacion()">
+                <span class="text">Devolver a contratación</span>
+                <mat-icon class="arrow">arrow_back</mat-icon>
+            </button>
             <mat-card>
                 <mat-card-content>
                     <h1 class="titulo" style="margin-right: 10px; width: 100%;">
                         Documentos para generar
                     </h1>
-                    <mat-accordion>
+                    <!-- Contenedor dividido -->
+                    <div class="split-container">
+                        <!-- Lado izquierdo: Lista de documentos -->
+                        <div class="left-panel">
+                            <div *ngFor="let doc of documentos" class="document-item">
+                                <span>{{ doc.titulo }}</span>
+                                <button mat-icon-button [matMenuTriggerFor]="menu">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                    <button mat-menu-item (click)="verPDF(doc.titulo)">
+                                        <mat-icon>visibility</mat-icon>
+                                        <span>Ver PDF</span>
+                                    </button>
+                                    <button mat-menu-item (click)="generarPDF(doc.titulo)">
+                                        <mat-icon>download</mat-icon>
+                                        <span>Generar PDF</span>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </div>
 
-
-                    </mat-accordion>
-                    <button mat-flat-button class="btn-with-arrow" (click)="devolvercontratacion()">
-                        <span class="text">Devolver a contratación</span>
-                        <mat-icon class="arrow">arrow_back</mat-icon>
-                    </button>
-
+                        <!-- Lado derecho: Vista previa del PDF -->
+                        <div class="right-panel">
+                            <p>Espacio para vista previa del PDF</p>
+                        </div>
+                    </div>
                 </mat-card-content>
             </mat-card>
-        </div>
 
+        </div>
     </div>
 </div>

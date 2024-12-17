@@ -1149,9 +1149,22 @@
                                     <input matInput formControlName="semanasCotizadas" type="number">
                                 </mat-form-field>
 
+                                <!--Daviplata, Davivienda cta ahorros, Colpatria cta ahorros, Bancolombia,  Otra -->
                                 <mat-form-field class="example-full-width3">
                                     <mat-label>Forma de Pago</mat-label>
-                                    <input matInput formControlName="formaPago">
+                                    <mat-select formControlName="formaPago">
+                                        <mat-option value="Daviplata">Daviplata</mat-option>
+                                        <mat-option value="Davivienda cta ahorros">Davivienda cta ahorros</mat-option>
+                                        <mat-option value="Colpatria cta ahorros">Colpatria cta ahorros</mat-option>
+                                        <mat-option value="Bancolombia">Bancolombia</mat-option>
+                                        <mat-option value="Otra">Otra</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <!--si es Otra habilitar campo-->
+                                <mat-form-field class="example-full-width3" *ngIf="pagoTransporteForm.get('formaPago')?.value === 'Otra'">
+                                    <mat-label>Otra Forma de Pago</mat-label>
+                                    <input matInput formControlName="otraFormaPago">
                                 </mat-form-field>
 
                                 <mat-form-field class="example-full-width3">

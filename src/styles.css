@@ -154,11 +154,14 @@ app-navbar-lateral {
 }
 
 mat-card {
+    background-color: white !important;
+}
+
+mat-card {
     width: 100%;
     max-width: 75vw;
     padding: 20px;
     margin: 0 auto;
-    /* Centra el mat-card */
 }
 
 .example-full-width {
@@ -428,6 +431,6 @@ mat-card-content p {
     }
 
     .vacante-card {
-        min-width: 80vw ;
+        min-width: 80vw;
     }
 }

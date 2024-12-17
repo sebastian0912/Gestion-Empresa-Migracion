@@ -406,7 +406,7 @@ export class SeleccionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
-  
+
     this.seleccionService.getUser().then(user => {
       if (user) {
         const abreviaciones: { [key: string]: string } = {
@@ -427,14 +427,14 @@ export class SeleccionComponent implements OnInit {
           'TOCANCIPÁ': 'TOC',
           'USME': 'USM',
         };
-  
+
         // Asegurar que `user.sucursalde` es string
         const sede: string = user.sucursalde;
         this.sedeLogin = sede;
         this.sede = abreviaciones[sede] || sede;
       }
     });
-  
+
     // Cargar lista completa de exámenes disponibles
     this.filteredExamOptions = [
       'Exámen Ingreso',
@@ -463,12 +463,12 @@ export class SeleccionComponent implements OnInit {
       'TETANO VACUNA T-D',
       'Exámen médico integral definido para conductores'
     ];
-  
+
     // Suscribirse a los cambios en el campo "cargo"
     this.formGroup2.get('cargo')?.valueChanges.subscribe(cargo => {
       this.updateExamOptions(cargo);
     });
-  
+
     // Inicializar con el primer cargo (si aplica)
     const cargoInicial = this.formGroup2.get('cargo')?.value;
     if (cargoInicial) {
@@ -479,18 +479,18 @@ export class SeleccionComponent implements OnInit {
   updateExamOptions(cargo: string): void {
     const labor = this.laborExams.find(l => l.labor === cargo);
     const preselectedExams = labor ? labor.exams : [];
-    
+
     // Preseleccionar los exámenes correspondientes al cargo
     this.formGroup3.get('selectedExams')?.setValue(preselectedExams);
-  
+
     // Actualizar el FormArray
     this.updateSelectedExamsArray(preselectedExams);
   }
-  
+
   get selectedExamsArray() {
     return this.formGroup3.get('selectedExamsArray') as FormArray;
   }
-  
+
   // Método para actualizar el FormArray de acuerdo a los exámenes seleccionados
   updateSelectedExamsArray(selectedExams: string[]): void {
     this.selectedExamsArray.clear(); // Limpiar el array antes de agregar los nuevos controles
@@ -715,27 +715,42 @@ export class SeleccionComponent implements OnInit {
         }
       },
       (err) => {
-        console.error(err);
-        Swal.fire({
-          title: 'Atención',
-          text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
-          icon: 'warning',
-          confirmButtonText: 'Ok'
-        });
-
-        // Generar el código de contrato si no se encuentra la cédula
-        this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
-          this.codigoContrato = response.codigo_contrato;
-          this.procesoValido = true;
+        if (err.error.message === "No se encontró el proceso de selección para la cédula proporcionada") {
           Swal.fire({
-            title: '¡Código de contrato generado!',
-            text: 'El código de contrato generado es ' + response.codigo_contrato,
-            icon: 'success',
+            title: 'Info',
+            text: 'El usuario no tiene ningun proceso con nosotros actualmente. Se procede a generar el código de contrato.',
+            icon: 'info',
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Generar el código de contrato si no se encuentra la cédula
+              this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
+                console.log('Código de contrato generado:', response);
+                this.codigoContrato = response.nuevo_codigo;
+                this.procesoValido = true;
+
+                Swal.fire({
+                  title: '¡Código de contrato generado!',
+                  text: 'El código de contrato generado es ' + response.nuevo_codigo,
+                  icon: 'success',
+                  confirmButtonText: 'Ok'
+                });
+              });
+            }
+          });
+        }
+        else {
+          Swal.fire({
+            title: 'Atención',
+            text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
+            icon: 'warning',
             confirmButtonText: 'Ok'
           });
-        });
+        }
+
       }
     );
+
   }
 
   applyFilter(event: Event) {

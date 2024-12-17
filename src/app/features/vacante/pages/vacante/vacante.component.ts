@@ -11,6 +11,7 @@ import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { ContratacionService } from '../../../../shared/services/contratacion/contratacion.service';
 import Swal from 'sweetalert2';
+import { VacanteService } from '../../service/vacante/vacante.service';
 
 @Component({
   selector: 'app-vacante',
@@ -53,6 +54,7 @@ export class VacanteComponent {
 
   constructor(
     private contratacionService: ContratacionService,
+    private vacanteService: VacanteService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -87,7 +89,6 @@ export class VacanteComponent {
         }
       },
       error: (err) => {
-        console.error('Error en la solicitud:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -104,7 +105,6 @@ export class VacanteComponent {
       if (context) {
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.firmaBase64 = '';
-        console.log('Firma limpiada');
       }
     }
   }
@@ -113,7 +113,22 @@ export class VacanteComponent {
     if (isPlatformBrowser(this.platformId) && this.firmaCanvas) {
       const canvas = this.firmaCanvas.nativeElement;
       this.firmaBase64 = canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '');
-      console.log('Firma guardada en Base64:', this.firmaBase64);
+      this.vacanteService.guardar_firma({ numerodeceduladepersona: this.form.get('numeroDocumento')?.value, firmaSolicitante: this.firmaBase64 }).subscribe({
+        next: (response) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Firma Guardada',
+            text: 'La firma ha sido guardada exitosamente.',
+          });
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al guardar la firma. Por favor, intente nuevamente.',
+          });
+        },
+      });
     }
   }
 
@@ -189,7 +204,11 @@ export class VacanteComponent {
         canvas.addEventListener('touchend', stopDrawing);
         canvas.addEventListener('touchcancel', stopDrawing);
       } else {
-        console.error('El contexto 2D no está disponible en el lienzo.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo inicializar el canvas para la firma. Por favor, intente nuevamente.',
+        });
       }
     }
   }
@@ -229,8 +248,6 @@ export class VacanteComponent {
         videoElement.play();
       })
       .catch((error) => {
-        console.error('Error al abrir la cámara:', error);
-
         let errorMessage = 'No se pudo acceder a la cámara. Por favor, verifica los permisos.';
         if (error.name === 'NotAllowedError') {
           errorMessage = 'Permiso denegado para usar la cámara. Habilítalo en la configuración de tu navegador.';
@@ -279,8 +296,23 @@ export class VacanteComponent {
   }
 
   guardarFoto() {
-    console.log('Foto guardada:', this.fotoBase64);
-    alert('¡La foto ha sido guardada exitosamente!');
+    this.vacanteService.guardar_foto({ numerodeceduladepersona: this.form.get('numeroDocumento')?.value, fotoSolicitante: this.fotoBase64 }).subscribe({
+      next: (response) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Foto Guardada',
+          text: 'La foto ha sido guardada exitosamente.',
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al guardar la foto. Por favor, intente nuevamente.',
+        });
+      },
+    });
+
   }
 
 }

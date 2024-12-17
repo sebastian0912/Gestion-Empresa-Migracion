@@ -16,7 +16,6 @@ import { AdminService } from '../../services/admin/admin.service';
     MatIconModule,
     MatButtonModule,
     RouterLink,
-    NgIf,
     NgFor
   ],
   templateUrl: './navbar-superior.component.html',

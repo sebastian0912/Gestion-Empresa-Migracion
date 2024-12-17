@@ -46,7 +46,7 @@ export class SeleccionService {
     let params = new HttpParams()
       .set('office_prefix', officePrefix)
       .set('cedula', cedula);  // Añadir cedula al parámetro
-
+    console.log('Params:', params);
     return this.http.get(`${this.apiUrl}/contratacion/generarCodigoContratacion/`, { headers, params }).pipe(
       map((response: any) => response),  // Procesa la respuesta
       catchError(this.handleError)       // Manejo de errores
