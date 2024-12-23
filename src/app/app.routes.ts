@@ -36,6 +36,7 @@ import { CrearEstructuraDocumentalComponent } from './features/gestion-documenta
 import { BuscarDocumentacionComponent } from './features/gestion-documental/pages/buscar-documentacion/buscar-documentacion.component';
 import { SubirDocumentacionComponent } from './features/gestion-documental/pages/subir-documentacion/subir-documentacion.component';
 import { VacanteComponent } from './features/vacante/pages/vacante/vacante.component';
+import { PersonalAdministrativoComponent } from './features/personal_administrativos/pages/personal-administrativo/personal-administrativo.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -79,5 +80,6 @@ export const routes: Routes = [
   { path: 'generar-documentos', component: GenerarDocumentosComponent },
 
   { path: 'vacante-documentos', component: VacanteComponent },
+  { path: 'personal-administrativo', component: PersonalAdministrativoComponent }
   
 ];

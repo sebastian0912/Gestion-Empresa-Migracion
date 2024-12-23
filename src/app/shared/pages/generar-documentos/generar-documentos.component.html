@@ -25,7 +25,7 @@
                                     <mat-icon>more_vert</mat-icon>
                                 </button>
                                 <mat-menu #menu="matMenu">
-                                    <button mat-menu-item (click)="verPDF(doc.titulo)">
+                                    <button mat-menu-item (click)="verPDF(doc)">
                                         <mat-icon>visibility</mat-icon>
                                         <span>Ver PDF</span>
                                     </button>
@@ -39,8 +39,10 @@
 
                         <!-- Lado derecho: Vista previa del PDF -->
                         <div class="right-panel">
-                            <p>Espacio para vista previa del PDF</p>
+                            <iframe id="pdfPreview" class="pdf-preview">
+                                title="Vista previa PDF"></iframe>
                         </div>
+
                     </div>
                 </mat-card-content>
             </mat-card>

@@ -4,6 +4,26 @@
     line-height: 1;
 }
 
+.cajonFirma {
+    margin: 0 auto;
+}
+
+.firma {
+    border: 1px solid #ccc;
+    width: 70vw;
+    margin-bottom: 30px;
+}
+
+.boton{
+    width: 48%;
+    height: 40pt;
+    border-radius: 5pt;
+}
+
+.cajonFirma{
+    margin-bottom: 10pt;
+}
+
 .info {
     margin-top: 20px;
     width: 100%;

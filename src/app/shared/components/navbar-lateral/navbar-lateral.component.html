@@ -153,7 +153,14 @@
     <li class="blockLink" [class.active]="currentRoute === '/vacante-documentos'" routerLink="/vacante-documentos"
       *ngIf="hasPermission('vacante-documentos')">
       <img src="navbar/contrato.png" alt="Vacante Documentos" class="icon">
-      <p>Vacante Documentos</p>
+      <p>Vacante Documentos firmas</p>
+    </li>
+
+    <!--personal-administrativo-->
+    <li class="blockLink" [class.active]="currentRoute === '/personal-administrativo'" routerLink="/personal-administrativo"
+      *ngIf="hasPermission('personal-administrativo')">
+      <img src="navbar/contrato.png" alt="Personal Administrativo" class="icon">
+      <p>Administrativo firma</p>
     </li>
 
     <li class="blockLink" [class.active]="currentRoute === '/crear-estructura-documental'"

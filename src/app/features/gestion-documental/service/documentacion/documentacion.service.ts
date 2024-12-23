@@ -60,7 +60,6 @@ export class DocumentacionService {
   // Agregar un nuevo tipo de documento (POST)
   public crear_tipo_documento(data: any): Observable<any> {
     const headers = this.createAuthorizationHeader();
-    console.log('data', data);
     return this.http.post(`${this.apiUrl}/gestion_documental/document-types-create/`, data, { headers }).pipe(
       map((response: any) => response),
       catchError(this.handleError)

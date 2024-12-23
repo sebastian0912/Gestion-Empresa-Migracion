@@ -84,6 +84,8 @@ export class ContratacionComponent implements OnInit {
 
   pagoTransporteForm!: FormGroup;
   referenciasForm!: FormGroup;
+  huellaForm: FormGroup;
+
   // Variables de ayuda
   filteredExamOptions: string[] = [];
 
@@ -597,6 +599,11 @@ export class ContratacionComponent implements OnInit {
       traslado: [''],
     });
 
+    // Personal administrativo
+    this.huellaForm = this.fb.group({
+      cedula: [''],
+    });
+
   }
 
   descargarArchivo() {
@@ -772,38 +779,15 @@ export class ContratacionComponent implements OnInit {
       },
       (err: any) => {
         Swal.close(); // Cierra el Swal de carga si hay error
-        if (err.error.message === "No se encontró el proceso de selección para la cédula proporcionada") {
-          Swal.fire({
-            title: 'Info',
-            text: 'El usuario no tiene ningun proceso con nosotros actualmente. Se procede a generar el código de contrato.',
-            icon: 'info',
-            confirmButtonText: 'Ok',
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // Generar el código de contrato si no se encuentra la cédula
-              this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
-                console.log('Código de contrato generado:', response);
-                this.codigoContrato = response.nuevo_codigo;
-                this.procesoValido = true;
 
-                Swal.fire({
-                  title: '¡Código de contrato generado!',
-                  text: 'El código de contrato generado es ' + response.nuevo_codigo,
-                  icon: 'success',
-                  confirmButtonText: 'Ok'
-                });
-              });
-            }
-          });
-        } else {
-          Swal.fire({
-            title: 'Atención',
-            text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
-            icon: 'warning',
-            confirmButtonText: 'Ok',
-          });
-        }
+        Swal.fire({
+          title: 'Atención',
+          text: 'No se encontró la cédula ingresada, no ha llenado el formulario, se podrá continuar con el proceso, pero se debe indicar que a la persona que llene el formulario',
+          icon: 'warning',
+          confirmButtonText: 'Ok',
+        });
       }
+
     );
   }
 
@@ -1685,6 +1669,7 @@ export class ContratacionComponent implements OnInit {
       selecionparte4: this.formGroup4.value,
       pagoTransporte: this.pagoTransporteForm.value,
       empresa: this.nombreEmpresa,
+      cedulaPersonalAdministrativo: this.huellaForm.value,
     };
 
     // Guardar en localStorage como un único objeto JSON
@@ -1692,6 +1677,10 @@ export class ContratacionComponent implements OnInit {
     console.log('Formularios guardados en localStorage');
   }
 
+
+  registrarHuella(tipo: string): void {
+    console.log(`Registrando huella del ${tipo}`);
+  }
 
 
 

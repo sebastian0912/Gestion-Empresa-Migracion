@@ -1,10 +1,10 @@
 import { AuthService } from '../../service/auth/auth.service';
-import { Component } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { MatIconModule } from '@angular/material/icon';
-import { NgClass, NgIf } from '@angular/common';
+import { isPlatformBrowser, NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -18,14 +18,19 @@ import { NgClass, NgIf } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   rightPanelActive: boolean = false;
   loginForm: FormGroup;
   registerForm: FormGroup;
   showPassword: boolean = false;
   showLoginPassword: boolean = false;
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router, 
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -40,6 +45,13 @@ export class LoginComponent {
       correo_electronico: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Borrar todo del local storage
+      localStorage.clear();
+    }
   }
 
   togglePanel(isSignUp: boolean): void {

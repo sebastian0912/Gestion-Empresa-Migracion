@@ -39,6 +39,24 @@ export class ContratacionService {
     );
   }
 
+  // Buscar en contratacion por cedula para sacar los datos bio
+  public buscarEncontratacionDatosBiometricos(cedula: any): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/contratacion/candidato/${cedula}`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
+  // check-contract/<str:codigo_contrato>/
+  public checkContract(codigo_contrato: any): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/contratacion/check-contract/${codigo_contrato}/`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
   // 
   public buscarEnContratacionFormulario(): Observable<any> {
     const headers = this.createAuthorizationHeader();

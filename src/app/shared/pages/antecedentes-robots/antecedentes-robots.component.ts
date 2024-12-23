@@ -66,7 +66,6 @@ export class AntecedentesRobotsComponent implements OnInit {
   buscarPorCedula(): void {
     const cedula = this.cedulaControl.value;
     if (cedula) {
-      console.log('Buscando por cédula:', cedula);
       this.robotsService.consultarEstadosRobots(cedula).subscribe(
         (response: any) => {
           // Verificar si los arreglos están vacíos

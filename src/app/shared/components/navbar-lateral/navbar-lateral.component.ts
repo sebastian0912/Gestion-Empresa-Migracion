@@ -117,7 +117,7 @@ export class NavbarLateralComponent implements OnInit {
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
       'antecedentes-robots','crear-estructura-documental', 'buscar-documentacion', 
-      'subir-documentacion', 'vacante-documentos'
+      'subir-documentacion', 'vacante-documentos', 'personal-administrativo'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'
@@ -656,7 +656,6 @@ export class NavbarLateralComponent implements OnInit {
     const datosMapeados = datos.map((dato: any) => {
 
       if (!dato.proceso_contratacion) {
-        //console.log("Proceso de contratación no está definido para la cédula: " + dato.datos_generales.numerodeceduladepersona);
       } else if (dato.proceso_contratacion.fechaIngreso === null ||
         dato.proceso_contratacion.fechaIngreso === undefined ||
         dato.proceso_contratacion.fechaIngreso === '' ||

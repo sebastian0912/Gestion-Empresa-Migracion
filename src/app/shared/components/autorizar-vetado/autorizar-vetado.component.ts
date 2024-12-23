@@ -56,7 +56,6 @@ export class AutorizarVetadoComponent implements OnInit {
   onCategoriaChange(categoriaId: number) {
     const categoria = this.categorias.find((c) => c.id === categoriaId);
     if (categoria) {
-      console.log(categoria);
       // Actualizar valores en el formulario
       this.categoriaForm.patchValue({
         clasificacion: categoria.clasificacion,
