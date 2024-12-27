@@ -61,10 +61,11 @@ p {
 .titulo-header h3 {
   font-size: 18pt;
   width: 100%;
-  color: #fff;
+  color: #febb2e;
   font-style: italic;
-  border-bottom: 2px solid #fff;
-  padding-bottom: 10px;
+  border-bottom: 2px solid #febb2e;
+  padding-bottom: 0px;
+  font-weight: 600;
   
 }
 

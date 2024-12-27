@@ -7,19 +7,12 @@
 <aside class="sidebar" [ngClass]="{'sidebar-hidden': isSidebarHidden}">
   <div class="sidebar-header titulo-header">
     <h3>Gestión Empresa</h3>
-
   </div>
 
   <div class="sidebar-header servicios-header">
     <h3>Menu</h3>
   </div>
-  <!--
-    <header>
-      <img src="toros.png" />
-      <h1>Finca Los Toros</h1>
-    </header>
-    -->
-
+   
   <ul>
     <li class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home">
       <img src="navbar/home-button.png" alt="Dashboard" class="icon">

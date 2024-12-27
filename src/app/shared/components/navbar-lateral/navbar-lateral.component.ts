@@ -114,7 +114,7 @@ export class NavbarLateralComponent implements OnInit {
       'reporte-contratacion', 'seguimiento-auditoria',
       'formulario-incapacicades', 'subida-archivos-incapacidades',
       'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
-      'contratacion',
+      'contratacion', , 'publicidad', 
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
       'crear-estructura-documental', 'vacante-documentos', 'personal-administrativo'

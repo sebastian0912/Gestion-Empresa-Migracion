@@ -80,12 +80,7 @@ body {
     background-repeat: no-repeat;
 }
 
-
-
-
-
 /* Estilos generales de tabla y inputs */
-
 .dashboard-container {
     display: flex;
     height: 100vh;
@@ -97,7 +92,6 @@ body {
     align-items: center;
     height: 70px;
     width: 100%;
-    padding: 0 16px;
     z-index: 4;
 }
 
@@ -109,13 +103,14 @@ body {
 }
 
 app-navbar-lateral {
-    width: 260px;
+    width: 195pt;
 }
 
 .dashboard-content {
     flex: 1;
-    padding: 16px;
+    padding: 16pt;
     overflow-y: auto;
+    max-width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -147,20 +142,20 @@ app-navbar-lateral {
     display: flex;
     align-items: center;
     width: 100%;
+    
 }
 
 .buscar {
     width: 100%;
 }
 
-mat-card {
-    background-color: white !important;
-}
+
 
 mat-card {
+    background-color: white !important;
     width: 100%;
     max-width: 75vw;
-    padding: 20px;
+    padding: 12pt;
     margin: 0 auto;
 }
 
