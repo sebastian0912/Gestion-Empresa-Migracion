@@ -13,7 +13,7 @@
 
                     <!-- Checkbox de "Es de hoy" -->
                     <div class="form-field-container">
-                        <mat-form-field appearance="fill" class="example-full-width2">
+                        <mat-form-field  class="example-full-width2">
                           <mat-label>¿Es de hoy?</mat-label>
                           <mat-select formControlName="esDeHoy">
                             <mat-option value="true">Sí</mat-option>
@@ -24,7 +24,7 @@
 
                         <!-- Campo de fecha que se muestra solo si el checkbox "Es de hoy" no está seleccionado -->
                         <div *ngIf="reporteForm.get('esDeHoy')?.value === 'false'" class="form-field-container">
-                            <mat-form-field appearance="fill" class="example-full-width2">
+                            <mat-form-field  class="example-full-width2">
                               <mat-label>Fecha</mat-label>
                               <input matInput [matDatepicker]="picker" formControlName="fecha" required>
                               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -34,7 +34,7 @@
 
                         <!-- Selección de Sede -->
                         <div class="form-field-container">
-                            <mat-form-field appearance="fill" class="example-full-width2">
+                            <mat-form-field  class="example-full-width2">
                                 <mat-label>Seleccione la sede</mat-label>
                                 <mat-select formControlName="sede">
                                     <mat-option *ngFor="let sede of sedes" [value]="sede">{{ sede.nombre }}</mat-option>
@@ -44,7 +44,7 @@
 
                         <!-- Contratos Hoy -->
                         <div class="form-field-container">
-                            <mat-form-field appearance="fill" class="example-full-width2">
+                            <mat-form-field  class="example-full-width2">
                                 <mat-label>¿Hubo contratos hoy?</mat-label>
                                 <mat-select formControlName="contratosHoy"
                                     (selectionChange)="onContratosHoyChange($event)">
@@ -63,7 +63,7 @@
                         <div class="subida">
                             <mat-checkbox (change)="onCheckboxChange($event, 'cedulasEscaneadas')">Cédulas
                                 Escaneadas</mat-checkbox>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field  class="example-full-width2">
                                 <input matInput [value]="cedulasEscaneadasFileName"
                                     placeholder="Ningún archivo seleccionado" readonly>
                                 <button mat-icon-button matSuffix (click)="fileInputCedulasEscaneadas.click()"
@@ -79,7 +79,7 @@
                         <div class="subida">
                             <mat-checkbox (change)="onCheckboxChange($event, 'cruceDiario')">Cruce diario
                                 Excel</mat-checkbox>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field  class="example-full-width2">
                                 <input matInput [value]="cruceDiarioFileName" placeholder="Ningún archivo seleccionado"
                                     readonly>
                                 <button mat-icon-button matSuffix (click)="fileInputCruceDiario.click()"
@@ -97,7 +97,7 @@
                         <!-- Subida de Excel ARL -->
                         <div class="subida">
                             <mat-checkbox (change)="onCheckboxChange($event, 'arl')">Subir ARL</mat-checkbox>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field  class="example-full-width2">
                                 <input matInput [value]="arlFileName" placeholder="Ningún archivo seleccionado"
                                     readonly>
                                 <button mat-icon-button matSuffix (click)="fileInputArl.click()"
@@ -113,7 +113,7 @@
                         <div class="subida">
                             <mat-checkbox (change)="onCheckboxChange($event, 'induccionSSO')">Inducción Seguridad y
                                 Salud en el Trabajo</mat-checkbox>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field  class="example-full-width2">
                                 <input matInput [value]="induccionSSOFileName" placeholder="Ningún archivo seleccionado"
                                     readonly>
                                 <button mat-icon-button matSuffix (click)="fileInputInduccionSSO.click()"
@@ -128,7 +128,7 @@
                         <!-- Subida de Traslados -->
                         <div class="subida">
                             <mat-checkbox (change)="onCheckboxChange($event, 'traslados')">Traslados</mat-checkbox>
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field  class="example-full-width2">
                                 <input matInput [value]="trasladosFileName" placeholder="Ningún archivo seleccionado"
                                     readonly>
                                 <button mat-icon-button matSuffix (click)="fileInputTraslados.click()"
@@ -142,19 +142,19 @@
 
                         <div class="primeras">
                             <!-- Cantidad de Contratos Tu Alianza -->
-                            <mat-form-field appearance="fill" class="example-full-width2">
+                            <mat-form-field  class="example-full-width2">
                                 <mat-label>Cantidad de Contratos Tu Alianza</mat-label>
                                 <input matInput type="number" formControlName="cantidadContratosTuAlianza" readonly>
                             </mat-form-field>
 
                             <!-- Cantidad de Contratos Apoyo Laboral -->
-                            <mat-form-field appearance="fill" class="example-full-width2">
+                            <mat-form-field  class="example-full-width2">
                                 <mat-label>Cantidad de Contratos Apoyo Laboral</mat-label>
                                 <input matInput type="number" formControlName="cantidadContratosApoyoLaboral" readonly>
                             </mat-form-field>
 
                             <!-- Notas -->
-                            <mat-form-field appearance="fill" class="example-full-width">
+                            <mat-form-field  class="example-full-width2">
                                 <mat-label>Notas</mat-label>
                                 <textarea matInput formControlName="notas" rows="4"></textarea>
                             </mat-form-field>
@@ -178,7 +178,7 @@
         <!-- Tabla de errores de validación -->
         <div *ngIf="erroresValidacion.data.length > 0">
             <div class="tabla">
-                <mat-form-field appearance="fill" class="example-full-width">
+                <mat-form-field  class="example-full-width2">
                     <mat-label>Buscar por error</mat-label>
                     <input matInput (keyup)="applyFilter('errores', $event)" placeholder="Ej. CAMPO">
                 </mat-form-field>

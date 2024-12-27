@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://10.10.10.60:4545' // URL del backend para desarrollo
+    apiUrl: 'https://formulario.tsservicios.co' // URL del backend para desarrollo
   };
   
