@@ -1616,10 +1616,10 @@ export class SeleccionComponent implements OnInit {
 
     // Ajustar la posición inicial
     pos += 13;
-    
+
     // Dividir el texto para ajustarse al margen (180)
     const textoDividido = doc.splitTextToSize(direccion, 180);
-    
+
     // Imprimir el texto línea por línea
     doc.setFontSize(6);
     doc.setFont('helvetica', 'bold');
@@ -1627,10 +1627,10 @@ export class SeleccionComponent implements OnInit {
       // Calcular la posición horizontal centrada
       const textWidth = doc.getTextWidth(line);
       const centerX = (210 - textWidth) / 2; // 210 es el ancho de una página A4 en unidades de jsPDF
-      
+
       doc.text(line, centerX, pos); // Centrar la línea
       pos += 3; // Incrementar la posición vertical para la siguiente línea
-  });
+    });
 
 
     // Guardar el documento
@@ -1678,7 +1678,302 @@ export class SeleccionComponent implements OnInit {
   }
 
   generarRemisionExamenMedico() {
-    console.log('Generar remisión examen médico');
+    // Determinar la ruta del logo y el NIT
+    let logoPath = '';
+    let codigo = '';
+    let version = '';
+    let texto = '';
+    let qrPath = '';
+    if (this.empresa === 'APOYO LABORAL TS SAS') {
+      logoPath = '/logos/Logo_AL.png';
+      codigo = 'Código: AL SE-RE-4';
+      version = 'Versión: 02';
+      texto = 'En el buscador escriba apoyo laboral ts,  dele click en la pestaña de registrarse o más información y diligencie todo el formulario y al final de la página presione click en “siguiente” para terminar.';
+      qrPath = '/qrs/QR_Apoyo.png';
+    } else if (this.empresa === 'TU ALIANZA SAS') {
+      logoPath = '/logos/Logo_TA.png';
+      codigo = 'Código: TA SE-RE-4';
+      version = 'Versión: 02';
+      texto = 'En el buscador escriba Tu Alianza SAS,  dele click en la pestaña de registrarse o más información y diligencie todo el formulario y al final de la página presione click en “siguiente” para terminar.';
+      qrPath = '/qrs/QR_ALIANZA.png';
+    } else {
+      console.error('Empresa no reconocida');
+      return;
+    }
+
+    // Crear el documento PDF en formato vertical
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+    });
+
+    doc.setProperties({
+      title: 'Contrato_Trabajo.pdf',
+      creator: this.empresa,
+      author: this.empresa,
+    });
+
+
+    // Posiciones iniciales
+    const startX = 5;
+    const startY = 5;
+    const tableWidth = 205;
+
+    // **Cuadro para el logo y NIT**
+    doc.setLineWidth(0.1);
+    doc.rect(startX, startY, 50, 13); // Cuadro del logo y NIT
+
+    // Agregar logo
+    doc.addImage(logoPath, 'PNG', startX + 7, startY + 1.5, 35, 10);
+
+    // Agregar NIT
+    doc.setFontSize(7);
+
+    // **Tabla al lado del logo**
+    let tableStartX = startX + 50; // Inicio de la tabla al lado del cuadro
+    doc.rect(tableStartX, startY, tableWidth - 50, 13); // Borde exterior de la tabla
+
+    // Encabezados
+    doc.setFont('helvetica', 'bold');
+    doc.text("PROCESO DE SELECCIÓN", tableStartX + 55, startY + 3);
+    doc.text("REMISION PARA ENTREVISTA Y/O PRUEBA TECNICA", tableStartX + 43, startY + 7);
+
+    // Líneas divisoras
+    let col1 = tableStartX + 30;
+    let col2 = tableStartX + 50;
+    let col3 = tableStartX + 110;
+
+    doc.line(tableStartX, startY + 4, tableStartX + tableWidth - 50, startY + 4); // Línea horizontal bajo el título
+    doc.line(tableStartX, startY + 8, tableStartX + tableWidth - 50, startY + 8); // Línea horizontal bajo el título
+    doc.line(col1, startY + 8, col1, startY + 13); // Línea vertical 1
+    doc.line(col2, startY + 8, col2, startY + 13); // Línea vertical 2
+    doc.line(col3, startY + 8, col3, startY + 13); // Línea vertical 3
+
+    // **Contenido de las columnas**
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.text(codigo, tableStartX + 2, startY + 11.5);
+    doc.text(version, col1 + 2, startY + 11.5); // Ajustar dentro de columna
+    let fechaEmision = this.obtenerFechaActual(); // Obtener la fecha actual formateada
+    doc.text(`Fecha Emisión: ${fechaEmision}`, col2 + 5, startY + 11.5);
+    doc.text("Página: 1 de 1", col3 + 6, startY + 11.5); // Ajustar dentro de columna
+
+    // linea de extremo a extremo
+    doc.line(startX, startY + 13, tableStartX + tableWidth - 50, startY + 13);
+    // REMISION PARA ENTREVISTA Y/O PRUEBA TECNICA
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text("REMISION PARA ENTREVISTA Y/O PRUEBA TECNICA", 80, startY + 20);
+    // linea de extremo a extremo
+    doc.line(startX, startY + 13, tableStartX + tableWidth - 50, startY + 13);
+    let fecha = this.getFormattedDate();
+
+    // posicion vertical
+    let pos = 30;
+    // **Datos del candidato**
+    doc.setFontSize(6);
+
+    // **Cuadro para el logo y NIT**
+    doc.setLineWidth(0.1);
+
+
+    // Agregar logo
+    doc.addImage(logoPath, 'PNG', startX + 7, startY + 1.5, 35, 10);
+
+    // **Información previa alineada**
+    pos = 30; // Ajustar la posición vertical inicial
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'bold');
+
+    // Definir posiciones para las columnas
+    const col1X = startX + 5; // Primera columna
+    const col2X = startX + 120; // Segunda columna
+    const spacer = 55; // Espaciado entre la etiqueta y el valor
+
+    // Primera fila
+    doc.text(`Fecha:`, col1X, pos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.getFormattedDate()}`, col1X + spacer, pos);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Código de Contrato:`, col2X, pos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.codigoContrato}`, col2X + spacer, pos);
+
+    // Segunda fila
+    pos += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Empresa Usuaria:`, col1X, pos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.formGroup4.value.empresaUsuaria}`, col1X + spacer, pos);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Cargo:`, col2X, pos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.formGroup2.value.cargo}`, col2X + spacer, pos);
+
+    // Tercera fila
+    pos += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Experiencia en el Sector:`, col1X, pos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.vacante.experiencia}`, col1X + spacer, pos);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text(`¿Cuánto tiempo?:`, col2X, pos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.infoGeneralC.tiempo_experiencia}`, col2X + spacer, pos);
+
+    // Añadir más texto como antes
+    pos += 12;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Respetados Señores:`, col1X, pos);
+
+    pos += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Muy comedidamente presentamos al señor (a):`, col1X, pos);
+    doc.text(`${this.getFullName()}`, col1X + spacer, pos);
+
+    pos += 5;
+    doc.text(`Identificado (a) con cédula de ciudadanía número:`, col1X, pos);
+    doc.text(`${this.infoGeneralC.numerodeceduladepersona}`, col1X + spacer, pos);
+
+    pos += 5;
+    doc.text(`Para presentar entrevista al área de:`, col1X, pos);
+    doc.text(`${this.formGroup2.value.areaEntrevista}`, col1X + spacer, pos);
+
+    pos += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`EN LAS INSTALACIONES DE LA EMPRESA`, col1X, pos);
+
+    // Convertir la hora
+    const hora12 = this.convertTo12HourFormat(this.formGroup2.value.horaPruebaEntrevista);
+
+    pos += 5;
+
+    // Texto "El día"
+    doc.setFont('helvetica', 'normal');
+    doc.text(`El día`, col1X, pos);
+
+    // Texto con la fecha en negrita
+    const textWidth1 = doc.getTextWidth(`El día `); // Obtener el ancho del texto anterior
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.formGroup2.value.fechaPruebaEntrevista}`, col1X + textWidth1, pos);
+
+    // Texto "a las"
+    doc.setFont('helvetica', 'normal');
+    const textWidth2 = textWidth1 + doc.getTextWidth(`${this.formGroup2.value.fechaPruebaEntrevista} `); // Ancho acumulado
+    doc.text(` a las`, col1X + textWidth2, pos);
+
+    // Texto con la hora en formato 12 horas en negrita
+    doc.setFont('helvetica', 'bold');
+    const textWidth3 = textWidth2 + doc.getTextWidth(` a las `); // Ancho acumulado
+    doc.text(`${hora12}`, col1X + textWidth3, pos);
+
+
+    pos += 5;
+    doc.text(`PREGUNTAR POR: `, col1X, pos);
+    doc.text(`Gestión Humana`, col1X + spacer, pos);
+
+
+    // **Tabla: Dirección de la empresa**
+    const tableData = [
+      ['DIRECCIÓN DE LA EMPRESA'], // Encabezado
+      [this.formGroup2.value.direccionEmpresa] // Dirección
+    ];
+
+    // Generar tabla con autoTable
+    autoTable(doc, {
+      startY: pos - 11, // Espaciado antes de la tabla
+      margin: { left: 135 }, // Define la posición X inicial (50 mm desde la izquierda)
+      head: [], // Sin encabezado adicional
+      body: tableData,
+      theme: 'grid', // Tema de la tabla
+      styles: {
+        font: 'helvetica',
+        fontSize: 6,
+        cellPadding: 1.5,
+        halign: 'center' // Centrar el contenido de la tabla
+      },
+      columnStyles: {
+        0: { cellWidth: 65 } // Ancho de la primera columna
+      }
+    });
+
+    pos += 20;
+    // Linea
+    doc.setLineWidth(0.2);
+    doc.line(10, pos, 50, pos);
+    // Nombre del evaluador
+    pos += 3.5;
+    doc.text(`GESTIÓN HUMANA (Temporal)`, startX + 5, pos);
+
+    // Dividir el texto en líneas con un ancho máximo de 80 mm
+    const text = `Para dar inicio al proceso de contratación por favor Regístrese escaneando el QR o a través de facebook o Google así:`;
+    // Parámetros de impresión
+    const maxWidth = 50;  // Ancho máximo del párrafo (en mm)
+    const lineHeight = 2; // Espacio vertical entre líneas
+
+    // Dividimos el texto en líneas según maxWidth
+    const lines = doc.splitTextToSize(text, maxWidth);
+
+    // Configuramos la fuente (por ejemplo, Helvetica en bold, tamaño 12)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6);
+
+    // Recorremos cada línea para imprimirla
+    lines.forEach((line: string | string[], index: number) => {
+      const linePosY = startY + (index * lineHeight) + pos - 15;
+      doc.text(line, startX + 120, linePosY, {
+        align: 'justify',
+      });
+    });
+
+    doc.setFont('helvetica', 'normal');
+    const lines2 = doc.splitTextToSize(texto, maxWidth);
+    lines2.forEach((line: string | string[], index: number) => {
+      const linePosY = startY + (index * lineHeight) + pos - 5;
+      doc.text(line, startX + 120, linePosY, {
+        align: 'justify',
+      });
+    });
+
+
+
+    // Agregar QR
+    doc.addImage(qrPath, 'PNG', startX + 172, startY + 80, 25, 25);
+
+    // Horario de Atención: LUNES a VIERNES DE 08:00 am - 12:00 pm y  DE 2:00 pm - 5:00 pm --- CENTRADO
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Horario de Atención: LUNES a VIERNES DE 08:00 am - 12:00 pm y  DE 2:00 pm - 5:00 pm`, 105, 115, {
+      align: 'center'
+    });
+
+    const direccion = `Facatativá: Carrera 2 # 8 - 156 (Frente a tornillos 7777777) Madrid: Calle 7 # 4 - 49 (Centro) Funza: Calle 9 # 10 a 61 Fontibón: Carrera 112 a # 18 a 05 (Segundo piso Surtimax La Economía) Soacha: Calle 21 a # 3 - 20 (Al lado de la fábrica El Triunfo) Suba: Carrera 103 D # 150 c - 03 (Frente a la entrada del bodytech plaza imperial) Tocancipa: Calle 7 # 7 - 20 (Detrás del Claro). PBX: 7444002-  EXT 1010-1050* Celular: 3126469000`;
+
+    // Ajustar la posición inicial
+    pos += 13;
+
+    // Dividir el texto para ajustarse al margen (180)
+    const textoDividido = doc.splitTextToSize(direccion, 180);
+
+    // Imprimir el texto línea por línea
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'bold');
+    textoDividido.forEach((line: string) => {
+      // Calcular la posición horizontal centrada
+      const textWidth = doc.getTextWidth(line);
+      const centerX = (210 - textWidth) / 2; // 210 es el ancho de una página A4 en unidades de jsPDF
+
+      doc.text(line, centerX, pos); // Centrar la línea
+      pos += 3; // Incrementar la posición vertical para la siguiente línea
+    });
+
+
+    // Guardar el documento
+    doc.save('Contrato_Trabajo.pdf');
   }
 
 

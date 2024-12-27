@@ -105,9 +105,10 @@ export class NavbarLateralComponent implements OnInit {
       'ausentismos', 'seguimiento-auditoria', 'estadisticas-auditoria',
       'ver-reporte', 'reporte-contratacion', 'consulta-formulario'
     ],
+    // 'buscar-documentacion',       'subir-documentacion', 'publicidad', 'antecedentes-robots',
     ADMIN: [
       'forma-pago', 'desprendibles-pago',
-      'arl', 'ausentismos', 'publicidad', 'vacantes',
+      'ausentismos',  'vacantes',
       'seguimiento-auditoria', 'estadisticas-auditoria', 'seguimiento-auditoria-archivo',
       'personal-activo',
       'reporte-contratacion', 'seguimiento-auditoria',
@@ -116,8 +117,7 @@ export class NavbarLateralComponent implements OnInit {
       'contratacion',
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
-      'antecedentes-robots','crear-estructura-documental', 'buscar-documentacion', 
-      'subir-documentacion', 'vacante-documentos', 'personal-administrativo'
+      'crear-estructura-documental', 'vacante-documentos', 'personal-administrativo'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'

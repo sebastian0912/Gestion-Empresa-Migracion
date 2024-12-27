@@ -62,10 +62,6 @@
       <p>Desprendibles de pago</p>
     </li>
 
-    <li class="blockLink" *ngIf="hasPermission('arl')" (click)="selectFile('arl')">
-      <img src="navbar/evaluacion.png" alt="ARL" class="icon">
-      <p>ARL</p>
-    </li>
 
     <li class="blockLink" *ngIf="hasPermission('adres')" (click)="selectFile('adres')">
       <img src="navbar/ai.png" alt="Adress Robots" class="icon">
@@ -153,14 +149,14 @@
     <li class="blockLink" [class.active]="currentRoute === '/vacante-documentos'" routerLink="/vacante-documentos"
       *ngIf="hasPermission('vacante-documentos')">
       <img src="navbar/contrato.png" alt="Vacante Documentos" class="icon">
-      <p>Vacante Documentos firmas</p>
+      <p>Firma de docs vacante </p>
     </li>
 
     <!--personal-administrativo-->
-    <li class="blockLink" [class.active]="currentRoute === '/personal-administrativo'" routerLink="/personal-administrativo"
-      *ngIf="hasPermission('personal-administrativo')">
+    <li class="blockLink" [class.active]="currentRoute === '/personal-administrativo'"
+      routerLink="/personal-administrativo" *ngIf="hasPermission('personal-administrativo')">
       <img src="navbar/contrato.png" alt="Personal Administrativo" class="icon">
-      <p>Administrativo firma</p>
+      <p>Firma PAD Docs</p>
     </li>
 
     <li class="blockLink" [class.active]="currentRoute === '/crear-estructura-documental'"
