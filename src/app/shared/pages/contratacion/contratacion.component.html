@@ -1139,13 +1139,13 @@
                     <mat-accordion>
                         <!-- Acordeón 1: Información de Pago y Transporte -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Información de Pago y Transporte</mat-panel-title>
+                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(pagoTransporteForm))}">
+                                <mat-panel-title>Información de Pago y Transporte ({{ getPercentage(pagoTransporteForm) }}% completo) </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="pagoTransporteForm">
                                 <mat-form-field class="example-full-width3">
-                                    <mat-label>Semanas Cotizadas</mat-label>
+                                    <mat-label>Semanas Cotizadas </mat-label>
                                     <input matInput formControlName="semanasCotizadas" type="number">
                                 </mat-form-field>
 
@@ -1170,31 +1170,32 @@
 
                                 <mat-form-field class="example-full-width3">
                                     <mat-label>Número para Pagos</mat-label>
-                                    <input matInput formControlName="numeroPagos">
+                                    <input matInput formControlName="numeroPagos" />
                                     <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('required')">
-                                      El número para pagos es obligatorio.
+                                        El número para pagos es obligatorio.
                                     </mat-error>
                                     <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('pattern')">
-                                      Debe contener exactamente 10 dígitos.
+                                        Debe contener exactamente 10 dígitos.
                                     </mat-error>
-                                  </mat-form-field>
-                                  
-                                  <mat-form-field class="example-full-width3">
+                                </mat-form-field>
+
+                                <mat-form-field class="example-full-width3">
                                     <mat-label>Validación Número de Cuenta</mat-label>
-                                    <input matInput formControlName="validacionNumeroCuenta">
-                                    <mat-error *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('required')">
-                                      La validación del número de cuenta es obligatoria.
+                                    <input matInput formControlName="validacionNumeroCuenta" />
+                                    <mat-error
+                                        *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('required')">
+                                        La validación del número de cuenta es obligatoria.
                                     </mat-error>
-                                    <mat-error *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('pattern')">
-                                      Debe contener exactamente 10 dígitos.
+                                    <mat-error
+                                        *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('pattern')">
+                                        Debe contener exactamente 10 dígitos.
                                     </mat-error>
-                                  </mat-form-field>
-                                  
-                                  <mat-error *ngIf="pagoTransporteForm?.errors?.['numbersNotMatch']">
+                                </mat-form-field>
+
+                                <!-- Error del validador del grupo -->
+                                <mat-error *ngIf="pagoTransporteForm.hasError('numbersNotMatch')" class="error">
                                     El número para pagos y la validación del número de cuenta deben coincidir.
-                                  </mat-error>
-                                  
-                                  
+                                </mat-error>
 
                                 <!--seguro funerario SI O NO -->
                                 <mat-form-field class="example-full-width3">
@@ -1331,8 +1332,8 @@
 
                         <!-- Acordeón 4: Traslados -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Traslados</mat-panel-title>
+                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(trasladosForm))}">
+                                <mat-panel-title>Traslados ({{ getPercentage(trasladosForm) }}% completo) </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="trasladosForm">

@@ -539,8 +539,6 @@ export class ContratacionService {
   // Servicio Angular
   public detalleLaboralContratacion(empresaUsuaria: string, sublabor: string): Observable<any> {
     const headers = this.createAuthorizationHeader();
-
-    console.log("empresaUsuaria", empresaUsuaria + " sublabor", sublabor);
     // Construimos los parámetros de consulta
     const params = new HttpParams()
       .set('empresa_usuaria', empresaUsuaria)
@@ -554,6 +552,47 @@ export class ContratacionService {
       catchError(this.handleError) // Manejamos errores
     );
   }
+
+
+  async guardarOActualizarContratacion(data: any): Promise<any> {
+    const token = this.getToken();
+  
+    if (!token) {
+      throw new Error('No se encontró un token válido');
+    }
+  
+    const urlcompleta = `${this.apiUrl}/contratacion/guardar-o-actualizar-contratacion/`;
+  
+    const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
+  
+    // Agregar el token JWT a los datos
+    const dataConToken = {
+      ...data,
+      jwt: token
+    };
+  
+    try {
+      const response = await firstValueFrom(
+        this.http.post<string>(urlcompleta, dataConToken, { headers }).pipe(
+          catchError(this.handleError)
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Error en la llamada al servicio:', error);
+      throw error;
+    }
+  }
+
+  // contratacion/traerCompletoContratacion/<str:codigo_contrato>/
+  public traerCompletoContratacion(codigo_contrato: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/contratacion/traerCompletoContratacion/${codigo_contrato}/`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+  
 
 
 

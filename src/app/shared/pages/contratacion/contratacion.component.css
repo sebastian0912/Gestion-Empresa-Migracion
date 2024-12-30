@@ -18,6 +18,14 @@ mat-error{
     line-height: 1.1;
 }
 
+.error{
+    font-size: 0.8rem;
+    max-width: 30%;
+    margin-left: 6pt;
+    display: inline-block; /* Evita que ocupe toda la línea */
+
+}
+
 .boton{
     width: 48%;
     height: 40pt;

@@ -564,26 +564,37 @@ export class ContratacionComponent implements OnInit {
       bonificacion: ['']
     });
 
-    this.pagoTransporteForm = this.fb.group({
-      semanasCotizadas: [''],
-      formaPago: [''],
-      otraFormaPago: [''],
-      numeroPagos: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      validacionNumeroCuenta: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      seguroFunerario: [''],
-      Ccostos: [''],
-      subcentro: [''],
-      grupo: [''],
-      categoria: [''],
-      operacion: [''],
-      sublabor: [''],
-      salario: [''],
-      auxilioTransporte: [''],
-      ruta: [''],
-      valorTransporte: [''],
-      horasExtras: [''],
-      porcentajeARL: ['']
-    }),    { validators: this.matchNumbersValidator };
+    this.pagoTransporteForm = this.fb.group(
+      {
+        semanasCotizadas: [''],
+        formaPago: [''],
+        otraFormaPago: [''],
+        numeroPagos: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+        validacionNumeroCuenta: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+        seguroFunerario: [''],
+        Ccostos: [''],
+        // subcentro: [''],
+        // grupo: [''],
+        // categoria: [''],
+        // operacion: [''],
+        // sublabor: [''],
+        salario: [''],
+        auxilioTransporte: [''],
+        // ruta: [''],
+        // valorTransporte: [''],
+        // horasExtras: [''],
+        porcentajeARL: [''],
+      },
+      { validators: this.matchNumbersValidator } // Aquí se aplica el validador al grupo
+    );
+
+    // Escuchar cambios en ambos campos y revalidar
+    this.pagoTransporteForm.get('numeroPagos')?.valueChanges.subscribe(() => {
+      this.pagoTransporteForm.updateValueAndValidity(); // Actualiza el estado del grupo
+    });
+    this.pagoTransporteForm.get('validacionNumeroCuenta')?.valueChanges.subscribe(() => {
+      this.pagoTransporteForm.updateValueAndValidity(); // Actualiza el estado del grupo
+    });
 
     this.referenciasForm = this.fb.group({
       familiar1: [''],
@@ -594,7 +605,7 @@ export class ContratacionComponent implements OnInit {
 
     // Inicializar el FormGroup de traslados
     this.trasladosForm = this.fb.group({
-      opcion_traslado_eps: ['no'],
+      opcion_traslado_eps: [''],
       eps_a_trasladar: [''],
       traslado: [''],
     });
@@ -606,17 +617,18 @@ export class ContratacionComponent implements OnInit {
 
   }
 
-    // Validator personalizado para verificar que los campos sean iguales
-    matchNumbersValidator(group: AbstractControl): { [key: string]: boolean } | null {
-      const numeroPagos = group.get('numeroPagos')?.value;
-      const validacionNumeroCuenta = group.get('validacionNumeroCuenta')?.value;
-  
-      if (numeroPagos && validacionNumeroCuenta && numeroPagos !== validacionNumeroCuenta) {
-        return { numbersNotMatch: true };
-      }
-  
-      return null;
+  // Validador personalizado para verificar que los campos sean iguales
+  matchNumbersValidator(group: AbstractControl): { [key: string]: boolean } | null {
+    const numeroPagos = group.get('numeroPagos')?.value;
+    const validacionNumeroCuenta = group.get('validacionNumeroCuenta')?.value;
+
+    // Si ambos campos tienen valores y no coinciden, retorna un error
+    if (numeroPagos && validacionNumeroCuenta && numeroPagos !== validacionNumeroCuenta) {
+      return { numbersNotMatch: true };
     }
+
+    return null; // Sin errores
+  }
 
   descargarArchivo() {
     let archivo: string;
@@ -755,7 +767,7 @@ export class ContratacionComponent implements OnInit {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
-
+      
     }).subscribe(
       async ({ seleccion, infoGeneral }) => {
         Swal.close(); // Cierra el Swal de carga al completar
@@ -1033,12 +1045,28 @@ export class ContratacionComponent implements OnInit {
           this.codigoContrato = this.seleccion.codigo_contrato;
           this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((vacante: any) => {
             this.nombreEmpresa = vacante.publicacion[0].empresaQueSolicita_id;
-            console.log('Nombre de la empresa:', this.nombreEmpresa);
           });
 
           this.contratacionService.traerDatosContratacion(this.cedula, this.codigoContrato).subscribe((datosContratacion: any) => {
             if (datosContratacion) {
               console.log(datosContratacion);
+              this.pagoTransporteForm.patchValue({
+                semanasCotizadas: datosContratacion.semanas_cotizadas,
+                formaPago: datosContratacion.forma_pago,
+                numeroPagos: datosContratacion.numero_pagos,
+                validacionNumeroCuenta: datosContratacion.validacion_numero_cuenta,
+                seguroFunerario: datosContratacion.seguro_funerario,
+                porcentajeARL: datosContratacion.porcentaje_arl,
+                auxilioTransporte: datosContratacion.auxilio_transporte,
+                salario: datosContratacion.salario_contratacion,
+                Ccostos: datosContratacion.centro_de_costos || '',
+              });
+              this.trasladosForm.patchValue({
+                opcion_traslado_eps: datosContratacion.opcion_traslado_eps,
+                eps_a_trasladar: datosContratacion.eps_a_trasladar,
+                traslado: datosContratacion.traslado,
+              });
+
             } else {
               console.error('No se encontraron datos de contratación');
             }
@@ -1145,7 +1173,6 @@ export class ContratacionComponent implements OnInit {
 
           this.contratacionService.detalleLaboralContratacion(this.formGroup2.value.centroCosto, this.formGroup2.value.cargo).subscribe((detalleLaboral: any) => {
             if (detalleLaboral) {
-              console.log(detalleLaboral);
               this.pagoTransporteForm.patchValue({
                 porcentajeARL: detalleLaboral[0].porcentaje_arl,
                 auxilioTransporte: detalleLaboral[0].valor_transporte,
@@ -1515,22 +1542,28 @@ export class ContratacionComponent implements OnInit {
   }
 
 
-  // Método para calcular el porcentaje de llenado de un FormGroup
-  getPercentage(formGroup: FormGroup): number {
-    const totalFields = Object.keys(formGroup.controls).length;
-    const filledFields = Object.values(formGroup.controls).filter(control => {
-      const value = control.value;
+// Método para calcular el porcentaje de llenado de un FormGroup
+getPercentage(formGroup: FormGroup): number {
+  const totalFields = Object.keys(formGroup.controls).length;
+  const filledFields = Object.entries(formGroup.controls).filter(([key, control]) => {
+    const value = control.value;
 
-      // Ignorar campos vacíos y arreglos vacíos
-      if (Array.isArray(value)) {
-        return value.length > 0; // Solo contar como lleno si el arreglo tiene elementos
-      }
+    // Ignorar el campo 'otraFormaPago'
+    if (key === 'otraFormaPago') {
+      return false;
+    }
 
-      return value !== null && value !== undefined && value !== ''; // Considerar los valores no vacíos
-    }).length;
+    // Ignorar campos vacíos y arreglos vacíos
+    if (Array.isArray(value)) {
+      return value.length > 0; // Solo contar como lleno si el arreglo tiene elementos
+    }
 
-    return Math.round((filledFields / totalFields) * 100);
-  }
+    return value !== null && value !== undefined && value !== ''; // Considerar los valores no vacíos
+  }).length;
+
+  return Math.round((filledFields / totalFields) * 100);
+}
+
 
   updateExamOptions(cargo: string): void {
     const labor = this.laborExams.find(l => l.labor === cargo);
@@ -1561,12 +1594,39 @@ export class ContratacionComponent implements OnInit {
 
 
   cargarPagoTransporte() {
-    if (this.pagoTransporteForm.value.otraFormaPago !== '') {
-      this.pagoTransporteForm.get('otraFormaPago')?.setValue(this.pagoTransporteForm.value.otraFormaPago);
+    // Verificar si el formulario es válido antes de enviar
+    if (this.pagoTransporteForm.invalid) {
+      console.error('Formulario inválido, por favor revise los datos.');
+      return;
     }
-    console.log('Información de Pago y Transporte:', this.pagoTransporteForm.value);
+  
+    // Construir los datos que se enviarán al servicio
+    const data = {
+      numero_de_cedula: this.cedula, // Cédula del candidato
+      codigo_contrato: this.codigoContrato, // Código de contrato
+      semanas_cotizadas: this.pagoTransporteForm.get('semanasCotizadas')?.value,
+      forma_pago: this.pagoTransporteForm.get('formaPago')?.value,
+      numero_pagos: this.pagoTransporteForm.get('numeroPagos')?.value,
+      validacion_numero_cuenta: this.pagoTransporteForm.get('validacionNumeroCuenta')?.value,
+      seguro_funerario: this.pagoTransporteForm.get('seguroFunerario')?.value,
+      centro_de_costos: this.pagoTransporteForm.get('Ccostos')?.value,
+      salario_contratacion: this.pagoTransporteForm.get('salario')?.value,
+      valor_transporte: this.pagoTransporteForm.get('auxilioTransporte')?.value,
+      porcentaje_arl: this.pagoTransporteForm.get('porcentajeARL')?.value
+    };
+    console.log('Pago de Transporte:', data);
+  
+    // Llamar al servicio para guardar o actualizar los datos
+    this.contratacionService.guardarOActualizarContratacion(data).then((response: any) => {
+      console.log('Respuesta exitosa:', response);
+      // Aquí puedes manejar la respuesta si es necesario
+    }).catch((error: any) => {
+      console.error('Error al guardar o actualizar:', error);
+      // Aquí puedes manejar el error si es necesario
+    });
   }
 
+  
   cargarReferencias() {
     console.log('Referencias Personales:', this.referenciasForm.value);
 
