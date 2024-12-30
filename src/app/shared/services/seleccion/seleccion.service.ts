@@ -72,7 +72,7 @@ export class SeleccionService {
       jwt: this.getToken()
     };
 
-    console.log('Data:', requestData);
+    //console.log('Data:', requestData);
 
     // Realizar la solicitud POST al backend
     return this.http.post(`${this.apiUrl}/Seleccion/crearSeleccionParteUnoCandidato`, requestData, { headers }).pipe(

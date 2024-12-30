@@ -52,10 +52,6 @@ export class GestionDocumentalService {
     if (contract_number) {
       formData.append('contract_number', contract_number);
     }
-    // imprimir el formData para ver que se está enviando
-    formData.forEach((value, key) => {
-      console.log('key : ' + key + ', value : ' + value);
-    });
 
     const headers = this.createAuthorizationHeader();
 

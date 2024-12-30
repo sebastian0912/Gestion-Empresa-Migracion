@@ -767,7 +767,7 @@ export class ContratacionComponent implements OnInit {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
-      
+
     }).subscribe(
       async ({ seleccion, infoGeneral }) => {
         Swal.close(); // Cierra el Swal de carga al completar
@@ -1029,7 +1029,91 @@ export class ContratacionComponent implements OnInit {
     return age;
   }
 
-
+  llenarDocumentos() {
+    forkJoin({
+      tipo2: this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 2),
+      tipo16: this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 16),
+      tipo17: this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 17)
+    }).subscribe({
+      next: async (resultados) => {
+        // Manejo de resultados para tipo 2
+        if (resultados.tipo2) {
+          for (const documento of resultados.tipo2) {
+            const typeKey = Object.keys(this.typeMap).find(key => this.typeMap[key] === documento.type);
+            if (typeKey) {
+              const file = await this.urlToFile(documento.file_url, documento.title || 'Documento sin título');
+              this.uploadedFiles[typeKey] = {
+                fileName: documento.title || 'Documento sin título',
+                file
+              };
+            }
+          }
+        } else {
+          Swal.fire({
+            title: '¡Atención!',
+            text: 'No se encontraron documentos de antecedentes (tipo 2)',
+            icon: 'warning',
+            confirmButtonText: 'Ok'
+          });
+        }
+  
+        // Manejo de resultados para tipo 16 (personal1 y personal2)
+        if (resultados.tipo16) {
+          let personalIndex = 1; // Índice para asignar personal1 y personal2
+          for (const documento of resultados.tipo16) {
+            const typeKey = `personal${personalIndex}`;
+            if (typeKey in this.typeMap) {
+              const file = await this.urlToFile(documento.file_url, documento.title || 'Documento sin título');
+              this.uploadedFiles[typeKey] = {
+                fileName: documento.title || 'Documento sin título',
+                file
+              };
+              personalIndex++; // Incrementar para manejar personal2
+            }
+          }
+        } else {
+          Swal.fire({
+            title: '¡Atención!',
+            text: 'No se encontraron documentos de referencias personales',
+            icon: 'warning',
+            confirmButtonText: 'Ok'
+          });
+        }
+  
+        // Manejo de resultados para tipo 17 (familiar1 y familiar2)
+        if (resultados.tipo17) {
+          let familiarIndex = 1; // Índice para asignar familiar1 y familiar2
+          for (const documento of resultados.tipo17) {
+            const typeKey = `familiar${familiarIndex}`;
+            if (typeKey in this.typeMap) {
+              const file = await this.urlToFile(documento.file_url, documento.title || 'Documento sin título');
+              this.uploadedFiles[typeKey] = {
+                fileName: documento.title || 'Documento sin título',
+                file
+              };
+              familiarIndex++; // Incrementar para manejar familiar2
+            }
+          }
+        } else {
+          Swal.fire({
+            title: '¡Atención!',
+            text: 'No se encontraron documentos de referencias familiares',
+            icon: 'warning',
+            confirmButtonText: 'Ok'
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error al obtener documentos:', err);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Ocurrió un error al obtener los documentos',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+      }
+    });
+  }
 
   async verificarSeleccion() {
     // Si existe un proceso de selección, llenar el formulario con los datos
@@ -1037,82 +1121,30 @@ export class ContratacionComponent implements OnInit {
       // Mostrar el diálogo de confirmación
       Swal.fire({
         title: '¡Atención!',
-        html: 'Se procedera con el codigo de contrato <b>' + this.seleccion.codigo_contrato + '</b>. de este usuario',
+        html: 'Este usuario ya tiene un proceso de selección con el código de contrato <b>' + this.seleccion.codigo_contrato + '</b>. ¿Deseas crear otro o seguir con este?',
         icon: 'warning',
-        confirmButtonText: 'Continuar', // Texto del único botón
+        showCancelButton: true,
+        confirmButtonText: 'Crear otro',
+        cancelButtonText: 'Seguir con este'
       }).then((result) => {
         if (result.isConfirmed) {
+          this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
+            this.codigoContrato = response.codigo_contrato;
+            Swal.fire({
+              title: '¡Código de contrato generado!',
+              text: 'El código de contrato generado es ' + response.codigo_contrato,
+              icon: 'success',
+              confirmButtonText: 'Ok'
+            });
+          });
+
+        } else {
           this.codigoContrato = this.seleccion.codigo_contrato;
-          this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((vacante: any) => {
-            this.nombreEmpresa = vacante.publicacion[0].empresaQueSolicita_id;
+          this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((response: any) => {
+            this.nombreEmpresa = response.publicacion[0].empresaQueSolicita_id;
+            //this.vacante = response.publicacion[0]
           });
-
-          this.contratacionService.traerDatosContratacion(this.cedula, this.codigoContrato).subscribe((datosContratacion: any) => {
-            if (datosContratacion) {
-              console.log(datosContratacion);
-              this.pagoTransporteForm.patchValue({
-                semanasCotizadas: datosContratacion.semanas_cotizadas,
-                formaPago: datosContratacion.forma_pago,
-                numeroPagos: datosContratacion.numero_pagos,
-                validacionNumeroCuenta: datosContratacion.validacion_numero_cuenta,
-                seguroFunerario: datosContratacion.seguro_funerario,
-                porcentajeARL: datosContratacion.porcentaje_arl,
-                auxilioTransporte: datosContratacion.auxilio_transporte,
-                salario: datosContratacion.salario_contratacion,
-                Ccostos: datosContratacion.centro_de_costos || '',
-              });
-              this.trasladosForm.patchValue({
-                opcion_traslado_eps: datosContratacion.opcion_traslado_eps,
-                eps_a_trasladar: datosContratacion.eps_a_trasladar,
-                traslado: datosContratacion.traslado,
-              });
-
-            } else {
-              console.error('No se encontraron datos de contratación');
-            }
-          });
-
-
-          // Ahora que ya se ha asignado this.codigoContrato, puedes llamar a obtenerDocumentosPorTipo
-          if (this.codigoContrato) {
-            this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 2)
-              .subscribe({
-                next: (infoGestionDocumentalAntecedentes: any[]) => {
-                  if (infoGestionDocumentalAntecedentes) {
-                    // Iterar sobre los documentos y mapearlos a los campos correctos
-                    infoGestionDocumentalAntecedentes.forEach((documento: any) => {
-                      const typeKey = Object.keys(this.typeMap).find(key => this.typeMap[key] === documento.type);
-                      if (typeKey) {
-                        // Aquí almacenamos el archivo con su URL para visualizarlo luego
-                        this.uploadedFiles[typeKey] = {
-                          fileName: documento.title,
-                          file: documento.file_url // Guardar la URL para acceder al archivo más tarde
-                        };
-                      }
-                    });
-                  }
-
-                },
-                error: (err: any) => {
-                  if (err.error.error === "No se encontraron documentos") {
-                    Swal.fire({
-                      title: '¡Atención!',
-                      text: 'No se encontraron documentos de antecedentes',
-                      icon: 'warning',
-                      confirmButtonText: 'Ok'
-                    });
-                  } else {
-                    console.error('Error al obtener antecedentes:', err);
-                    Swal.fire({
-                      title: '¡Error!',
-                      text: 'No se pudieron obtener los documentos de antecedentes',
-                      icon: 'error',
-                      confirmButtonText: 'Ok'
-                    });
-                  }
-                }
-              });
-          }
+          this.llenarDocumentos();
 
           // Llenar los campos del formulario de Datos Generales (formGroup1)
           this.formGroup1.patchValue({
@@ -1125,6 +1157,7 @@ export class ContratacionComponent implements OnInit {
             medidasCorrectivas: this.seleccion.medidas_correctivas || '',
             area_aplica: this.seleccion.area_aplica || ''
           });
+
 
           // Llenar los campos del formulario con los datos de la selección
           this.formGroup2.patchValue({
@@ -1159,6 +1192,10 @@ export class ContratacionComponent implements OnInit {
           // Establecer el FormArray en el formulario
           this.formGroup3.setControl('selectedExamsArray', formArray);
 
+
+
+
+
           // Llenar los campos del formulario de Contratación (formGroup4)
           this.formGroup4.patchValue({
             empresaUsuaria: this.seleccion.empresa_usuario || '',
@@ -1169,26 +1206,6 @@ export class ContratacionComponent implements OnInit {
             auxMovilidad: this.seleccion.aux_movilidad || '',
             bonificacion: this.seleccion.bonificacion || ''
           });
-
-
-          this.contratacionService.detalleLaboralContratacion(this.formGroup2.value.centroCosto, this.formGroup2.value.cargo).subscribe((detalleLaboral: any) => {
-            if (detalleLaboral) {
-              this.pagoTransporteForm.patchValue({
-                porcentajeARL: detalleLaboral[0].porcentaje_arl,
-                auxilioTransporte: detalleLaboral[0].valor_transporte,
-                salario: detalleLaboral[0].salario,
-                Ccostos: this.seleccion.centro_costo_entrevista || '',
-              });
-              console.log('Detalle laboral:', detalleLaboral);
-            } else {
-              console.error('No se encontraron datos de detalle laboral');
-            }
-          }
-          );
-
-
-
-
         }
       });
 
@@ -1198,25 +1215,29 @@ export class ContratacionComponent implements OnInit {
   }
 
 
-  // Método que se ejecuta cuando se selecciona un archivo
-  subirArchivo(event: any, campo: string) {
-    const file = event.target.files[0]; // Obtén el archivo seleccionado
-    if (file) {
-      // Verificar si el nombre del archivo tiene más de 100 caracteres
-      if (file.name.length > 100) {
-        Swal.fire('Error', 'El nombre del archivo no debe exceder los 100 caracteres', 'error');
-        return; // Salir de la función si la validación falla
-      }
-
-      // Si la validación es exitosa, almacenar el archivo
-      this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
-      //Swal.fire('Archivo subido', `Archivo ${file.name} subido para ${campo}`, 'success');
-    }
+  urlToFile(url: string, fileName: string): Promise<File> {
+    return fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`No se pudo descargar el archivo: ${response.statusText}`);
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const extension = fileName.split('.').pop() || 'txt';
+        const mimeType = blob.type || `application/${extension}`;
+        return new File([blob], fileName, { type: mimeType });
+      })
+      .catch(error => {
+        console.error('Error al descargar el archivo:', error);
+        throw error;
+      });
   }
 
   // Método para abrir un archivo en una nueva pestaña
   verArchivo(campo: string) {
     const archivo = this.uploadedFiles[campo];
+    console.log('Ver archivo:', archivo);
 
     if (archivo && archivo.file) {
       if (typeof archivo.file === 'string') {
@@ -1239,6 +1260,21 @@ export class ContratacionComponent implements OnInit {
     }
   }
 
+  // Método que se ejecuta cuando se selecciona un archivo
+  subirArchivo(event: any, campo: string) {
+    const file = event.target.files[0]; // Obtén el archivo seleccionado
+    if (file) {
+      // Verificar si el nombre del archivo tiene más de 100 caracteres
+      if (file.name.length > 100) {
+        Swal.fire('Error', 'El nombre del archivo no debe exceder los 100 caracteres', 'error');
+        return; // Salir de la función si la validación falla
+      }
+
+      // Si la validación es exitosa, almacenar el archivo
+      this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
+      //Swal.fire('Archivo subido', `Archivo ${file.name} subido para ${campo}`, 'success');
+    }
+  }
 
   // Método para imprimir los datos del formulario y subir todos los archivos
   imprimirVerificacionesAplicacion(): void {
@@ -1260,7 +1296,6 @@ export class ContratacionComponent implements OnInit {
       .subscribe(
         (response) => {
           console.log('Respuesta exitosa Parte 1:', response);
-          console.log('Archivos a subir:', this.uploadedFiles);
           if (response.message === 'success') {
             // si this.uploadedFiles esta vacio
             if (Object.keys(this.uploadedFiles).length === 0) {
@@ -1275,6 +1310,7 @@ export class ContratacionComponent implements OnInit {
             else {
               // Si la respuesta es exitosa, proceder a subir los archivos
               this.subirTodosLosArchivos().then((allFilesUploaded) => {
+                console.log('Todos los archivos subidos:', allFilesUploaded);
                 if (allFilesUploaded) {
                   Swal.close();
                   // Cerrar el Swal de carga y mostrar el mensaje de éxito
@@ -1312,47 +1348,57 @@ export class ContratacionComponent implements OnInit {
   // Método para subir todos los archivos almacenados en uploadedFiles
   subirTodosLosArchivos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      console.log('Subiendo archivos...', this.uploadedFiles);
+      // Filtrar archivos válidos
+      const archivosAEnviar = Object.keys(this.uploadedFiles)
+        .filter(key => {
+          const fileData = this.uploadedFiles[key];
+          // Solo incluir archivos con un objeto `file` válido
+          return fileData && fileData.file;
+        })
+        .map(key => ({
+          key,
+          ...this.uploadedFiles[key],
+          typeId: this.typeMap[key] // Asignar el tipo documental (typeId)
+        }));
 
-      // Filtrar los archivos, ignorando la clave "traslado"
-      const filteredFiles = Object.keys(this.uploadedFiles)
-        .filter((key) => key !== 'traslado')
-        .map((key) => ({ campo: key, ...this.uploadedFiles[key] })); // Crea un array de archivos a subir
-
-      if (filteredFiles.length === 0) {
-        console.log('No hay archivos para subir.');
-        resolve(true); // No hay archivos, se resuelve la promesa inmediatamente
+      // Si no hay archivos para subir
+      if (archivosAEnviar.length === 0) {
+        console.log('No hay archivos que enviar');
+        resolve(true); // Resolver inmediatamente si no hay archivos
         return;
       }
 
-      // Crear un array de promesas para subir los archivos
-      const uploadPromises = filteredFiles.map(({ campo, file, fileName }) => {
-        const title = fileName; // El título será el nombre del archivo PDF
-        const type = this.typeMap[campo] || 3; // Si no hay tipo definido, usar 3 como predeterminado
-
-        // Llamar al servicio de subida
-        return this.gestionDocumentalService
-          .guardarDocumento(title, this.cedula, type, file)
-          .toPromise() // Convertir el Observable en una Promesa
-          .then((response) => {
-            console.log(`Archivo ${fileName} subido con éxito.`);
-            return response; // Devuelve la respuesta para posibles usos
-          })
-          .catch((error) => {
-            console.error(`Error al subir el archivo para ${campo}`, error);
-            throw new Error(`Error al subir el archivo para ${campo}`); // Propaga el error
-          });
+      // Crear promesas para cada archivo
+      const promesasDeSubida = archivosAEnviar.map(({ key, file, fileName, typeId }) => {
+        return new Promise<void>((resolveSubida, rejectSubida) => {
+          if (file && typeId) {
+            this.gestionDocumentalService
+              .guardarDocumento(fileName, this.cedula, typeId, file)
+              .subscribe({
+                next: () => {
+                  console.log(`Archivo ${fileName} (${key}) subido correctamente`);
+                  resolveSubida(); // Resolver la promesa de este archivo
+                },
+                error: (error) => {
+                  console.error(`Error al subir archivo ${fileName} (${key}):`, error);
+                  rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
+                }
+              });
+          } else {
+            rejectSubida(`Archivo ${key} no tiene datos válidos`);
+          }
+        });
       });
 
-      // Manejar todas las promesas
-      Promise.all(uploadPromises)
+      // Esperar a que todas las subidas terminen
+      Promise.all(promesasDeSubida)
         .then(() => {
-          console.log('Todos los archivos se han subido con éxito.');
-          resolve(true); // Resolución exitosa de la promesa
+          console.log('Todos los archivos se subieron correctamente');
+          resolve(true); // Resolver cuando todos los archivos hayan sido procesados
         })
         .catch((error) => {
-          console.error('Error al subir los archivos:', error);
-          reject(error.message || 'Error al subir los archivos.'); // Rechaza la promesa en caso de error
+          console.error('Ocurrió un error durante la subida de archivos:', error);
+          reject(error); // Rechazar si hay errores en alguna subida
         });
     });
   }
@@ -1542,27 +1588,27 @@ export class ContratacionComponent implements OnInit {
   }
 
 
-// Método para calcular el porcentaje de llenado de un FormGroup
-getPercentage(formGroup: FormGroup): number {
-  const totalFields = Object.keys(formGroup.controls).length;
-  const filledFields = Object.entries(formGroup.controls).filter(([key, control]) => {
-    const value = control.value;
+  // Método para calcular el porcentaje de llenado de un FormGroup
+  getPercentage(formGroup: FormGroup): number {
+    const totalFields = Object.keys(formGroup.controls).length;
+    const filledFields = Object.entries(formGroup.controls).filter(([key, control]) => {
+      const value = control.value;
 
-    // Ignorar el campo 'otraFormaPago'
-    if (key === 'otraFormaPago') {
-      return false;
-    }
+      // Ignorar el campo 'otraFormaPago'
+      if (key === 'otraFormaPago') {
+        return false;
+      }
 
-    // Ignorar campos vacíos y arreglos vacíos
-    if (Array.isArray(value)) {
-      return value.length > 0; // Solo contar como lleno si el arreglo tiene elementos
-    }
+      // Ignorar campos vacíos y arreglos vacíos
+      if (Array.isArray(value)) {
+        return value.length > 0; // Solo contar como lleno si el arreglo tiene elementos
+      }
 
-    return value !== null && value !== undefined && value !== ''; // Considerar los valores no vacíos
-  }).length;
+      return value !== null && value !== undefined && value !== ''; // Considerar los valores no vacíos
+    }).length;
 
-  return Math.round((filledFields / totalFields) * 100);
-}
+    return Math.round((filledFields / totalFields) * 100);
+  }
 
 
   updateExamOptions(cargo: string): void {
@@ -1599,7 +1645,7 @@ getPercentage(formGroup: FormGroup): number {
       console.error('Formulario inválido, por favor revise los datos.');
       return;
     }
-  
+
     // Construir los datos que se enviarán al servicio
     const data = {
       numero_de_cedula: this.cedula, // Cédula del candidato
@@ -1615,7 +1661,7 @@ getPercentage(formGroup: FormGroup): number {
       porcentaje_arl: this.pagoTransporteForm.get('porcentajeARL')?.value
     };
     console.log('Pago de Transporte:', data);
-  
+
     // Llamar al servicio para guardar o actualizar los datos
     this.contratacionService.guardarOActualizarContratacion(data).then((response: any) => {
       console.log('Respuesta exitosa:', response);
@@ -1626,7 +1672,7 @@ getPercentage(formGroup: FormGroup): number {
     });
   }
 
-  
+
   cargarReferencias() {
     console.log('Referencias Personales:', this.referenciasForm.value);
 

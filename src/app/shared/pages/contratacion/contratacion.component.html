@@ -1232,8 +1232,8 @@
 
                         <!-- Referencias Personales -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Referencias Familiares y Personales</mat-panel-title>
+                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup2))}">
+                                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(formGroup2) }}% completo </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="referenciasForm">
