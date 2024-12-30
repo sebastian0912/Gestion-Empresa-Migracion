@@ -14,6 +14,10 @@
     margin-bottom: 30px;
 }
 
+mat-error{
+    line-height: 1.1;
+}
+
 .boton{
     width: 48%;
     height: 40pt;
@@ -59,7 +63,7 @@ mat-card:nth-child(1) {
 
 .example-full-width3 {
     width: 30%;
-    margin: 5px;
+    margin: 8px;
 }
 
 .example-full-width4 {

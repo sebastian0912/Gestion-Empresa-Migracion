@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import { NgClass, NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
@@ -568,8 +568,8 @@ export class ContratacionComponent implements OnInit {
       semanasCotizadas: [''],
       formaPago: [''],
       otraFormaPago: [''],
-      numeroPagos: [''],
-      validacionNumeroCuenta: [''],
+      numeroPagos: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      validacionNumeroCuenta: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       seguroFunerario: [''],
       Ccostos: [''],
       subcentro: [''],
@@ -583,7 +583,7 @@ export class ContratacionComponent implements OnInit {
       valorTransporte: [''],
       horasExtras: [''],
       porcentajeARL: ['']
-    });
+    }),    { validators: this.matchNumbersValidator };
 
     this.referenciasForm = this.fb.group({
       familiar1: [''],
@@ -605,6 +605,18 @@ export class ContratacionComponent implements OnInit {
     });
 
   }
+
+    // Validator personalizado para verificar que los campos sean iguales
+    matchNumbersValidator(group: AbstractControl): { [key: string]: boolean } | null {
+      const numeroPagos = group.get('numeroPagos')?.value;
+      const validacionNumeroCuenta = group.get('validacionNumeroCuenta')?.value;
+  
+      if (numeroPagos && validacionNumeroCuenta && numeroPagos !== validacionNumeroCuenta) {
+        return { numbersNotMatch: true };
+      }
+  
+      return null;
+    }
 
   descargarArchivo() {
     let archivo: string;
@@ -743,6 +755,7 @@ export class ContratacionComponent implements OnInit {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
+
     }).subscribe(
       async ({ seleccion, infoGeneral }) => {
         Swal.close(); // Cierra el Swal de carga al completar
@@ -761,7 +774,6 @@ export class ContratacionComponent implements OnInit {
 
         if (infoGeneral && infoGeneral.data) {
           this.infoGeneralC = infoGeneral.data[0];
-          console.log('Info general encontrada:', this.infoGeneralC);
           this.infoGeneral = true;
         } else {
           Swal.fire({
@@ -1051,6 +1063,7 @@ export class ContratacionComponent implements OnInit {
                       }
                     });
                   }
+
                 },
                 error: (err: any) => {
                   if (err.error.error === "No se encontraron documentos") {
@@ -1128,6 +1141,27 @@ export class ContratacionComponent implements OnInit {
             auxMovilidad: this.seleccion.aux_movilidad || '',
             bonificacion: this.seleccion.bonificacion || ''
           });
+
+
+          this.contratacionService.detalleLaboralContratacion(this.formGroup2.value.centroCosto, this.formGroup2.value.cargo).subscribe((detalleLaboral: any) => {
+            if (detalleLaboral) {
+              console.log(detalleLaboral);
+              this.pagoTransporteForm.patchValue({
+                porcentajeARL: detalleLaboral[0].porcentaje_arl,
+                auxilioTransporte: detalleLaboral[0].valor_transporte,
+                salario: detalleLaboral[0].salario,
+                Ccostos: this.seleccion.centro_costo_entrevista || '',
+              });
+              console.log('Detalle laboral:', detalleLaboral);
+            } else {
+              console.error('No se encontraron datos de detalle laboral');
+            }
+          }
+          );
+
+
+
+
         }
       });
 

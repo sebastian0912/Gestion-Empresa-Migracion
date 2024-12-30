@@ -1,5 +1,5 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom, Observable, throwError } from 'rxjs';
@@ -535,6 +535,27 @@ export class ContratacionService {
       throw error;
     }
   }
+
+  // Servicio Angular
+  public detalleLaboralContratacion(empresaUsuaria: string, sublabor: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+
+    console.log("empresaUsuaria", empresaUsuaria + " sublabor", sublabor);
+    // Construimos los parámetros de consulta
+    const params = new HttpParams()
+      .set('empresa_usuaria', empresaUsuaria)
+      .set('sublabor', sublabor);
+    
+    
+
+    // Realizamos la solicitud GET
+    return this.http.get(`${this.apiUrl}/infoCentrosCosto/detalle-laboralContratacion/`, { headers, params }).pipe(
+      map((response: any) => response), // Procesamos la respuesta si es necesario
+      catchError(this.handleError) // Manejamos errores
+    );
+  }
+
+
 
 
 }

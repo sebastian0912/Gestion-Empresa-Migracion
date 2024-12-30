@@ -1171,12 +1171,30 @@
                                 <mat-form-field class="example-full-width3">
                                     <mat-label>Número para Pagos</mat-label>
                                     <input matInput formControlName="numeroPagos">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
+                                    <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('required')">
+                                      El número para pagos es obligatorio.
+                                    </mat-error>
+                                    <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('pattern')">
+                                      Debe contener exactamente 10 dígitos.
+                                    </mat-error>
+                                  </mat-form-field>
+                                  
+                                  <mat-form-field class="example-full-width3">
                                     <mat-label>Validación Número de Cuenta</mat-label>
                                     <input matInput formControlName="validacionNumeroCuenta">
-                                </mat-form-field>
+                                    <mat-error *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('required')">
+                                      La validación del número de cuenta es obligatoria.
+                                    </mat-error>
+                                    <mat-error *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('pattern')">
+                                      Debe contener exactamente 10 dígitos.
+                                    </mat-error>
+                                  </mat-form-field>
+                                  
+                                  <mat-error *ngIf="pagoTransporteForm?.errors?.['numbersNotMatch']">
+                                    El número para pagos y la validación del número de cuenta deben coincidir.
+                                  </mat-error>
+                                  
+                                  
 
                                 <!--seguro funerario SI O NO -->
                                 <mat-form-field class="example-full-width3">
@@ -1194,7 +1212,7 @@
 
                                 <mat-form-field class="example-full-width3">
                                     <mat-label>Salario</mat-label>
-                                    <input matInput formControlName="salario">
+                                    <input matInput formControlName="salario" type="number">
                                 </mat-form-field>
 
                                 <mat-form-field class="example-full-width3">
