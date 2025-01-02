@@ -1232,8 +1232,8 @@
 
                         <!-- Referencias Personales -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup2))}">
-                                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(formGroup2) }}% completo </mat-panel-title>
+                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(referenciasForm))}">
+                                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(referenciasForm) }}% completo </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="referenciasForm">
@@ -1376,12 +1376,14 @@
                                             (change)="subirArchivo($event, 'traslado')" />
                                         <button mat-menu-item (click)="descargarArchivo()">Descargar</button>
                                     </mat-menu>
+
                                     <mat-form-field appearance="fill" class="example-full-width">
                                         <mat-label>Archivo Traslado</mat-label>
                                         <input matInput formControlName="traslado"
                                             [value]="uploadedFiles['traslado'] ? uploadedFiles['traslado'].fileName : ''"
                                             readonly />
                                     </mat-form-field>
+
                                 </div>
 
                                 <!-- Botón para cargar los traslados -->

@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import Swal from 'sweetalert2';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
+import { GestionDocumentalService } from '../../services/gestion-documental/gestion-documental.service';
 
 @Component({
   selector: 'app-generar-documentos',
@@ -68,6 +69,13 @@ export class GenerarDocumentosComponent implements OnInit {
 
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
 
+  typeMap: { [key: string]: number } = {
+    Contrato: 25,
+    "Autorización de datos": 26,
+    "Entrega de documentos": 27,
+    'Ficha técnica': 28,
+  };
+
 
   ngOnInit(): void {
     // Mostrar Swal de carga desde el inicio
@@ -104,7 +112,6 @@ export class GenerarDocumentosComponent implements OnInit {
         Swal.close();
 
         if (res && Object.keys(res).length > 0) {
-          console.log('Datos biométricos encontrados', res);
           this.firma = res.firmaSolicitante || '';
           this.huellaIndiceDerecho = res.huellaIndiceDerecho || '';
           this.huellaPulgarDerecho = res.huellaPulgarDerecho || '';
@@ -125,7 +132,8 @@ export class GenerarDocumentosComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private contratacionService: ContratacionService
+    private contratacionService: ContratacionService,
+    private gestionDocumentalService: GestionDocumentalService
   ) { }
 
   toggleSidebar() {
@@ -205,7 +213,6 @@ export class GenerarDocumentosComponent implements OnInit {
         this.empresa = data.empresa || '';
         this.pagoTransporte = data.pagoTransporte || {};
         this.cedulaPersonalAdministrativo = data.cedulaPersonalAdministrativo || {};
-        console.log('Formularios recuperados:', data);
         this.codigoContratacion = localStorage.getItem('codigoContrato');
         // Extraer el objeto del localStorage
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -832,7 +839,6 @@ export class GenerarDocumentosComponent implements OnInit {
     doc.text('Firma de Aceptación', 10, y + 4);
     // Aquí agregamos la firma en base64 con su prefijo
     if (this.firma !== '') {
-      console.log('Firma encontrada');
       // Asegúrate de que this.firma solo sea el base64 sin el 'data:image/png;base64,'
       const firmaConPrefijo = 'data:image/png;base64,' + this.firma;
 
@@ -1266,7 +1272,6 @@ export class GenerarDocumentosComponent implements OnInit {
     doc.text('Firma de Aceptación', 10, y + 4);
     // Aquí agregamos la firma en base64 con su prefijo
     if (this.firma !== '') {
-      console.log('Firma encontrada');
       // Asegúrate de que this.firma solo sea el base64 sin el 'data:image/png;base64,'
       const firmaConPrefijo = 'data:image/png;base64,' + this.firma;
 
@@ -1644,7 +1649,6 @@ export class GenerarDocumentosComponent implements OnInit {
     doc.text(this.datosPersonales.numerodeceduladepersona, 110, y + 18);
     doc.text('Número de Identificación del Trabajador', 110, y + 23);
     if (this.firma !== '') {
-      console.log('Firma encontrada');
       // Asegúrate de que this.firma solo sea el base64 sin el 'data:image/png;base64,'
       const firmaConPrefijo = 'data:image/png;base64,' + this.firma;
 
@@ -1668,13 +1672,11 @@ export class GenerarDocumentosComponent implements OnInit {
     doc.text('C.C. 1.019.034.641', 80, y + 46);
 
     // Testigo 2
-    console.log('Cedula Personal Administrativo', this.cedulaPersonalAdministrativo);
     doc.text('Testigo 2 Nombre y No de CC', 110, y + 43);
     doc.text(this.nombreCompletoLogin, 150, y + 43);
     doc.text('C.C.' + this.cedulaPersonalAdministrativo.cedula, 150, y + 46);
-    
+
     if (this.firmaPersonalAdministrativo !== '') {
-      console.log('Firma Personal Administrativo encontrada');
       // Asegúrate de que this.firmaPersonalAdministrativo solo sea el base64 sin el 'data:image/png;base64,'
       const firmaPersonalAdministrativoConPrefijo = 'data:image/png;base64,' + this.firmaPersonalAdministrativo;
 
@@ -1830,6 +1832,102 @@ export class GenerarDocumentosComponent implements OnInit {
     doc.setFont('helvetica', 'normal');
   }
 
+
+  cargarpdf() {
+    // Mostrar Swal de carga
+    Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espera mientras se suben los archivos.',
+      icon: 'info',
+      allowOutsideClick: false, // Evitar que el usuario cierre el Swal
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar el indicador de carga
+      }
+    });
+  
+    // Subir los archivos
+    this.subirTodosLosArchivos().then((allFilesUploaded) => {
+      console.log('Todos los archivos subidos:', allFilesUploaded);
+      if (allFilesUploaded) {
+        Swal.close(); // Cerrar el Swal de carga
+        // Mostrar mensaje de éxito
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Datos y archivos guardados exitosamente.',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        });
+      }
+    }).catch((error) => {
+      // Cerrar el Swal de carga y mostrar el mensaje de error en caso de fallo al subir archivos
+      Swal.close(); // Asegurar que se cierre el Swal de carga antes de mostrar el error
+      Swal.fire({
+        title: 'Error',
+        text: `Hubo un error al subir los archivos: ${error}`,
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
+    });
+  }
+  
+
+  // Método para subir todos los archivos almacenados en uploadedFiles
+  subirTodosLosArchivos(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      // Filtrar y preparar los archivos para subir
+      const archivosAEnviar = Object.keys(this.uploadedFiles)
+        .filter((key) => {
+          const fileData = this.uploadedFiles[key];
+          // Verificar si la clave tiene un tipo documental válido
+          if (!(key in this.typeMap)) {
+            console.error(`La clave "${key}" no tiene un tipo documental asignado en typeMap`);
+            return false;
+          }
+          // Verificar si el archivo es válido
+          return fileData && fileData.file;
+        })
+        .map((key) => ({
+          key,
+          ...this.uploadedFiles[key],
+          typeId: this.typeMap[key], // Asignar el tipo documental correspondiente
+        }));
+
+      if (archivosAEnviar.length === 0) {
+        console.log('No hay archivos para enviar');
+        resolve(true); // Resolver si no hay archivos
+        return;
+      }
+
+      // Crear promesas para subir cada archivo
+      const promesasDeSubida = archivosAEnviar.map(({ key, file, fileName, typeId }) => {
+        return new Promise<void>((resolveSubida, rejectSubida) => {
+          this.gestionDocumentalService
+            .guardarDocumento(fileName, this.cedula, typeId, file, this.codigoContratacion)
+            .subscribe({
+              next: () => {
+                console.log(`Archivo "${fileName}" subido correctamente (${key})`);
+                resolveSubida();
+              },
+              error: (error) => {
+                console.error(`Error al subir archivo "${fileName}" (${key}):`, error);
+                rejectSubida(`Error al subir archivo "${key}": ${error.message}`);
+              },
+            });
+        });
+      });
+
+      // Esperar a que todas las subidas terminen
+      Promise.all(promesasDeSubida)
+        .then(() => {
+          console.log('Todos los archivos se subieron correctamente');
+          resolve(true);
+        })
+        .catch((error) => {
+          console.error('Ocurrió un error durante la subida de archivos:', error);
+          reject(error);
+        });
+    });
+  }
 
 
 
