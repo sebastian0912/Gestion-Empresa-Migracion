@@ -42,3 +42,9 @@ mat-card{
     padding: 8px 0;
     border-bottom: 1px solid #ccc;
 }
+
+.btn-with-arrow2{
+    margin-top: 10pt;
+    width: 100%;
+    border-radius: 5px;
+}

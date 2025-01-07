@@ -729,7 +729,7 @@
                     </mat-form-field>
                   </div>
                 </div>
-                
+
 
 
 
@@ -738,8 +738,6 @@
                 <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
-
-
 
             <!-- Contratación -->
             <mat-expansion-panel>
@@ -786,10 +784,91 @@
                 <button mat-flat-button (click)="imprimirContratacion()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
+
+            <!-- Subida de documentos -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Subida de Documentos
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <!-- Exámenes Médicos -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuExamenes" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuExamenes="matMenu">
+                  <button mat-menu-item (click)="verArchivo('examenesMedicos')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputExamenes" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputExamenes" style="display: none;"
+                    (change)="subirArchivo($event, 'examenesMedicos')" />
+                </mat-menu>
+
+                <!-- Mostrar el nombre del archivo subido en el campo de entrada -->
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Exámenes Médicos</mat-label>
+                  <input matInput [placeholder]="'Cargar Exámenes Médicos'"
+                    [value]="uploadedFiles['examenesMedicos'].fileName || ''" readonly />
+                </mat-form-field>
+              </div>
+
+              <!-- Pensión/Semanas Cotizadas -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuPension" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuPension="matMenu">
+                  <button mat-menu-item (click)="verArchivo('pensionSemanas')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputPension" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputPension" style="display: none;"
+                    (change)="subirArchivo($event, 'pensionSemanas')" />
+                </mat-menu>
+
+                <!-- Mostrar el nombre del archivo subido en el campo de entrada -->
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Pensión/Semanas Cotizadas</mat-label>
+                  <input matInput [placeholder]="'Cargar Pensión/Semanas Cotizadas'"
+                    [value]="uploadedFiles['pensionSemanas'].fileName || ''" readonly />
+                </mat-form-field>
+              </div>
+
+              <!-- Figura Humana -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuFiguraHumana" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuFiguraHumana="matMenu">
+                  <button mat-menu-item (click)="verArchivo('figuraHumana')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputFiguraHumana" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputFiguraHumana" style="display: none;"
+                    (change)="subirArchivo($event, 'figuraHumana')" />
+                </mat-menu>
+
+                <!-- Mostrar el nombre del archivo subido en el campo de entrada -->
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Figura Humana</mat-label>
+                  <input matInput [placeholder]="'Cargar Figura Humana'"
+                    [value]="uploadedFiles['figuraHumana'].fileName || ''" readonly />
+                </mat-form-field>
+              </div>
+
+              <!-- boton -->
+              <button mat-flat-button (click)="imprimirDocumentos()" class="example-full-width">Cargar</button>
+
+            </mat-expansion-panel>
+
+
+
           </mat-accordion>
 
           <!--boton generar remision prueba tecnica -->
-          <button mat-flat-button (click)="generarRemisionPruebaTecnica()" >Generar Remisión
+          <button mat-flat-button (click)="generarRemisionPruebaTecnica()">Generar Remisión
             Prueba Técnica
           </button>
 

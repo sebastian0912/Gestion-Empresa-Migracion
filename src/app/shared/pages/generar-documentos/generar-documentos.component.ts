@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser, NgIf } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
@@ -24,6 +24,7 @@ import { GestionDocumentalService } from '../../services/gestion-documental/gest
     MatButtonModule,
     MatMenuModule,
     NgForOf,
+    NgIf
   ],
   templateUrl: './generar-documentos.component.html',
   styleUrls: ['./generar-documentos.component.css'],
@@ -65,6 +66,9 @@ export class GenerarDocumentosComponent implements OnInit {
     { titulo: 'Entrega de documentos' },
     { titulo: 'Ficha técnica' },
     { titulo: 'Contrato' },
+    { titulo: 'Cedula' },
+    { titulo: 'ARL' },
+    { titulo: 'Figura Humana' },
   ];
 
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
@@ -74,6 +78,9 @@ export class GenerarDocumentosComponent implements OnInit {
     "Autorización de datos": 26,
     "Entrega de documentos": 27,
     'Ficha técnica': 28,
+    Cedula: 29,
+    ARL: 30,
+    'Figura Humana': 31
   };
 
 
@@ -138,6 +145,45 @@ export class GenerarDocumentosComponent implements OnInit {
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
+  }
+
+  isSubirPDF(doc: any): boolean {
+    // Devuelve true si el título corresponde a Cedula, ARL o Figura Humana
+    return ['Cedula', 'ARL', 'Figura Humana'].includes(doc.titulo);
+  }
+
+
+
+  subirArchivo(event: any, campo: string) {
+    const input = event.target as HTMLInputElement; // Referencia al input
+    const file = input.files?.[0]; // Obtén el archivo seleccionado
+    console.log('Archivo seleccionado:', file);
+
+    if (file) {
+      // Verificar si el nombre del archivo tiene más de 100 caracteres
+      if (file.name.length > 100) {
+        Swal.fire('Error', 'El nombre del archivo no debe exceder los 100 caracteres', 'error');
+
+        // Limpiar el input
+        this.resetInput(input);
+        return; // Salir de la función si la validación falla
+      }
+
+      // Si la validación es exitosa, almacenar el archivo
+      this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
+      console.log('Archivo subido:', this.uploadedFiles[campo]);
+
+
+    }
+
+    // Limpiar el input para permitir seleccionar el mismo archivo nuevamente
+    this.resetInput(input);
+  }
+
+  // Método para reiniciar el input en el DOM
+  private resetInput(input: HTMLInputElement): void {
+    const newInput = input.cloneNode(true) as HTMLInputElement;
+    input.parentNode?.replaceChild(newInput, input);
   }
 
   devolvercontratacion() {
@@ -1844,7 +1890,7 @@ export class GenerarDocumentosComponent implements OnInit {
         Swal.showLoading(); // Mostrar el indicador de carga
       }
     });
-  
+
     // Subir los archivos
     this.subirTodosLosArchivos().then((allFilesUploaded) => {
       console.log('Todos los archivos subidos:', allFilesUploaded);
@@ -1869,7 +1915,7 @@ export class GenerarDocumentosComponent implements OnInit {
       });
     });
   }
-  
+
 
   // Método para subir todos los archivos almacenados en uploadedFiles
   subirTodosLosArchivos(): Promise<boolean> {

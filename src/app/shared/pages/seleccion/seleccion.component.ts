@@ -83,6 +83,7 @@ export class SeleccionComponent implements OnInit {
   mostrarObservacion: boolean = false; // Controla la visibilidad del campo de observación
   observacion: string = ''; // Almacena la observación escrita por el usuario
   idvacante = '';
+
   typeMap: { [key: string]: number } = {
     eps: 7,
     policivos: 6,
@@ -93,6 +94,9 @@ export class SeleccionComponent implements OnInit {
     ramaJudicial: 12,
     sisben: 8,
     ofac: 5,
+    figuraHumana: 31,
+    examenesMedicos: 32,
+    pensionSemanas: 33
   };
 
   uploadedFiles: { [key: string]: { file?: File; fileName?: string } } = {
@@ -104,13 +108,14 @@ export class SeleccionComponent implements OnInit {
     ramaJudicial: { fileName: 'No disponible, falta cargar' },
     medidasCorrectivas: { fileName: 'No disponible, falta cargar' },
     sisben: { fileName: 'No disponible, falta cargar' },
-    ofac: { fileName: 'No disponible, falta cargar' }
+    ofac: { fileName: 'No disponible, falta cargar' },
+    examenesMedicos: { fileName: 'No disponible, falta cargar' },
+    figuraHumana: { fileName: 'No disponible, falta cargar' },
+    pensionSemanas: { fileName: 'No disponible, falta cargar' },
   };
 
 
-
   laborExams = [
-
     { labor: 'ADMINISTRACIÓN', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'RECEPCIONISTA', exams: ['Exámen Ingreso', 'Visiometria'] },
     { labor: 'SST, JEFE, EJECUTIVOS', exams: ['Exámen Ingreso', 'Visiometria'] },
@@ -1025,7 +1030,7 @@ export class SeleccionComponent implements OnInit {
   }
 
 
-  
+
 
   abrirModal(): void {
     this.dialog.open(LeerInfoCandidatoComponent, {
@@ -1132,8 +1137,9 @@ export class SeleccionComponent implements OnInit {
               });
             }
             else {
+              const nombres = ["eps", "afp", "policivos", "procuraduria", "contraloria", "ramaJudicial", "medidasCorrectivas", "sisben", "ofac"];
               // Si la respuesta es exitosa, proceder a subir los archivos
-              this.subirTodosLosArchivos().then((allFilesUploaded) => {
+              this.subirTodosLosArchivos(nombres).then((allFilesUploaded) => {
                 console.log('Todos los archivos subidos:', allFilesUploaded);
                 if (allFilesUploaded) {
                   Swal.close();
@@ -1170,50 +1176,70 @@ export class SeleccionComponent implements OnInit {
   }
 
   // Método para subir todos los archivos almacenados en uploadedFiles
-  subirTodosLosArchivos(): Promise<boolean> {
+  subirTodosLosArchivos(keysEspecificos: string[]): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      // Filtrar archivos válidos
-      const archivosAEnviar = Object.keys(this.uploadedFiles)
+      // Filtrar los archivos válidos basados en las keys específicas proporcionadas
+      let archivosAEnviar = Object.keys(this.uploadedFiles)
         .filter(key => {
           const fileData = this.uploadedFiles[key];
-          // Solo incluir archivos con un objeto `file` válido
-          return fileData && fileData.file;
+          // Incluir solo las keys específicas y con un objeto `file` válido
+          return keysEspecificos.includes(key) && fileData && fileData.file;
         })
         .map(key => ({
           key,
           ...this.uploadedFiles[key],
           typeId: this.typeMap[key] // Asignar el tipo documental (typeId)
         }));
-  
+
+      console.log('Archivos a enviar:', archivosAEnviar);
+
       // Si no hay archivos para subir
       if (archivosAEnviar.length === 0) {
         console.log('No hay archivos que enviar');
         resolve(true); // Resolver inmediatamente si no hay archivos
         return;
       }
-  
+
       // Crear promesas para cada archivo
       const promesasDeSubida = archivosAEnviar.map(({ key, file, fileName, typeId }) => {
         return new Promise<void>((resolveSubida, rejectSubida) => {
           if (file && typeId) {
-            this.gestionDocumentalService
-              .guardarDocumento(fileName, this.cedula, typeId, file)
-              .subscribe({
-                next: () => {
-                  console.log(`Archivo ${fileName} (${key}) subido correctamente`);
-                  resolveSubida(); // Resolver la promesa de este archivo
-                },
-                error: (error) => {
-                  console.error(`Error al subir archivo ${fileName} (${key}):`, error);
-                  rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
-                }
-              });
+            // Verificar si la clave está entre ["examenesMedicos", "figuraHumana", "pensionSemanas"]
+            if (["examenesMedicos", "figuraHumana", "pensionSemanas"].includes(key)) {
+              // Si la clave coincide, incluir this.codigoContrato en guardarDocumento
+              this.gestionDocumentalService
+                .guardarDocumento(fileName, this.cedula, typeId, file, this.codigoContrato)
+                .subscribe({
+                  next: () => {
+                    console.log(`Archivo ${fileName} (${key}) subido correctamente con código de contrato.`);
+                    resolveSubida(); // Resolver la promesa de este archivo
+                  },
+                  error: (error) => {
+                    console.error(`Error al subir archivo ${fileName} (${key}):`, error);
+                    rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
+                  }
+                });
+            } else {
+              // Si no coincide, usar el método normal
+              this.gestionDocumentalService
+                .guardarDocumento(fileName, this.cedula, typeId, file) // Sin this.codigoContrato
+                .subscribe({
+                  next: () => {
+                    console.log(`Archivo ${fileName} (${key}) subido correctamente sin código de contrato.`);
+                    resolveSubida(); // Resolver la promesa de este archivo
+                  },
+                  error: (error) => {
+                    console.error(`Error al subir archivo ${fileName} (${key}):`, error);
+                    rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
+                  }
+                });
+            }
           } else {
             rejectSubida(`Archivo ${key} no tiene datos válidos`);
           }
         });
       });
-  
+
       // Esperar a que todas las subidas terminen
       Promise.all(promesasDeSubida)
         .then(() => {
@@ -1226,9 +1252,11 @@ export class SeleccionComponent implements OnInit {
         });
     });
   }
-  
-  
-  
+
+
+
+
+
 
   // Método para imprimir los datos de los formularios
   imprimirEntrevistaPrueba(): void {
@@ -1702,6 +1730,55 @@ export class SeleccionComponent implements OnInit {
 
     return `${mes} ${dia}-${anio}`;
   }
+
+
+
+
+
+
+
+
+  imprimirDocumentos() {
+    // Mostrar Swal de carga con ícono animado
+    Swal.fire({
+      title: 'Subiendo archivos...',
+      icon: 'info',
+      html: 'Por favor, espere mientras se suben los archivos.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading(); // Mostrar icono de carga animado
+      }
+    });
+    const nombres = ["examenesMedicos", "figuraHumana", "pensionSemanas"];
+    // Subir solo los primeros 9 archivos
+    this.subirTodosLosArchivos(nombres)
+      .then((allFilesUploaded) => {
+        console.log('Archivos seleccionados subidos:', allFilesUploaded);
+        if (allFilesUploaded) {
+          Swal.close(); // Cerrar el Swal de carga
+          // Mostrar mensaje de éxito
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Datos y archivos guardados exitosamente',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error al subir archivos:', error);
+        // Cerrar el Swal de carga y mostrar un mensaje de error
+        Swal.close();
+        Swal.fire({
+          title: 'Error',
+          text: `Hubo un error al subir los archivos: ${error}`,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+      });
+  }
+
 
 
 }

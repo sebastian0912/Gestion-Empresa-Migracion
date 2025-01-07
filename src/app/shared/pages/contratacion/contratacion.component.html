@@ -1139,8 +1139,10 @@
                     <mat-accordion>
                         <!-- Acordeón 1: Información de Pago y Transporte -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(pagoTransporteForm))}">
-                                <mat-panel-title>Información de Pago y Transporte ({{ getPercentage(pagoTransporteForm) }}% completo) </mat-panel-title>
+                            <mat-expansion-panel-header
+                                [ngStyle]="{'background-color': getPanelColor(getPercentage(pagoTransporteForm))}">
+                                <mat-panel-title>Información de Pago y Transporte ({{ getPercentage(pagoTransporteForm)
+                                    }}% completo) </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="pagoTransporteForm">
@@ -1232,11 +1234,14 @@
 
                         <!-- Referencias Personales -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(referenciasForm))}">
-                                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(referenciasForm) }}% completo </mat-panel-title>
+                            <mat-expansion-panel-header
+                                [ngStyle]="{'background-color': getPanelColor(getPercentage(referenciasForm))}">
+                                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(referenciasForm)
+                                    }}% completo </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="referenciasForm">
+                                
                                 <div class="input-container">
                                     <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar1"
                                         aria-label="PDF options">
@@ -1255,7 +1260,6 @@
                                         <input matInput formControlName="familiar1"
                                             [value]="uploadedFiles['familiar1'] ? uploadedFiles['familiar1'].fileName : ''"
                                             readonly />
-
                                     </mat-form-field>
                                 </div>
 
@@ -1332,8 +1336,10 @@
 
                         <!-- Acordeón 4: Traslados -->
                         <mat-expansion-panel>
-                            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(trasladosForm))}">
-                                <mat-panel-title>Traslados ({{ getPercentage(trasladosForm) }}% completo) </mat-panel-title>
+                            <mat-expansion-panel-header
+                                [ngStyle]="{'background-color': getPanelColor(getPercentage(trasladosForm))}">
+                                <mat-panel-title>Traslados ({{ getPercentage(trasladosForm) }}% completo)
+                                </mat-panel-title>
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="trasladosForm">
@@ -1414,7 +1420,7 @@
 
                     </mat-accordion>
                     <button mat-flat-button class="btn-with-arrow" (click)="generacionDocumentos()">
-                        <span class="text">Generar documentación</span>
+                        <span class="text">Generar o subir documentación </span>
                         <mat-icon class="arrow">arrow_forward</mat-icon>
                     </button>
                 </mat-card-content>
