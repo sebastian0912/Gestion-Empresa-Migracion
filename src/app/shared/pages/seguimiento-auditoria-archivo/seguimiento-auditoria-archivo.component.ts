@@ -30,7 +30,6 @@ import { MatMenuModule } from '@angular/material/menu';
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -41,10 +40,8 @@ import { MatMenuModule } from '@angular/material/menu';
     NgIf,
     NgFor,
     NgClass,
-    DateRangeDialogComponent,
     MatDialogModule,
     MatExpansionModule,
-    SeguimientoHvComponent,
     MatMenuModule
   ],
   templateUrl: './seguimiento-auditoria-archivo.component.html',
@@ -166,7 +163,6 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
             });
           },
           error: (error: any) => {
-            console.error(error);
             Swal.fire({
               icon: 'error',
               title: 'Error',
@@ -200,7 +196,6 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
       this.groupedData = response;
       this.applyAllFilters(); // Asegurarse de que los filtros se apliquen después de cargar datos
     } catch (error) {
-      console.error(error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -220,7 +215,6 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
         window.URL.revokeObjectURL(url);
       },
       error: (error: any) => {
-        console.error(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',

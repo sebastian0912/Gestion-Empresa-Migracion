@@ -56,7 +56,6 @@ export class VacantesService {
     return this.http.post(`${this.apiUrl}/publicacion/crearVacante`, vacanteData).pipe(
       map((response: any) => response),
       catchError((error: any) => {
-        console.error('Error en el servicio:', error);
         return throwError(error);
       })
     );

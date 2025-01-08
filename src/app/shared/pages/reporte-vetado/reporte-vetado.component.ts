@@ -129,7 +129,6 @@ export class ReporteVetadoComponent implements OnInit {
         this.reporteForm.updateValueAndValidity();  // Actualiza el estado del formulario
       },
       (error: any) => {
-        console.error('Error al buscar el nombre:', error);
         if (error.error.message === "No se encontró el candidato con la cédula proporcionada") {
           // Establece el error en el campo de nombre para invalidar el formulario
           this.reporteForm.get('nombre')?.setErrors({ notFound: true });
@@ -155,11 +154,31 @@ export class ReporteVetadoComponent implements OnInit {
     if (this.reporteForm.valid) {
       const reporte = this.reporteForm.getRawValue();  // Obtener valores del formulario
       this.vetadosService.enviarReporte(reporte, this.sede).subscribe(
-        response => console.log('Reporte enviado exitosamente', response),
-        error => console.error('Error al enviar el reporte', error)
+        response => {
+          Swal.fire({
+            title: 'Éxito',
+            text: 'Reporte enviado exitosamente.',
+            icon: 'success', // Ícono de éxito
+            confirmButtonText: 'Aceptar'
+          });
+        },
+        error => {
+          Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al enviar el reporte.',
+            icon: 'error', // Ícono de error
+            confirmButtonText: 'Aceptar'
+          });
+        }
       );
     } else {
-      console.error('El formulario no es válido');
+      Swal.fire({
+        title: 'Formulario Inválido',
+        text: 'Por favor, completa todos los campos requeridos.',
+        icon: 'warning', // Ícono de advertencia
+        confirmButtonText: 'Aceptar'
+      });
     }
   }
+  
 }

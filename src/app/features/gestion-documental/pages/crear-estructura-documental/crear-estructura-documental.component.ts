@@ -13,6 +13,7 @@ import { DocumentModalComponent, ModalData } from '../../components/document-mod
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NavbarLateralComponent } from '../../../../shared/components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../../../shared/components/navbar-superior/navbar-superior.component';
+import Swal from 'sweetalert2';
 /** Nodo para el árbol plano */
 interface FlatNode {
   id: number;
@@ -167,7 +168,11 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
               this.loadData(); // Recargar los datos
             },
             (error) => {
-              console.error('Error al editar el tipo documental:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al editar el tipo documental',
+                text: 'Hubo un problema al intentar editar el tipo documental.'
+              });
             }
           );
         } else if (!isEdit) {
@@ -181,7 +186,11 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
               this.loadData(); // Recargar los datos
             },
             (error) => {
-              console.error('Error al crear el tipo documental:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al crear el tipo documental',
+                text: 'Hubo un problema al intentar crear el tipo documental.'
+              });
             }
           );
         }

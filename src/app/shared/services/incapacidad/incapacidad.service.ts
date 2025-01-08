@@ -36,7 +36,7 @@ export class IncapacidadService {
     const token = this.getToken();
     return token ? new HttpHeaders().set('Authorization', token) : new HttpHeaders();
   }
-  
+
   createIncapacidad(incapacidad: Incapacidad): Observable<Incapacidad> {
     const urlcompleta = `${this.apiUrl}/Incapacidades/crearIncapacidad`;
     const headers = this.createAuthorizationHeader().set('Content-Type', 'application/json');
@@ -147,10 +147,32 @@ export class IncapacidadService {
         // Si todos los archivos han sido procesados, envía los datos
         if (Object.keys(fileData).length === 2) {
           this.uploadFiles(fileData, fileNames).subscribe(
-            response => console.log('Datos enviados con éxito:', response),
-            error => console.error('Error al enviar los datos:', error)
+            response => {
+              Swal.fire({
+                title: 'Éxito',
+                text: 'Datos enviados con éxito.',
+                icon: 'success', // Ícono de éxito
+                confirmButtonText: 'Aceptar'
+              });
+            },
+            error => {
+              Swal.fire({
+                title: 'Error',
+                text: 'Hubo un problema al enviar los datos. Por favor, intenta nuevamente.',
+                icon: 'error', // Ícono de error
+                confirmButtonText: 'Aceptar'
+              });
+            }
           );
+        } else {
+          Swal.fire({
+            title: 'Archivos incompletos',
+            text: 'Por favor, procesa y sube los archivos requeridos antes de enviar.',
+            icon: 'warning', // Ícono de advertencia
+            confirmButtonText: 'Aceptar'
+          });
         }
+
       };
 
       reader.readAsBinaryString(file);
@@ -159,6 +181,8 @@ export class IncapacidadService {
     // Devuelve un observable vacío para evitar errores
     return new Observable();
   }
+
+
   uploadFiles(fileData: { [key: string]: any[] }, fileNames: { [key: string]: string }): Observable<any> {
     const archivos = Object.keys(fileData).map(key => ({
       name: fileNames[key],

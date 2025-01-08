@@ -534,8 +534,8 @@ export class ReporteContratacionComponent implements OnInit {
         this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(result.TA);
         this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(result.AL)
       }).catch(error => {
-        // Manejo de errores al contar AL y TA, si es necesario
-        console.error('Error al contar AL y TA:', error);
+        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
+        Swal.fire('Error', 'Error al contar AL y TA en el archivo de cruce diario', 'error');
       });
 
       let mensaje = "";
@@ -1359,7 +1359,6 @@ export class ReporteContratacionComponent implements OnInit {
       }
 
     } catch (error) {
-      //console.error('Error procesando el archivo Excel:', error);
       this.processingErrors.push('Cruce diario Excel');
     }
   }

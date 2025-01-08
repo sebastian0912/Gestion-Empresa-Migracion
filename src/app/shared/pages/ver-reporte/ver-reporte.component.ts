@@ -372,8 +372,6 @@ export class VerReporteComponent implements OnInit {
             Swal.close();
           },
           (error) => {
-            console.error('Error al descargar el archivo:', error);
-
             // Cerrar el Swal y mostrar error
             Swal.fire({
               icon: 'error',

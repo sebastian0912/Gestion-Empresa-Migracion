@@ -525,7 +525,6 @@ export class ContratacionService {
       const response = await firstValueFrom(
         this.http.post(urlcompleta, payload, { headers }).pipe(
           catchError((error) => {
-            console.error('Error en la solicitud:', error);
             return throwError(() => new Error('Error al validar información de contratación'));
           })
         )
@@ -579,7 +578,6 @@ export class ContratacionService {
       );
       return response;
     } catch (error) {
-      console.error('Error en la llamada al servicio:', error);
       throw error;
     }
   }

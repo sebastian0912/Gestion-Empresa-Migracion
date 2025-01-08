@@ -31,7 +31,6 @@ export interface ColumnConfig {
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -800,7 +799,6 @@ export class BuscarIncapacidadComponent implements OnInit {
   convertBase64ToPDF(base64String: string): string | null {
     // Verificar si la cadena base64 es válida
     if (!base64String || typeof base64String !== 'string') {
-      console.error('Invalid base64 string');
       return null;
     }
 
@@ -825,7 +823,6 @@ export class BuscarIncapacidadComponent implements OnInit {
       // Crear una URL para el Blob
       return window.URL.createObjectURL(blob);
     } catch (error) {
-      console.error('Failed to convert Base64 to PDF:', error);
       return null;
     }
   }

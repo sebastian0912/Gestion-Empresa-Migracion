@@ -124,14 +124,12 @@ export class GenerarDocumentosComponent implements OnInit {
           this.huellaPulgarDerecho = res.huellaPulgarDerecho || '';
           this.firmaPersonalAdministrativo = res.firmaPersonalAdministrativo || '';
         } else {
-          console.error('Error: Sin datos encontrados', res);
           Swal.fire('Sin datos', 'No se encontraron datos biométricos para esta cédula.', 'info');
         }
       },
       (error) => {
         // En caso de error también cerrar el Swal y notificar
         Swal.close();
-        console.error('Error al buscar en contratación', error);
         Swal.fire('Error', 'Ocurrió un error al obtener los datos biométricos.', 'error');
       }
     );
@@ -290,7 +288,6 @@ export class GenerarDocumentosComponent implements OnInit {
       logoPath = '/logos/Logo_TA.png';
       nit = 'NIT: 900.864.596-1';
     } else {
-      console.error('Empresa no reconocida');
       return;
     }
 
@@ -1400,7 +1397,6 @@ export class GenerarDocumentosComponent implements OnInit {
       nit = '900.864.596-1';
       domicilio = 'CLL 7 4 49 Madrid, Cundinamarca';
     } else {
-      console.error('Empresa no reconocida');
       return;
     }
 
@@ -1926,7 +1922,6 @@ export class GenerarDocumentosComponent implements OnInit {
           const fileData = this.uploadedFiles[key];
           // Verificar si la clave tiene un tipo documental válido
           if (!(key in this.typeMap)) {
-            console.error(`La clave "${key}" no tiene un tipo documental asignado en typeMap`);
             return false;
           }
           // Verificar si el archivo es válido
@@ -1955,7 +1950,6 @@ export class GenerarDocumentosComponent implements OnInit {
                 resolveSubida();
               },
               error: (error) => {
-                console.error(`Error al subir archivo "${fileName}" (${key}):`, error);
                 rejectSubida(`Error al subir archivo "${key}": ${error.message}`);
               },
             });
@@ -1969,7 +1963,7 @@ export class GenerarDocumentosComponent implements OnInit {
           resolve(true);
         })
         .catch((error) => {
-          console.error('Ocurrió un error durante la subida de archivos:', error);
+          Swal.fire({ icon: 'error', title: 'Error al subir archivos', text: error });
           reject(error);
         });
     });

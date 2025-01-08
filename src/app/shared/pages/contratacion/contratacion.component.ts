@@ -760,7 +760,6 @@ export class ContratacionComponent implements OnInit {
         confirmButtonText: 'Ok',
       });
     } catch (error) {
-      console.error('Error al enviar la información:', error);
       Swal.fire({
         title: '¡Error!',
         text: 'Hubo un error al enviar la información.',
@@ -1165,7 +1164,6 @@ export class ContratacionComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Error al obtener documentos:', err);
         Swal.fire({
           title: '¡Error!',
           text: 'Ocurrió un error al obtener los documentos',
@@ -1235,7 +1233,7 @@ export class ContratacionComponent implements OnInit {
                     Ccostos: this.seleccion.centro_costo_entrevista || '',
                   });
                 } else {
-                  console.error('No se encontraron datos de detalle laboral');
+                  Swal.fire('Error', 'No se encontraron datos de detalle laboral', 'error');
                 }
               }
               );
@@ -1324,7 +1322,7 @@ export class ContratacionComponent implements OnInit {
         return new File([blob], fileName, { type: mimeType });
       })
       .catch(error => {
-        console.error('Error al descargar el archivo:', error);
+        Swal.fire('Error', 'No se pudo descargar el archivo', 'error');
         throw error;
       });
   }
@@ -1495,7 +1493,6 @@ export class ContratacionComponent implements OnInit {
                   resolveSubida(); // Resolver la promesa de este archivo
                 },
                 error: (error) => {
-                  console.error(`Error al subir archivo ${fileName} (${key}):`, error);
                   rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
                 }
               });
@@ -1512,7 +1509,6 @@ export class ContratacionComponent implements OnInit {
           resolve(true); // Resolver cuando todos los archivos hayan sido procesados
         })
         .catch((error) => {
-          console.error('Ocurrió un error durante la subida de archivos:', error);
           reject(error); // Rechazar si hay errores en alguna subida
         });
     });
@@ -1555,7 +1551,7 @@ export class ContratacionComponent implements OnInit {
               }
             },
             (error) => {
-              console.error(error);
+              Swal.fire('Error', `Error al subir el archivo para ${campo}`, 'error');
               reject(`Error al subir el archivo para ${campo}`);
             }
           );
@@ -1599,7 +1595,7 @@ export class ContratacionComponent implements OnInit {
               }
             },
             (error) => {
-              console.error(error);
+              Swal.fire('Error', `Error al subir el archivo para ${campo}`, 'error');
               reject(`Error al subir el archivo para ${campo}`);
             }
           );
@@ -1680,7 +1676,12 @@ export class ContratacionComponent implements OnInit {
         console.log('Respuesta exitosa Parte 4:', response);
       },
       error => {
-        console.error('Error en la solicitud Parte 4:', error);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Error al guardar los datos',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     );
   }
@@ -1763,7 +1764,6 @@ export class ContratacionComponent implements OnInit {
   cargarPagoTransporte() {
     // Verificar si el formulario es válido antes de enviar
     if (this.pagoTransporteForm.invalid) {
-      console.error('Formulario inválido, por favor revise los datos.');
       return;
     }
 
@@ -1788,7 +1788,7 @@ export class ContratacionComponent implements OnInit {
       console.log('Respuesta exitosa:', response);
       // Aquí puedes manejar la respuesta si es necesario
     }).catch((error: any) => {
-      console.error('Error al guardar o actualizar:', error);
+      Swal.fire('Error', 'Hubo un error al guardar o actualizar los datos', 'error');
       // Aquí puedes manejar el error si es necesario
     });
   }
@@ -1876,8 +1876,6 @@ export class ContratacionComponent implements OnInit {
           }
         })
         .catch((error) => {
-          console.error('Error al subir archivos:', error);
-
           // Mostrar mensaje de error si algo falla al subir el archivo
           Swal.close(); // Cerrar el Swal de carga
           Swal.fire({
@@ -1909,8 +1907,6 @@ export class ContratacionComponent implements OnInit {
           confirmButtonText: 'Ok',
         });
       } catch (error) {
-        console.error('Error en la solicitud:', error);
-
         // Mostrar mensaje de error si algo falla en la solicitud
         Swal.close(); // Cerrar el Swal de carga
         Swal.fire({

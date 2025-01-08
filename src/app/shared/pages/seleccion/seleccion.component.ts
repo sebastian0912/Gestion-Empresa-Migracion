@@ -947,7 +947,6 @@ export class SeleccionComponent implements OnInit {
                       confirmButtonText: 'Ok'
                     });
                   } else {
-                    console.error('Error al obtener antecedentes:', err);
                     Swal.fire({
                       title: '¡Error!',
                       text: 'No se pudieron obtener los documentos de antecedentes',
@@ -1058,7 +1057,7 @@ export class SeleccionComponent implements OnInit {
         return new File([blob], fileName, { type: mimeType });
       })
       .catch(error => {
-        console.error('Error al descargar el archivo:', error);
+        Swal.fire('Error', 'No se pudo descargar el archivo', 'error');
         throw error;
       });
   }
@@ -1215,7 +1214,6 @@ export class SeleccionComponent implements OnInit {
                     resolveSubida(); // Resolver la promesa de este archivo
                   },
                   error: (error) => {
-                    console.error(`Error al subir archivo ${fileName} (${key}):`, error);
                     rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
                   }
                 });
@@ -1229,7 +1227,6 @@ export class SeleccionComponent implements OnInit {
                     resolveSubida(); // Resolver la promesa de este archivo
                   },
                   error: (error) => {
-                    console.error(`Error al subir archivo ${fileName} (${key}):`, error);
                     rejectSubida(`Error al subir archivo ${key}: ${error.message}`);
                   }
                 });
@@ -1247,7 +1244,6 @@ export class SeleccionComponent implements OnInit {
           resolve(true); // Resolver cuando todos los archivos hayan sido procesados
         })
         .catch((error) => {
-          console.error('Ocurrió un error durante la subida de archivos:', error);
           reject(error); // Rechazar si hay errores en alguna subida
         });
     });
@@ -1412,7 +1408,6 @@ export class SeleccionComponent implements OnInit {
       texto = 'En el buscador escriba Tu Alianza SAS,  dele click en la pestaña de registrarse o más información y diligencie todo el formulario y al final de la página presione click en “siguiente” para terminar.';
       qrPath = '/qrs/QR_ALIANZA.png';
     } else {
-      console.error('Empresa no reconocida');
       return;
     }
 
@@ -1767,7 +1762,6 @@ export class SeleccionComponent implements OnInit {
         }
       })
       .catch((error) => {
-        console.error('Error al subir archivos:', error);
         // Cerrar el Swal de carga y mostrar un mensaje de error
         Swal.close();
         Swal.fire({

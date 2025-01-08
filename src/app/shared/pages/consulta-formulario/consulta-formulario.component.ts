@@ -135,7 +135,6 @@ export class ConsultaFormularioComponent implements OnInit {
         this.dataSource.sort = this.sort;  // Vincula la ordenación
       },
       (error) => {
-        console.error(error);
         // "No se encontraron datos para la cédula ingresada: 78"
         if (error.status === 404) {
           Swal.fire({
@@ -196,7 +195,11 @@ export class ConsultaFormularioComponent implements OnInit {
     navigator.clipboard.writeText(copyText).then(() => {
       alert('¡Tabla copiada al portapapeles!');
     }).catch(error => {
-      console.error('Error al copiar la tabla al portapapeles:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al copiar la tabla al portapapeles',
+        text: 'Hubo un problema al intentar copiar la tabla al portapapeles.'
+      });
     });
   }
   

@@ -98,7 +98,6 @@ export class DocumentModalComponent implements OnInit {
           }
         }
       },
-      error: (err) => console.error('Error al cargar los tags:', err),
     });
   }
 

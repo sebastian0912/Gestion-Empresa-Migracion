@@ -26,7 +26,6 @@ import { catchError, of } from 'rxjs';
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -349,7 +348,6 @@ enviarDatosExcel(datos: any[]): void {
       this.loadData();
     },
     (error: any) => {
-      console.error('Error en el servicio:', error);
       Swal.fire('Error', 'Ocurrió un error al subir los datos', 'error');
     }
   );

@@ -93,9 +93,7 @@ export class LoginComponent implements OnInit {
           text: response.message || 'No se pudo crear la cuenta, por favor intente de nuevo'
         });
       }
-    } catch (error: any) {
-      console.error(error.error);
-  
+    } catch (error: any) { 
       // Procesar los errores recibidos del servidor
       const processedErrors = this.processErrors(error.error);
   

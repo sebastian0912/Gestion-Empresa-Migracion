@@ -32,8 +32,6 @@ import { EstadisticasAuditoriaComponent } from '../estadisticas-auditoria/estadi
   standalone: true,
   imports: [
     NavbarLateralComponent,
-    NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -43,8 +41,6 @@ import { EstadisticasAuditoriaComponent } from '../estadisticas-auditoria/estadi
     MatIconModule,
     FormsModule,
     MatCardModule,
-    NgSwitch,
-    NgIf,
     NgFor,
     ReactiveFormsModule,
   ],
@@ -405,7 +401,6 @@ export class FormularioReporteComponent implements OnInit {
 
   handleError(error: any): void {
     this.toggleLoader(false);
-    //console.error('Error:', error);
   }
 
   toggleLoader(visible: boolean, showCounter: boolean = false): void {
