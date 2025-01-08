@@ -78,7 +78,6 @@ export class AntecedentesRobotsComponent implements OnInit {
           } else {
             // Mostrar los registros en la tabla
             this.dataSource.data = response.con_registros;
-            console.log('Datos recibidos:', this.dataSource.data);
           }
         },
         (error) => {

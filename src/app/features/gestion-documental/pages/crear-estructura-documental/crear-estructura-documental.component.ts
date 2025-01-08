@@ -98,7 +98,6 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
   loadData() {
     this.documentacionService.mostrar_jerarquia_gestion_documental().subscribe((data) => {
       this.dataSource.data = data;
-      console.log('Jerarquía de gestión documental:', data);
       this.documentTypes = data;
     }); 
   }
@@ -144,10 +143,8 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
           tags: [], // Tags iniciales vacíos
           estado: true,
           isEdit,
-        };
-  
-    console.log('Datos enviados al modal:', data);
-  
+        };  
+ 
     // Abrir el modal con los datos proporcionados
     const dialogRef = this.dialog.open(DocumentModalComponent, {
       minWidth: '50vw',
@@ -157,14 +154,11 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
   
     // Procesar el resultado del modal
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log('Resultado del modal:', result);
-  
+      if (result) {  
         if (isEdit && node) {
           // Caso de edición
           this.documentacionService.editar_tipo_documento(node.id, result).subscribe(
             () => {
-              console.log('Tipo documental editado correctamente.');
               this.loadData(); // Recargar los datos
             },
             (error) => {
@@ -179,10 +173,8 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
           if(data.id !== null){
             result.parent = data.id;
           }
-          console.log('Creando nuevo nodo sin editar:', result);
           this.documentacionService.crear_tipo_documento(result).subscribe(
             () => {
-              console.log('Tipo documental creado correctamente.');
               this.loadData(); // Recargar los datos
             },
             (error) => {
@@ -194,9 +186,7 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
             }
           );
         }
-      } else {
-        console.log('Modal cerrado sin cambios.');
-      }
+      } 
     });
   }
   
@@ -210,9 +200,6 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
   addSubtype(event: MouseEvent, parentNode: DocumentType) {
     // Detener propagación del evento para evitar que afecte la expansión
     event.stopPropagation();
-
-    console.log('Agregando subtipo a:', parentNode);
-    // Aquí puedes añadir lógica adicional para agregar el subtipo
   }
 
 
@@ -232,7 +219,6 @@ export class CrearEstructuraDocumentalComponent implements OnInit {
 
   /** Obtener los cambios realizados */
   getChanges() {
-    console.log('Cambios realizados:', this.changes);
     return this.changes;
   }
 

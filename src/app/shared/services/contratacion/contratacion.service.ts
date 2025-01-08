@@ -337,8 +337,6 @@ export class ContratacionService {
       jwt: token
     };
     delete data2.traslado; // Eliminar campo innecesario
-    console.log(data2);
-
     try {
       const response = await firstValueFrom(this.http.post<string>(urlcompleta, data2, { headers }).pipe(
         catchError(this.handleError)

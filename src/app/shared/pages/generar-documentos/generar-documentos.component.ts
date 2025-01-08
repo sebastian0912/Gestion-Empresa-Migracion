@@ -155,7 +155,6 @@ export class GenerarDocumentosComponent implements OnInit {
   subirArchivo(event: any, campo: string) {
     const input = event.target as HTMLInputElement; // Referencia al input
     const file = input.files?.[0]; // Obtén el archivo seleccionado
-    console.log('Archivo seleccionado:', file);
 
     if (file) {
       // Verificar si el nombre del archivo tiene más de 100 caracteres
@@ -169,11 +168,7 @@ export class GenerarDocumentosComponent implements OnInit {
 
       // Si la validación es exitosa, almacenar el archivo
       this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
-      console.log('Archivo subido:', this.uploadedFiles[campo]);
-
-
     }
-
     // Limpiar el input para permitir seleccionar el mismo archivo nuevamente
     this.resetInput(input);
   }
@@ -185,7 +180,6 @@ export class GenerarDocumentosComponent implements OnInit {
   }
 
   devolvercontratacion() {
-    console.log('Devolver a contratación');
     window.location.href = '/contratacion';
   }
 
@@ -1889,7 +1883,6 @@ export class GenerarDocumentosComponent implements OnInit {
 
     // Subir los archivos
     this.subirTodosLosArchivos().then((allFilesUploaded) => {
-      console.log('Todos los archivos subidos:', allFilesUploaded);
       if (allFilesUploaded) {
         Swal.close(); // Cerrar el Swal de carga
         // Mostrar mensaje de éxito
@@ -1934,7 +1927,6 @@ export class GenerarDocumentosComponent implements OnInit {
         }));
 
       if (archivosAEnviar.length === 0) {
-        console.log('No hay archivos para enviar');
         resolve(true); // Resolver si no hay archivos
         return;
       }
@@ -1946,7 +1938,6 @@ export class GenerarDocumentosComponent implements OnInit {
             .guardarDocumento(fileName, this.cedula, typeId, file, this.codigoContratacion)
             .subscribe({
               next: () => {
-                console.log(`Archivo "${fileName}" subido correctamente (${key})`);
                 resolveSubida();
               },
               error: (error) => {
@@ -1959,7 +1950,6 @@ export class GenerarDocumentosComponent implements OnInit {
       // Esperar a que todas las subidas terminen
       Promise.all(promesasDeSubida)
         .then(() => {
-          console.log('Todos los archivos se subieron correctamente');
           resolve(true);
         })
         .catch((error) => {

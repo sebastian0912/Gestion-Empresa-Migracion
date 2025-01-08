@@ -520,7 +520,6 @@ export class SeleccionComponent implements OnInit {
     if (this.observacion.trim()) {
       let nombre = '';
       await this.contratacionService.getUser().then((data: any) => {
-        console.log(data);
         if (data) {
           nombre = `${data.primer_nombre} ${data.primer_apellido} - ${data.rol}`;
         }
@@ -534,7 +533,6 @@ export class SeleccionComponent implements OnInit {
       };
       this.vetadosService.enviarReporte(reporte, this.sedeLogin).subscribe((response: any) => {
         if (response) {
-          console.log('Reporte enviado:', response);
           Swal.fire('Observación Enviada', 'Su observación ha sido enviada: ' + this.observacion, 'success');
           this.mostrarObservacion = false; // Ocultar el campo después de enviar la observación
           this.observacion = ''; // Limpiar el campo de texto
@@ -584,7 +582,6 @@ export class SeleccionComponent implements OnInit {
     // Si los datos de la vacante existen, actualizar el formulario directamente
     if (vacante) {
       this.idvacante = vacante.id;
-      console.log('Vacante seleccionada:', this.idvacante);
       // imprimir hora de prueba tecnica
       this.formGroup2.patchValue({
         centroCosto: vacante.Localizaciondelavacante || '',
@@ -734,7 +731,6 @@ export class SeleccionComponent implements OnInit {
             if (result.isConfirmed) {
               // Generar el código de contrato si no se encuentra la cédula
               this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
-                console.log('Código de contrato generado:', response);
                 this.codigoContrato = response.nuevo_codigo;
                 this.procesoValido = true;
 
@@ -915,7 +911,6 @@ export class SeleccionComponent implements OnInit {
             this.gestionDocumentalService.obtenerDocumentosPorTipo(this.cedula, this.codigoContrato, 2)
               .subscribe({
                 next: (infoGestionDocumentalAntecedentes: any[]) => {
-                  console.log('Documentos de antecedentes:', infoGestionDocumentalAntecedentes);
                   if (infoGestionDocumentalAntecedentes) {
                     // Iterar sobre los documentos y mapearlos a los campos correctos
                     infoGestionDocumentalAntecedentes.forEach(async (documento: any) => {
@@ -1022,10 +1017,7 @@ export class SeleccionComponent implements OnInit {
           });
         }
       });
-
-    } else {
-      console.log('No tiene proceso de selección');
-    }
+    } 
   }
 
 
@@ -1065,8 +1057,6 @@ export class SeleccionComponent implements OnInit {
   // Método para abrir un archivo en una nueva pestaña
   verArchivo(campo: string) {
     const archivo = this.uploadedFiles[campo];
-    console.log('Ver archivo:', archivo);
-
     if (archivo && archivo.file) {
       if (typeof archivo.file === 'string') {
         // Asegurarse de que la URL esté correctamente codificada para evitar problemas
@@ -1123,7 +1113,6 @@ export class SeleccionComponent implements OnInit {
       .crearSeleccionParteUnoCandidato(this.formGroup1.value, this.cedula, this.codigoContrato)
       .subscribe(
         (response) => {
-          console.log('Respuesta exitosa Parte 1:', response);
           if (response.message === 'success') {
             // si this.uploadedFiles esta vacio
             if (Object.keys(this.uploadedFiles).length === 0) {
@@ -1139,7 +1128,6 @@ export class SeleccionComponent implements OnInit {
               const nombres = ["eps", "afp", "policivos", "procuraduria", "contraloria", "ramaJudicial", "medidasCorrectivas", "sisben", "ofac"];
               // Si la respuesta es exitosa, proceder a subir los archivos
               this.subirTodosLosArchivos(nombres).then((allFilesUploaded) => {
-                console.log('Todos los archivos subidos:', allFilesUploaded);
                 if (allFilesUploaded) {
                   Swal.close();
                   // Cerrar el Swal de carga y mostrar el mensaje de éxito
@@ -1190,11 +1178,9 @@ export class SeleccionComponent implements OnInit {
           typeId: this.typeMap[key] // Asignar el tipo documental (typeId)
         }));
 
-      console.log('Archivos a enviar:', archivosAEnviar);
 
       // Si no hay archivos para subir
       if (archivosAEnviar.length === 0) {
-        console.log('No hay archivos que enviar');
         resolve(true); // Resolver inmediatamente si no hay archivos
         return;
       }
@@ -1210,7 +1196,6 @@ export class SeleccionComponent implements OnInit {
                 .guardarDocumento(fileName, this.cedula, typeId, file, this.codigoContrato)
                 .subscribe({
                   next: () => {
-                    console.log(`Archivo ${fileName} (${key}) subido correctamente con código de contrato.`);
                     resolveSubida(); // Resolver la promesa de este archivo
                   },
                   error: (error) => {
@@ -1223,7 +1208,6 @@ export class SeleccionComponent implements OnInit {
                 .guardarDocumento(fileName, this.cedula, typeId, file) // Sin this.codigoContrato
                 .subscribe({
                   next: () => {
-                    console.log(`Archivo ${fileName} (${key}) subido correctamente sin código de contrato.`);
                     resolveSubida(); // Resolver la promesa de este archivo
                   },
                   error: (error) => {
@@ -1240,7 +1224,6 @@ export class SeleccionComponent implements OnInit {
       // Esperar a que todas las subidas terminen
       Promise.all(promesasDeSubida)
         .then(() => {
-          console.log('Todos los archivos se subieron correctamente');
           resolve(true); // Resolver cuando todos los archivos hayan sido procesados
         })
         .catch((error) => {
@@ -1257,7 +1240,6 @@ export class SeleccionComponent implements OnInit {
   // Método para imprimir los datos de los formularios
   imprimirEntrevistaPrueba(): void {
     this.formGroup2.value.vacante = this.idvacante;
-    console.log('Formulario de Examen de Salud Ocupacional:', this.idvacante);
     this.seleccionService.crearSeleccionParteDosCandidato(this.formGroup2.value, this.cedula, this.codigoContrato).subscribe(
       response => {
         if (response.message === 'success') {
@@ -1293,11 +1275,8 @@ export class SeleccionComponent implements OnInit {
       .map((item: { aptoStatus: any; }) => item.aptoStatus || 'Sin especificar') // Ajusta a la propiedad que desees
       .join(', ');
 
-    console.log('Examen de Salud Ocupacional:', formData);
-
     this.seleccionService.crearSeleccionParteTresCandidato(formData, this.cedula, this.codigoContrato).subscribe(
       response => {
-        console.log('Respuesta exitosa Parte 3:', response);
         if (response.message === 'success') {
           Swal.fire({
             title: '¡Éxito!',
@@ -1322,8 +1301,6 @@ export class SeleccionComponent implements OnInit {
 
   // Método para imprimir los datos de los formularios
   imprimirContratacion(): void {
-    console.log('Contratación:', this.formGroup4.value);
-
     this.seleccionService.crearSeleccionParteCuatroCandidato(this.formGroup4.value, this.cedula, this.codigoContrato).subscribe(
       response => {
         if (response.message === 'success') {
@@ -1749,7 +1726,6 @@ export class SeleccionComponent implements OnInit {
     // Subir solo los primeros 9 archivos
     this.subirTodosLosArchivos(nombres)
       .then((allFilesUploaded) => {
-        console.log('Archivos seleccionados subidos:', allFilesUploaded);
         if (allFilesUploaded) {
           Swal.close(); // Cerrar el Swal de carga
           // Mostrar mensaje de éxito

@@ -830,10 +830,6 @@ export class BuscarIncapacidadComponent implements OnInit {
 
   applyFilter() {
     // Función auxiliar para verificar coincidencias de cadenas
-    console.log('Criterios de filtro:', this.filterCriteria); // Debug inicial
-    console.log('Datos originales de la tabla:', this.dataSourcetable1); // Debug inicial
-
-    // Función auxiliar para verificar coincidencias de cadenas
     const stringMatch = (value: string, filterValue: string): boolean => {
       return value?.toLowerCase().trim().includes(filterValue?.toLowerCase().trim());
     };
@@ -964,9 +960,7 @@ export class BuscarIncapacidadComponent implements OnInit {
             text: 'No se han realizado búsquedas'
           });
         }
-      } else if (result.isDismissed) {
-        console.log('El diálogo fue cancelado');
-      }
+      } 
     });
   }
 

@@ -749,7 +749,6 @@ export class ReporteContratacionComponent implements OnInit {
         }
 
         this.erroresValidacion.data = allErrors;
-        console.log('Errores de validación en proceso cruce:', allErrors);
         // Luego, validar la ARL una vez que el cruce diario haya sido validado
         await this.proccssArl([this.filesToUpload['arl'][0]]);
 
@@ -805,7 +804,6 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async processArl(workbook: XLSX.WorkBook): Promise<void> {
-    console.log('Procesando archivo de ARL...');
     let confirmarErrores = true;
 
     this.arlBase64 = await this.convertToBase64(this.filesToUpload['arl'][0]);
@@ -839,8 +837,6 @@ export class ReporteContratacionComponent implements OnInit {
         }
         return row;
       });
-
-      console.log('Filas de ARL:', rowsArl);
 
       const headers = [
         "Fecha de firma de contrato",
@@ -1070,12 +1066,9 @@ export class ReporteContratacionComponent implements OnInit {
 
           if (fechaCruce.getTime() !== fechaArl.getTime()) {
             estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
-            console.log(`Fechas no coinciden para la cédula: ${cedulaCruce}`);
           }
           fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
-        } else {
-          console.log(`Cédula no encontrada en ARL: ${cedulaCruce}`);
-        }
+        } 
 
         const resultado: { [key: string]: any } = {
           "Numero de Cedula": cedulaCruce,

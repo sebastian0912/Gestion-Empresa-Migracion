@@ -72,7 +72,6 @@ export class PersonalAdministrativoComponent {
 
     this.contratacionService.checkContract(codigo_contrato).subscribe({
       next: (response) => {
-        console.log(response);
         if (response.exists === true) {
           this.nombreCompleto = `${response.nombre_completo}`;
           this.cedulaEncontrada = true;
@@ -124,7 +123,6 @@ export class PersonalAdministrativoComponent {
           });
         },
         error: (err) => {
-          console.log(err);
           Swal.fire({
             icon: 'error',
             title: 'Error',

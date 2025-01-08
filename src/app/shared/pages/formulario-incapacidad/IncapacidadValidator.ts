@@ -156,8 +156,6 @@ export class IncapacidadValidator {
   }
 
   private static faltancosas(incapacidad: any): string {
-
-    console.log(`Días cotizados: ${incapacidad.observaciones}`);
     const observaciones = [
       'PRESCRITA', 'FALSA', 'SIN EPICRISIS', 'SIN INCAPACIDAD', 'MEDICINA PREPA', 'ILEGIBLE',
       'INCONSISTENTE -, MAS DE 180 DIAS', 'MAS DE 540 DIAS', 'FECHAS INCONSISTENTES', 'FALTA ORIGINAL',

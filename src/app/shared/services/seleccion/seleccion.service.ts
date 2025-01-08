@@ -45,7 +45,6 @@ export class SeleccionService {
     let params = new HttpParams()
       .set('office_prefix', officePrefix)
       .set('cedula', cedula);  // Añadir cedula al parámetro
-    console.log('Params:', params);
     return this.http.get(`${this.apiUrl}/contratacion/generarCodigoContratacion/`, { headers, params }).pipe(
       map((response: any) => response),  // Procesa la respuesta
       catchError(this.handleError)       // Manejo de errores
@@ -70,8 +69,6 @@ export class SeleccionService {
       area_aplica: formData.area_aplica,
       jwt: this.getToken()
     };
-
-    //console.log('Data:', requestData);
 
     // Realizar la solicitud POST al backend
     return this.http.post(`${this.apiUrl}/Seleccion/crearSeleccionParteUnoCandidato`, requestData, { headers }).pipe(
@@ -116,8 +113,6 @@ export class SeleccionService {
       vacante: formData.vacante,
 
     };
-    console.log('Data:', requestData);
-
     return this.http.post(`${this.apiUrl}/Seleccion/crearSeleccionparteDoscandidato`, requestData, { headers }).pipe(
       map((response: any) => response),
       catchError(this.handleError)

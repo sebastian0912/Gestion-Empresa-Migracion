@@ -82,7 +82,6 @@ export class VacantesService {
   // Actualizar vacante por id 
   actualizarVacante(id: string, vacanteData: any): Observable<any> {
     vacanteData.jwt = this.getToken();
-    console.log('vacanteData:', vacanteData);
     return this.http.post(`${this.apiUrl}/publicacion/editarVacante/${id}`, vacanteData).pipe(
       map((response: any) => response),
       catchError(this.handleError)
@@ -145,8 +144,6 @@ export class VacantesService {
       .set('finca', finca)
       .set('sublabor', sublabor);
 
-    console.log('params:', params);
-    
     // Hacer la solicitud GET
     return this.http.get(`${this.apiUrl}/infoCentrosCosto/detalle-laboral/`, { headers, params }).pipe(
       map((response: any) => response),  // Procesar la respuesta

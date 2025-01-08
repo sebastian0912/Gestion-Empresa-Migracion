@@ -63,7 +63,6 @@ export class VetadosGerenciaComponent implements OnInit {
     this.vetadosService.listarReportesVetados().subscribe((data: any) => {
       // Separar los datos de reportados y todos los vetados
       this.reportadosDataSource.data = data.reportados;  // Solo los reportados
-      console.log('Reportados:', data);
       this.todosDataSource.data = data.revisados;  // Todos los vetados (reportados + revisados)
     });
   }
@@ -100,9 +99,7 @@ export class VetadosGerenciaComponent implements OnInit {
 
   // Función para eliminar el registro (por ahora solo imprime)
   eliminar(element: any) {
-    console.log('Eliminar registro:', element);
     this.vetadosService.eliminarReporte(element.id).subscribe((data: any) => {
-      console.log('Registro eliminado:', data);
       this.getVetados();
     });
   }

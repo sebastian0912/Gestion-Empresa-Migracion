@@ -130,7 +130,6 @@ export class ConsultaFormularioComponent implements OnInit {
     this.contratacionService.buscarEncontratacion(this.cedula).subscribe(
       (data) => {
         this.dataSource.data = data.data;  // Asigna los datos a la fuente de la tabla
-        console.log(this.dataSource.data);  // Verifica los datos
         this.dataSource.paginator = this.paginator;  // Vincula el paginador
         this.dataSource.sort = this.sort;  // Vincula la ordenación
       },

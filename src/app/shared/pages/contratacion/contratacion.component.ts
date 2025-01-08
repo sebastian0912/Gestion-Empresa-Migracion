@@ -313,7 +313,6 @@ export class ContratacionComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       // Ejecutar el código relacionado con localStorage solo si estamos en un navegador
       const cedula = localStorage.getItem('cedula');
-      console.log('Cédula en localStorage:', cedula);
       if (cedula) {
         // Asignar la cédula al campo del formulario
         this.cedula = cedula;
@@ -676,8 +675,6 @@ export class ContratacionComponent implements OnInit {
 
   descargarArchivo() {
     let archivo: string;
-    console.log('Empresa:', this.nombreEmpresa);
-
     if (this.nombreEmpresa === 'APOYO LABORAL TS SAS') {
       archivo = 'APOYOLABORALCARTAAUTORIZACIONTRASLADO2024.pdf';
     } else if (this.nombreEmpresa === 'TU ALIANZA SAS') {
@@ -747,12 +744,9 @@ export class ContratacionComponent implements OnInit {
       fechaExpedicionCC: formatFecha(this.datosPersonales.get('fecha_expedicion_cc')?.value),
     };
 
-    console.log('Payload:', payload);
-
     // Llama al servicio
     try {
       const response = await this.contratacionService.validarInformacionContratacion(payload);
-      console.log('Respuesta del servidor:', response);
       Swal.fire({
         title: '¡Información validada!',
         text: 'La información ha sido validada correctamente.',
@@ -1301,10 +1295,7 @@ export class ContratacionComponent implements OnInit {
 
         }
       });
-
-    } else {
-      console.log('No tiene proceso de selección');
-    }
+    } 
   }
 
 
@@ -1330,7 +1321,6 @@ export class ContratacionComponent implements OnInit {
   // Método para abrir un archivo en una nueva pestaña
   verArchivo(campo: string) {
     const archivo = this.uploadedFiles[campo];
-    console.log('Ver archivo:', archivo);
 
     if (archivo && archivo.file) {
       if (typeof archivo.file === 'string') {
@@ -1356,7 +1346,6 @@ export class ContratacionComponent implements OnInit {
   subirArchivo(event: any, campo: string) {
     const input = event.target as HTMLInputElement; // Referencia al input
     const file = input.files?.[0]; // Obtén el archivo seleccionado
-    console.log('Archivo seleccionado:', file);
 
     if (file) {
       // Verificar si el nombre del archivo tiene más de 100 caracteres
@@ -1370,8 +1359,6 @@ export class ContratacionComponent implements OnInit {
 
       // Si la validación es exitosa, almacenar el archivo
       this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
-      console.log('Archivo subido:', this.uploadedFiles[campo]);
-
       // Actualizar el valor del FormControl en el FormGroup
       this.trasladosForm.get(campo)?.setValue(file.name); // Actualiza el control traslado con el nombre del archivo
       this.trasladosForm.get(campo)?.markAsTouched(); // Asegura que Angular lo considere como interactuado
@@ -1408,7 +1395,6 @@ export class ContratacionComponent implements OnInit {
       .crearSeleccionParteUnoCandidato(this.formGroup1.value, this.cedula, this.codigoContrato)
       .subscribe(
         (response) => {
-          console.log('Respuesta exitosa Parte 1:', response);
           if (response.message === 'success') {
             // si this.uploadedFiles esta vacio
             if (Object.keys(this.uploadedFiles).length === 0) {
@@ -1423,7 +1409,6 @@ export class ContratacionComponent implements OnInit {
             else {
               // Si la respuesta es exitosa, proceder a subir los archivos
               this.subirTodosLosArchivos().then((allFilesUploaded) => {
-                console.log('Todos los archivos subidos:', allFilesUploaded);
                 if (allFilesUploaded) {
                   Swal.close();
                   // Cerrar el Swal de carga y mostrar el mensaje de éxito
@@ -1476,7 +1461,6 @@ export class ContratacionComponent implements OnInit {
 
       // Si no hay archivos para subir
       if (archivosAEnviar.length === 0) {
-        console.log('No hay archivos que enviar');
         resolve(true); // Resolver inmediatamente si no hay archivos
         return;
       }
@@ -1489,7 +1473,6 @@ export class ContratacionComponent implements OnInit {
               .guardarDocumento(fileName, this.cedula, typeId, file)
               .subscribe({
                 next: () => {
-                  console.log(`Archivo ${fileName} (${key}) subido correctamente`);
                   resolveSubida(); // Resolver la promesa de este archivo
                 },
                 error: (error) => {
@@ -1505,7 +1488,6 @@ export class ContratacionComponent implements OnInit {
       // Esperar a que todas las subidas terminen
       Promise.all(promesasDeSubida)
         .then(() => {
-          console.log('Todos los archivos se subieron correctamente');
           resolve(true); // Resolver cuando todos los archivos hayan sido procesados
         })
         .catch((error) => {
@@ -1517,8 +1499,6 @@ export class ContratacionComponent implements OnInit {
   // Método para subir solo los archivos de referencias personales y familiares
   subirReferenciasArchivos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      console.log('Subiendo archivos de referencias...', this.uploadedFiles);
-
       // Filtrar los campos relevantes: personal1, personal2, familiar1, familiar2
       const referenciasKeys = ['personal1', 'personal2', 'familiar1', 'familiar2'];
       const archivosFiltrados = Object.keys(this.uploadedFiles).filter(key => referenciasKeys.includes(key));
@@ -1561,7 +1541,6 @@ export class ContratacionComponent implements OnInit {
 
   subirArchivoTraslados(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      console.log('Subiendo archivos de referencias...', this.uploadedFiles);
 
       // Filtrar los campos relevantes: personal1, personal2, familiar1, familiar2
       const referenciasKeys = ['traslado'];
@@ -1640,11 +1619,9 @@ export class ContratacionComponent implements OnInit {
       .map((item: { aptoStatus: any; }) => item.aptoStatus || 'Sin especificar') // Ajusta a la propiedad que desees
       .join(', ');
 
-    console.log('Examen de Salud Ocupacional:', formData);
 
     this.seleccionService.crearSeleccionParteTresCandidato(formData, this.cedula, this.codigoContrato).subscribe(
       response => {
-        console.log('Respuesta exitosa Parte 3:', response);
         if (response.message === 'success') {
           Swal.fire({
             title: '¡Éxito!',
@@ -1669,11 +1646,16 @@ export class ContratacionComponent implements OnInit {
 
   // Método para imprimir los datos de los formularios
   imprimirContratacion(): void {
-    console.log('Contratación:', this.formGroup4.value);
-
     this.seleccionService.crearSeleccionParteCuatroCandidato(this.formGroup4.value, this.cedula, this.codigoContrato).subscribe(
       response => {
-        console.log('Respuesta exitosa Parte 4:', response);
+        if (response) {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Datos guardados exitosamente',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
       error => {
         Swal.fire({
@@ -1781,11 +1763,9 @@ export class ContratacionComponent implements OnInit {
       valor_transporte: this.pagoTransporteForm.get('auxilioTransporte')?.value,
       porcentaje_arl: this.pagoTransporteForm.get('porcentajeARL')?.value
     };
-    console.log('Pago de Transporte:', data);
 
     // Llamar al servicio para guardar o actualizar los datos
     this.contratacionService.guardarOActualizarContratacion(data).then((response: any) => {
-      console.log('Respuesta exitosa:', response);
       // Aquí puedes manejar la respuesta si es necesario
     }).catch((error: any) => {
       Swal.fire('Error', 'Hubo un error al guardar o actualizar los datos', 'error');
@@ -1795,8 +1775,6 @@ export class ContratacionComponent implements OnInit {
 
 
   cargarReferencias() {
-    console.log('Referencias Personales:', this.referenciasForm.value);
-
     // Mostrar Swal de carga
     Swal.fire({
       title: 'Cargando...',
@@ -1845,8 +1823,6 @@ export class ContratacionComponent implements OnInit {
   }
 
   cargarTraslados() {
-    console.log('Información de Traslados:', this.trasladosForm.value);
-
     // Agregar información adicional al formulario
     const cedula = this.cedula;
     const codigoContrato = this.codigoContrato;
@@ -1896,7 +1872,6 @@ export class ContratacionComponent implements OnInit {
     (async () => {
       try {
         const response = await this.contratacionService.actualizarProcesoContratacion(this.trasladosForm.value);
-        console.log('Respuesta exitosa:', response);
 
         // Mostrar mensaje de éxito
         Swal.close(); // Cerrar el Swal de carga
@@ -1923,7 +1898,6 @@ export class ContratacionComponent implements OnInit {
 
 
   generacionDocumentos() {
-    console.log('Generación de documentos:', this.cedula, this.codigoContrato);
     // Guardar cedula y codigoContrato en el localStorage separados
     localStorage.setItem('cedula', this.cedula);
     localStorage.setItem('codigoContrato', this.codigoContrato);
@@ -1958,13 +1932,10 @@ export class ContratacionComponent implements OnInit {
 
     // Guardar en localStorage como un único objeto JSON
     localStorage.setItem('formularios', JSON.stringify(formularios));
-    console.log('Formularios guardados en localStorage');
   }
 
 
-  registrarHuella(tipo: string): void {
-    console.log(`Registrando huella del ${tipo}`);
-  }
+
 
 
 

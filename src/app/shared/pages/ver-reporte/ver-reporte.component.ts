@@ -391,7 +391,6 @@ export class VerReporteComponent implements OnInit {
       if (result) {
         this.contratacionService.obtenerReportesPorFechasCentroCosto(result.start, result.end).subscribe(
           (response: any) => {
-            console.log(response);
             if (response.resultado.total_general === 0) {
               Swal.fire({
                 icon: 'warning',

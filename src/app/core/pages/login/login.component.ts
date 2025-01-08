@@ -78,7 +78,6 @@ export class LoginComponent implements OnInit {
   
     try {
       const response = await this.authService.register(newUser);
-      console.log(response);
       if (response && response) {
         Swal.fire({
           icon: 'success',

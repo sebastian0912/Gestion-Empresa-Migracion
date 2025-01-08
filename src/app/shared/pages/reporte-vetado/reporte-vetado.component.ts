@@ -115,7 +115,6 @@ export class ReporteVetadoComponent implements OnInit {
 
     this.vetadosService.traerNombreCompletoCandidato(cedula).subscribe(
       (response: any) => {
-        console.log('Nombre encontrado:', response);
         const nombreCompleto = response?.nombre_completo || '';
 
         // Si encuentra el nombre, actualiza el campo de nombre y elimina los errores

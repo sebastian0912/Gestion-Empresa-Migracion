@@ -70,7 +70,6 @@ export class VacantesComponent implements OnInit {
       this.vacantes = response.publicacion.map((vacante: any) => ({
         ...vacante,
       }));
-      console.log(this.vacantes);
     });
   }
 

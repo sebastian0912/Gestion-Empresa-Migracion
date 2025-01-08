@@ -191,8 +191,6 @@ export class SeguimientoHvArchivoService {
       datos: datos,
       responsable: responsable
     };
-    console.log('body', body);
-
     return this.http.post(`${this.apiUrl}/auditoria/cargar_data_excel_archivo/`, body, { headers })
       .pipe(
         catchError(this.handleError)

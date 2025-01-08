@@ -109,7 +109,6 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
         Temporal: item.tipo,
       };
     });
-    console.log(datosParaExcel);
 
     // Crear una nueva hoja de trabajo (worksheet)
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
@@ -150,12 +149,10 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
         }, {});
       });
 
-      console.log(filas); // Aquí tienes los datos desde la fila 3 en adelante, con índices de columnas
       this.seguimientoHvService.enviarSeguimientoHvArchivo(filas)
       .then(observable => {
         observable.subscribe({
           next: (response: any) => {
-            console.log(response);
             Swal.fire({
               icon: 'success',
               title: 'Éxito',
@@ -429,7 +426,6 @@ export class SeguimientoAuditoriaArchivoComponent implements OnInit {
   filterDataByDateRange(startDate: string, endDate: string): any[] {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    console.log(this.filteredSIN_REVISAR);
     return this.filteredSIN_REVISAR.filter(item => {
       return item.ultimas_actualizaciones.some((update: { fecha: string | number | Date; estado: string; }) => {
         const updateDate = new Date(update.fecha);

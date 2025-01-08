@@ -41,7 +41,6 @@ export class PersonalAdministrativosService {
     const body = {
       firmaPersonalAdministrativo: firma // Enviar solo la firma
     };
-    console.log('body', body);
     return this.http.post(`${this.apiUrl}/contratacion/update-contract/${codigo_contrato}/`, body, { headers }).pipe(
       map((response: any) => response), // Procesar la respuesta
       catchError(this.handleError)     // Manejar errores

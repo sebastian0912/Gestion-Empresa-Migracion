@@ -40,7 +40,6 @@ export class VetadosService {
     const headers = this.createAuthorizationHeader();
     reporte.jwt = this.getToken();
     reporte.sede = sede;
-    console.log(reporte);
     return this.http.post(`${this.apiUrl}/vetados/vetados/`, reporte, { headers });
   }
 
@@ -72,7 +71,6 @@ export class VetadosService {
   async actualizarReporte(reporte: any, Categoria: any): Promise<Observable<any>> {
     let nombreRol = "";
     await this.getUser().then((data: any) => {
-      console.log(data);
       nombreRol = data.primer_nombre + " " + data.primer_apellido + " - " + data.rol;
     });
     Categoria.jwt = this.getToken();
@@ -80,7 +78,6 @@ export class VetadosService {
 
     // cambiar de id a categoria_id de categoria
     Categoria.categoria_id = Categoria.id;
-    console.log(Categoria);
 
     return this.http.put(`${this.apiUrl}/vetados/vetados/update/${reporte.id}`, Categoria);
   }
