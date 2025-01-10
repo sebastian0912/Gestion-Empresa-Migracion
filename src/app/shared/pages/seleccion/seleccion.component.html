@@ -8,10 +8,10 @@
 
 
     <!---- !-- Tarjeta para búsqueda de cédula
-    <mat-accordion *ngIf="procesoValido">
+    <mat-accordion>
     -->
 
-    <mat-accordion>
+    <mat-accordion *ngIf="procesoValido">
       <mat-expansion-panel class="opcionesVer">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -63,9 +63,9 @@
     </mat-accordion>
 
     <!-- Acordeón principal que contiene todos los sub-acordeones 
-    <mat-accordion *ngIf="procesoValido">
-    -->
     <mat-accordion>
+    -->
+    <mat-accordion *ngIf="procesoValido">
 
       <!-- Acordeón principal: Información Adicional -->
       <mat-expansion-panel class="opcionesVer">
@@ -363,9 +363,9 @@
 
 
       <!--
-        <mat-card *ngIf="procesoValido">
+        <mat-card>
         -->
-      <mat-card>
+      <mat-card *ngIf="procesoValido">
 
         <h1 class="titulo" style="margin-right: 10px; width: 100%;">
           Diligencie los campos correspondientes:
@@ -877,9 +877,9 @@
 
 
       <!--
-        <mat-card *ngIf="procesoValido">
-      -->
-      <mat-card>
+        <mat-card>
+        -->
+      <mat-card *ngIf="procesoValido">
         <mat-card-content>
           <div class="tabla">
             <h1 class="titulo">Reportes 901</h1>

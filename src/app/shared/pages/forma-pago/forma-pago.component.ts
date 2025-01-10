@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-forma-pago',
@@ -29,7 +29,8 @@ import { NgIf } from '@angular/common';
     MatIconModule,
     FormsModule,
     MatCardModule,
-    NgIf
+    NgIf,
+    CommonModule
   ],
   templateUrl: './forma-pago.component.html',
   styleUrls: ['./forma-pago.component.css']
@@ -118,7 +119,8 @@ export class FormaPagoComponent implements OnInit {
   toggleEdit(element: any): void {
     if (this.correo === "contaduria.rtc@gmail.com" ||
       this.correo === "ghumana.rtc@gmail.com"||
-      this.correo === "antcontable5.ts@gmail.com") {
+      this.correo === "antcontable5.ts@gmail.com" ||
+      this.correo === "programador.ts@gmail.com") {
 
       element.editing = !element.editing;
 

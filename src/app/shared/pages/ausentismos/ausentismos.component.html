@@ -8,6 +8,8 @@
 </div>
 
 <input type="file" id="fileInput" (change)="cargarExcel($event)" accept=".xlsx, .xls" style="display: none;">
+<input type="file" id="fileInput2" (change)="eliminarCaracteresEspeciales($event)" accept=".xlsx, .xls"
+  style="display: none;">
 
 <div class="dashboard-container">
   <div class="navbar">
@@ -27,9 +29,17 @@
             </mat-form-field>
             <button mat-raised-button color="primary" (click)="buscarFormasPago(cedula)" class="boton">Buscar</button>
           </div>
-          <app-info-card title="Cargar Ausentismos" imageUrl="comun/excel.png" (click)="triggerFileInput()"
-            style="cursor: pointer;"
-            *ngIf="correo == 'tuafiliacion@tsservicios.co' || correo == 'contaduria.rtc@gmail.com' || correo == 'programador.ts@gmail.com'"></app-info-card>
+
+          <div class="cards">
+            <app-info-card title="Cargar Ausentismos" imageUrl="comun/excel.png" (click)="triggerFileInput()"
+              style="cursor: pointer;"
+              *ngIf="correo == 'tuafiliacion@tsservicios.co' || correo == 'contaduria.rtc@gmail.com' || correo == 'programador.ts@gmail.com'"></app-info-card>
+  
+            <app-info-card title="Eliminar caracteres especiales" imageUrl="comun/excel.png" 
+              style="cursor: pointer;" (click)="triggerFileInput2()"
+              *ngIf="correo == 'tuafiliacion@tsservicios.co' || correo == 'contaduria.rtc@gmail.com' || correo == 'programador.ts@gmail.com'"></app-info-card>
+          </div>
+
         </div>
 
         <div class="tabla">

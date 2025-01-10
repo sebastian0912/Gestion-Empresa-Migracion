@@ -72,6 +72,24 @@
                   <input matInput [(ngModel)]="element.valor" [readonly]="!element.editing" class="editado">
                 </td>
               </ng-container>
+              <!--
+                            <ng-container matColumnDef="valor">
+                <th mat-header-cell *matHeaderCellDef> Valor </th>
+                <td mat-cell *matCellDef="let element" [class.editable]="element.editing">
+                  <ng-container *ngIf="!element.editing; else editMode">
+                    {{ element.valor | number:'1.0-0' }}
+                  </ng-container>
+                  <ng-template #editMode>
+                    <input 
+                      matInput 
+                      [(ngModel)]="element.valor" 
+                      class="editado"
+                      type="text"
+                    >
+                  </ng-template>
+                </td>
+              </ng-container>
+            -->
               <ng-container matColumnDef="banco">
                 <th mat-header-cell *matHeaderCellDef> Banco </th>
                 <td mat-cell *matCellDef="let element" [class.editable]="element.editing">

@@ -5,6 +5,23 @@
     font-weight: bold;
 }
 
+.example-full-width{
+    min-width: 60% !important;
+}
+
+.buscar{
+    min-width: 40%;
+}
+
+app-info-card{
+    background-color: red;
+}
+
+.boton{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 
 input[readonly] {
     border: none;

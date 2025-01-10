@@ -643,6 +643,8 @@ export class ReporteContratacionComponent implements OnInit {
           text: 'Todas las cédulas coinciden con el cruce diario',
           heightAuto: false
         });
+
+        
       }
 
     } catch (error) {
@@ -653,92 +655,150 @@ export class ReporteContratacionComponent implements OnInit {
 
 
   async validarCruce() {
+    // Cierra cualquier posible alerta abierta
     Swal.close();
+  
     const files = this.filesToUpload['cruceDiario'];
-
+  
     if (!files || files.length === 0) {
       Swal.fire('Error', 'Debe cargar un archivo antes de validar', 'error');
       return;
     }
-
+  
+    // Primer mensaje: "Iniciando el proceso"
     Swal.fire({
       icon: 'info',
       title: 'Cargando...',
       text: 'Iniciando el proceso de validación',
+      allowOutsideClick: false,
+      showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading();
       }
     });
-
+  
     const file = files[0];
     const reader = new FileReader();
+  
     reader.onload = async (e: any) => {
       const bstr: string = e.target.result;
       const workbook = XLSX.read(bstr, { type: 'binary' });
-
+  
       try {
-        Swal.update({ text: 'Leyendo el archivo Excel...' });
-
+        // Cierra el Swal anterior y abre uno nuevo
+        Swal.close();
+        Swal.fire({
+          icon: 'info',
+          title: 'Leyendo el archivo Excel...',
+          text: 'Por favor, espere...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+  
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+        const json = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          raw: false,
+          dateNF: 'dd/mm/yyyy'
+        });
+        // Quitamos el encabezado
         json.shift();
-
+  
+        // Función para formatear fechas
         const formatDate = (date: string): string => {
           const regex_ddmmyyyy = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
           const regex_mmddyy = /^\d{1,2}\/\d{1,2}\/\d{2}$/;
-
+  
           if (regex_ddmmyyyy.test(date)) {
             return date;
           } else if (regex_mmddyy.test(date)) {
             const [month, day, year] = date.split('/');
-            const fullYear = (parseInt(year, 10) < 50) ? `20${year}` : `19${year}`;
+            const fullYear = parseInt(year, 10) < 50 ? `20${year}` : `19${year}`;
             return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${fullYear}`;
           }
           return date;
         };
-
+  
         const indicesFechas = [0, 8, 16, 24, 44, 134];
-
+  
+        // Transformamos cada fila del Excel
         const rows: string[][] = (json as any[][]).map((row: any[]) => {
           const completeRow = new Array(195).fill('-');
-
+  
           row.forEach((cell, index) => {
             if (index < 195) {
-              if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
+              if (
+                cell == null ||
+                cell === '' ||
+                cell === '#N/A' ||
+                cell === 'N/A' ||
+                cell === '#REF!' ||
+                cell === '#¡REF!'
+              ) {
                 completeRow[index] = '-';
               } else if (index === 11 || index === 1) {
+                // Ejemplo: quitar comas, puntos, espacios y dejar solo números o x/X
                 completeRow[index] = this.removeSpecialCharacters(
-                  cell.toString()
-                    .replace(/,/g, '')      // Elimina comas
-                    .replace(/\./g, '')     // Elimina puntos
-                    .replace(/\s/g, '')     // Elimina espacios
-                    .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
+                  cell
+                    .toString()
+                    .replace(/,/g, '')
+                    .replace(/\./g, '')
+                    .replace(/\s/g, '')
+                    .replace(/[^0-9xX]/g, '')
                 );
-
               } else if (indicesFechas.includes(index)) {
-                completeRow[index] = formatDate(this.removeSpecialCharacters(cell.toString()));
+                completeRow[index] = formatDate(
+                  this.removeSpecialCharacters(cell.toString())
+                );
               } else {
                 completeRow[index] = this.removeSpecialCharacters(cell.toString());
               }
             }
           });
-
+  
           return completeRow;
         });
-
+  
         this.datoscruced = rows;
-        Swal.update({ text: 'Dividiendo los datos en lotes...' });
-
+  
+        // Cierra el swal anterior y abre uno nuevo indicando división en lotes
+        Swal.close();
+        Swal.fire({
+          icon: 'info',
+          title: 'Dividiendo los datos en lotes...',
+          text: 'Por favor, espere...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+  
         const batchSize = 1500;
         const totalBatches = Math.ceil(rows.length / batchSize);
         let allErrors: any[] = [];
-
+  
+        // Procesamos por lotes
         for (let i = 0; i < totalBatches; i++) {
           const batch = rows.slice(i * batchSize, (i + 1) * batchSize);
-
-          Swal.update({ text: `Enviando el lote ${i + 1} de ${totalBatches} para validación...` });
-
+  
+          // Cierra el swal anterior y abre uno nuevo para cada lote
+          Swal.close();
+          Swal.fire({
+            icon: 'info',
+            title: 'Validando lote...',
+            text: `Enviando el lote ${i + 1} de ${totalBatches} para validación...`,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+  
           await this.jefeAreaService.subirContratacionValidar(batch).then(
             (response) => {
               if (response.status === 'error') {
@@ -747,56 +807,95 @@ export class ReporteContratacionComponent implements OnInit {
             }
           );
         }
-
+  
+        // Cierra el swal anterior y abre uno nuevo para "Procesando errores..."
+        Swal.close();
+        Swal.fire({
+          icon: 'info',
+          title: 'Procesando errores...',
+          text: 'Por favor, espere...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+  
+        // Guardamos los errores en nuestra estructura
         this.erroresValidacion.data = allErrors;
-        // Luego, validar la ARL una vez que el cruce diario haya sido validado
+  
+        // Luego, validar la ARL (asumiendo tienes la lógica en proccssArl)
         await this.proccssArl([this.filesToUpload['arl'][0]]);
-
+  
+        // Evaluamos si hay errores
         if (allErrors.length > 0) {
-          // Crear un array de errores con el formato adecuado para el backend
+          // Formatear errores para el backend
           const erroresFormateados = [];
-
+  
           for (const [registro, errorObj] of Object.entries(allErrors)) {
-            // Formatear el objeto con 'registro' y 'errores'
             erroresFormateados.push({
               registro: registro,
               errores: errorObj.errores || []
             });
           }
-
+  
           let payload = {
             errores: erroresFormateados,
             responsable: this.nombre,
             tipo: 'Documento de Contratación'
           };
-
-          Swal.update({ text: 'Enviando todos los errores para guardar...' });
-
+  
+          // Cierra el swal y abre uno nuevo "Enviando todos los errores..."
+          Swal.close();
+          Swal.fire({
+            icon: 'info',
+            title: 'Enviando errores...',
+            text: 'Guardando errores encontrados...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+  
           await this.jefeAreaService.enviarErroresValidacion(payload).then(
             () => {
               Swal.close();
-              // Error corriga el excel subidp
-              Swal.fire('Error', 'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.', 'error');
+              Swal.fire(
+                'Error',
+                'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.',
+                'error'
+              );
             },
             (error) => {
               Swal.close();
               Swal.fire('Error', 'Error al guardar los errores.', 'error');
             }
           );
-        }
-        else {
+        } else {
+          // Si no hubo errores
+          Swal.close();
           this.isCruceValidado = true;
-
-          Swal.fire('Completado', 'Proceso de validación finalizado correctamente.', 'success');
+  
+          Swal.fire(
+            'Completado',
+            'Proceso de validación finalizado correctamente.',
+            'success'
+          );
         }
-
       } catch (error) {
-        Swal.fire('Error', 'Error procesando el archivo. Verifique el formato e intente de nuevo.', 'error');
+        Swal.close();
+        Swal.fire(
+          'Error',
+          'Error procesando el archivo. Verifique el formato e intente de nuevo.',
+          'error'
+        );
       }
     };
-
+  
     reader.readAsBinaryString(file);
   }
+  
 
   applyFilter(column: string, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -1092,10 +1191,6 @@ export class ReporteContratacionComponent implements OnInit {
         return resultado;
       });
 
-
-
-
-
       const workbookOut = new ExcelJS.Workbook();
       const worksheet = workbookOut.addWorksheet('Datos');
 
@@ -1174,6 +1269,7 @@ export class ReporteContratacionComponent implements OnInit {
             text: 'Todos los datos de ARL coinciden con el cruce diario',
             heightAuto: false
           });
+          Swal.close();
         } else {
           Swal.fire({
             icon: 'error',
@@ -1181,6 +1277,7 @@ export class ReporteContratacionComponent implements OnInit {
             text: 'Se han encontrado discrepancias en los datos de ARL. Por favor, revise los datos y vuelva a intentarlo. Si tiene errores en la base tambien se mostraran',
             heightAuto: false
           });
+          Swal.close();
         }
       }, 500);
 
