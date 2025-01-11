@@ -46,4 +46,6 @@ Thumbs.db
 # 
 package-lock.json
 capacitor.config.ts
-
+src/environments
+src/environments/environment.development.ts
+src/environments/environment.ts
