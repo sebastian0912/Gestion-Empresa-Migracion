@@ -14,25 +14,26 @@
     margin-bottom: 30px;
 }
 
-mat-error{
+mat-error {
     line-height: 1.1;
 }
 
-.error{
+.error {
     font-size: 0.8rem;
     max-width: 30%;
     margin-left: 6pt;
-    display: inline-block; /* Evita que ocupe toda la línea */
+    display: inline-block;
+    /* Evita que ocupe toda la línea */
 
 }
 
-.boton{
+.boton {
     width: 48%;
     height: 40pt;
     border-radius: 5pt;
 }
 
-.cajonFirma{
+.cajonFirma {
     margin-bottom: 10pt;
 }
 
@@ -83,9 +84,8 @@ mat-card:nth-child(1) {
 
 mat-card:nth-child(2) {
     width: 60%;
-    margin: 10px;
-    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     overflow-y: auto;
+    margin: 10px;
 }
 
 
@@ -168,18 +168,21 @@ mat-card-subtitle {
     text-align: center;
     padding: 10px 20px;
     border-radius: 10px;
-    background-color: #1976d2; /* Color azul del botón */
+    background-color: #1976d2;
+    /* Color azul del botón */
     color: white;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .text {
-    margin-right: auto; /* Empuja el texto hacia la izquierda */
+    margin-right: auto;
+    /* Empuja el texto hacia la izquierda */
     text-align: left;
 }
 
 .arrow {
-    margin-left: 10px; /* Espaciado entre texto y flecha */
+    margin-left: 10px;
+    /* Espaciado entre texto y flecha */
     display: flex;
     align-items: center;
 }
@@ -299,4 +302,61 @@ mat-card-subtitle {
     /* Opcional: Espaciado para mejor apariencia */
     border-radius: 5px;
     /* Opcional: Bordes redondeados */
+}
+
+mat-option {
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+.fingerprint-card {
+    margin: 16px 0;
+    border-radius: 8px;
+    padding: 16px;
+    width: 65% !important;
+    /* quitar box-shadow */
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.card2{
+    margin-left: 8pt;
+}
+
+
+
+.main-container {
+    display: flex;
+    align-items: center;
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+button {
+    width: fit-content;
+}
+
+.status-message {
+    font-size: 14px;
+    color: #1976d2;
+    display: flex;
+    align-items: center;
+}
+
+.status-message mat-icon {
+    margin-right: 8px;
+    color: #4caf50;
+    /* Verde para indicar éxito */
+}
+
+.fingerprint-image-container img {
+    margin-left: 10pt;
+    width: 100pt;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
 }

@@ -147,6 +147,7 @@ ngOnInit(): void {
           observaciones: this.data.observacionVacante,
           fechaIngreso: this.data.fechadeIngreso ? 'Si' : 'No',
           fechaIngresoSeleccionada: this.data.fechadeIngreso ? this.convertirStringADate(this.data.fechadeIngreso) : null,
+          descripcion: this.data.descripcion
         });
 
         cargosArray.push(cargoGroup); // Add cargo to the form array
@@ -234,6 +235,7 @@ ngOnInit(): void {
       fechaIngresoSeleccionada: [''],
       requiereExperiencia: ['no'],
       numeroPersonas: ['', Validators.required],
+      descripcion: ['', Validators.required],
       observaciones: ['']
     });
   }

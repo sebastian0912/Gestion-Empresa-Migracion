@@ -84,16 +84,14 @@ export class VacantesComponent implements OnInit {
       if (result && result.cargos) {
         // Inicializamos un array para capturar los resultados de cada solicitud
         const envioResultados: Array<Promise<any>> = [];
-
+        
         result.cargos.forEach((cargo: any, index: number) => {
           // Estructurar los datos que se enviarán a la API
           const cargoAEnviar = {
             Cargovacante: cargo.cargo,
             CargovacanteOtros: '',
-
             Localizaciondelavacante: result.empresa,
             zonaquenoestaTrabajador: '',
-
             localizacionDeLaPersona: result.oficina.join(', '),
             finca : result.finca,
             zonaquenoestaPostulante: '',
@@ -106,6 +104,7 @@ export class VacantesComponent implements OnInit {
             Observaciones: cargo.observaciones,
             fechadeingreso: cargo.fechaIngresoSeleccionada || null,
             empresaQueSolicita: result.temporal,
+            descripcion: cargo.descripcion,
           };
 
           // Almacenar cada solicitud como una promesa en el array
@@ -187,6 +186,7 @@ export class VacantesComponent implements OnInit {
             Observaciones: cargo.observaciones,
             fechadeingreso: cargo.fechaIngresoSeleccionada || null,
             empresaQueSolicita: result.temporal,
+            descripcion: cargo.descripcion,
           };
 
           // Almacenar cada solicitud como una promesa en el array

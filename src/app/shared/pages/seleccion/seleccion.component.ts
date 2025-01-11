@@ -1017,7 +1017,7 @@ export class SeleccionComponent implements OnInit {
           });
         }
       });
-    } 
+    }
   }
 
 
@@ -1377,7 +1377,7 @@ export class SeleccionComponent implements OnInit {
       codigo = 'Código: AL SE-RE-4';
       version = 'Versión: 02';
       texto = 'En el buscador escriba apoyo laboral ts,  dele click en la pestaña de registrarse o más información y diligencie todo el formulario y al final de la página presione click en “siguiente” para terminar.';
-      qrPath = '/qrs/QR_Apoyo.png';
+      qrPath = '/qrs/QR_APOYO.png';
     } else if (this.empresa === 'TU ALIANZA SAS') {
       logoPath = '/logos/Logo_TA.png';
       codigo = 'Código: TA SE-RE-4';
@@ -1660,7 +1660,7 @@ export class SeleccionComponent implements OnInit {
 
 
     // Guardar el documento
-    doc.save('Contrato_Trabajo.pdf');
+    doc.save('Remision_prueba_tecnica_' + this.getFullName() + '_' + this.codigoContrato + '.pdf');
   }
 
   getFormattedDate(): string {

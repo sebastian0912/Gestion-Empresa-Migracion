@@ -1113,7 +1113,7 @@
 
         <!-- Tarjeta para búsqueda de cédula -->
         <div class="seleccion">
-            <mat-card>
+            <mat-card class="campoCedula">
                 <mat-card-content>
                     <h1 class="titulo" style="margin-right: 10px; width: 100%;">
                         Ingrese la cédula del usuario a buscar:
@@ -1131,7 +1131,7 @@
                 </mat-card-content>
             </mat-card>
 
-            <mat-card>
+            <mat-card class="camposInfo">
                 <mat-card-content>
                     <h1 class="titulo" style="margin-right: 10px; width: 100%;">
                         Complete la información de contratación
@@ -1413,48 +1413,79 @@
                                         <input matInput formControlName="cedula"
                                             placeholder="Ingrese el número de cédula">
                                     </mat-form-field>
+                                    <!-- arregloDeCentroDeCostos -->
+                                    <mat-form-field appearance="fill" class="example-full-width4">
+                                        <mat-label>Centro de Costo</mat-label>
+                                        <!-- Campo de texto con autocompletado -->
+                                        <input matInput [matAutocomplete]="auto" formControlName="centroCosto"
+                                            placeholder="Selecciona o busca un centro de costo" />
+                                        <mat-autocomplete #auto="matAutocomplete">
+                                            <!-- Opciones filtradas dinámicamente -->
+                                            <mat-option *ngFor="let centro of filteredCentros$ | async"
+                                                [value]="centro">
+                                                {{ centro }}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
                                 </div>
                             </div>
 
                             <!-- Campo de Huella Dactilar -->
-                            <div fxFlex="calc(100% - 20px)">
-                                <mat-card-subtitle>Captura de Huella Digital Indice
-                                    Derecho</mat-card-subtitle>
+                            <!-- Sección para la huella del índice derecho -->
+                            <mat-card class="fingerprint-card">
+                                <mat-card-content>
+                                    <!-- Contenedor para alinear los elementos principales -->
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px"
+                                        class="main-container">
+                                        <!-- Contenedor de la acción y mensaje -->
+                                        <div fxLayout="column" fxLayoutGap="8px" class="left-section">
+                                            <h1 class="titulo">Huella Digital: Índice Derecho</h1>
+                                            <!-- Botón para capturar huella -->
+                                            <button mat-raised-button color="primary" (click)="captureFingerprintID()">
+                                                <mat-icon>camera</mat-icon> Capturar Huella
+                                            </button>
 
-                                <button (click)="captureFingerprintID()">
-                                    Capturar Huella
-                                </button>
+                                            <!-- Mensaje de estado -->
+                                            <div *ngIf="message" class="status-message">
+                                                <mat-icon>check_circle</mat-icon> {{ message }}
+                                            </div>
+                                        </div>
 
-                                <!-- Muestra el estado de la captura -->
-                                <div *ngIf="message" class="status-message">
-                                    {{ message }}
-                                </div>
+                                        <!-- Imagen de la huella -->
+                                        <div *ngIf="fingerprintImageID" class="fingerprint-image-container">
+                                            <img [src]="fingerprintImageID" alt="Imagen de la huella digital" />
+                                        </div>
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
 
-                                <!-- Visualización de la imagen de la huella digital capturada, si está disponible -->
-                                <div *ngIf="fingerprintImageID">
-                                    <h3>Huella Capturada:</h3>
-                                    <img [src]="fingerprintImageID" alt="Imagen de la huella digital" />
-                                </div>
-                            </div>
-                            <div fxFlex="calc(100% - 20px)">
-                                <mat-card-subtitle>Captura de Huella Digital Pulgar
-                                    Derecho</mat-card-subtitle>
+                            <mat-card class="fingerprint-card card2">
+                                <mat-card-content>
+                                    <!-- Contenedor principal alineado horizontalmente -->
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px"
+                                        class="main-container">
+                                        <!-- Sección izquierda: Botón y mensaje -->
+                                        <div fxLayout="column" fxLayoutGap="8px" class="left-section">
+                                            <h1 class="titulo">Huella Digital: Pulgar Derecho</h1>
+                                            <!-- Botón para capturar huella -->
+                                            <button mat-raised-button color="primary" (click)="captureFingerprintPD()">
+                                                <mat-icon>camera</mat-icon> Capturar Huella
+                                            </button>
 
-                                <button (click)="captureFingerprintPD()">
-                                    Capturar Huella
-                                </button>
+                                            <!-- Mensaje de estado -->
+                                            <div *ngIf="message2" class="status-message">
+                                                <mat-icon>check_circle</mat-icon> {{ message2 }}
+                                            </div>
+                                        </div>
 
-                                <!-- Muestra el estado de la captura -->
-                                <div *ngIf="message" class="status-message">
-                                    {{ message }}
-                                </div>
+                                        <!-- Imagen de la huella -->
+                                        <div *ngIf="fingerprintImagePD" class="fingerprint-image-container">
+                                            <img [src]="fingerprintImagePD" alt="Imagen de la huella digital" />
+                                        </div>
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
 
-                                <!-- Visualización de la imagen de la huella digital capturada, si está disponible -->
-                                <div *ngIf="fingerprintImagePD">
-                                    <h3>Huella Capturada:</h3>
-                                    <img [src]="fingerprintImagePD" alt="Imagen de la huella digital" />
-                                </div>
-                            </div>
 
                         </mat-expansion-panel>
 

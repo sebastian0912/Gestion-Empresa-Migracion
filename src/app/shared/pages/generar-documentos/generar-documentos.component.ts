@@ -34,6 +34,7 @@ import * as fontkit from 'fontkit';
 export class GenerarDocumentosComponent implements OnInit {
   isSidebarHidden = false;
   empresa: string = '';
+  descripcionVacante: string = '';
   cedula: string = '';
   nombreCompletoLogin: string = '';
   // Propiedades para almacenar los formularios
@@ -56,13 +57,12 @@ export class GenerarDocumentosComponent implements OnInit {
   pagoTransporte: any = {};
   codigoContratacion: any = '';
   firma: any = '';
-  huellaIndiceDerecho: any = '';
-  huellaPulgarDerecho: any = '';
+  huellaIndiceDerecho: any;
+  huellaPulgarDerecho: any;
   firmaPersonalAdministrativo: any = '';
   user: any = {};
   sede: any = '';
   cedulaPersonalAdministrativo: any = {};
-
   documentos = [
     { titulo: 'Autorización de datos' },
     { titulo: 'Entrega de documentos' },
@@ -72,6 +72,7 @@ export class GenerarDocumentosComponent implements OnInit {
     { titulo: 'ARL' },
     { titulo: 'Figura Humana' },
   ];
+  nombreCompleto = '';
 
   referenciasA = [
     "AMIGO LO CONOCE HACE 5 AÑOS LO REFIERE COMO ESTRATEGICA",
@@ -138,7 +139,7 @@ export class GenerarDocumentosComponent implements OnInit {
   };
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Mostrar Swal de carga desde el inicio
     Swal.fire({
       icon: 'info',
@@ -149,7 +150,7 @@ export class GenerarDocumentosComponent implements OnInit {
         Swal.showLoading();
       }
     });
-    this.recuperarFormulariosDesdeLocalStorage();
+    await this.recuperarFormulariosDesdeLocalStorage();
 
     // Cargar datos del localStorage y asignarlos
     if (isPlatformBrowser(this.platformId)) {
@@ -174,8 +175,8 @@ export class GenerarDocumentosComponent implements OnInit {
 
         if (res && Object.keys(res).length > 0) {
           this.firma = res.firmaSolicitante || '';
-          this.huellaIndiceDerecho = res.huellaIndiceDerecho || '';
-          this.huellaPulgarDerecho = res.huellaPulgarDerecho || '';
+          // this.huellaIndiceDerecho = res.huellaIndiceDerecho || '';
+          // this.huellaPulgarDerecho = res.huellaPulgarDerecho || '';
           this.firmaPersonalAdministrativo = res.firmaPersonalAdministrativo || '';
         } else {
           Swal.fire('Sin datos', 'No se encontraron datos biométricos para esta cédula.', 'info');
@@ -203,8 +204,6 @@ export class GenerarDocumentosComponent implements OnInit {
     // Devuelve true si el título corresponde a Cedula, ARL o Figura Humana
     return ['Cedula', 'ARL', 'Figura Humana'].includes(doc.titulo);
   }
-
-
 
   subirArchivo(event: any, campo: string) {
     const input = event.target as HTMLInputElement; // Referencia al input
@@ -283,7 +282,7 @@ export class GenerarDocumentosComponent implements OnInit {
     }
   }
 
-  recuperarFormulariosDesdeLocalStorage() {
+  async recuperarFormulariosDesdeLocalStorage() {
     // Verificar si está en el navegador
     if (isPlatformBrowser(this.platformId)) {
       const formularios = localStorage.getItem('formularios');
@@ -310,6 +309,9 @@ export class GenerarDocumentosComponent implements OnInit {
         this.pagoTransporte = data.pagoTransporte || {};
         this.cedulaPersonalAdministrativo = data.cedulaPersonalAdministrativo || {};
         this.codigoContratacion = localStorage.getItem('codigoContrato');
+        this.descripcionVacante = data.descripcionVacante || '';
+        this.huellaIndiceDerecho = data.huellaIndice || '';
+        this.huellaPulgarDerecho = data.huellaPulgarDerecho || '';
         // Extraer el objeto del localStorage
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -320,6 +322,11 @@ export class GenerarDocumentosComponent implements OnInit {
           user.primer_nombre || '',
           user.segundo_nombre || ''
         ].filter(part => part.trim() !== '').join(' ');
+
+        this.nombreCompleto = `${this.datosPersonales.primer_nombre} ${this.datosPersonales.segundo_nombre} ${this.datosPersonales.primer_apellido} ${this.datosPersonales.segundo_apellido}`
+          .replace(/\s+/g, ' ')
+          .trim();
+        console.log(this.nombreCompleto);
       } else {
         console.warn('No se encontraron formularios en localStorage');
       }
@@ -626,6 +633,7 @@ export class GenerarDocumentosComponent implements OnInit {
 
   // Generar el documento de entrega de documentos de Tu Alianza
   generarEntregaDocsAlianza() {
+
     // Crear el documento PDF
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -978,6 +986,25 @@ export class GenerarDocumentosComponent implements OnInit {
     // Dibujar áreas para las huellas debajo de los encabezados
     doc.rect(startX, startY + headerHeight, tableWidth / 2, tableHeight); // Área "Huella Indice Derecho"
     doc.rect(startX + tableWidth / 2, startY + headerHeight, tableWidth / 2, tableHeight); // Área "Huella pulgar Derecho"
+
+    // colocar imagen que estan indicederecho en base 64 dentro del cuadro
+    // Tamaño de las imágenes dentro de los cuadros
+    const imageWidth = tableWidth / 2 - 10; // Un pequeño margen
+    const imageHeight = tableHeight - 3;  // Un pequeño margen
+
+    // Posiciones de las imágenes
+    const indiceX = startX + 5;
+    const indiceY = startY + headerHeight + 2;
+    const pulgarX = startX + tableWidth / 2 + 5;
+    const pulgarY = startY + headerHeight + 2;
+
+    // Colocar las imágenes si están disponibles
+    if (this.huellaIndiceDerecho) {
+      doc.addImage(this.huellaIndiceDerecho, 'PNG', indiceX, indiceY, imageWidth, imageHeight);
+    }
+    if (this.huellaPulgarDerecho) {
+      doc.addImage(this.huellaPulgarDerecho, 'PNG', pulgarX, pulgarY, imageWidth, imageHeight);
+    }
 
     // Posición vertical ajustada al final del documento
     y += 1; // Espacio adicional después del contenido final
@@ -1413,6 +1440,26 @@ export class GenerarDocumentosComponent implements OnInit {
     doc.rect(startX, startY + headerHeight, tableWidth / 2, tableHeight); // Área "Huella Indice Derecho"
     doc.rect(startX + tableWidth / 2, startY + headerHeight, tableWidth / 2, tableHeight); // Área "Huella pulgar Derecho"
 
+    // colocar imagen que estan indicederecho en base 64 dentro del cuadro
+    // Tamaño de las imágenes dentro de los cuadros
+    const imageWidth = tableWidth / 2 - 10; // Un pequeño margen
+    const imageHeight = tableHeight - 3;  // Un pequeño margen
+
+    // Posiciones de las imágenes
+    const indiceX = startX + 5;
+    const indiceY = startY + headerHeight + 2;
+    const pulgarX = startX + tableWidth / 2 + 5;
+    const pulgarY = startY + headerHeight + 2;
+
+    // Colocar las imágenes si están disponibles
+    if (this.huellaIndiceDerecho) {
+      doc.addImage(this.huellaIndiceDerecho, 'PNG', indiceX, indiceY, imageWidth, imageHeight);
+    }
+    if (this.huellaPulgarDerecho) {
+      doc.addImage(this.huellaPulgarDerecho, 'PNG', pulgarX, pulgarY, imageWidth, imageHeight);
+    }
+
+
     // Posición vertical ajustada al final del documento
     y += 5; // Espacio adicional después del contenido final
 
@@ -1530,10 +1577,14 @@ export class GenerarDocumentosComponent implements OnInit {
       fecha.getFullYear()  // yyyy
     ].join('/');
 
+
+    // Normaliza el texto de nombre completo para evitar problemas con caracteres especiales
+    const nombreCompletoNormalizado = this.nombreCompleto.normalize('NFC');
+
     // Datos de titulos
     const datos = [
       { titulo: 'Representado por', valor: 'MAYRA HUAMANÍ LÓPEZ' },
-      { titulo: 'Nombre del Trabajador', valor: this.datosPersonales.segundo_apellido + ' ' + this.datosPersonales.primer_apellido + ' ' + this.datosPersonales.primer_nombre + ' ' + this.datosPersonales.segundo_nombre },
+      { titulo: 'Nombre del Trabajador', valor: nombreCompletoNormalizado },
       { titulo: 'Fecha de Nacimiento', valor: this.datosPersonales.fecha_nacimiento },
       { titulo: 'Domicilio del Trabajador', valor: this.datosPersonales.direccion_residencia },
       { titulo: 'Fecha de Iniciación', valor: fechaFormateada },
@@ -1543,13 +1594,13 @@ export class GenerarDocumentosComponent implements OnInit {
       { titulo: 'Forma de Pago', valor: 'Banca Móvil,  Cuenta de Ahorro o Tarjeta Monedero' },
       { titulo: 'Nombre Empresa Usuria', valor: this.selecionparte2.centroCosto },
       { titulo: 'Cargo', valor: this.selecionparte2.cargo },
-      { titulo: 'Descripción de la Obra/Motivo Temporada', valor: '' },
+      { titulo: 'Descripción de la Obra/Motivo Temporada', valor: this.descripcionVacante },
       { titulo: 'Domicilio del patrono', valor: domicilio },
       { titulo: 'Tipo y No de Identificación', valor: this.datosPersonales.tipodedocumento + '        ' + this.datosPersonales.numerodeceduladepersona },
       { titulo: 'Email', valor: this.datosPersonales.direccion_residencia },
     ];
     // Configuración de columnas
-    const columnWidth = 100; // Ancho de cada columna
+    const columnWidth = 110; // Ancho de cada columna
     const rowSpacing = 3;    // Espaciado entre filas
     const columnMargin = 10; // Margen entre columnas
     const columnStartX = 5;  // Posición inicial X
@@ -1568,9 +1619,16 @@ export class GenerarDocumentosComponent implements OnInit {
       doc.setFont('helvetica', 'normal');
       doc.text(`${item.titulo}:`, x, y);
 
-      // Establecer el valor en fuente negrita
-      doc.setFont('helvetica', 'bold');
-      doc.text(item.valor, x + 30, y);
+      if (index > 11) {
+        // Establecer el valor en fuente negrita
+        doc.setFont('helvetica', 'bold');
+        doc.text(item.valor, x + 30.2, y);
+      }
+      else {
+        // Establecer el valor en fuente negrita
+        doc.setFont('helvetica', 'bold');
+        doc.text(item.valor, x + 48, y);
+      }
     });
 
     // Restaurar la fuente a la normal después del bucle
@@ -1592,7 +1650,7 @@ export class GenerarDocumentosComponent implements OnInit {
     y += 3; // Espacio adicional después del contenido
     doc.setFontSize(6.5);
     doc.setFont('helvetica', 'bold');
-    doc.text('CENTRO DE COSTO---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------', 5, y);
+    doc.text(this.cedulaPersonalAdministrativo.centroCosto, 7, y + 1);
 
     // Segundo parrago
     y += 5; // Espacio adicional después del contenido
@@ -2163,6 +2221,7 @@ export class GenerarDocumentosComponent implements OnInit {
       // Fecha de Fecha de NacimientoRow1
       const fechaNacimientoField = form.getTextField('Fecha de NacimientoRow1');
       fechaNacimientoField.setText(fechaNacimiento);
+      fechaNacimientoField.updateAppearances(customFont);
 
       //Departamento de NacimientoRow1
       const departamentoNacimientoField = form.getTextField('Departamento de NacimientoRow1');
@@ -2238,6 +2297,7 @@ export class GenerarDocumentosComponent implements OnInit {
       // CelularGrupo Sanguineo y RH
       const celularGrupoSanguineoField = form.getTextField('CelularGrupo Sanguineo y RH');
       celularGrupoSanguineoField.setText(this.datosPersonales.rh || '');
+      celularGrupoSanguineoField.updateAppearances(customFont);
 
       // if zurdo_diestro = ZU -> Diestro CON X
       if (this.datosPersonales.zurdo_diestro === 'ZU') {
@@ -2285,10 +2345,12 @@ export class GenerarDocumentosComponent implements OnInit {
       // Banco
       const bancoField = form.getTextField('Banco');
       bancoField.setText(this.pagoTransporte.formaPago || '');
+      bancoField.updateAppearances(customFont);
 
       // Cuenta
       const cuentaField = form.getTextField('Cuenta');
       cuentaField.setText(this.pagoTransporte.numeroPagos || '');
+      cuentaField.updateAppearances(customFont);
 
       // EPS SaludRow1
       const epsSaludField = form.getTextField('EPS SaludRow1');
@@ -2320,8 +2382,7 @@ export class GenerarDocumentosComponent implements OnInit {
       // Número de ContactoRow1
       const numeroContactoField = form.getTextField('Número de ContactoRow1');
       numeroContactoField.setText(this.datosPersonales.telefono_familiar_emergencia || '');
-
-
+      numeroContactoField.updateAppearances(customFont);
 
       // Seleccione el Grado de Escolaridad
       const gradoEscolaridadField = form.getTextField('Seleccione el Grado de Escolaridad');
@@ -2341,6 +2402,7 @@ export class GenerarDocumentosComponent implements OnInit {
       // Año Finalización
       const anoFinalizacionField = form.getTextField('Año Finalización');
       anoFinalizacionField.setText(this.datosPersonalesParte2.ano_finalizacion || '');
+      anoFinalizacionField.updateAppearances(customFont);
 
       // Nombre y Apellido PadreRow1
       const nombrePadreField = form.getTextField('Nombre y Apellido PadreRow1');
@@ -2415,6 +2477,7 @@ export class GenerarDocumentosComponent implements OnInit {
       // OcupaciónRow1_3
       const ocupacionConyugeField = form.getTextField('OcupaciónRow1_3');
       ocupacionConyugeField.setText(this.datosConyugue.ocupacion_conyugue || '');
+      ocupacionConyugeField.updateAppearances(customFont);
 
       // DirecciónRow1_3
       const direccionConyugeField = form.getTextField('DirecciónRow1_3');
@@ -2681,6 +2744,7 @@ export class GenerarDocumentosComponent implements OnInit {
         : '';
       const fechaRetiro1Field = form.getTextField('F de RetiroRow1');
       fechaRetiro1Field.setText(fechaRetiro1);
+      fechaRetiro1Field.updateAppearances(customFont);
 
       // Motivo de RetiroRow1
       const motivoRetiro1Field = form.getTextField('Motivo de RetiroRow1');
@@ -2830,17 +2894,29 @@ export class GenerarDocumentosComponent implements OnInit {
 
       // TEXTOCARNET
       const textoCarnetField = form.getTextField('TEXTOCARNET');
-      textoCarnetField.setText("En Caso de perdida o daño, autorizo a " + nombreEmpresa +" , para descontar de mi sueldo o de mis prestaciones en caso de retiro, la suma eqivalente a MEDIO DÍA DE SALARIO MINIMO LEGAL VIGENTE (1/2 DSMLV) y me comprometo a presentar ante " + this.selecionparte2.centroCosto + "  fotocopia del denuncio correspondiente y en el caso de aparecer el carnet perdido lo devolveré a la empresa para su respectiva anulación.");
+      textoCarnetField.setText("En Caso de perdida o daño, autorizo a " + nombreEmpresa + " , para descontar de mi sueldo o de mis prestaciones en caso de retiro, la suma eqivalente a MEDIO DÍA DE SALARIO MINIMO LEGAL VIGENTE (1/2 DSMLV) y me comprometo a presentar ante " + this.selecionparte2.centroCosto + "  fotocopia del denuncio correspondiente y en el caso de aparecer el carnet perdido lo devolveré a la empresa para su respectiva anulación.");
       textoCarnetField.setFontSize(6);
+      textoCarnetField.updateAppearances(customFont);
 
       // TEXTOLOCKER5
       const textoLockerField = form.getTextField('TEXTOLOCKER5');
-      textoLockerField.setText("Yo " + this.datosPersonales.primer_nombre + " " +  this.datosPersonales.segundo_nombre + " " + this.datosPersonales.primer_apellido + " " + this.datosPersonales.segundo_apellido + " identificado(a) con cedula de ciudadanía No. " + this.datosPersonales.numerodeceduladepersona + " declaro haber recibido el Locker relacionado abajo y me comprometo a seguir las recomendaciones y politicas de uso y cuidado de estós, y a devolver el Locker en el mismo estado en que me fue asignado, al momento de la finalización de mi relación laboral y antes de la entrega de la liquidación de contrato");
+      textoLockerField.setText("Yo " + this.datosPersonales.primer_nombre + " " + this.datosPersonales.segundo_nombre + " " + this.datosPersonales.primer_apellido + " " + this.datosPersonales.segundo_apellido + " identificado(a) con cedula de ciudadanía No. " + this.datosPersonales.numerodeceduladepersona + " declaro haber recibido el Locker relacionado abajo y me comprometo a seguir las recomendaciones y politicas de uso y cuidado de estós, y a devolver el Locker en el mismo estado en que me fue asignado, al momento de la finalización de mi relación laboral y antes de la entrega de la liquidación de contrato");
+      textoLockerField.setFontSize(6);
+      textoLockerField.updateAppearances(customFont);
 
       // empresa
       const empresaField = form.getTextField('empresa');
       empresaField.setText(nombreEmpresa);
-      
+      empresaField.updateAppearances(customFont);
+
+      // Image10_af_image
+      // La imagen esta en base 64 con el prefijo data:image/png;base64, es huellaIndiceDerecha
+      const huellaBytes = this.base64ToUint8Array(this.huellaIndiceDerecho);
+      const huellaImage = await pdfDoc.embedPng(huellaBytes);
+      const huellaField = form.getButton('Image10_af_image');
+      huellaField.setImage(huellaImage);
+
+
 
 
 
@@ -2913,10 +2989,18 @@ export class GenerarDocumentosComponent implements OnInit {
     URL.revokeObjectURL(url);
   }
 
-  // Función para convertir una cadena Base64 a Uint8Array
+  // Función para convertir una cadena Base64 (con o sin prefijo) a Uint8Array
   base64ToUint8Array(base64: string): Uint8Array {
-    const binaryString = atob(base64);
+    // Verifica si la cadena contiene el prefijo y lo elimina si está presente
+    const base64Data = base64.includes('data:image')
+      ? base64.replace(/^data:image\/(png|jpeg|jpg);base64,/, '')
+      : base64;
+
+    // Decodifica la cadena base64 en un binario
+    const binaryString = atob(base64Data);
     const len = binaryString.length;
+
+    // Convierte el binario en un Uint8Array
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
       bytes[i] = binaryString.charCodeAt(i);
@@ -2926,6 +3010,7 @@ export class GenerarDocumentosComponent implements OnInit {
 
 
 
-  
+
+
 
 }

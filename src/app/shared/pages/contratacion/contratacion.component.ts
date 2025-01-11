@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 import { NgClass, NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
-import { catchError, elementAt, forkJoin, of } from 'rxjs';
+import { catchError, elementAt, forkJoin, map, Observable, of, startWith } from 'rxjs';
 import { LeerInfoCandidatoComponent } from '../../components/leer-info-candidato/leer-info-candidato.component';
 import { MatDialog } from '@angular/material/dialog';
 import { VacantesService } from '../../services/vacantes/vacantes.service';
@@ -26,6 +26,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { GestionDocumentalService } from '../../services/gestion-documental/gestion-documental.service';
+import { arregloDeCentroDeCostos } from '../../model/models';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 
 @Component({
   selector: 'app-contratacion',
@@ -50,7 +53,9 @@ import { GestionDocumentalService } from '../../services/gestion-documental/gest
     MatProgressBarModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSelectModule
+    MatSelectModule,
+    MatAutocompleteModule,
+    CommonModule
   ],
   templateUrl: './contratacion.component.html',
   styleUrl: './contratacion.component.css'
@@ -62,6 +67,7 @@ export class ContratacionComponent implements OnInit {
   sedeLogin: string = '';
   cedula: string = ''; // Variable to store the cedula input
   nombreEmpresa: string = ''; // Variable to store the company name
+  descripcionVacante: string = ''; // Variable to store the vacancy description
   // Formularios 
   formGroup1!: FormGroup;
   formGroup2!: FormGroup;
@@ -97,8 +103,12 @@ export class ContratacionComponent implements OnInit {
   isSidebarHidden = false;
   fingerprintCaptured: boolean = false;
   message: string = '';
+  message2: string = '';
   fingerprintImagePD: string | null = null;
   fingerprintImageID: string | null = null;
+  arregloDeCentroDeCostos: any[] = arregloDeCentroDeCostos;
+  // Opciones filtradas
+  filteredCentros$: Observable<string[]> | undefined;
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
@@ -313,6 +323,15 @@ export class ContratacionComponent implements OnInit {
 
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
 
+
+  // Lógica de filtro
+  filtrarCentros(valor: string): string[] {
+    const filtro = valor.toLowerCase();
+    return this.arregloDeCentroDeCostos.filter((centro) =>
+      centro.toLowerCase().includes(filtro)
+    );
+  }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       // Ejecutar el código relacionado con localStorage solo si estamos en un navegador
@@ -327,6 +346,14 @@ export class ContratacionComponent implements OnInit {
         localStorage.removeItem('cedula');
       }
     }
+
+    // Filtrar dinámicamente según la entrada del usuario
+    this.filteredCentros$ = this.huellaForm.get('centroCosto')!.valueChanges.pipe(
+      startWith(''),
+      map((valor) =>
+        this.filtrarCentros(valor)
+      )
+    );
 
     // Escucha los cambios en 'formaPago' y actualiza 'otraFormaPago'
     this.pagoTransporteForm.get('formaPago')?.valueChanges.subscribe((value) => {
@@ -660,6 +687,7 @@ export class ContratacionComponent implements OnInit {
     // Personal administrativo
     this.huellaForm = this.fb.group({
       cedula: [''],
+      centroCosto: [''],
     });
 
   }
@@ -1199,7 +1227,9 @@ export class ContratacionComponent implements OnInit {
         } else {
           this.codigoContrato = this.seleccion.codigo_contrato;
           this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((response: any) => {
+            console.log(response);
             this.nombreEmpresa = response.publicacion[0].empresaQueSolicita_id;
+            this.descripcionVacante = response.publicacion[0].descripcion;
             //this.vacante = response.publicacion[0]
           });
           this.llenarDocumentos();
@@ -1299,7 +1329,7 @@ export class ContratacionComponent implements OnInit {
 
         }
       });
-    } 
+    }
   }
 
 
@@ -1902,6 +1932,13 @@ export class ContratacionComponent implements OnInit {
 
 
   generacionDocumentos() {
+    console.log('Generando documentos...');
+    console.log(this.huellaForm.value);
+    if (this.huellaForm.value.cedula == '' || this.huellaForm.value.centroCosto == '' || this.fingerprintImageID == '' || this.fingerprintImagePD == '') {
+      Swal.fire('Error', 'Por favor, complete los campos', 'error');
+      return;
+    }
+
     // Guardar cedula y codigoContrato en el localStorage separados
     localStorage.setItem('cedula', this.cedula);
     localStorage.setItem('codigoContrato', this.codigoContrato);
@@ -1932,6 +1969,9 @@ export class ContratacionComponent implements OnInit {
       pagoTransporte: this.pagoTransporteForm.value,
       empresa: this.nombreEmpresa,
       cedulaPersonalAdministrativo: this.huellaForm.value,
+      descripcionVacante: this.descripcionVacante,
+      huellaIndice: this.fingerprintImageID,
+      huellaPulgarDerecho: this.fingerprintImagePD,
     };
 
     // Guardar en localStorage como un único objeto JSON
@@ -1970,21 +2010,21 @@ export class ContratacionComponent implements OnInit {
       window.electron.fingerprint.get()
         .then((result: { success: boolean; data?: string; error?: string }) => {
           if (result.success) {
-            this.message = 'Huella capturada exitosamente.';
+            this.message2 = 'Huella capturada exitosamente.';
             this.fingerprintImagePD = `data:image/png;base64,${result.data}`;
           } else {
-            this.message = `Error al capturar huella: ${result.error || 'Error desconocido.'}`;
+            this.message2 = `Error al capturar huella: ${result.error || 'Error desconocido.'}`;
             console.error(this.message);
           }
         })
         .catch((error: any) => {
-          this.message = `Error al capturar huella: ${error.error || 'Error de comunicación con el módulo Electron.'}`;
+          this.message2 = `Error al capturar huella: ${error.error || 'Error de comunicación con el módulo Electron.'}`;
           console.error(this.message);
         });
     } else {
       const errorMessage = 'Electron o fingerprint no están disponibles en window.';
       console.error(errorMessage);
-      this.message = errorMessage;
+      this.message2 = errorMessage;
     }
   }
 
