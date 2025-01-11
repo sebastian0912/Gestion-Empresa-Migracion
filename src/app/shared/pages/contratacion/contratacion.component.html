@@ -1241,7 +1241,7 @@
                             </mat-expansion-panel-header>
 
                             <div [formGroup]="referenciasForm">
-                                
+
                                 <div class="input-container">
                                     <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar1"
                                         aria-label="PDF options">
@@ -1415,6 +1415,47 @@
                                     </mat-form-field>
                                 </div>
                             </div>
+
+                            <!-- Campo de Huella Dactilar -->
+                            <div fxFlex="calc(100% - 20px)">
+                                <mat-card-subtitle>Captura de Huella Digital Indice
+                                    Derecho</mat-card-subtitle>
+
+                                <button (click)="captureFingerprintID()">
+                                    Capturar Huella
+                                </button>
+
+                                <!-- Muestra el estado de la captura -->
+                                <div *ngIf="message" class="status-message">
+                                    {{ message }}
+                                </div>
+
+                                <!-- Visualización de la imagen de la huella digital capturada, si está disponible -->
+                                <div *ngIf="fingerprintImageID">
+                                    <h3>Huella Capturada:</h3>
+                                    <img [src]="fingerprintImageID" alt="Imagen de la huella digital" />
+                                </div>
+                            </div>
+                            <div fxFlex="calc(100% - 20px)">
+                                <mat-card-subtitle>Captura de Huella Digital Pulgar
+                                    Derecho</mat-card-subtitle>
+
+                                <button (click)="captureFingerprintPD()">
+                                    Capturar Huella
+                                </button>
+
+                                <!-- Muestra el estado de la captura -->
+                                <div *ngIf="message" class="status-message">
+                                    {{ message }}
+                                </div>
+
+                                <!-- Visualización de la imagen de la huella digital capturada, si está disponible -->
+                                <div *ngIf="fingerprintImagePD">
+                                    <h3>Huella Capturada:</h3>
+                                    <img [src]="fingerprintImagePD" alt="Imagen de la huella digital" />
+                                </div>
+                            </div>
+
                         </mat-expansion-panel>
 
 

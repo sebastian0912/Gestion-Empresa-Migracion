@@ -95,6 +95,10 @@ export class ContratacionComponent implements OnInit {
   infoGeneralC: any;
   infoGeneral: boolean = false;
   isSidebarHidden = false;
+  fingerprintCaptured: boolean = false;
+  message: string = '';
+  fingerprintImagePD: string | null = null;
+  fingerprintImageID: string | null = null;
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
@@ -1932,6 +1936,56 @@ export class ContratacionComponent implements OnInit {
 
     // Guardar en localStorage como un único objeto JSON
     localStorage.setItem('formularios', JSON.stringify(formularios));
+  }
+
+
+
+  captureFingerprintID() {
+    // Verifica si window.myElectron y window.myElectron.fingerprint están disponibles
+    if (window.electron.fingerprint) {
+      window.electron.fingerprint.get()
+        .then((result: { success: boolean; data?: string; error?: string }) => {
+          if (result.success) {
+            this.message = 'Huella capturada exitosamente.';
+            this.fingerprintImageID = `data:image/png;base64,${result.data}`;
+          } else {
+            this.message = `Error al capturar huella: ${result.error || 'Error desconocido.'}`;
+            console.error(this.message);
+          }
+        })
+        .catch((error: any) => {
+          this.message = `Error al capturar huella: ${error.error || 'Error de comunicación con el módulo Electron.'}`;
+          console.error(this.message);
+        });
+    } else {
+      const errorMessage = 'Electron o fingerprint no están disponibles en window.';
+      console.error(errorMessage);
+      this.message = errorMessage;
+    }
+  }
+
+  captureFingerprintPD() {
+    // Verifica si window.myElectron y window.myElectron.fingerprint están disponibles
+    if (window.electron.fingerprint) {
+      window.electron.fingerprint.get()
+        .then((result: { success: boolean; data?: string; error?: string }) => {
+          if (result.success) {
+            this.message = 'Huella capturada exitosamente.';
+            this.fingerprintImagePD = `data:image/png;base64,${result.data}`;
+          } else {
+            this.message = `Error al capturar huella: ${result.error || 'Error desconocido.'}`;
+            console.error(this.message);
+          }
+        })
+        .catch((error: any) => {
+          this.message = `Error al capturar huella: ${error.error || 'Error de comunicación con el módulo Electron.'}`;
+          console.error(this.message);
+        });
+    } else {
+      const errorMessage = 'Electron o fingerprint no están disponibles en window.';
+      console.error(errorMessage);
+      this.message = errorMessage;
+    }
   }
 
 
