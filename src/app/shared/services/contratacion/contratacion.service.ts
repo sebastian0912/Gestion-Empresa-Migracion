@@ -588,6 +588,15 @@ export class ContratacionService {
       catchError(this.handleError)
     );
   }
+
+  // contratos/<str:cedula>/
+  public obtenerCodigosContrato(cedula: string): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/contratacion/contratos/${cedula}/`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
   
 
 

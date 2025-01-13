@@ -66,5 +66,14 @@ export class DocumentacionService {
     );
   }
 
+  //  document-search/
+  public buscar_documentos(data: any): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/gestion_documental/document-search/`, { headers, params: data }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
 
 }

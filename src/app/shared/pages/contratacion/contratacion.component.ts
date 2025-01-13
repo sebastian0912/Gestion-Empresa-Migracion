@@ -1934,10 +1934,10 @@ export class ContratacionComponent implements OnInit {
   generacionDocumentos() {
     console.log('Generando documentos...');
     console.log(this.huellaForm.value);
-    if (this.huellaForm.value.cedula == '' || this.huellaForm.value.centroCosto == '' || this.fingerprintImageID == '' || this.fingerprintImagePD == '') {
+    /*if (this.huellaForm.value.cedula == '' || this.huellaForm.value.centroCosto == '' || this.fingerprintImageID == '' || this.fingerprintImagePD == '') {
       Swal.fire('Error', 'Por favor, complete los campos', 'error');
       return;
-    }
+    }*/
 
     // Guardar cedula y codigoContrato en el localStorage separados
     localStorage.setItem('cedula', this.cedula);

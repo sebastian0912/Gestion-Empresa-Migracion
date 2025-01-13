@@ -20,16 +20,14 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [
     NavbarLateralComponent,
-    NavbarSuperiorComponent,
-    InfoCardComponent,
+    NavbarSuperiorComponent,    
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
     FormsModule,
-    MatCardModule,
-    NgIf
+    MatCardModule,    
   ],
   templateUrl: './solicitar-turno.component.html',
   styleUrl: './solicitar-turno.component.css'

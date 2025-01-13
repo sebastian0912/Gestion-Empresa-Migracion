@@ -64,7 +64,7 @@ export class NavbarLateralComponent implements OnInit {
   isActive(path: string): boolean {
     return this.activeRoute === path;
   }
-  
+
   toggleMenu(menu: string): void {
     this.menuState[menu] = !this.menuState[menu];
     this.isMenuVisible = !this.isMenuVisible;
@@ -108,16 +108,17 @@ export class NavbarLateralComponent implements OnInit {
     // 'buscar-documentacion',       'subir-documentacion', 'publicidad', 'antecedentes-robots',
     ADMIN: [
       'forma-pago', 'desprendibles-pago',
-      'ausentismos',  'vacantes',
+      'ausentismos', 'vacantes',
       'seguimiento-auditoria', 'estadisticas-auditoria', 'seguimiento-auditoria-archivo',
       'personal-activo',
       'reporte-contratacion', 'seguimiento-auditoria',
       'formulario-incapacicades', 'subida-archivos-incapacidades',
       'buscar-incapacicades', 'incapacidades-totales', 'seleccion',
-      'contratacion', , 'publicidad', 
+      'contratacion', , 'publicidad',
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
-      'crear-estructura-documental', 'vacante-documentos', 'personal-administrativo'
+      'vacante-documentos', 'personal-administrativo',
+      'crear-estructura-documental', 'buscar-documentacion'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'
@@ -134,7 +135,7 @@ export class NavbarLateralComponent implements OnInit {
     ],
     INCAPACIDADSUBIDA: [
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
-      'ausentismos', 'consulta-formulario',       'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades',
+      'ausentismos', 'consulta-formulario', 'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades',
       'formulario-incapacicades', 'reporte-contratacion', 'ver-reporte'
     ],
     AUX_CONTRATACION: [
@@ -148,7 +149,7 @@ export class NavbarLateralComponent implements OnInit {
     reporteIncapacidad: [
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
       'ausentismos',
-      'ver-reporte', 'reporte-contratacion','consulta-formulario'
+      'ver-reporte', 'reporte-contratacion', 'consulta-formulario'
     ],
 
 
@@ -189,6 +190,18 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // borrar del localstorage cedula, codigoContrato, formularios
+    // Verificar si estamos en un entorno de navegador
+    if (isPlatformBrowser(this.platformId)) {
+      // Verificar si estamos en la ruta 'generar-documentos'
+      if (this.router.url !== '/generar-documentos' && this.router.url !== '/contratacion') {
+        localStorage.removeItem('cedula');
+        localStorage.removeItem('codigoContrato');
+        localStorage.removeItem('formularios');
+      }
+    }
+
+
     const user = await this.getUser();
     if (user) {
       const auxContratacionEmails = [

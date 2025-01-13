@@ -1577,7 +1577,6 @@ export class GenerarDocumentosComponent implements OnInit {
       fecha.getFullYear()  // yyyy
     ].join('/');
 
-
     // Normaliza el texto de nombre completo para evitar problemas con caracteres especiales
     const nombreCompletoNormalizado = this.nombreCompleto.normalize('NFC');
 
