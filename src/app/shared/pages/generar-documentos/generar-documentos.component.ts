@@ -326,12 +326,11 @@ export class GenerarDocumentosComponent implements OnInit {
         this.nombreCompleto = `${this.datosPersonales.primer_nombre} ${this.datosPersonales.segundo_nombre} ${this.datosPersonales.primer_apellido} ${this.datosPersonales.segundo_apellido}`
           .replace(/\s+/g, ' ')
           .trim();
-        console.log(this.nombreCompleto);
       } else {
-        console.warn('No se encontraron formularios en localStorage');
+        Swal.fire('Error', 'No se encontraron formularios en el almacenamiento local', 'error');
       }
     } else {
-      console.warn('No se puede acceder a localStorage en este entorno');
+      Swal.fire('Error', 'No se puede acceder a localStorage en este entorno', 'error');
     }
   }
 

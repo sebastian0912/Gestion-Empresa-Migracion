@@ -41,7 +41,21 @@
               "sweetalert2",
               "moment",
               "exceljs",
-              "file-saver"
+              "file-saver",
+              "canvg",
+              "rgbcolor",
+              "jspdf-autotable",
+              "pdf-lib",
+              "fontkit",
+              "pako",
+              "unicode-trie",
+              "dfa",
+              "clone",
+              "brotli/decompress.js",
+              "base64-js",
+              "core-js",
+              "@babel/runtime",
+              "raf"
             ]
           },
           "configurations": {
