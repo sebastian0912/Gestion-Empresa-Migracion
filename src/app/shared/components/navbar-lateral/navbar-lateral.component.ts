@@ -88,11 +88,7 @@ export class NavbarLateralComponent implements OnInit {
 
   rolePermissions: any = {
     GERENCIA: [
-      'forma-pago', 'desprendibles-pago', 'arl',
-      'ausentismos', 'reporte-contratacion', 'seguimiento-auditoria',
-      'estadisticas-auditoria', 'envio-paquete-documentacion', 'recibir-paquete-documentacion',
-      'personal-activo', 'consulta-formulario'
-    ],
+      'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria', 'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo', 'consulta-formulario'],
     RECEPCION: [
       'forma-pago', 'desprendibles-pago', 'ausentismos'
     ],
@@ -105,7 +101,7 @@ export class NavbarLateralComponent implements OnInit {
       'ausentismos', 'seguimiento-auditoria', 'estadisticas-auditoria',
       'ver-reporte', 'reporte-contratacion', 'consulta-formulario'
     ],
-    // 'buscar-documentacion',       'subir-documentacion', 'publicidad', 'antecedentes-robots',
+    // 'buscar-documentacion',       ,
     ADMIN: [
       'forma-pago', 'desprendibles-pago',
       'ausentismos', 'vacantes',
@@ -118,7 +114,7 @@ export class NavbarLateralComponent implements OnInit {
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
       'vacante-documentos', 'personal-administrativo',
-      'crear-estructura-documental', 'buscar-documentacion'
+      'crear-estructura-documental', 'buscar-documentacion', 'subir-documentacion', 'publicidad', 'antecedentes-robots'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'
@@ -155,6 +151,19 @@ export class NavbarLateralComponent implements OnInit {
 
   };
 
+  obtenerPermisosUnicos(rolePermissions: Record<string, string[]>): string[] {
+    const permisosUnicos = new Set<string>();
+
+    // Aseguramos que los valores son de tipo string[]
+    Object.values(rolePermissions).forEach((permisos) => {
+      (permisos as string[]).forEach((permiso) => permisosUnicos.add(permiso));
+    });
+
+    // Convertimos el Set a un arreglo y lo devolvemos
+    return Array.from(permisosUnicos);
+  }
+
+
   isMinimized: boolean = false;
 
 
@@ -190,6 +199,10 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    let persmiso = this.obtenerPermisosUnicos(this.rolePermissions);
+    console.log(persmiso);
+
+
     // borrar del localstorage cedula, codigoContrato, formularios
     // Verificar si estamos en un entorno de navegador
     if (isPlatformBrowser(this.platformId)) {

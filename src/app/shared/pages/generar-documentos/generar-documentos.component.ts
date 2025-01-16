@@ -2909,17 +2909,12 @@ export class GenerarDocumentosComponent implements OnInit {
 
       // Image10_af_image
       // La imagen esta en base 64 con el prefijo data:image/png;base64, es huellaIndiceDerecha
-      const huellaBytes = this.base64ToUint8Array(this.huellaIndiceDerecho);
-      const huellaImage = await pdfDoc.embedPng(huellaBytes);
-      const huellaField = form.getButton('Image10_af_image');
-      huellaField.setImage(huellaImage);
-
-
-
-
-
-
-
+      if (this.huellaIndiceDerecho) {
+        const huellaBytes = this.base64ToUint8Array(this.huellaIndiceDerecho);
+        const huellaImage = await pdfDoc.embedPng(huellaBytes);
+        const huellaField = form.getButton('Image10_af_image');
+        huellaField.setImage(huellaImage);
+      }
 
 
       // Bloquear todos los campos del formulario para que sean solo lectura

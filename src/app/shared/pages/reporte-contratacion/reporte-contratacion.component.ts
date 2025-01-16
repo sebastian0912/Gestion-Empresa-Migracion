@@ -1501,6 +1501,16 @@ export class ReporteContratacionComponent implements OnInit {
     const user = await this.jefeAreaService.getUser();
 
     // Verificar si el cruce ha sido validado
+    if (this.isArlValidado) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debe validar el archivo ARL antes de enviar.',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
     if (this.reporteForm.get('cruceDiario')?.value && !this.isCruceValidado) {
       Swal.fire({
         icon: 'error',
@@ -1510,7 +1520,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
       return;
     }
-
+    
     // Validar si el formulario completo es válido
     if (this.reporteForm.valid) {
       // si contratos es si

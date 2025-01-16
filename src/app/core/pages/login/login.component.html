@@ -6,15 +6,18 @@
 
         <div class="input-container">
           <input type="text" placeholder="Número de Documento" formControlName="numero_de_documento" required />
-          <div *ngIf="registerForm.get('numero_de_documento')?.touched && registerForm.get('numero_de_documento')?.invalid">
-            <small *ngIf="registerForm.get('numero_de_documento')?.hasError('required')" class="error">El número de documento es obligatorio.</small>
+          <div
+            *ngIf="registerForm.get('numero_de_documento')?.touched && registerForm.get('numero_de_documento')?.invalid">
+            <small *ngIf="registerForm.get('numero_de_documento')?.hasError('required')" class="error">El número de
+              documento es obligatorio.</small>
           </div>
         </div>
 
         <div class="input-container">
           <input type="text" placeholder="Primer Nombre" formControlName="primer_nombre" required />
           <div *ngIf="registerForm.get('primer_nombre')?.touched && registerForm.get('primer_nombre')?.invalid">
-            <small *ngIf="registerForm.get('primer_nombre')?.hasError('required')" class="error">El primer nombre es obligatorio.</small>
+            <small *ngIf="registerForm.get('primer_nombre')?.hasError('required')" class="error">El primer nombre es
+              obligatorio.</small>
           </div>
         </div>
 
@@ -25,7 +28,8 @@
         <div class="input-container">
           <input type="text" placeholder="Primer Apellido" formControlName="primer_apellido" required />
           <div *ngIf="registerForm.get('primer_apellido')?.touched && registerForm.get('primer_apellido')?.invalid">
-            <small *ngIf="registerForm.get('primer_apellido')?.hasError('required')" class="error">El primer apellido es obligatorio.</small>
+            <small *ngIf="registerForm.get('primer_apellido')?.hasError('required')" class="error">El primer apellido es
+              obligatorio.</small>
           </div>
         </div>
 
@@ -35,19 +39,24 @@
 
         <div class="input-container">
           <input type="email" placeholder="Correo" formControlName="correo_electronico" required />
-          <div *ngIf="registerForm.get('correo_electronico')?.touched && registerForm.get('correo_electronico')?.invalid">
-            <small *ngIf="registerForm.get('correo_electronico')?.hasError('required')" class="error">El correo es obligatorio.</small>
-            <small *ngIf="registerForm.get('correo_electronico')?.hasError('correo_electronico')" class="error">Por favor, introduce un correo válido.</small>
+          <div
+            *ngIf="registerForm.get('correo_electronico')?.touched && registerForm.get('correo_electronico')?.invalid">
+            <small *ngIf="registerForm.get('correo_electronico')?.hasError('required')" class="error">El correo es
+              obligatorio.</small>
+            <small *ngIf="registerForm.get('correo_electronico')?.hasError('correo_electronico')" class="error">Por
+              favor, introduce un correo válido.</small>
           </div>
         </div>
 
         <div class="input-container password-container">
-          <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password" required />
+          <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password"
+            required />
           <mat-icon class="toggle-password" (click)="togglePasswordVisibility()">
             {{ showPassword ? 'visibility_off' : 'visibility' }}
           </mat-icon>
           <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
-            <small *ngIf="registerForm.get('password')?.hasError('required')" class="error">La contraseña es obligatoria.</small>
+            <small *ngIf="registerForm.get('password')?.hasError('required')" class="error">La contraseña es
+              obligatoria.</small>
             <small *ngIf="registerForm.get('password')?.hasError('minlength')" class="error">
               La contraseña debe tener al menos 6 caracteres.
             </small>
@@ -66,17 +75,20 @@
           <input type="email" placeholder="Correo" formControlName="email" required />
           <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
             <small *ngIf="loginForm.get('email')?.hasError('required')" class="error">El correo es obligatorio.</small>
-            <small *ngIf="loginForm.get('email')?.hasError('email')" class="error">Por favor, introduce un correo válido.</small>
+            <small *ngIf="loginForm.get('email')?.hasError('email')" class="error">Por favor, introduce un correo
+              válido.</small>
           </div>
         </div>
 
         <div class="input-container password-container">
-          <input [type]="showLoginPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password" required />
+          <input [type]="showLoginPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password"
+            required />
           <mat-icon class="toggle-password" (click)="toggleLoginPasswordVisibility()">
             {{ showLoginPassword ? 'visibility_off' : 'visibility' }}
           </mat-icon>
           <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-            <small *ngIf="loginForm.get('password')?.hasError('required')" class="error">La contraseña es obligatoria.</small>
+            <small *ngIf="loginForm.get('password')?.hasError('required')" class="error">La contraseña es
+              obligatoria.</small>
             <small *ngIf="loginForm.get('password')?.hasError('minlength')" class="error">
               La contraseña debe tener al menos 6 caracteres.
             </small>
