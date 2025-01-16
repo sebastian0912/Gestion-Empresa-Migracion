@@ -1520,7 +1520,7 @@ export class ReporteContratacionComponent implements OnInit {
       });
       return;
     }
-    
+
     // Validar si el formulario completo es válido
     if (this.reporteForm.valid) {
       // si contratos es si
@@ -1541,7 +1541,7 @@ export class ReporteContratacionComponent implements OnInit {
             Swal.fire({
               icon: 'info',
               title: `Procesando ${name}`,
-              html: 'Por favor espera...',
+              html: 'Por favor esper...',
               allowOutsideClick: false,
               didOpen: () => {
                 Swal.showLoading();
