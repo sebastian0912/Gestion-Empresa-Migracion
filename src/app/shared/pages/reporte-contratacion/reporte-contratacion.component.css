@@ -1,30 +1,27 @@
 form {
     display: flex;
     flex-direction: column;
-    gap: 15pt;
     margin: 0 auto;
 }
 
 .primeras {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
     justify-content: space-between; /* Distribuye uniformemente */
     align-items: center;
-}
-
-.example-full-width2 {
-    width: 25vw;
-    margin-left: 10pt;
 }
 
 .form-field-container {
     flex: 1 1 10%;
 }
 
-.example-full-width {
-    width: 100%;
+.botones{
+    display: flex;
+    gap: 10pt;
+    justify-content: space-between;
 }
+
+
 
 .subida {
     display: flex;
@@ -42,7 +39,8 @@ textarea {
 }
 
 button {
-    align-self: flex-start;
+    width: 50%;
+    border-radius: 5pt;
 }
 
 /* Estilos responsivos para tablets */

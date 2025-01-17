@@ -148,59 +148,68 @@ export class ConsultaFormularioComponent implements OnInit {
   }
 
 
-  copyTableToClipboard(): void {
-    let copyText = '';  
- 
-    // Mapea los nombres de columnas que no coinciden con las propiedades del objeto de datos
-    const columnMappings: { [key: string]: string } = {
-      'num_hijos_dependen_economicamente2' : 'num_hijos_dependen_economicamente',
-      // Otros mapeos necesarios
-    };
+  async copyTableToClipboard(): Promise<void> {
+    let copyText = '';
   
-    // Agrega los datos de cada fila con separadores de tabulaciones
+    // Definir los mapeos de columnas al principio del método
+    const columnMappings: { [key: string]: string } = {
+      'num_hijos_dependen_economicamente2': 'Número de hijos dependientes',
+      // Otros mapeos necesarios
+    };     
+  
+    // Itera sobre los datos filtrados y genera las filas
     this.dataSource.filteredData.forEach(row => {
       const rowData = this.displayedColumns.map(column => {
-        // Verificar si la columna es de hijos generados dinámicamente
-        if (column.startsWith('nombre_hijo') || column.startsWith('sexo_hijo') || 
-            column.startsWith('fecha_nacimiento_hijo') || column.startsWith('no_documento_hijo') || 
-            column.startsWith('estudia_o_trabaja_hijo') || column.startsWith('curso_hijo')) {
-          
-          // Extraer el índice del hijo
+        // Manejo de columnas dinámicas relacionadas con hijos
+        if (column.startsWith('nombre_hijo') || column.startsWith('sexo_hijo') ||
+          column.startsWith('fecha_nacimiento_hijo') || column.startsWith('no_documento_hijo') ||
+          column.startsWith('estudia_o_trabaja_hijo') || column.startsWith('curso_hijo')) {
+  
           const match = column.match(/\d+$/);
           const index = match ? parseInt(match[0], 10) - 1 : 0;
   
-          // Obtener el campo correspondiente del hijo
           if (row.hijos && row.hijos[index]) {
-            if (column.startsWith('nombre_hijo')) return row.hijos[index].nombre || 'N/A';
-            if (column.startsWith('sexo_hijo')) return row.hijos[index].sexo || 'N/A';
-            if (column.startsWith('fecha_nacimiento_hijo')) return row.hijos[index].fecha_nacimiento || 'N/A';
-            if (column.startsWith('no_documento_hijo')) return row.hijos[index].no_documento || 'N/A';
-            if (column.startsWith('estudia_o_trabaja_hijo')) return row.hijos[index].estudia_o_trabaja || 'N/A';
-            if (column.startsWith('curso_hijo')) return row.hijos[index].curso || 'N/A';
+            if (column.startsWith('nombre_hijo')) return this.escapeForExcel(row.hijos[index].nombre || 'N/A');
+            if (column.startsWith('sexo_hijo')) return this.escapeForExcel(row.hijos[index].sexo || 'N/A');
+            if (column.startsWith('fecha_nacimiento_hijo')) return this.escapeForExcel(row.hijos[index].fecha_nacimiento || 'N/A');
+            if (column.startsWith('no_documento_hijo')) return this.escapeForExcel(row.hijos[index].no_documento || 'N/A');
+            if (column.startsWith('estudia_o_trabaja_hijo')) return this.escapeForExcel(row.hijos[index].estudia_o_trabaja || 'N/A');
+            if (column.startsWith('curso_hijo')) return this.escapeForExcel(row.hijos[index].curso || 'N/A');
           } else {
-            // Si no hay hijo en el índice correspondiente, devolver 'N/A'
             return 'N/A';
           }
         }
   
-        // Verificar si la columna tiene un nombre diferente en los datos
-        const dataField = columnMappings[column] || column; 
-        return row[dataField] || ''; 
+        // Manejo de columnas normales con mapeo
+        const dataField = columnMappings[column] || column;
+        return this.escapeForExcel(row[dataField] || '');
       }).join('\t');
       copyText += rowData + '\n';
     });
   
-    // Usa Clipboard API para copiar el texto generado
-    navigator.clipboard.writeText(copyText).then(() => {
-      alert('¡Tabla copiada al portapapeles!');
-    }).catch(error => {
+    // Copiar al portapapeles
+    try {
+      await navigator.clipboard.writeText(copyText);
+      Swal.fire({
+        icon: 'success',
+        title: 'Tabla copiada al portapapeles',
+        text: 'La tabla se ha copiado exitosamente al portapapeles.'
+      });
+    } catch (error) {
       Swal.fire({
         icon: 'error',
         title: 'Error al copiar la tabla al portapapeles',
         text: 'Hubo un problema al intentar copiar la tabla al portapapeles.'
       });
-    });
+    }
   }
+  
+  // Función para manejar caracteres especiales
+  escapeForExcel(value: string): string {
+    if (!value) return '';
+    return value.replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/"/g, '""');
+  }
+  
   
   // Función para retornar los encabezados amigables de las columnas
   getColumnHeader(column: string): string {

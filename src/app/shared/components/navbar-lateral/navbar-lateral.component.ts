@@ -199,9 +199,6 @@ export class NavbarLateralComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    let persmiso = this.obtenerPermisosUnicos(this.rolePermissions);
-    console.log(persmiso);
-
 
     // borrar del localstorage cedula, codigoContrato, formularios
     // Verificar si estamos en un entorno de navegador

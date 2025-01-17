@@ -113,29 +113,16 @@ app-navbar-lateral {
     max-width: 100%;
 }
 
-@media (max-width: 768px) {
-    .navbar {
-        display: flex;
-        /* Muestra solo en dispositivos pequeños */
-    }
 
-    .dashboard-container {
-        flex-direction: column;
-        /* Ajusta el contenido en columna */
-    }
-
-    app-navbar-lateral {
-        width: 100%;
-        /* Ocupa todo el ancho en dispositivos móviles */
-    }
-}
 
 /*--------------------------------------------------------------------*/
 
 
 .titulo {
     margin-bottom: 20px;
-    font-size: 16pt;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    line-height: 1.1 !important;
 }
 
 .search-container {
@@ -219,7 +206,36 @@ mat-card {
     margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
+.nombre {
+    margin-top: 0;
+    margin-left: 20px;
+    font-size: 14pt !important;
+    width: 50% !important;
+    line-height: 1.3 !important;
+}
+
+@media (max-width: 933px) {
+
+    .navbar {
+        display: flex;
+        /* Muestra solo en dispositivos pequeños */
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+        /* Ajusta el contenido en columna */
+    }
+
+    app-navbar-lateral {
+        width: 100%;
+        /* Ocupa todo el ancho en dispositivos móviles */
+    }
+
+    .nombre {
+        width: 100% !important;
+        font-size: 12pt;
+    }
+
     mat-card {
         width: 90vw;
         padding: 15px;
@@ -255,17 +271,12 @@ mat-card {
         font-size: 10pt;
     }
 
-    .nombre {
-        width: 100%;
-        font-size: 12pt;
-    }
+
 
     .search-container {
         flex-direction: column;
     }
-}
 
-@media (max-width: 480px) {
     .table-container table {
         font-size: 10px;
         /* Aún más pequeño para pantallas muy pequeñas */
@@ -280,7 +291,19 @@ mat-card {
         flex-direction: column;
     }
 
+   
+
+    .vacantes-container {
+        width: 100%;
+    }
+
+    .vacante-card {
+        min-width: 80vw;
+    }
+
 }
+
+
 
 
 
@@ -420,12 +443,12 @@ mat-card-content p {
     padding: 10px;
 }
 
-@media (max-width: 768px) {
-    .vacantes-container {
-        width: 100%;
-    }
 
-    .vacante-card {
-        min-width: 80vw;
-    }
+
+.cards{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
+
