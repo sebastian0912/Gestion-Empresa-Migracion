@@ -23,33 +23,33 @@
 
                     <div class="primeras">
                         <!-- Campo de fecha que se muestra solo si el checkbox "Es de hoy" no está seleccionado -->
-                   
-                            <mat-form-field class="example-full-width" *ngIf="reporteForm.get('esDeHoy')?.value === 'false'" >
-                                <mat-label>Fecha</mat-label>
-                                <input matInput [matDatepicker]="picker" formControlName="fecha" required>
-                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                <mat-datepicker #picker></mat-datepicker>
-                            </mat-form-field>
-                        
+
+                        <mat-form-field class="example-full-width"
+                            *ngIf="reporteForm.get('esDeHoy')?.value === 'false'">
+                            <mat-label>Fecha</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="fecha" required>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+
 
                         <!-- Selección de Sede -->
-                            <mat-form-field class="example-full-width">
-                                <mat-label>Seleccione la sede</mat-label>
-                                <mat-select formControlName="sede">
-                                    <mat-option *ngFor="let sede of sedes" [value]="sede">{{ sede.nombre }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Seleccione la sede</mat-label>
+                            <mat-select formControlName="sede">
+                                <mat-option *ngFor="let sede of sedes" [value]="sede">{{ sede.nombre }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
 
                         <!-- Contratos Hoy -->
-                            <mat-form-field class="example-full-width">
-                                <mat-label>¿Hubo contratos hoy?</mat-label>
-                                <mat-select formControlName="contratosHoy"
-                                    (selectionChange)="onContratosHoyChange($event)">
-                                    <mat-option value="si">Sí</mat-option>
-                                    <mat-option value="no">No</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                        <mat-form-field class="example-full-width">
+                            <mat-label>¿Hubo contratos hoy?</mat-label>
+                            <mat-select formControlName="contratosHoy" (selectionChange)="onContratosHoyChange($event)">
+                                <mat-option value="si">Sí</mat-option>
+                                <mat-option value="no">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
 
 

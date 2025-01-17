@@ -38,10 +38,12 @@ textarea {
     resize: vertical;
 }
 
-button {
+.botones button {
     width: 50%;
     border-radius: 5pt;
 }
+
+
 
 /* Estilos responsivos para tablets */
 @media (max-width: 933px) {

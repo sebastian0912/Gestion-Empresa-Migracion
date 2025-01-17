@@ -298,12 +298,13 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async processTraslados(files: File[]) {
-    const validEPS = ['NUEVA EPS', 'SALUD TOTAL', 'FAMISANAR']; // Lista de EPS válidas
-
+    // Lista de EPS válidas (en formato normalizado sin espacios)
+    const validEPS = ['nuevaeps', 'saludtotal', 'famisanar'];
+  
     for (const file of files) {
       let cedula = '';
       let eps = '';
-
+  
       // Intentar dividir por ' - ' primero, luego por '-' si falla
       if (file.name.includes(' - ')) {
         [cedula, eps] = file.name.split(' - ');
@@ -312,30 +313,36 @@ export class ReporteContratacionComponent implements OnInit {
       } else {
         continue; // Salta este archivo si no cumple con el formato esperado
       }
-
-      eps = eps.replace('.pdf', '').trim().toUpperCase(); // Eliminar '.pdf', espacios adicionales y convertir a mayúsculas
-
-      // Validar si la EPS es válida (NUEVA EPS o SALUD TOTAL)
+  
+      // Normalizar EPS eliminando '.pdf', espacios adicionales y convirtiendo a minúsculas sin espacios
+      eps = eps.replace('.pdf', '').replace(/\s+/g, '').toLowerCase();
+  
+      // Validar si la EPS normalizada es válida
       if (!validEPS.includes(eps)) {
-        Swal.fire('Error', `La EPS "${eps}" no es válida. Solo se permiten NUEVA EPS, SALUD TOTAL o FAMISANAR, corrija los nombres`, 'error');
+        Swal.fire(
+          'Error',
+          `La EPS "${eps}" no es válida. Solo se permiten NUEVA EPS, SALUD TOTAL o FAMISANAR. Por favor, corrija los nombres.`,
+          'error'
+        );
         this.isCruceValidado = false;
         return;
       }
-
+  
       const base64 = await this.convertToBase64(file);
-
+  
       // Añadir a la lista de traslados en base64 con el nombre original
       this.trasladosBase64.push({ file_name: file.name, file_base64: base64 });
       const data = {
         numero_cedula: cedula.trim(), // Eliminar espacios adicionales
-        eps_a_trasladar: eps, // EPS ya está en el formato correcto
+        eps_a_trasladar: eps.toUpperCase(), // Convertir de nuevo a mayúsculas para mostrar uniformidad
         solicitud_traslado: base64
       };
-
+  
       await this.jefeAreaService.enviarTraslado(data);
-      await this.delay(100); // Espera de 100 ms
     }
   }
+  
+  
 
 
   corregirFecha(fecha: string): string {
@@ -923,7 +930,7 @@ export class ReporteContratacionComponent implements OnInit {
 
       const dataArl = XLSX.utils.sheet_to_json(sheetArl, {
         header: 1,
-        range: 1,
+
         raw: true,
         defval: ''
       });
@@ -933,33 +940,26 @@ export class ReporteContratacionComponent implements OnInit {
 
       // Buscar las posiciones de los encabezados
       const dniTrabajadorIndex = datos.indexOf("DNI TRABAJADOR");
+
       const inicioVigenciaIndex = datos.indexOf("INICIO VIGENCIA");
 
       // Validar si se encontraron
-      if (dniTrabajadorIndex !== -1) {
-        console.log(`El encabezado "DNI TRABAJADOR" está en la posición: ${dniTrabajadorIndex}`);
-      } else {
-        console.log(`El encabezado "DNI TRABAJADOR" no se encontró en los encabezados.`);
+      if (dniTrabajadorIndex == -1) {
+        Swal.fire('Error', 'No se encontró el encabezado "DNI TRABAJADOR" en el archivo de ARL. Tiene que tener encabezados', 'error');
       }
-
-      if (inicioVigenciaIndex !== -1) {
-        console.log(`El encabezado "INICIO VIGENCIA" está en la posición: ${inicioVigenciaIndex}`);
-      } else {
-        console.log(`El encabezado "INICIO VIGENCIA" no se encontró en los encabezados.`);
-      }
+      if (inicioVigenciaIndex == -1) {
+        Swal.fire('Error', 'No se encontró el encabezado "INICIO VIGENCIA" en el archivo de ARL. Tiene que tener encabezados', 'error');
+      } 
 
       // Continuar con el mapeo de filas, si es necesario
       const rowsArl = (dataArl as any[][]).map(row => {
         if (row[9] && typeof row[9] === 'number') {
           row[9] = this.excelSerialToJSDate(row[9]);
         }
-        if (row[10] && typeof row[10] === 'number') {
-          row[10] = this.excelSerialToJSDate(row[10]);
-        }
         return row;
       });
-      console.log(rowsArl);
-
+      // Eliminar la primera fila (encabezados)
+      rowsArl.shift();
 
       const headers = [
         "Fecha de firma de contrato",
@@ -1167,18 +1167,18 @@ export class ReporteContratacionComponent implements OnInit {
         cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
 
         const filaArl = rowsArl.find(arlRow => {
-          const cedulaArl = (arlRow[0] || '').toString().replace(/\s|\./g, '');
+          const cedulaArl = (arlRow[dniTrabajadorIndex] || '').toString().replace(/\s|\./g, '');
           return cedulaArl === cedulaCruce;
         });
 
         let estadoCedula = 'ALERTA NO ESTA EN ARL';
-        let estadoFechas = 'ALERTA NO COINCIDEN';
+        let estadoFechas = 'SATISFACTORIO';
         let fechaIngresoArl = 'NO DISPONIBLE';
         let fechaIngresoCruce = comparativoCruce || 'NO DISPONIBLE';
 
         if (filaArl) {
           estadoCedula = 'SATISFACTORIO';
-          const comparativoArl = filaArl[9];
+          const comparativoArl = filaArl[inicioVigenciaIndex];
           const formatDate = (dateStr: string) => {
             const normalizedDateStr = dateStr.includes('-') ? dateStr.replace(/-/g, '/') : dateStr;
             const [day, month, year] = normalizedDateStr.split('/').map(Number);
@@ -1187,11 +1187,10 @@ export class ReporteContratacionComponent implements OnInit {
 
           const fechaArl = formatDate(comparativoArl);
           const fechaCruce = formatDate(comparativoCruce);
-
-          if (fechaCruce.getTime() !== fechaArl.getTime()) {
+          // iguales?
+          if (fechaCruce.getTime() != fechaArl.getTime()) {
             estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
           }
-          console
           fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
         }
 
@@ -1524,10 +1523,9 @@ export class ReporteContratacionComponent implements OnInit {
 
   async onSubmit() {
     Swal.close();
-    console.log("Arl->", this.isArlValidado);
     const user = await this.jefeAreaService.getUser();
 
-    if (this.isArlValidado) {
+    if (!this.isArlValidado) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -1564,7 +1562,7 @@ export class ReporteContratacionComponent implements OnInit {
             try {
               Swal.fire({
                 icon: 'info',
-                title: `Procesando ${name}`,
+                title: `Procesando`,
                 html: 'Por favor espere...',
                 allowOutsideClick: false,
                 didOpen: () => {
@@ -1594,6 +1592,7 @@ export class ReporteContratacionComponent implements OnInit {
           Swal.close();
           const reporteData = {
             sede: this.reporteForm.get('sede')?.value.nombre,
+            fecha: this.reporteForm.get('fecha')?.value,
             contratosHoy: this.reporteForm.get('contratosHoy')?.value,
             cantidadContratosTuAlianza: this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
             cantidadContratosApoyoLaboral: this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
