@@ -1663,7 +1663,27 @@ export class ReporteContratacionComponent implements OnInit {
   async onSubmit() {
     Swal.close();
     const user = await this.jefeAreaService.getUser();
-    
+
+    if (!this.isArlValidado) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debe validar el archivo ARL antes de enviar.',
+        confirmButtonText: 'Aceptar',
+      });
+      return;
+    }
+
+    if (this.reporteForm.get('cruceDiario')?.value && !this.isCruceValidado) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debe validar el cruce diario antes de enviar.',
+        confirmButtonText: 'Aceptar',
+      });
+      return;
+    }
+
     if (this.reporteForm.valid) {
       if (this.reporteForm.get('contratosHoy')?.value === 'si') {
         this.processingErrors = [];
