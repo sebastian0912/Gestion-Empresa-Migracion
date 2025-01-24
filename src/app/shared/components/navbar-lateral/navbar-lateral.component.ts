@@ -114,7 +114,8 @@ export class NavbarLateralComponent implements OnInit {
       'archivos-contratacion', 'ver-reporte', 'adres',
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
       'vacante-documentos', 'personal-administrativo',
-      'crear-estructura-documental', 'buscar-documentacion', 'subir-documentacion', 'publicidad', 'antecedentes-robots'
+      'crear-estructura-documental', 'buscar-documentacion', 'subir-documentacion', 'publicidad', 'antecedentes-robots',
+      'gestionar-permisos'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'
@@ -150,18 +151,6 @@ export class NavbarLateralComponent implements OnInit {
 
 
   };
-
-  obtenerPermisosUnicos(rolePermissions: Record<string, string[]>): string[] {
-    const permisosUnicos = new Set<string>();
-
-    // Aseguramos que los valores son de tipo string[]
-    Object.values(rolePermissions).forEach((permisos) => {
-      (permisos as string[]).forEach((permiso) => permisosUnicos.add(permiso));
-    });
-
-    // Convertimos el Set a un arreglo y lo devolvemos
-    return Array.from(permisosUnicos);
-  }
 
 
   isMinimized: boolean = false;

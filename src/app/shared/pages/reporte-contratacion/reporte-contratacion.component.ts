@@ -1,5 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidatorFn, FormsModule, FormControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray,
+  AbstractControl,
+  ValidatorFn,
+  FormsModule,
+  FormControl,
+} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,10 +48,10 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatDatepickerModule,
     MatTableModule,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './reporte-contratacion.component.html',
-  styleUrls: ['./reporte-contratacion.component.css']
+  styleUrls: ['./reporte-contratacion.component.css'],
 })
 export class ReporteContratacionComponent implements OnInit {
   reporteForm!: FormGroup;
@@ -57,11 +66,11 @@ export class ReporteContratacionComponent implements OnInit {
   filesToUpload: { [key: string]: File[] } = {};
   erroresValidacion = new MatTableDataSource<any>([]);
 
-  isCruceValidado: boolean = false;  // Bandera para el estado de validación del cruce
+  isCruceValidado: boolean = false; // Bandera para el estado de validación del cruce
   datoscruced: any[] = [];
   // Variables para almacenar archivos en base64 y sus nombres
-  cedulasBase64: { file_name: string, file_base64: string }[] = [];
-  trasladosBase64: { file_name: string, file_base64: string }[] = [];
+  cedulasBase64: { file_name: string; file_base64: string }[] = [];
+  trasladosBase64: { file_name: string; file_base64: string }[] = [];
   cruceBase64: string = '';
   sstBase64: string = '';
   arlBase64: string = '';
@@ -85,19 +94,16 @@ export class ReporteContratacionComponent implements OnInit {
   ) {
     this.reporteForm = this.fb.group({
       cantidadContratosTuAlianza: [0],
-      cantidadContratosApoyoLaboral: [0]
+      cantidadContratosApoyoLaboral: [0],
     });
-
-
-
   }
 
   async ngOnInit() {
     // Inicialización del formulario reactivo
     this.reporteForm = this.fb.group({
       sede: [null, Validators.required],
-      esDeHoy: ['false'],  // Inicializamos la lista desplegable con "false" (No)
-      fecha: [null],  // La validación se aplica condicionalmente
+      esDeHoy: ['false'], // Inicializamos la lista desplegable con "false" (No)
+      fecha: [null], // La validación se aplica condicionalmente
       contratosHoy: ['', Validators.required],
       cedulasEscaneadas: [false],
       cruceDiario: [false],
@@ -106,31 +112,34 @@ export class ReporteContratacionComponent implements OnInit {
       traslados: [false],
       cantidadContratosTuAlianza: [null],
       cantidadContratosApoyoLaboral: [null],
-      notas: ['']
+      notas: [''],
     });
 
-
-    this.jefeAreaService.getUser().then((data: any) => {
-      if (data) {
-        this.nombre = data.primer_nombre + ' ' + data.primer_apellido;
-      }
-    }).catch((error) => {
-      Swal.fire('Error', 'No se pudo obtener el nombre del usuario', 'error');
-    });
-
+    this.jefeAreaService
+      .getUser()
+      .then((data: any) => {
+        if (data) {
+          this.nombre = data.primer_nombre + ' ' + data.primer_apellido;
+        }
+      })
+      .catch((error) => {
+        Swal.fire('Error', 'No se pudo obtener el nombre del usuario', 'error');
+      });
 
     // Validación inicial del campo 'fecha' según el valor de 'esDeHoy'
     await this.manageFechaValidation();
 
     // Observador para 'esDeHoy' para actualizar la validación de 'fecha'
     this.reporteForm.get('esDeHoy')?.valueChanges.subscribe(async () => {
-      await this.manageFechaValidation();  // Actualiza la validación cuando cambia el estado del checkbox
+      await this.manageFechaValidation(); // Actualiza la validación cuando cambia el estado del checkbox
     });
 
     // Observador para el campo 'contratosHoy' para activar o desactivar validaciones
     this.reporteForm.get('contratosHoy')?.valueChanges.subscribe((value) => {
       if (value === 'si') {
-        this.reporteForm.get('cedulasEscaneadas')?.setValidators(Validators.required);
+        this.reporteForm
+          .get('cedulasEscaneadas')
+          ?.setValidators(Validators.required);
         this.reporteForm.get('arl')?.setValidators(Validators.required);
         this.reporteForm.get('cruceDiario')?.setValidators(Validators.required);
       } else {
@@ -148,17 +157,18 @@ export class ReporteContratacionComponent implements OnInit {
     if (sucursalesObservable) {
       sucursalesObservable.subscribe((data: any) => {
         if (data && Array.isArray(data.sucursal)) {
-          const sucursalesUnicas = data.sucursal.filter((item: any, index: number, self: any[]) =>
-            index === self.findIndex((t) => t.nombre === item.nombre)
+          const sucursalesUnicas = data.sucursal.filter(
+            (item: any, index: number, self: any[]) =>
+              index === self.findIndex((t) => t.nombre === item.nombre)
           );
-          this.sedes = sucursalesUnicas.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+          this.sedes = sucursalesUnicas.sort((a: any, b: any) =>
+            a.nombre.localeCompare(b.nombre)
+          );
         } else {
           Swal.fire('Error', 'No se pudieron cargar las sedes', 'error');
         }
       });
-
     }
-
   }
 
   // Gestión dinámica de la validación de 'fecha'
@@ -176,20 +186,8 @@ export class ReporteContratacionComponent implements OnInit {
 
     // Actualizamos la validación del campo fecha
     this.reporteForm.get('fecha')?.updateValueAndValidity();
-    this.reporteForm.updateValueAndValidity();  // Aseguramos que el formulario se revalide completamente
-
+    this.reporteForm.updateValueAndValidity(); // Aseguramos que el formulario se revalide completamente
   }
-
-
-
-
-
-
-
-
-
-
-
 
   onContratosHoyChange(event: any) {
     if (event.value === 'si') {
@@ -204,7 +202,7 @@ export class ReporteContratacionComponent implements OnInit {
         traslados: false,
         cantidadContratosTuAlianza: null,
         cantidadContratosApoyoLaboral: null,
-        notas: ''
+        notas: '',
       });
       this.filesToUpload = {};
       this.cedulasEscaneadasFileName = '';
@@ -234,14 +232,13 @@ export class ReporteContratacionComponent implements OnInit {
   onFileSelected(event: any, controlName: string) {
     const file = event.target.files[0]; // Asegúrate de que se seleccionó un archivo
     if (file) {
-      this.updateFileName([file], controlName);  // Actualizar el nombre del archivo mostrado
-      this.filesToUpload[controlName] = [file];  // Guardar el archivo seleccionado en filesToUpload
+      this.updateFileName([file], controlName); // Actualizar el nombre del archivo mostrado
+      this.filesToUpload[controlName] = [file]; // Guardar el archivo seleccionado en filesToUpload
     }
   }
 
-
   updateFileName(files: File[], controlName: string) {
-    const fileNames = files.map(file => file.name).join(', ');
+    const fileNames = files.map((file) => file.name).join(', ');
     switch (controlName) {
       case 'cedulasEscaneadas':
         this.cedulasEscaneadasFileName = fileNames;
@@ -265,7 +262,7 @@ export class ReporteContratacionComponent implements OnInit {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
       reader.readAsDataURL(file);
     });
   }
@@ -289,7 +286,7 @@ export class ReporteContratacionComponent implements OnInit {
 
       const data = {
         numero_cedula: cedula.trim(), // Eliminar espacios adicionales
-        cedula_escaneada_delante: base64
+        cedula_escaneada_delante: base64,
       };
 
       await this.jefeAreaService.cargarCedula(data);
@@ -300,11 +297,11 @@ export class ReporteContratacionComponent implements OnInit {
   async processTraslados(files: File[]) {
     // Lista de EPS válidas (en formato normalizado sin espacios)
     const validEPS = ['nuevaeps', 'saludtotal', 'famisanar'];
-  
+
     for (const file of files) {
       let cedula = '';
       let eps = '';
-  
+
       // Intentar dividir por ' - ' primero, luego por '-' si falla
       if (file.name.includes(' - ')) {
         [cedula, eps] = file.name.split(' - ');
@@ -313,10 +310,10 @@ export class ReporteContratacionComponent implements OnInit {
       } else {
         continue; // Salta este archivo si no cumple con el formato esperado
       }
-  
+
       // Normalizar EPS eliminando '.pdf', espacios adicionales y convirtiendo a minúsculas sin espacios
       eps = eps.replace('.pdf', '').replace(/\s+/g, '').toLowerCase();
-  
+
       // Validar si la EPS normalizada es válida
       if (!validEPS.includes(eps)) {
         Swal.fire(
@@ -327,23 +324,20 @@ export class ReporteContratacionComponent implements OnInit {
         this.isCruceValidado = false;
         return;
       }
-  
+
       const base64 = await this.convertToBase64(file);
-  
+
       // Añadir a la lista de traslados en base64 con el nombre original
       this.trasladosBase64.push({ file_name: file.name, file_base64: base64 });
       const data = {
         numero_cedula: cedula.trim(), // Eliminar espacios adicionales
         eps_a_trasladar: eps.toUpperCase(), // Convertir de nuevo a mayúsculas para mostrar uniformidad
-        solicitud_traslado: base64
+        solicitud_traslado: base64,
       };
-  
+
       await this.jefeAreaService.enviarTraslado(data);
     }
   }
-  
-  
-
 
   corregirFecha(fecha: string): string {
     const dateParts = fecha.split(/\/|-/);
@@ -357,7 +351,7 @@ export class ReporteContratacionComponent implements OnInit {
       if (year.length === 2) {
         const currentYear = new Date().getFullYear();
         const century = Math.floor(currentYear / 100);
-        year = (year >= "50" ? century - 1 : century) + year;
+        year = (year >= '50' ? century - 1 : century) + year;
       }
 
       // Asegurar que el día y el mes sean de dos dígitos
@@ -373,7 +367,8 @@ export class ReporteContratacionComponent implements OnInit {
 
   removeSpecialCharacters = (text: string): string => {
     // Expresión regular ampliada para eliminar cualquier emoji, pictogramas y símbolos especiales
-    const emojiPattern = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F7E0}-\u{1F7EF}]/gu;
+    const emojiPattern =
+      /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F7E0}-\u{1F7EF}]/gu;
 
     return text.replace(emojiPattern, '');
   };
@@ -389,17 +384,26 @@ export class ReporteContratacionComponent implements OnInit {
         try {
           const sheetName = workbook.SheetNames[0]; // Asumiendo que quieres la primera hoja
           const sheet = workbook.Sheets[sheetName];
-          const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+          const json = XLSX.utils.sheet_to_json(sheet, {
+            header: 1,
+            raw: false,
+            dateNF: 'dd/mm/yyyy',
+          });
           json.shift(); // Eliminar el encabezado, si lo tiene
 
           // Obtener todas las cédulas de la columna 1 (índice 0)
-          const cedulas: string[] = (json as any[]).map((row: any[]) => {
-            const cedula = row[1]; // Columna de índice 0
-            return cedula ? this.removeSpecialCharacters(cedula.toString().replace(/\s/g, '')) : '';
-          }).filter(cedula => cedula !== ''); // Filtrar cédulas vacías
+          const cedulas: string[] = (json as any[])
+            .map((row: any[]) => {
+              const cedula = row[1]; // Columna de índice 0
+              return cedula
+                ? this.removeSpecialCharacters(
+                    cedula.toString().replace(/\s/g, '')
+                  )
+                : '';
+            })
+            .filter((cedula) => cedula !== ''); // Filtrar cédulas vacías
 
           resolve(cedulas);
-
         } catch (error) {
           reject(error);
         }
@@ -409,7 +413,9 @@ export class ReporteContratacionComponent implements OnInit {
     });
   }
 
-  private async contarALyTAEnColumna(file: File): Promise<{ AL: number, TA: number }> {
+  private async contarALyTAEnColumna(
+    file: File
+  ): Promise<{ AL: number; TA: number }> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -420,7 +426,11 @@ export class ReporteContratacionComponent implements OnInit {
         try {
           const sheetName = workbook.SheetNames[0]; // Asumiendo que quieres la primera hoja
           const sheet = workbook.Sheets[sheetName];
-          const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+          const json = XLSX.utils.sheet_to_json(sheet, {
+            header: 1,
+            raw: false,
+            dateNF: 'dd/mm/yyyy',
+          });
           json.shift(); // Eliminar el encabezado, si lo tiene
 
           let alCount = 0;
@@ -437,7 +447,6 @@ export class ReporteContratacionComponent implements OnInit {
           });
 
           resolve({ AL: alCount, TA: taCount });
-
         } catch (error) {
           reject(error);
         }
@@ -491,15 +500,19 @@ export class ReporteContratacionComponent implements OnInit {
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     try {
       // Verificar si se ha subido un archivo para el cruce diario
       const files = this.filesToUpload['cruceDiario'];
       if (!files || files.length === 0) {
-        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
-        await Swal.fire('Error', 'Debe cargar un archivo de cruce diario antes de validar', 'error');
+        Swal.close(); // Cerrar el Swal de carga antes de mostrar el error
+        await Swal.fire(
+          'Error',
+          'Debe cargar un archivo de cruce diario antes de validar',
+          'error'
+        );
         return;
       }
       const file = files[0]; // Archivo de cruce diario
@@ -507,16 +520,24 @@ export class ReporteContratacionComponent implements OnInit {
       // Validar que ARL esté cargado
       const arlFiles = this.filesToUpload['arl'];
       if (!arlFiles || arlFiles.length === 0) {
-        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
-        await Swal.fire('Error', 'Debe cargar un archivo de ARL antes de validar', 'error');
+        Swal.close(); // Cerrar el Swal de carga antes de mostrar el error
+        await Swal.fire(
+          'Error',
+          'Debe cargar un archivo de ARL antes de validar',
+          'error'
+        );
         return;
       }
 
       // Verificar si se han subido cédulas escaneadas
       const cedulasEscaneadas = this.filesToUpload['cedulasEscaneadas'];
       if (!cedulasEscaneadas || cedulasEscaneadas.length === 0) {
-        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
-        await Swal.fire('Error', 'Debe cargar archivos de cédulas escaneadas antes de validar', 'error');
+        Swal.close(); // Cerrar el Swal de carga antes de mostrar el error
+        await Swal.fire(
+          'Error',
+          'Debe cargar archivos de cédulas escaneadas antes de validar',
+          'error'
+        );
         return;
       }
       const cedulas = this.extraerCedulasDeArchivos(cedulasEscaneadas);
@@ -526,74 +547,118 @@ export class ReporteContratacionComponent implements OnInit {
       if (this.reporteForm.get('traslados')?.value) {
         const cedulasTraslados = this.filesToUpload['traslados'];
         if (!cedulasTraslados || cedulasTraslados.length === 0) {
-          Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
-          await Swal.fire('Error', 'Debe cargar archivos de traslados si seleccionó esa opción', 'error');
+          Swal.close(); // Cerrar el Swal de carga antes de mostrar el error
+          await Swal.fire(
+            'Error',
+            'Debe cargar archivos de traslados si seleccionó esa opción',
+            'error'
+          );
           return;
         }
-        cedulasTrasladosExtraidas = this.extraerCedulasDeArchivos(cedulasTraslados);
+        cedulasTrasladosExtraidas =
+          this.extraerCedulasDeArchivos(cedulasTraslados);
       }
 
       // Extraer cédulas del archivo Excel de cruce diario
       const cedulasExcel = await this.extraerCedulasDelArchivo(file);
 
       // Contar AL y TA en la columna 2 del archivo de cruce diario
-      this.contarALyTAEnColumna(file).then(result => {
-        this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(result.TA);
-        this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(result.AL)
-      }).catch(error => {
-        Swal.close();  // Cerrar el Swal de carga antes de mostrar el error
-        Swal.fire('Error', 'Error al contar AL y TA en el archivo de cruce diario', 'error');
-      });
+      this.contarALyTAEnColumna(file)
+        .then((result) => {
+          this.reporteForm.controls['cantidadContratosTuAlianza'].setValue(
+            result.TA
+          );
+          this.reporteForm.controls['cantidadContratosApoyoLaboral'].setValue(
+            result.AL
+          );
+        })
+        .catch((error) => {
+          Swal.close(); // Cerrar el Swal de carga antes de mostrar el error
+          Swal.fire(
+            'Error',
+            'Error al contar AL y TA en el archivo de cruce diario',
+            'error'
+          );
+        });
 
-      let mensaje = "";
-      let consoleOutput = "";
-      const erroresFormateados: { registro: string; errores: any[]; tipo: string }[] = []; // Para acumular todos los errores
+      let mensaje = '';
+      let consoleOutput = '';
+      const erroresFormateados: {
+        registro: string;
+        errores: any[];
+        tipo: string;
+      }[] = []; // Para acumular todos los errores
 
       // Validación 1: Las cédulas escaneadas deben estar en el Excel (cédulas en escaneadas pero no en Excel)
-      const cedulasFaltantesEnExcel = cedulas.filter(c => !cedulasExcel.includes(c));
+      const cedulasFaltantesEnExcel = cedulas.filter(
+        (c) => !cedulasExcel.includes(c)
+      );
       if (cedulasFaltantesEnExcel.length > 0) {
-        mensaje += `Faltan en el cruce diario las siguientes cédulas escaneadas: ${cedulasFaltantesEnExcel.join(', ')}.\n`;
-        consoleOutput += `Cédulas escaneadas faltantes en el Excel: ${cedulasFaltantesEnExcel.join(', ')}.\n`;
+        mensaje += `Faltan en el cruce diario las siguientes cédulas escaneadas: ${cedulasFaltantesEnExcel.join(
+          ', '
+        )}.\n`;
+        consoleOutput += `Cédulas escaneadas faltantes en el Excel: ${cedulasFaltantesEnExcel.join(
+          ', '
+        )}.\n`;
 
         // Formatear los errores de cruce diario
-        cedulasFaltantesEnExcel.forEach(cedula => {
+        cedulasFaltantesEnExcel.forEach((cedula) => {
           erroresFormateados.push({
-            registro: "0",
-            errores: ['Cédula no encontrada en el Excel la cedula es la: ' + cedula],
-            tipo: 'Cedula escaneada'
+            registro: '0',
+            errores: [
+              'Cédula no encontrada en el Excel la cedula es la: ' + cedula,
+            ],
+            tipo: 'Cedula escaneada',
           });
         });
       }
 
       // Validación 2: Las cédulas del Excel que no están en las cédulas escaneadas (cédulas en Excel pero no en escaneadas)
-      const cedulasExtrasEnExcel = cedulasExcel.filter(c => !cedulas.includes(c));
+      const cedulasExtrasEnExcel = cedulasExcel.filter(
+        (c) => !cedulas.includes(c)
+      );
       if (cedulasExtrasEnExcel.length > 0) {
-        mensaje += `El cruce diario contiene las siguientes cédulas adicionales que no fueron escaneadas: ${cedulasExtrasEnExcel.join(', ')}.\n`;
-        consoleOutput += `Cédulas adicionales en el Excel: ${cedulasExtrasEnExcel.join(', ')}.\n`;
+        mensaje += `El cruce diario contiene las siguientes cédulas adicionales que no fueron escaneadas: ${cedulasExtrasEnExcel.join(
+          ', '
+        )}.\n`;
+        consoleOutput += `Cédulas adicionales en el Excel: ${cedulasExtrasEnExcel.join(
+          ', '
+        )}.\n`;
 
         // Formatear los errores de cruce diario
-        cedulasExtrasEnExcel.forEach(cedula => {
+        cedulasExtrasEnExcel.forEach((cedula) => {
           erroresFormateados.push({
-            registro: "0",
-            errores: ['Cédula en el Excel pero no escaneada la cedula es la: ' + cedula],
-            tipo: 'Cedula escaneada'
+            registro: '0',
+            errores: [
+              'Cédula en el Excel pero no escaneada la cedula es la: ' + cedula,
+            ],
+            tipo: 'Cedula escaneada',
           });
         });
       }
 
       // Validación 3: Las cédulas de traslados deben estar en el Excel (solo si se seleccionó traslados)
       if (cedulasTrasladosExtraidas.length > 0) {
-        const cedulasTrasladosNoEnExcel = cedulasTrasladosExtraidas.filter(c => !cedulasExcel.includes(c));
+        const cedulasTrasladosNoEnExcel = cedulasTrasladosExtraidas.filter(
+          (c) => !cedulasExcel.includes(c)
+        );
         if (cedulasTrasladosNoEnExcel.length > 0) {
-          mensaje += `Las cédulas de los traslados que no están en el cruce diario: ${cedulasTrasladosNoEnExcel.join(', ')}.\n`;
-          consoleOutput += `Cédulas de los traslados faltantes en el Excel: ${cedulasTrasladosNoEnExcel.join(', ')}.\n`;
+          mensaje += `Las cédulas de los traslados que no están en el cruce diario: ${cedulasTrasladosNoEnExcel.join(
+            ', '
+          )}.\n`;
+          consoleOutput += `Cédulas de los traslados faltantes en el Excel: ${cedulasTrasladosNoEnExcel.join(
+            ', '
+          )}.\n`;
 
           // Formatear los errores de traslados
-          cedulasTrasladosNoEnExcel.forEach(cedula => {
+          cedulasTrasladosNoEnExcel.forEach((cedula) => {
             erroresFormateados.push({
-              registro: "0",
-              errores: ['Cédula de traslado no encontrada en el Excel la cedula es la :' + cedula],
-              tipo: 'Traslado'
+              registro: '0',
+              errores: [
+                'Cédula de traslado no encontrada en el Excel la cedula es la :' +
+                  cedula,
+              ],
+              tipo: 'Traslado',
             });
           });
         }
@@ -607,18 +672,20 @@ export class ReporteContratacionComponent implements OnInit {
 
       // Si hay errores, almacenarlos en this.erroresValidacion.data y luego enviarlos
       if (erroresFormateados.length > 0) {
-        Swal.close();  // Asegurarse de cerrar el Swal de carga antes de mostrar el resultado
+        Swal.close(); // Asegurarse de cerrar el Swal de carga antes de mostrar el resultado
 
         // Guardar los errores en this.erroresValidacion.data
         this.erroresValidacion.data = erroresFormateados;
 
         // Identificar el tipo de errores para enviar
-        const tipoErrores = this.reporteForm.get('traslados')?.value ? 'Traslado' : 'Cruce Diario';
+        const tipoErrores = this.reporteForm.get('traslados')?.value
+          ? 'Traslado'
+          : 'Cruce Diario';
 
         let payload = {
           errores: this.erroresValidacion.data, // Aquí los errores ya almacenados
           responsable: 'Nombre del Responsable', // Cambia esto dinámicamente si es necesario
-          tipo: tipoErrores // Se envía el tipo de error correcto
+          tipo: tipoErrores, // Se envía el tipo de error correcto
         };
 
         Swal.update({ text: 'Enviando todos los errores para guardar...' });
@@ -627,14 +694,17 @@ export class ReporteContratacionComponent implements OnInit {
         await this.jefeAreaService.enviarErroresValidacion(payload).then(
           () => {
             Swal.close();
-            Swal.fire('Error', 'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.', 'error');
+            Swal.fire(
+              'Error',
+              'Se han encontrado errores en el archivo de cruce diario. Por favor, corrija los datos y vuelva a intentarlo.',
+              'error'
+            );
           },
           (error) => {
             Swal.close();
             Swal.fire('Error', 'Error al guardar los errores.', 'error');
           }
         );
-
       } else {
         Swal.close();
         this.isCruceValidado = true;
@@ -642,24 +712,22 @@ export class ReporteContratacionComponent implements OnInit {
         // Validar el cruce diario
         await this.validarCruce();
 
-
-
         await Swal.fire({
           icon: 'success',
           title: 'Validación exitosa',
           text: 'Todas las cédulas coinciden con el cruce diario',
-          heightAuto: false
+          heightAuto: false,
         });
-
-
       }
-
     } catch (error) {
-      Swal.close();  // Asegurarse de cerrar el Swal de carga antes de mostrar el error
-      await Swal.fire('Error', 'Error al procesar el archivo. Inténtelo de nuevo.', 'error');
+      Swal.close(); // Asegurarse de cerrar el Swal de carga antes de mostrar el error
+      await Swal.fire(
+        'Error',
+        'Error al procesar el archivo. Inténtelo de nuevo.',
+        'error'
+      );
     }
   }
-
 
   async validarCruce() {
     // Cierra cualquier posible alerta abierta
@@ -681,7 +749,7 @@ export class ReporteContratacionComponent implements OnInit {
       showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     const file = files[0];
@@ -702,7 +770,7 @@ export class ReporteContratacionComponent implements OnInit {
           showConfirmButton: false,
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         });
 
         const sheetName = workbook.SheetNames[0];
@@ -710,7 +778,7 @@ export class ReporteContratacionComponent implements OnInit {
         const json = XLSX.utils.sheet_to_json(sheet, {
           header: 1,
           raw: false,
-          dateNF: 'dd/mm/yyyy'
+          dateNF: 'dd/mm/yyyy',
         });
         // Quitamos el encabezado
         json.shift();
@@ -724,8 +792,12 @@ export class ReporteContratacionComponent implements OnInit {
             return date;
           } else if (regex_mmddyy.test(date)) {
             const [month, day, year] = date.split('/');
-            const fullYear = parseInt(year, 10) < 50 ? `20${year}` : `19${year}`;
-            return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${fullYear}`;
+            const fullYear =
+              parseInt(year, 10) < 50 ? `20${year}` : `19${year}`;
+            return `${day.padStart(2, '0')}/${month.padStart(
+              2,
+              '0'
+            )}/${fullYear}`;
           }
           return date;
         };
@@ -762,7 +834,9 @@ export class ReporteContratacionComponent implements OnInit {
                   this.removeSpecialCharacters(cell.toString())
                 );
               } else {
-                completeRow[index] = this.removeSpecialCharacters(cell.toString());
+                completeRow[index] = this.removeSpecialCharacters(
+                  cell.toString()
+                );
               }
             }
           });
@@ -782,7 +856,7 @@ export class ReporteContratacionComponent implements OnInit {
           showConfirmButton: false,
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         });
 
         const batchSize = 1500;
@@ -798,21 +872,23 @@ export class ReporteContratacionComponent implements OnInit {
           Swal.fire({
             icon: 'info',
             title: 'Validando lote...',
-            text: `Enviando el lote ${i + 1} de ${totalBatches} para validación...`,
+            text: `Enviando el lote ${
+              i + 1
+            } de ${totalBatches} para validación...`,
             allowOutsideClick: false,
             showConfirmButton: false,
             didOpen: () => {
               Swal.showLoading();
-            }
+            },
           });
 
-          await this.jefeAreaService.subirContratacionValidar(batch).then(
-            (response) => {
+          await this.jefeAreaService
+            .subirContratacionValidar(batch)
+            .then((response) => {
               if (response.status === 'error') {
                 allErrors.push(...response.errores);
               }
-            }
-          );
+            });
         }
 
         // Cierra el swal anterior y abre uno nuevo para "Procesando errores..."
@@ -825,7 +901,7 @@ export class ReporteContratacionComponent implements OnInit {
           showConfirmButton: false,
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         });
 
         // Guardamos los errores en nuestra estructura
@@ -842,14 +918,14 @@ export class ReporteContratacionComponent implements OnInit {
           for (const [registro, errorObj] of Object.entries(allErrors)) {
             erroresFormateados.push({
               registro: registro,
-              errores: errorObj.errores || []
+              errores: errorObj.errores || [],
             });
           }
 
           let payload = {
             errores: erroresFormateados,
             responsable: this.nombre,
-            tipo: 'Documento de Contratación'
+            tipo: 'Documento de Contratación',
           };
 
           // Cierra el swal y abre uno nuevo "Enviando todos los errores..."
@@ -862,7 +938,7 @@ export class ReporteContratacionComponent implements OnInit {
             showConfirmButton: false,
             didOpen: () => {
               Swal.showLoading();
-            }
+            },
           });
 
           await this.jefeAreaService.enviarErroresValidacion(payload).then(
@@ -903,7 +979,6 @@ export class ReporteContratacionComponent implements OnInit {
     reader.readAsBinaryString(file);
   }
 
-
   applyFilter(column: string, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.erroresValidacion.filter = filterValue.trim().toLowerCase();
@@ -921,7 +996,7 @@ export class ReporteContratacionComponent implements OnInit {
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     try {
@@ -932,27 +1007,35 @@ export class ReporteContratacionComponent implements OnInit {
         header: 1,
 
         raw: true,
-        defval: ''
+        defval: '',
       });
 
       // Extraer encabezados de la primera fila
       const datos = dataArl[0] as string[];
 
       // Buscar las posiciones de los encabezados
-      const dniTrabajadorIndex = datos.indexOf("DNI TRABAJADOR");
+      const dniTrabajadorIndex = datos.indexOf('DNI TRABAJADOR');
 
-      const inicioVigenciaIndex = datos.indexOf("INICIO VIGENCIA");
+      const inicioVigenciaIndex = datos.indexOf('INICIO VIGENCIA');
 
       // Validar si se encontraron
       if (dniTrabajadorIndex == -1) {
-        Swal.fire('Error', 'No se encontró el encabezado "DNI TRABAJADOR" en el archivo de ARL. Tiene que tener encabezados', 'error');
+        Swal.fire(
+          'Error',
+          'No se encontró el encabezado "DNI TRABAJADOR" en el archivo de ARL. Tiene que tener encabezados',
+          'error'
+        );
       }
       if (inicioVigenciaIndex == -1) {
-        Swal.fire('Error', 'No se encontró el encabezado "INICIO VIGENCIA" en el archivo de ARL. Tiene que tener encabezados', 'error');
-      } 
+        Swal.fire(
+          'Error',
+          'No se encontró el encabezado "INICIO VIGENCIA" en el archivo de ARL. Tiene que tener encabezados',
+          'error'
+        );
+      }
 
       // Continuar con el mapeo de filas, si es necesario
-      const rowsArl = (dataArl as any[][]).map(row => {
+      const rowsArl = (dataArl as any[][]).map((row) => {
         if (row[9] && typeof row[9] === 'number') {
           row[9] = this.excelSerialToJSDate(row[9]);
         }
@@ -962,324 +1045,361 @@ export class ReporteContratacionComponent implements OnInit {
       rowsArl.shift();
 
       const headers = [
-        "Fecha de firma de contrato",
-        "N° CC",
-        "TEM",
-        "Código",
-        "Empresa Usuaria y Centro de Costo",
-        "Tipo de Documento de Identidad",
-        "Ingreso,(ing) No Ingres , Sin Confirmar, Cambio de contrato",
-        "Cargo (Operario de... y/oficios varios)",
-        "Fecha de Ingreso",
-        "Descripción de la Obra / Motivo Temporada/// Cambia cada mes",
-        "Salario S.M.M.L.V.",
-        "Número de Identificación Trabajador",
-        "Primer Apellido Trabajador",
-        "Segundo Apellido Trabajador",
-        "Primer Nombre Trabajador",
-        "Segundo Nombre Trabajador",
-        "Fecha de Nacimiento (DD/MM/AAAA) Trabajador",
-        "Sexo (F - M) Trabajador",
-        "Estado civil (SO-UL - CA-SE-VI) Trabajador",
-        "Dirección de residencia Trabajador",
-        "Barrio Trabajador",
-        "Teléfono móvil Trabajador",
-        "Correo electrónico E-mail Trabajador",
-        "Ciudad de Residencia Trabajador",
-        "Fecha Expedición CC Trabajador",
-        "Municipio Expedición CC Trabajador",
-        "Departamento Expedición CC Trabajador",
-        "Lugar de Nacimiento Municipio Trabajador",
-        "Lugar de Nacimiento Departamento Trabajador",
-        "Rh Trabajador",
-        "Zurdo/ Diestro Trabajador",
-        "EPS Trabajador",
-        "AFP Trabajador",
-        "AFC Trabajador",
-        "Centro de costo Para el Carné Trabajador",
-        "Persona que hace Contratación",
-        "Edad Apropiada v",
-        "Escolaridad (1-11) Trabajador",
-        "Técnico Trabajador",
-        "Tecnólogo Trabajador",
-        "Universidad Trabajador",
-        "Especialización Trabajador",
-        "Otros Trabajador",
-        "Nombre Institución Trabajador",
-        "Año de Finalización Trabajador",
-        "Título Obtenido Trabajador",
-        "Chaqueta Trabajador",
-        "Pantalón Trabajador",
-        "Camisa Trabajador",
-        "Calzado Trabajador",
-        "Familiar en caso de Emergencia",
-        "Parentesco Emergencia",
-        "Dirección Emergencia",
-        "Barrio Emergencia",
-        "Teléfono Emergencia",
-        "Ocupación Emergencia",
-        "Nombre Pareja",
-        "Vive Si/No Pareja",
-        "Ocupación Pareja",
-        "Dirección Pareja",
-        "Teléfono Pareja",
-        "Barrio Pareja",
-        "No de Hijos Dependientes",
-        "Nombre Hijo 1",
-        "Sexo Hijo 1",
-        "Fecha Nacimiento Hijo 1",
-        "No de Documento de Identidad Hijo 1",
-        "Estudia o Trabaja Hijo 1",
-        "Curso Hijo 1",
-        "Nombre Hijo 2",
-        "Sexo Hijo 2",
-        "Fecha Nacimiento Hijo 2",
-        "No de Documento de Identidad Hijo 2",
-        "Estudia o trabaja Hijo 2",
-        "Curso Hijo 2",
-        "Nombre Hijo 3",
-        "Sexo Hijo 3",
-        "Fecha Nacimiento Hijo 3",
-        "No de Documento de Identidad Hijo 3",
-        "Estudia o trabaja Hijo 3",
-        "Curso Hijo 3",
-        "Nombre Hijo 4",
-        "Sexo Hijo 4",
-        "Fecha Nacimiento Hijo 4",
-        "No de Documento de Identidad Hijo 4",
-        "Estudia o trabaja Hijo 4",
-        "Curso Hijo 4",
-        "Nombre Hijo 5",
-        "Sexo Hijo 5",
-        "Fecha Nacimiento Hijo 5",
-        "No de Documento de Identidad Hijo 5",
-        "Estudia o trabaja Hijo 5",
-        "Curso Hijo 5",
-        "Nombre Hijo 6",
-        "Sexo Hijo 6",
-        "Fecha Nacimiento Hijo 6",
-        "No de Documento de Identidad Hijo 6",
-        "Estudia o trabaja Hijo 6",
-        "Curso Hijo 6",
-        "Nombre Hijo 7",
-        "Sexo Hijo 7",
-        "Fecha Nacimiento Hijo 7",
-        "No de Documento de Identidad Hijo 7",
-        "Estudia o trabaja Hijo 7",
-        "Curso Hijo 7",
-        "Nombre Padre",
-        "Vive Si/No Padre",
-        "Ocupación Padre",
-        "Dirección Padre",
-        "Teléfono Padre",
-        "Barrio/Municipio Padre",
-        "Nombre Madre",
-        "Vive Si/No Madre",
-        "Ocupación Madre",
-        "Dirección Madre",
-        "Teléfono Madre",
-        "Barrio/Municipio Madre",
-        "Nombre Referencia Personal 1",
-        "Teléfono Referencia Personal 1",
-        "Ocupación Referencia Personal 1",
-        "Nombre Referencia Personal 2",
-        "Teléfono Referencia Personal 2",
-        "Ocupación Referencia Personal 2",
-        "Nombre Referencia Familiar 1",
-        "Teléfono Referencia Familiar 1",
-        "Ocupación Referencia Familiar 1",
-        "Nombre Referencia Familiar 2",
-        "Teléfono Referencia Familiar 2",
-        "Ocupación Referencia Familiar 2",
-        "Nombre Empresa Experiencia Laboral 1",
-        "Dirección Empresa Experiencia Laboral 1",
-        "Teléfonos Experiencia Laboral 1",
-        "Nombre Jefe Inmediato Experiencia Laboral 1",
-        "AREA DE EXPERIENCIA Experiencia Laboral 1",
-        "Fecha de Retiro Experiencia Laboral 1",
-        "Motivo Retiro Experiencia Laboral 1",
-        "Nombre Empresa Experiencia Laboral 2",
-        "Dirección Empresa Experiencia Laboral 2",
-        "Teléfonos Experiencia Laboral 2",
-        "Nombre Jefe Inmediato Experiencia Laboral 2",
-        "Cargo del Trabajador Experiencia Laboral 2",
-        "Fecha de Retiro Experiencia Laboral 2",
-        "Motivo Retiro Experiencia Laboral 2",
-        "Nombre del Carnet",
-        "Desea Plan Funerario",
-        "Número Cuenta/Celular",
-        "Número Tarjeta/Tipo de Cuenta",
-        "Clave para Asignar",
-        "Examen Salud Ocupacional",
-        "Apto para el Cargo? Sí o No",
-        "EXAMEN DE SANGRE",
-        "PLANILLA FUMIGACION",
-        "Otros Examenes2 (Nombre)",
-        "VACUNA COVID",
-        "Nombre de la EPS afiliada",
-        "EPS A TRASLADAR",
-        "Nombre de AFP Afiliado 01",
-        "AFP A TRASLADAR",
-        "Afiliación Caja de compensación",
-        "Nombre de AFP Afiliado 02",
-        "Revisión de Fecha de Ingreso ARL",
-        "Confirmación de los Ingresos Envío de correos a las Fincas a diario Confirmacion hasta las 12:30",
-        "Fecha confirmación Ingreso a las Empresas Usuarias",
-        "Afiliación enviada con fecha (Coomeva-Nueva Eps - Sura - S.O.S - Salud Vida -Compensar - Famisanar",
-        "Revisión Personal Confirmado Empresas Usuarias VS Nómina los días 14 y los días 29 de cada Mes",
-        "Referenciación Personal 1",
-        "Referenciación Personal 2",
-        "Referenciación Familiar 1",
-        "Referenciación Familiar 2",
-        "Referenciación Experiencia Laboral 1",
-        "Referenciación Experiencia Laboral 2",
-        "Revisión Registraduria (Fecha entrega CC)",
-        "COMO SE ENTERO DEL EMPLEO",
-        "Tiene Experiencia laboral ?",
-        "Empresas de flores que ha trabajado (Separarlas con ,)",
-        "¿En que area?",
-        "Describa paso a paso como es su labora (ser lo mas breve posible)",
-        "Califique su rendimiento",
-        "¿Por que se da esta auto calificación?",
-        "Hace cuanto vive en la zona",
-        "Tipo de vivienda",
-        "Con quien Vive",
-        "Estudia Actualmente",
-        "Personas a cargo",
-        "Numero de hijosacargo",
-        "Quien los cuida?",
-        "Como es su relacion Familiar",
-        "Segun su Experiencia y desempeño laboral por que motivos lo han felicitado",
-        "Ha tenido algun malentendido o situacion conflictiva en algun trabajo, Si si en otro especificar por que:",
-        "Esta dispuesto a realizar actividades diferentes al cargo :",
-        "Mencione una experiencia significativa en su trabajo",
-        "Que proyecto de vida tiene de aqui a 3 años",
-        "La vivienda es:",
-        "¿Cuál es su motivación?",
-        "OBSERVACIONES"
+        'Fecha de firma de contrato',
+        'N° CC',
+        'TEM',
+        'Código',
+        'Empresa Usuaria y Centro de Costo',
+        'Tipo de Documento de Identidad',
+        'Ingreso,(ing) No Ingres , Sin Confirmar, Cambio de contrato',
+        'Cargo (Operario de... y/oficios varios)',
+        'Fecha de Ingreso',
+        'Descripción de la Obra / Motivo Temporada/// Cambia cada mes',
+        'Salario S.M.M.L.V.',
+        'Número de Identificación Trabajador',
+        'Primer Apellido Trabajador',
+        'Segundo Apellido Trabajador',
+        'Primer Nombre Trabajador',
+        'Segundo Nombre Trabajador',
+        'Fecha de Nacimiento (DD/MM/AAAA) Trabajador',
+        'Sexo (F - M) Trabajador',
+        'Estado civil (SO-UL - CA-SE-VI) Trabajador',
+        'Dirección de residencia Trabajador',
+        'Barrio Trabajador',
+        'Teléfono móvil Trabajador',
+        'Correo electrónico E-mail Trabajador',
+        'Ciudad de Residencia Trabajador',
+        'Fecha Expedición CC Trabajador',
+        'Municipio Expedición CC Trabajador',
+        'Departamento Expedición CC Trabajador',
+        'Lugar de Nacimiento Municipio Trabajador',
+        'Lugar de Nacimiento Departamento Trabajador',
+        'Rh Trabajador',
+        'Zurdo/ Diestro Trabajador',
+        'EPS Trabajador',
+        'AFP Trabajador',
+        'AFC Trabajador',
+        'Centro de costo Para el Carné Trabajador',
+        'Persona que hace Contratación',
+        'Edad Apropiada v',
+        'Escolaridad (1-11) Trabajador',
+        'Técnico Trabajador',
+        'Tecnólogo Trabajador',
+        'Universidad Trabajador',
+        'Especialización Trabajador',
+        'Otros Trabajador',
+        'Nombre Institución Trabajador',
+        'Año de Finalización Trabajador',
+        'Título Obtenido Trabajador',
+        'Chaqueta Trabajador',
+        'Pantalón Trabajador',
+        'Camisa Trabajador',
+        'Calzado Trabajador',
+        'Familiar en caso de Emergencia',
+        'Parentesco Emergencia',
+        'Dirección Emergencia',
+        'Barrio Emergencia',
+        'Teléfono Emergencia',
+        'Ocupación Emergencia',
+        'Nombre Pareja',
+        'Vive Si/No Pareja',
+        'Ocupación Pareja',
+        'Dirección Pareja',
+        'Teléfono Pareja',
+        'Barrio Pareja',
+        'No de Hijos Dependientes',
+        'Nombre Hijo 1',
+        'Sexo Hijo 1',
+        'Fecha Nacimiento Hijo 1',
+        'No de Documento de Identidad Hijo 1',
+        'Estudia o Trabaja Hijo 1',
+        'Curso Hijo 1',
+        'Nombre Hijo 2',
+        'Sexo Hijo 2',
+        'Fecha Nacimiento Hijo 2',
+        'No de Documento de Identidad Hijo 2',
+        'Estudia o trabaja Hijo 2',
+        'Curso Hijo 2',
+        'Nombre Hijo 3',
+        'Sexo Hijo 3',
+        'Fecha Nacimiento Hijo 3',
+        'No de Documento de Identidad Hijo 3',
+        'Estudia o trabaja Hijo 3',
+        'Curso Hijo 3',
+        'Nombre Hijo 4',
+        'Sexo Hijo 4',
+        'Fecha Nacimiento Hijo 4',
+        'No de Documento de Identidad Hijo 4',
+        'Estudia o trabaja Hijo 4',
+        'Curso Hijo 4',
+        'Nombre Hijo 5',
+        'Sexo Hijo 5',
+        'Fecha Nacimiento Hijo 5',
+        'No de Documento de Identidad Hijo 5',
+        'Estudia o trabaja Hijo 5',
+        'Curso Hijo 5',
+        'Nombre Hijo 6',
+        'Sexo Hijo 6',
+        'Fecha Nacimiento Hijo 6',
+        'No de Documento de Identidad Hijo 6',
+        'Estudia o trabaja Hijo 6',
+        'Curso Hijo 6',
+        'Nombre Hijo 7',
+        'Sexo Hijo 7',
+        'Fecha Nacimiento Hijo 7',
+        'No de Documento de Identidad Hijo 7',
+        'Estudia o trabaja Hijo 7',
+        'Curso Hijo 7',
+        'Nombre Padre',
+        'Vive Si/No Padre',
+        'Ocupación Padre',
+        'Dirección Padre',
+        'Teléfono Padre',
+        'Barrio/Municipio Padre',
+        'Nombre Madre',
+        'Vive Si/No Madre',
+        'Ocupación Madre',
+        'Dirección Madre',
+        'Teléfono Madre',
+        'Barrio/Municipio Madre',
+        'Nombre Referencia Personal 1',
+        'Teléfono Referencia Personal 1',
+        'Ocupación Referencia Personal 1',
+        'Nombre Referencia Personal 2',
+        'Teléfono Referencia Personal 2',
+        'Ocupación Referencia Personal 2',
+        'Nombre Referencia Familiar 1',
+        'Teléfono Referencia Familiar 1',
+        'Ocupación Referencia Familiar 1',
+        'Nombre Referencia Familiar 2',
+        'Teléfono Referencia Familiar 2',
+        'Ocupación Referencia Familiar 2',
+        'Nombre Empresa Experiencia Laboral 1',
+        'Dirección Empresa Experiencia Laboral 1',
+        'Teléfonos Experiencia Laboral 1',
+        'Nombre Jefe Inmediato Experiencia Laboral 1',
+        'AREA DE EXPERIENCIA Experiencia Laboral 1',
+        'Fecha de Retiro Experiencia Laboral 1',
+        'Motivo Retiro Experiencia Laboral 1',
+        'Nombre Empresa Experiencia Laboral 2',
+        'Dirección Empresa Experiencia Laboral 2',
+        'Teléfonos Experiencia Laboral 2',
+        'Nombre Jefe Inmediato Experiencia Laboral 2',
+        'Cargo del Trabajador Experiencia Laboral 2',
+        'Fecha de Retiro Experiencia Laboral 2',
+        'Motivo Retiro Experiencia Laboral 2',
+        'Nombre del Carnet',
+        'Desea Plan Funerario',
+        'Número Cuenta/Celular',
+        'Número Tarjeta/Tipo de Cuenta',
+        'Clave para Asignar',
+        'Examen Salud Ocupacional',
+        'Apto para el Cargo? Sí o No',
+        'EXAMEN DE SANGRE',
+        'PLANILLA FUMIGACION',
+        'Otros Examenes2 (Nombre)',
+        'VACUNA COVID',
+        'Nombre de la EPS afiliada',
+        'EPS A TRASLADAR',
+        'Nombre de AFP Afiliado 01',
+        'AFP A TRASLADAR',
+        'Afiliación Caja de compensación',
+        'Nombre de AFP Afiliado 02',
+        'Revisión de Fecha de Ingreso ARL',
+        'Confirmación de los Ingresos Envío de correos a las Fincas a diario Confirmacion hasta las 12:30',
+        'Fecha confirmación Ingreso a las Empresas Usuarias',
+        'Afiliación enviada con fecha (Coomeva-Nueva Eps - Sura - S.O.S - Salud Vida -Compensar - Famisanar',
+        'Revisión Personal Confirmado Empresas Usuarias VS Nómina los días 14 y los días 29 de cada Mes',
+        'Referenciación Personal 1',
+        'Referenciación Personal 2',
+        'Referenciación Familiar 1',
+        'Referenciación Familiar 2',
+        'Referenciación Experiencia Laboral 1',
+        'Referenciación Experiencia Laboral 2',
+        'Revisión Registraduria (Fecha entrega CC)',
+        'COMO SE ENTERO DEL EMPLEO',
+        'Tiene Experiencia laboral ?',
+        'Empresas de flores que ha trabajado (Separarlas con ,)',
+        '¿En que area?',
+        'Describa paso a paso como es su labora (ser lo mas breve posible)',
+        'Califique su rendimiento',
+        '¿Por que se da esta auto calificación?',
+        'Hace cuanto vive en la zona',
+        'Tipo de vivienda',
+        'Con quien Vive',
+        'Estudia Actualmente',
+        'Personas a cargo',
+        'Numero de hijosacargo',
+        'Quien los cuida?',
+        'Como es su relacion Familiar',
+        'Segun su Experiencia y desempeño laboral por que motivos lo han felicitado',
+        'Ha tenido algun malentendido o situacion conflictiva en algun trabajo, Si si en otro especificar por que:',
+        'Esta dispuesto a realizar actividades diferentes al cargo :',
+        'Mencione una experiencia significativa en su trabajo',
+        'Que proyecto de vida tiene de aqui a 3 años',
+        'La vivienda es:',
+        '¿Cuál es su motivación?',
+        'OBSERVACIONES',
       ];
 
-      const datosMapeados = this.datoscruced.map((cruceRow: any[], index: number) => {
+      const datosMapeados = this.datoscruced.map(
+        (cruceRow: any[], index: number) => {
+          let cedulaCruce = cruceRow[1];
+          const comparativoCruce = cruceRow[8];
 
-        let cedulaCruce = cruceRow[1];
-        const comparativoCruce = cruceRow[8];
+          cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
 
-        cedulaCruce = cedulaCruce.replace(/\s|\./g, '');
+          const filaArl = rowsArl.find((arlRow) => {
+            const cedulaArl = (arlRow[dniTrabajadorIndex] || '')
+              .toString()
+              .replace(/\s|\./g, '');
+            return cedulaArl === cedulaCruce;
+          });
 
-        const filaArl = rowsArl.find(arlRow => {
-          const cedulaArl = (arlRow[dniTrabajadorIndex] || '').toString().replace(/\s|\./g, '');
-          return cedulaArl === cedulaCruce;
-        });
+          let estadoCedula = 'ALERTA NO ESTA EN ARL';
+          let estadoFechas = 'SATISFACTORIO';
+          let fechaIngresoArl = 'NO DISPONIBLE';
+          let fechaIngresoCruce = comparativoCruce || 'NO DISPONIBLE';
 
-        let estadoCedula = 'ALERTA NO ESTA EN ARL';
-        let estadoFechas = 'SATISFACTORIO';
-        let fechaIngresoArl = 'NO DISPONIBLE';
-        let fechaIngresoCruce = comparativoCruce || 'NO DISPONIBLE';
+          if (filaArl) {
+            estadoCedula = 'SATISFACTORIO';
+            const comparativoArl = filaArl[inicioVigenciaIndex];
 
-        if (filaArl) {
-          estadoCedula = 'SATISFACTORIO';
-          const comparativoArl = filaArl[inicioVigenciaIndex];
-          const formatDate = (dateStr: string) => {
-            const normalizedDateStr = dateStr.includes('-') ? dateStr.replace(/-/g, '/') : dateStr;
-            const [day, month, year] = normalizedDateStr.split('/').map(Number);
-            return new Date(year, month - 1, day);
+            const formatDate = (dateStr: string | number) => {
+              if (typeof dateStr === 'number') {
+                // Si es un número, se interpreta como una fecha en formato Excel
+                const excelEpoch = new Date(1899, 11, 30); // Base para fechas en Excel
+                return new Date(
+                  excelEpoch.getTime() + dateStr * 24 * 60 * 60 * 1000
+                );
+              }
+
+              if (typeof dateStr === 'string') {
+                console.log(dateStr);
+                const normalizedDateStr = dateStr.includes('-')
+                  ? dateStr.replace(/-/g, '/')
+                  : dateStr;
+                const [day, month, year] = normalizedDateStr
+                  .split('/')
+                  .map(Number);
+                return new Date(year, month - 1, day);
+              }
+
+              throw new Error('Formato de fecha no reconocido');
+            };
+
+            const fechaArl = formatDate(comparativoArl);
+            const fechaCruce = formatDate(comparativoCruce);
+
+            // Comparar fechas
+            if (fechaCruce.getTime() !== fechaArl.getTime()) {
+              estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
+            }
+
+            fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
+          }
+
+          const resultado: { [key: string]: any } = {
+            'Numero de Cedula': cedulaCruce,
+            Arl: estadoCedula,
+            ARL_FECHAS: estadoFechas,
+            'FECHA EN ARL': fechaIngresoArl,
+            'FECHA INGRESO SUBIDA CONTRATACION': fechaIngresoCruce,
+            Errores: 'OK', // Inicializamos con "OK" por defecto
           };
 
-          const fechaArl = formatDate(comparativoArl);
-          const fechaCruce = formatDate(comparativoCruce);
-          // iguales?
-          if (fechaCruce.getTime() != fechaArl.getTime()) {
-            estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
+          headers.forEach((header, index) => {
+            resultado[header] = cruceRow[index] || 'NO DISPONIBLE';
+          });
+
+          const registroErrores = this.erroresValidacion.data.find(
+            (err: any) => err.registro == index + 1
+          );
+          if (registroErrores && registroErrores.errores.length > 0) {
+            confirmarErrores = false;
+            resultado['Errores'] = registroErrores.errores.join(', ');
           }
-          fechaIngresoArl = comparativoArl || 'NO DISPONIBLE';
+
+          return resultado;
         }
-
-        const resultado: { [key: string]: any } = {
-          "Numero de Cedula": cedulaCruce,
-          "Arl": estadoCedula,
-          "ARL_FECHAS": estadoFechas,
-          "FECHA EN ARL": fechaIngresoArl,
-          "FECHA INGRESO SUBIDA CONTRATACION": fechaIngresoCruce,
-          "Errores": "OK"  // Inicializamos con "OK" por defecto
-        };
-
-        headers.forEach((header, index) => {
-          resultado[header] = cruceRow[index] || 'NO DISPONIBLE';
-        });
-
-        const registroErrores = this.erroresValidacion.data.find((err: any) => err.registro == (index + 1));
-        if (registroErrores && registroErrores.errores.length > 0) {
-          confirmarErrores = false;
-          resultado["Errores"] = registroErrores.errores.join(', ');
-        }
-
-        return resultado;
-      });
+      );
 
       const workbookOut = new ExcelJS.Workbook();
       const worksheet = workbookOut.addWorksheet('Datos');
 
-      worksheet.columns = Object.keys(datosMapeados[0]).map(titulo => ({ header: titulo, key: titulo, width: 20 }));
+      worksheet.columns = Object.keys(datosMapeados[0]).map((titulo) => ({
+        header: titulo,
+        key: titulo,
+        width: 20,
+      }));
 
-      datosMapeados.forEach(dato => {
+      datosMapeados.forEach((dato) => {
         const row = worksheet.addRow(dato);
 
-        if (dato["Arl"] === 'SATISFACTORIO') {
+        if (dato['Arl'] === 'SATISFACTORIO') {
           row.getCell('Arl').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: '00FF00' }
+            fgColor: { argb: '00FF00' },
           };
-        } else if (dato["Arl"] === 'ALERTA NO ESTA EN ARL') {
+        } else if (dato['Arl'] === 'ALERTA NO ESTA EN ARL') {
           this.isArlValidado = false;
           row.getCell('Arl').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' }
+            fgColor: { argb: 'FF0000' },
           };
         }
 
-        if (dato["ARL_FECHAS"] === 'SATISFACTORIO') {
+        if (dato['ARL_FECHAS'] === 'SATISFACTORIO') {
           row.getCell('ARL_FECHAS').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: '00FF00' }
+            fgColor: { argb: '00FF00' },
           };
-        } else if (dato["ARL_FECHAS"] === 'ALERTA FECHAS NO COINCIDEN') {
+        } else if (dato['ARL_FECHAS'] === 'ALERTA FECHAS NO COINCIDEN') {
           this.isArlValidado = false;
           row.getCell('ARL_FECHAS').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' }
+            fgColor: { argb: 'FF0000' },
           };
         }
 
-        if (dato["FECHA EN ARL"] === 'NO DISPONIBLE') {
+        if (dato['FECHA EN ARL'] === 'NO DISPONIBLE') {
           row.getCell('FECHA EN ARL').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' }
+            fgColor: { argb: 'FF0000' },
           };
         }
 
-        if (dato["FECHA INGRESO SUBIDA CONTRATACION"] === 'NO DISPONIBLE') {
+        if (dato['FECHA INGRESO SUBIDA CONTRATACION'] === 'NO DISPONIBLE') {
           row.getCell('FECHA INGRESO SUBIDA CONTRATACION').fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0000' }
+            fgColor: { argb: 'FF0000' },
           };
         }
       });
 
-      const cedulasNoEncontradas = datosMapeados.filter(dato => dato["Arl"] === 'ALERTA NO ESTA EN ARL').map(dato => dato["Numero de Cedula"]);
-      const cedulasWorksheet = workbookOut.addWorksheet('Cédulas No Encontradas');
-      cedulasWorksheet.columns = [{ header: 'Cédula', key: 'cedula', width: 20 }];
-      cedulasNoEncontradas.forEach(cedula => {
+      const cedulasNoEncontradas = datosMapeados
+        .filter((dato) => dato['Arl'] === 'ALERTA NO ESTA EN ARL')
+        .map((dato) => dato['Numero de Cedula']);
+      const cedulasWorksheet = workbookOut.addWorksheet(
+        'Cédulas No Encontradas'
+      );
+      cedulasWorksheet.columns = [
+        { header: 'Cédula', key: 'cedula', width: 20 },
+      ];
+      cedulasNoEncontradas.forEach((cedula) => {
         cedulasWorksheet.addRow({ cedula });
       });
 
-      workbookOut.xlsx.writeBuffer().then(buffer => {
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      workbookOut.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
         FileSaver.saveAs(blob, 'ReporteARL.xlsx');
       });
       // Cerrar el Swal de carga
@@ -1292,7 +1412,7 @@ export class ReporteContratacionComponent implements OnInit {
             icon: 'success',
             title: 'Validación exitosa',
             text: 'Todos los datos de ARL coinciden con el cruce diario',
-            heightAuto: false
+            heightAuto: false,
           });
           Swal.close();
         } else {
@@ -1300,23 +1420,22 @@ export class ReporteContratacionComponent implements OnInit {
             icon: 'error',
             title: 'El arl tiene problemas',
             text: 'Se han encontrado discrepancias en los datos de ARL. Por favor, revise los datos y vuelva a intentarlo. Si tiene errores en la base tambien se mostraran',
-            heightAuto: false
+            heightAuto: false,
           });
           Swal.close();
         }
       }, 500);
-
     } catch (error) {
+      console.log(error);
       Swal.close();
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Ocurrió un error al procesar los datos. Por favor, inténtelo de nuevo.',
-        confirmButtonText: 'Aceptar'
+        confirmButtonText: 'Aceptar',
       });
     }
   }
-
 
   excelSerialToJSDate(serial: number): string {
     const utc_days = Math.floor(serial - 25569);
@@ -1328,7 +1447,7 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async processFileList(files: File[]) {
@@ -1346,17 +1465,15 @@ export class ReporteContratacionComponent implements OnInit {
       if (file.name === induccionSSOFile?.name) {
         this.sstBase64 = base64;
       }
-
     } catch (error) {
       this.processingErrors.push('archivo');
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: `Ocurrió un error al procesar el archivo, inténtelo de nuevo.`
+        text: `Ocurrió un error al procesar el archivo, inténtelo de nuevo.`,
       });
     }
   }
-
 
   async processExcelFiles(files: File[]) {
     for (const file of files) {
@@ -1404,12 +1521,18 @@ export class ReporteContratacionComponent implements OnInit {
     let response: any;
 
     // Copiar el Excel en base64
-    this.cruceBase64 = await this.convertToBase64(this.filesToUpload['cruceDiario'][0]);
+    this.cruceBase64 = await this.convertToBase64(
+      this.filesToUpload['cruceDiario'][0]
+    );
 
     try {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      const json = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: "dd/mm/yyyy" });
+      const json = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+        raw: false,
+        dateNF: 'dd/mm/yyyy',
+      });
       json.shift(); // Eliminar la fila de encabezados si es necesario
 
       const formatDate = (date: string): string => {
@@ -1420,8 +1543,11 @@ export class ReporteContratacionComponent implements OnInit {
           return date;
         } else if (regex_mmddyy.test(date)) {
           const [month, day, year] = date.split('/');
-          const fullYear = (parseInt(year, 10) < 50) ? `20${year}` : `19${year}`;
-          return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${fullYear}`;
+          const fullYear = parseInt(year, 10) < 50 ? `20${year}` : `19${year}`;
+          return `${day.padStart(2, '0')}/${month.padStart(
+            2,
+            '0'
+          )}/${fullYear}`;
         }
         return date;
       };
@@ -1433,29 +1559,40 @@ export class ReporteContratacionComponent implements OnInit {
 
         row.forEach((cell, index) => {
           if (index < 195) {
-            if (cell == null || cell === '' || cell === '#N/A' || cell === 'N/A' || cell === '#REF!' || cell === '#¡REF!') {
+            if (
+              cell == null ||
+              cell === '' ||
+              cell === '#N/A' ||
+              cell === 'N/A' ||
+              cell === '#REF!' ||
+              cell === '#¡REF!'
+            ) {
               completeRow[index] = '-';
             } else if (index === 11 || index === 1) {
               completeRow[index] = this.removeSpecialCharacters(
-                cell.toString()
-                  .replace(/,/g, '')      // Elimina comas
-                  .replace(/\./g, '')     // Elimina puntos
-                  .replace(/\s/g, '')     // Elimina espacios
-                  .replace(/[^0-9xX]/g, '')  // Elimina todo excepto números y 'x' o 'X'
+                cell
+                  .toString()
+                  .replace(/,/g, '') // Elimina comas
+                  .replace(/\./g, '') // Elimina puntos
+                  .replace(/\s/g, '') // Elimina espacios
+                  .replace(/[^0-9xX]/g, '') // Elimina todo excepto números y 'x' o 'X'
               );
-            }
-            else if (index === 3) {
+            } else if (index === 3) {
+              completeRow[index] = this.removeSpecialCharacters(
+                cell
+                  .toString()
+                  .replace(/,/g, '') // Elimina comas
+                  .replace(/\./g, '') // Elimina puntos
+                  .replace(/\s/g, '') // Elimina espacios
+              );
+            } else if (indicesFechas.includes(index)) {
+              completeRow[index] = formatDate(
+                this.removeSpecialCharacters(cell.toString())
+              );
+            } else {
               completeRow[index] = this.removeSpecialCharacters(
                 cell.toString()
-                  .replace(/,/g, '')      // Elimina comas
-                  .replace(/\./g, '')     // Elimina puntos
-                  .replace(/\s/g, '')     // Elimina espacios
               );
-            }
-            else if (indicesFechas.includes(index)) {
-              completeRow[index] = formatDate(this.removeSpecialCharacters(cell.toString()));
-            } else {
-              completeRow[index] = this.removeSpecialCharacters(cell.toString());
             }
           }
         });
@@ -1472,25 +1609,28 @@ export class ReporteContratacionComponent implements OnInit {
       if (response.message !== 'success') {
         this.processingErrors.push('Cruce diario Excel');
       }
-
     } catch (error) {
       this.processingErrors.push('Cruce diario Excel');
     }
   }
 
   async generateErrorExcel(errores: any[]): Promise<void> {
-    const worksheetData = [
-      ['Registro', 'Campo', 'Error']
-    ];
+    const worksheetData = [['Registro', 'Campo', 'Error']];
 
     errores.forEach((error: any) => {
       worksheetData.push([error.registro, error.campo, error.error]);
     });
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(worksheetData);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Errores': worksheet }, SheetNames: ['Errores'] };
+    const workbook: XLSX.WorkBook = {
+      Sheets: { Errores: worksheet },
+      SheetNames: ['Errores'],
+    };
 
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
 
     this.saveAsExcelFile(excelBuffer, 'Errores_Contratacion');
   }
@@ -1520,62 +1660,59 @@ export class ReporteContratacionComponent implements OnInit {
     return `${day}/${month}/${year}`;
   }
 
-
   async onSubmit() {
     Swal.close();
     const user = await this.jefeAreaService.getUser();
-
-    if (!this.isArlValidado) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Debe validar el archivo ARL antes de enviar.',
-        confirmButtonText: 'Aceptar',
-      });
-      return;
-    }
-
-    if (this.reporteForm.get('cruceDiario')?.value && !this.isCruceValidado) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Debe validar el cruce diario antes de enviar.',
-        confirmButtonText: 'Aceptar',
-      });
-      return;
-    }
-
+    
     if (this.reporteForm.valid) {
       if (this.reporteForm.get('contratosHoy')?.value === 'si') {
         this.processingErrors = [];
 
         const processes = [
-          { key: 'cedulasEscaneadas', name: 'Cédulas Escaneadas', process: this.processCedulasEscaneadas.bind(this) },
-          { key: 'cruceDiario', name: 'Cruce diario Excel', process: this.processExcelFiles.bind(this) },
-          { key: 'induccionSSO', name: 'Inducción Seguridad y Salud en el trabajo', process: this.processFileList.bind(this) },
-          { key: 'traslados', name: 'Traslados', process: this.processTraslados.bind(this) },
+          {
+            key: 'cedulasEscaneadas',
+            name: 'Cédulas Escaneadas',
+            process: this.processCedulasEscaneadas.bind(this),
+          },
+          {
+            key: 'cruceDiario',
+            name: 'Cruce diario Excel',
+            process: this.processExcelFiles.bind(this),
+          },
+          {
+            key: 'induccionSSO',
+            name: 'Inducción Seguridad y Salud en el trabajo',
+            process: this.processFileList.bind(this),
+          },
+          {
+            key: 'traslados',
+            name: 'Traslados',
+            process: this.processTraslados.bind(this),
+          },
         ];
 
-        const processPromises = processes.map(async ({ key, name, process }) => {
-          if (this.reporteForm.get(key)?.value) {
-            const files = this.filesToUpload[key];
-            try {
-              Swal.fire({
-                icon: 'info',
-                title: `Procesando`,
-                html: 'Por favor espere...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                  Swal.showLoading();
-                },
-              });
-              await process(files);
-            } catch (error) {
-              this.processingErrors.push(name);
-              console.error(`Error procesando ${name}:`, error);
+        const processPromises = processes.map(
+          async ({ key, name, process }) => {
+            if (this.reporteForm.get(key)?.value) {
+              const files = this.filesToUpload[key];
+              try {
+                Swal.fire({
+                  icon: 'info',
+                  title: `Procesando`,
+                  html: 'Por favor espere...',
+                  allowOutsideClick: false,
+                  didOpen: () => {
+                    Swal.showLoading();
+                  },
+                });
+                await process(files);
+              } catch (error) {
+                this.processingErrors.push(name);
+                console.error(`Error procesando ${name}:`, error);
+              }
             }
           }
-        });
+        );
 
         // Ejecutar todas las promesas en paralelo
         await Promise.all(processPromises);
@@ -1585,7 +1722,9 @@ export class ReporteContratacionComponent implements OnInit {
           Swal.fire({
             icon: 'error',
             title: 'Errores durante la carga',
-            html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors.map(err => `<li>${err}</li>`).join('')}</ul>`,
+            html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors
+              .map((err) => `<li>${err}</li>`)
+              .join('')}</ul>`,
             confirmButtonText: 'Aceptar',
           });
         } else {
@@ -1594,15 +1733,28 @@ export class ReporteContratacionComponent implements OnInit {
             sede: this.reporteForm.get('sede')?.value.nombre,
             fecha: this.reporteForm.get('fecha')?.value,
             contratosHoy: this.reporteForm.get('contratosHoy')?.value,
-            cantidadContratosTuAlianza: this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
-            cantidadContratosApoyoLaboral: this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
+            cantidadContratosTuAlianza:
+              this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
+            cantidadContratosApoyoLaboral:
+              this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
             nota: this.reporteForm.get('notas')?.value,
-            cedulas: this.cedulasBase64.length > 0 ? this.cedulasBase64 : 'No se han cargado cédulas',
-            traslados: this.trasladosBase64.length > 0 ? this.trasladosBase64 : 'No se han cargado traslados',
-            cruce: this.cruceBase64 !== '' ? this.cruceBase64 : 'No se ha cargado cruce',
-            sst: this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
+            cedulas:
+              this.cedulasBase64.length > 0
+                ? this.cedulasBase64
+                : 'No se han cargado cédulas',
+            traslados:
+              this.trasladosBase64.length > 0
+                ? this.trasladosBase64
+                : 'No se han cargado traslados',
+            cruce:
+              this.cruceBase64 !== ''
+                ? this.cruceBase64
+                : 'No se ha cargado cruce',
+            sst:
+              this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
             nombre: user.primer_nombre + ' ' + user.primer_apellido,
-            arl: this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
+            arl:
+              this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
           };
 
           try {
@@ -1612,11 +1764,13 @@ export class ReporteContratacionComponent implements OnInit {
               title: 'Reporte enviado',
               text: 'El reporte ha sido enviado correctamente.',
               confirmButtonText: 'Aceptar',
-            }).then(result => {
+            }).then((result) => {
               if (result.isConfirmed) {
-                this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => {
-                  this.router.navigate(['/reporte-contratacion']);
-                });
+                this.router
+                  .navigateByUrl('/home', { skipLocationChange: true })
+                  .then(() => {
+                    this.router.navigate(['/reporte-contratacion']);
+                  });
               }
             });
           } catch (error) {
@@ -1645,7 +1799,4 @@ export class ReporteContratacionComponent implements OnInit {
       });
     }
   }
-
-
-
 }

@@ -20,10 +20,6 @@
   gap: 8px; /* Espaciado entre >los botones */
 }
 
-.hide-toggle mat-expansion-indicator {
-  display: none !important; /* Oculta completamente el ícono pequeño */
-}
-
-::ng-deep .hide-toggle mat-expansion-indicator {
-  display: none !important; /* Ocultar el ícono pequeño */
+mat-expansion-panel-header.hide-toggle .mat-expansion-indicator {
+  display: none; /* Oculta el ícono */
 }

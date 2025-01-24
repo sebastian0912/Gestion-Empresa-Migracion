@@ -132,7 +132,7 @@ export class GenerarDocumentosComponent implements OnInit {
     Contrato: 25,
     "Autorización de datos": 26,
     "Entrega de documentos": 27,
-    'Ficha técnica': 28,
+    'Ficha técnica': 34,
     Cedula: 29,
     ARL: 30,
     'Figura Humana': 31

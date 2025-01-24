@@ -26,6 +26,12 @@ export class AdminService {
     return token ? new HttpHeaders().set('Authorization', token) : new HttpHeaders();
   }
 
+  traerUsuarios(): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/usuarios/usuariosEmpresa`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   public getUser(): any {
     if (isPlatformBrowser(this.platformId)) {
       return JSON.parse(localStorage.getItem('user') || '{}');
@@ -44,7 +50,7 @@ export class AdminService {
       .pipe(catchError(this.handleError));
   }
 
-  // Editar sede 
+  // Editar sede
   async editarSede(
     ceduladelapersona: string,
     sucursalacambiar: string

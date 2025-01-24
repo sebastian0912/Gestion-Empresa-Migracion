@@ -12,7 +12,7 @@
   <div class="sidebar-header servicios-header">
     <h3>Menu</h3>
   </div>
-   
+
   <ul>
     <li class="blockLink" [class.active]="currentRoute === '/home'" routerLink="/home">
       <img src="navbar/home-button.png" alt="Dashboard" class="icon">
@@ -168,6 +168,13 @@
       *ngIf="hasPermission('buscar-documentacion')">
       <img src="navbar/buscar.png" alt="Buscar documentación" class="icon">
       <p>Buscar documentación</p>
+    </li>
+
+    <!--Gestion persmisos-->
+    <li class="blockLink" [class.active]="currentRoute === '/gestionar-permisos'" routerLink="/gestionar-permisos"
+      *ngIf="hasPermission('gestionar-permisos')">
+      <img src="navbar/permisos.png" alt="Gestionar permisos" class="icon">
+      <p>Gestionar permisos</p>
     </li>
 
     <!--
