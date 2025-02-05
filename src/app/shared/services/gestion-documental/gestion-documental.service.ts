@@ -5,13 +5,15 @@ import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GestionDocumentalService {
-
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) { }
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   private getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
@@ -22,7 +24,9 @@ export class GestionDocumentalService {
 
   private createAuthorizationHeader(): HttpHeaders {
     const token = this.getToken();
-    return token ? new HttpHeaders().set('Authorization', `${token}`) : new HttpHeaders();
+    return token
+      ? new HttpHeaders().set('Authorization', `${token}`)
+      : new HttpHeaders();
   }
 
   async getUser(): Promise<any> {
@@ -41,7 +45,7 @@ export class GestionDocumentalService {
     owner_id: string,
     type: number,
     file: File,
-    contract_number?: string  // Hacer que el número de contrato sea opcional
+    contract_number?: string // Hacer que el número de contrato sea opcional
   ): Observable<any> {
     const formData = new FormData();
     formData.append('title', title); // Nombre del archivo
@@ -55,13 +59,14 @@ export class GestionDocumentalService {
 
     const headers = this.createAuthorizationHeader();
 
-    return this.http.post(`${this.apiUrl}/gestion_documental/documentos/`, formData, {
-      headers
-    });
+    return this.http.post(
+      `${this.apiUrl}/gestion_documental/documentos/`,
+      formData,
+      {
+        headers,
+      }
+    );
   }
-
-
-
 
   // Nuevo método para obtener documentos por tipo documental
   obtenerDocumentosPorTipo(
@@ -77,7 +82,11 @@ export class GestionDocumentalService {
     params = params.append('contract_number', contract_number);
     params = params.append('type', type.toString()); // Agregar el tipo documental
 
-    return this.http.get(`${this.apiUrl}/gestion_documental/documentos/`, { headers, params });
+    return this.http.get(`${this.apiUrl}/gestion_documental/documentos/`, {
+      headers,
+      params,
+    });
   }
+
 
 }

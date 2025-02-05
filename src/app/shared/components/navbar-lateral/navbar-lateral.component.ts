@@ -115,7 +115,7 @@ export class NavbarLateralComponent implements OnInit {
       'reporte-vetado', 'vetados-gerencia', 'consulta-formulario',
       'vacante-documentos', 'personal-administrativo',
       'crear-estructura-documental', 'buscar-documentacion', 'subir-documentacion', 'publicidad', 'antecedentes-robots',
-      'gestionar-permisos'
+      'gestionar-permisos', 'activos'
     ],
     TESORERIA: [
       'forma-pago', 'desprendibles-pago', 'ausentismos', 'consulta-formulario'

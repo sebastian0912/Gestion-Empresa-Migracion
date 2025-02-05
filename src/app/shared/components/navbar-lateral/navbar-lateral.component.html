@@ -79,6 +79,13 @@
       <p>Antecedentes Robots</p>
     </li>
 
+    <!--activos-->
+    <li class="blockLink" [class.active]="currentRoute === '/activos'" routerLink="/activos"
+      *ngIf="hasPermission('activos')">
+      <img src="navbar/asistencia-social.png" alt="Activos" class="icon">
+      <p>Activos</p>
+    </li>
+
     <li class="blockLink" [class.active]="currentRoute === '/publicidad'" routerLink="/publicidad"
       *ngIf="hasPermission('publicidad')">
       <img src="navbar/publicidad-digital.png" alt="Publicidad" class="icon">

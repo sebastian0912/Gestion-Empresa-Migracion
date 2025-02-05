@@ -11,32 +11,65 @@
 </div>
 
 <!-- Input oculto para carga de archivos -->
-<input id="fileInput" type="file" (change)="cargarExcel($event)" accept=".xlsx, .xls" multiple style="display: none;" />
+<input
+  id="fileInput"
+  type="file"
+  (change)="cargarExcel($event)"
+  accept=".xlsx, .xls"
+  multiple
+  style="display: none"
+/>
 
 <div class="dashboard-container">
-  <div class="navbar">
-
-  </div>
-  <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+  <div class="navbar"></div>
+  <app-navbar-lateral
+    [class.sidebar-hidden]="isSidebarHidden"
+  ></app-navbar-lateral>
   <div class="dashboard-content">
     <app-navbar-superior></app-navbar-superior>
     <mat-card>
-      <h3 class="title">Carga de archivos para incapacidades</h3>
+      <h3 class="titulo">Carga de archivos para incapacidades</h3>
+
       <mat-card-content>
-        <!-- Botones para cargar archivos -->
-        <ng-container *ngFor="let file of fileList">
-          <!-- Botón para subir archivo -->
-          <app-info-card [title]="file.title" imageUrl="comun/excel.png" (click)="triggerFileInput()"
-            style="cursor: pointer;">
-          </app-info-card>
+        <!-- Botón tipo "tarjeta" que abre el diálogo de selección de archivo -->
+        <app-info-card
+          [title]="'Cargar códigos diagnósticos'"
+          imageUrl="comun/excel.png"
+          (click)="triggerFileInput2()"
+          style="cursor: pointer"
+        >
+        </app-info-card>
 
-          <!-- Botón para descargar archivo asociado -->
-          <button mat-flat-button (click)="downloadFile(file.filename)">
-            <mat-icon>download</mat-icon>
-            Descargar {{ file.title }}
-          </button>
+        <!-- Input oculto para recibir el archivo Excel -->
+        <input
+          id="fileInputDiag"
+          type="file"
+          accept=".xlsx,.xls"
+          style="display: none"
+          (change)="onFileChange($event)"
+        />
 
-        </ng-container>
+        <div class="cards">
+          <!-- Botones para cargar archivos -->
+          <ng-container *ngFor="let file of fileList">
+            <div class="conjunto">
+              <!-- Botón para subir archivo -->
+              <app-info-card
+                [title]="file.title"
+                imageUrl="comun/excel.png"
+                (click)="triggerFileInput()"
+                style="cursor: pointer"
+              >
+              </app-info-card>
+
+              <!-- Botón para descargar archivo asociado -->
+              <button mat-flat-button (click)="downloadFile(file.filename)">
+                <mat-icon>download</mat-icon>
+                Descargar {{ file.title }}
+              </button>
+            </div>
+          </ng-container>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

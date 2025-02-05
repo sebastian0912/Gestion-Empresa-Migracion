@@ -94,7 +94,7 @@ export class FormularioIncapacidadComponent implements OnInit {
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
   }
-  
+
   fields: string[] = [
     'Oficina', 'Nombre de quien recibio', 'Tipo de documento', 'Numero de documento', 'Temporal del contrato',
     'Numero de contrato', 'Apellido', 'Nombre', 'Edad', 'Sexo', 'Empresa', 'Centro de costo', 'Celular o telefono 01',
@@ -627,6 +627,9 @@ export class FormularioIncapacidadComponent implements OnInit {
   async ngOnInit(): Promise<void> {
 
     const user = await this.getUser();
+    if (!user) {
+      return;
+    }
     this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
     if (this.currentRole === 'INCAPACIDADADMIN') {
       this.undisableInitialFields();
@@ -755,6 +758,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       Swal.fire({
         title: 'Cargando...',
         html: 'Por favor espera mientras se carga la información',
+        icon: 'info',
         allowOutsideClick: false, // Evitar que se cierre al hacer click fuera
         didOpen: () => {
           Swal.showLoading(); // Mostrar el spinner

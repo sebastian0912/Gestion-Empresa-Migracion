@@ -23,7 +23,7 @@ function createWindow() {
   });
 
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:4200');
+    mainWindow.loadURL('http://localhost:4500');
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.removeMenu();

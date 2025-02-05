@@ -21,7 +21,6 @@ import { NgIf } from '@angular/common';
   imports: [
     NavbarLateralComponent,
     NavbarSuperiorComponent,
-    InfoCardComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -29,7 +28,6 @@ import { NgIf } from '@angular/common';
     MatIconModule,
     FormsModule,
     MatCardModule,
-    NgIf
   ],
   templateUrl: './publicidad.component.html',
   styleUrl: './publicidad.component.css'

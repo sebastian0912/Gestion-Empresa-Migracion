@@ -1292,7 +1292,7 @@ export class ReporteContratacionComponent implements OnInit {
             const fechaCruce = formatDate(comparativoCruce);
 
             // Comparar fechas
-            if (fechaCruce.getTime() !== fechaArl.getTime()) {
+            if (fechaArl.getTime() > fechaCruce.getTime()) {
               estadoFechas = 'ALERTA FECHAS NO COINCIDEN';
             }
 

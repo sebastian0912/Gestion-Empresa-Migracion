@@ -38,6 +38,7 @@ import { SubirDocumentacionComponent } from './features/gestion-documental/pages
 import { VacanteComponent } from './features/vacante/pages/vacante/vacante.component';
 import { PersonalAdministrativoComponent } from './features/personal_administrativos/pages/personal-administrativo/personal-administrativo.component';
 import { GestionarPermisosComponent } from './features/gestion-documental/pages/gestionar-permisos/gestionar-permisos.component';
+import { ActivosComponent } from './shared/pages/activos/activos.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -82,6 +83,7 @@ export const routes: Routes = [
 
   { path: 'vacante-documentos', component: VacanteComponent },
   { path: 'personal-administrativo', component: PersonalAdministrativoComponent },
-  { path: 'gestionar-permisos', component: GestionarPermisosComponent }
+  { path: 'gestionar-permisos', component: GestionarPermisosComponent },
+  { path: 'activos', component: ActivosComponent }
 
 ];

@@ -16,7 +16,6 @@ import { NgClass, NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { catchError, elementAt, forkJoin, map, Observable, of, startWith } from 'rxjs';
-import { LeerInfoCandidatoComponent } from '../../components/leer-info-candidato/leer-info-candidato.component';
 import { MatDialog } from '@angular/material/dialog';
 import { VacantesService } from '../../services/vacantes/vacantes.service';
 import { MatMenuModule } from '@angular/material/menu';
@@ -68,7 +67,7 @@ export class ContratacionComponent implements OnInit {
   cedula: string = ''; // Variable to store the cedula input
   nombreEmpresa: string = ''; // Variable to store the company name
   descripcionVacante: string = ''; // Variable to store the vacancy description
-  // Formularios 
+  // Formularios
   formGroup1!: FormGroup;
   formGroup2!: FormGroup;
   formGroup3!: FormGroup;
@@ -1942,7 +1941,7 @@ export class ContratacionComponent implements OnInit {
     // Guardar cedula y codigoContrato en el localStorage separados
     localStorage.setItem('cedula', this.cedula);
     localStorage.setItem('codigoContrato', this.codigoContrato);
-    // empresa 
+    // empresa
     this.guardarFormulariosEnLocalStorage();
     // Redirige a la página de generación de documentos
     window.location.href = "/generar-documentos";

@@ -15,7 +15,6 @@ import { NgClass, NgFor, NgForOf, NgIf, NgStyle } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ContratacionService } from '../../services/contratacion/contratacion.service';
 import { catchError, elementAt, forkJoin, of } from 'rxjs';
-import { LeerInfoCandidatoComponent } from '../../components/leer-info-candidato/leer-info-candidato.component';
 import { MatDialog } from '@angular/material/dialog';
 import { VacantesService } from '../../services/vacantes/vacantes.service';
 import { MatMenuModule } from '@angular/material/menu';
@@ -69,7 +68,7 @@ export class SeleccionComponent implements OnInit {
   vacantes: any[] = [];
   sede: string = '';
   sedeLogin: string = '';
-  // Formularios 
+  // Formularios
   formGroup1: FormGroup;
   formGroup2: FormGroup;
   formGroup3: FormGroup;
@@ -365,7 +364,7 @@ export class SeleccionComponent implements OnInit {
     });
 
 
-    // forms de ayuda 
+    // forms de ayuda
 
     // Inicializamos cada FormGroup de manera independiente
     this.infoPersonalForm = this.fb.group({
@@ -1018,21 +1017,6 @@ export class SeleccionComponent implements OnInit {
         }
       });
     }
-  }
-
-
-
-
-  abrirModal(): void {
-    this.dialog.open(LeerInfoCandidatoComponent, {
-      minWidth: '80vw',
-      minHeight: '60vh',
-      maxHeight: '80vh',
-      data: {
-        seleccion: this.seleccion,
-        infoGeneralC: this.infoGeneralC,
-      },
-    });
   }
 
   urlToFile(url: string, fileName: string): Promise<File> {
