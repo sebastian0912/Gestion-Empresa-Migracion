@@ -1707,7 +1707,7 @@ export class ReporteContratacionComponent implements OnInit {
           },
           {
             key: 'induccionSSO',
-            name: 'Inducción en Seguridad y Salud en el Trabajo (SST)',
+            name: 'Inducción en SST',
             process: this.processFileList.bind(this),
           },
           {
@@ -1741,21 +1741,90 @@ export class ReporteContratacionComponent implements OnInit {
 
         await Promise.all(processPromises);
 
-        // Verificamos si hubo errores en alguno de los procesos
+        // Si hubo errores en alguno de los procesos, los mostramos (pero se continúa el flujo)
         if (this.processingErrors.length > 0) {
           Swal.fire({
             icon: 'error',
             title: 'Errores durante la carga',
             html: `Ocurrieron errores al procesar los siguientes elementos:
-                   <ul>${this.processingErrors
-                .map((err) => `<li>${err}</li>`)
-                .join('')}</ul>`,
+                  <ul>${this.processingErrors
+                    .map((err) => `<li>${err}</li>`)
+                    .join('')}</ul>`,
+            confirmButtonText: 'Aceptar',
+          });
+        }
+
+        // Cerramos el Swal de "Procesando" antes de mostrar el siguiente
+        Swal.close();
+
+        try {
+          // ================================
+          // AQUÍ DEFINIMOS reporteData
+          // ================================
+          const reporteData = {
+            sede: this.reporteForm.get('sede')?.value.nombre,
+            fecha: this.reporteForm.get('fecha')?.value,
+            contratosHoy: this.reporteForm.get('contratosHoy')?.value,
+            cantidadContratosTuAlianza:
+              this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
+            cantidadContratosApoyoLaboral:
+              this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
+            nota: this.reporteForm.get('notas')?.value,
+            // Estas variables base64 se van llenando en los métodos "process..."
+            // Asegúrate de que estén actualizadas correctamente.
+            cedulas:
+              this.cedulasBase64.length > 0
+                ? this.cedulasBase64
+                : 'No se han cargado las cédulas.',
+            traslados:
+              this.trasladosBase64.length > 0
+                ? this.trasladosBase64
+                : 'No se han cargado traslados.',
+            cruce:
+              this.cruceBase64 !== ''
+                ? this.cruceBase64
+                : 'No se ha cargado el cruce.',
+            sst:
+              this.sstBase64 !== ''
+                ? this.sstBase64
+                : 'No se ha cargado la inducción SST.',
+            nombre: `${user.primer_nombre} ${user.primer_apellido}`,
+            arl:
+              this.arlBase64 !== ''
+                ? this.arlBase64
+                : 'No se ha cargado el archivo ARL.',
+          };
+
+          // Enviamos el reporte
+          await this.jefeAreaService.cargarReporte(reporteData);
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Reporte enviado',
+            text: 'El reporte se ha enviado correctamente.',
+            confirmButtonText: 'Aceptar',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Navegación de ejemplo al finalizar
+              this.router
+                .navigateByUrl('/home', { skipLocationChange: true })
+                .then(() => {
+                  this.router.navigate(['/reporte-contratacion']);
+                });
+            }
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
             confirmButtonText: 'Aceptar',
           });
         }
       } else {
+        // Si contratosHoy !== 'si'
 
-        // Si todo salió bien, cerramos el loader
+        // Cerramos el loader
         Swal.close();
 
         // Preparamos la data para el reporte
@@ -1784,7 +1853,7 @@ export class ReporteContratacionComponent implements OnInit {
             this.sstBase64 !== ''
               ? this.sstBase64
               : 'No se ha cargado la inducción SST.',
-          nombre: user.primer_nombre + ' ' + user.primer_apellido,
+          nombre: `${user.primer_nombre} ${user.primer_apellido}`,
           arl:
             this.arlBase64 !== ''
               ? this.arlBase64
@@ -1794,6 +1863,7 @@ export class ReporteContratacionComponent implements OnInit {
         try {
           // Enviamos el reporte
           await this.jefeAreaService.cargarReporte(reporteData);
+
           Swal.fire({
             icon: 'success',
             title: 'Reporte enviado',
