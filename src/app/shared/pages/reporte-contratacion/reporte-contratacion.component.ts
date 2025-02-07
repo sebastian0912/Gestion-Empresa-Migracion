@@ -397,8 +397,8 @@ export class ReporteContratacionComponent implements OnInit {
               const cedula = row[1]; // Columna de índice 0
               return cedula
                 ? this.removeSpecialCharacters(
-                    cedula.toString().replace(/\s/g, '')
-                  )
+                  cedula.toString().replace(/\s/g, '')
+                )
                 : '';
             })
             .filter((cedula) => cedula !== ''); // Filtrar cédulas vacías
@@ -656,7 +656,7 @@ export class ReporteContratacionComponent implements OnInit {
               registro: '0',
               errores: [
                 'Cédula de traslado no encontrada en el Excel la cedula es la :' +
-                  cedula,
+                cedula,
               ],
               tipo: 'Traslado',
             });
@@ -872,9 +872,8 @@ export class ReporteContratacionComponent implements OnInit {
           Swal.fire({
             icon: 'info',
             title: 'Validando lote...',
-            text: `Enviando el lote ${
-              i + 1
-            } de ${totalBatches} para validación...`,
+            text: `Enviando el lote ${i + 1
+              } de ${totalBatches} para validación...`,
             allowOutsideClick: false,
             showConfirmButton: false,
             didOpen: () => {
@@ -1661,9 +1660,13 @@ export class ReporteContratacionComponent implements OnInit {
   }
 
   async onSubmit() {
+    // Cerrar cualquier alerta que haya quedado abierta
     Swal.close();
+
+    // Obtenemos la información del usuario
     const user = await this.jefeAreaService.getUser();
 
+    // Validaciones previas a la carga
     if (!this.isArlValidado) {
       Swal.fire({
         icon: 'error',
@@ -1684,10 +1687,13 @@ export class ReporteContratacionComponent implements OnInit {
       return;
     }
 
+    // Verificamos si el formulario es válido
     if (this.reporteForm.valid) {
+      // Si se seleccionó "sí" para contratosHoy
       if (this.reporteForm.get('contratosHoy')?.value === 'si') {
         this.processingErrors = [];
 
+        // Definimos los procesos a ejecutar
         const processes = [
           {
             key: 'cedulasEscaneadas',
@@ -1701,7 +1707,7 @@ export class ReporteContratacionComponent implements OnInit {
           },
           {
             key: 'induccionSSO',
-            name: 'Inducción Seguridad y Salud en el trabajo',
+            name: 'Inducción en Seguridad y Salud en el Trabajo (SST)',
             process: this.processFileList.bind(this),
           },
           {
@@ -1711,112 +1717,116 @@ export class ReporteContratacionComponent implements OnInit {
           },
         ];
 
-        const processPromises = processes.map(
-          async ({ key, name, process }) => {
-            if (this.reporteForm.get(key)?.value) {
-              const files = this.filesToUpload[key];
-              try {
-                Swal.fire({
-                  icon: 'info',
-                  title: `Procesando`,
-                  html: 'Por favor espere...',
-                  allowOutsideClick: false,
-                  didOpen: () => {
-                    Swal.showLoading();
-                  },
-                });
-                await process(files);
-              } catch (error) {
-                this.processingErrors.push(name);
-                console.error(`Error procesando ${name}:`, error);
-              }
+        // Ejecutamos todos los procesos en paralelo
+        const processPromises = processes.map(async ({ key, name, process }) => {
+          if (this.reporteForm.get(key)?.value) {
+            const files = this.filesToUpload[key];
+            try {
+              Swal.fire({
+                icon: 'info',
+                title: 'Procesando',
+                html: 'Por favor, espere...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+              await process(files);
+            } catch (error) {
+              this.processingErrors.push(name);
+              console.error(`Error procesando ${name}:`, error);
             }
           }
-        );
+        });
 
-        // Ejecutar todas las promesas en paralelo
         await Promise.all(processPromises);
 
-        // Mostrar errores si los hay
+        // Verificamos si hubo errores en alguno de los procesos
         if (this.processingErrors.length > 0) {
           Swal.fire({
             icon: 'error',
             title: 'Errores durante la carga',
-            html: `Ocurrieron errores al procesar los siguientes elementos: <ul>${this.processingErrors
-              .map((err) => `<li>${err}</li>`)
-              .join('')}</ul>`,
+            html: `Ocurrieron errores al procesar los siguientes elementos:
+                   <ul>${this.processingErrors
+                .map((err) => `<li>${err}</li>`)
+                .join('')}</ul>`,
             confirmButtonText: 'Aceptar',
           });
-        } else {
-          Swal.close();
-          const reporteData = {
-            sede: this.reporteForm.get('sede')?.value.nombre,
-            fecha: this.reporteForm.get('fecha')?.value,
-            contratosHoy: this.reporteForm.get('contratosHoy')?.value,
-            cantidadContratosTuAlianza:
-              this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
-            cantidadContratosApoyoLaboral:
-              this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
-            nota: this.reporteForm.get('notas')?.value,
-            cedulas:
-              this.cedulasBase64.length > 0
-                ? this.cedulasBase64
-                : 'No se han cargado cédulas',
-            traslados:
-              this.trasladosBase64.length > 0
-                ? this.trasladosBase64
-                : 'No se han cargado traslados',
-            cruce:
-              this.cruceBase64 !== ''
-                ? this.cruceBase64
-                : 'No se ha cargado cruce',
-            sst:
-              this.sstBase64 !== '' ? this.sstBase64 : 'No se ha cargado SST',
-            nombre: user.primer_nombre + ' ' + user.primer_apellido,
-            arl:
-              this.arlBase64 !== '' ? this.arlBase64 : 'No se ha cargado ARL',
-          };
-
-          try {
-            await this.jefeAreaService.cargarReporte(reporteData);
-            Swal.fire({
-              icon: 'success',
-              title: 'Reporte enviado',
-              text: 'El reporte ha sido enviado correctamente.',
-              confirmButtonText: 'Aceptar',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.router
-                  .navigateByUrl('/home', { skipLocationChange: true })
-                  .then(() => {
-                    this.router.navigate(['/reporte-contratacion']);
-                  });
-              }
-            });
-          } catch (error) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
-              confirmButtonText: 'Aceptar',
-            });
-          }
         }
       } else {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: 'Formulario enviado exitosamente.',
-          confirmButtonText: 'Aceptar',
-        });
+
+        // Si todo salió bien, cerramos el loader
+        Swal.close();
+
+        // Preparamos la data para el reporte
+        const reporteData = {
+          sede: this.reporteForm.get('sede')?.value.nombre,
+          fecha: this.reporteForm.get('fecha')?.value,
+          contratosHoy: this.reporteForm.get('contratosHoy')?.value,
+          cantidadContratosTuAlianza:
+            this.reporteForm.get('cantidadContratosTuAlianza')?.value || 0,
+          cantidadContratosApoyoLaboral:
+            this.reporteForm.get('cantidadContratosApoyoLaboral')?.value || 0,
+          nota: this.reporteForm.get('notas')?.value,
+          cedulas:
+            this.cedulasBase64.length > 0
+              ? this.cedulasBase64
+              : 'No se han cargado las cédulas.',
+          traslados:
+            this.trasladosBase64.length > 0
+              ? this.trasladosBase64
+              : 'No se han cargado traslados.',
+          cruce:
+            this.cruceBase64 !== ''
+              ? this.cruceBase64
+              : 'No se ha cargado el cruce.',
+          sst:
+            this.sstBase64 !== ''
+              ? this.sstBase64
+              : 'No se ha cargado la inducción SST.',
+          nombre: user.primer_nombre + ' ' + user.primer_apellido,
+          arl:
+            this.arlBase64 !== ''
+              ? this.arlBase64
+              : 'No se ha cargado el archivo ARL.',
+        };
+
+        try {
+          // Enviamos el reporte
+          await this.jefeAreaService.cargarReporte(reporteData);
+          Swal.fire({
+            icon: 'success',
+            title: 'Reporte enviado',
+            text: 'El reporte se ha enviado correctamente.',
+            confirmButtonText: 'Aceptar',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Navegación de ejemplo al finalizar
+              this.router
+                .navigateByUrl('/home', { skipLocationChange: true })
+                .then(() => {
+                  this.router.navigate(['/reporte-contratacion']);
+                });
+            }
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al enviar el reporte. Inténtelo nuevamente.',
+            confirmButtonText: 'Aceptar',
+          });
+        }
       }
     } else {
+      // Si el formulario no es válido
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Por favor, completa el formulario correctamente.',
+        text: 'Por favor, complete el formulario correctamente.',
         confirmButtonText: 'Aceptar',
       });
     }
   }
+
 }
