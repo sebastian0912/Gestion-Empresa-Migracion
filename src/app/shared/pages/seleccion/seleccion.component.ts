@@ -27,6 +27,7 @@ import { GestionDocumentalService } from '../../services/gestion-documental/gest
 import { VetadosService } from '../../services/vetados/vetados.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { PDFDocument } from 'pdf-lib';
 
 @Component({
   selector: 'app-seleccion',
@@ -82,6 +83,7 @@ export class SeleccionComponent implements OnInit {
   mostrarObservacion: boolean = false; // Controla la visibilidad del campo de observación
   observacion: string = ''; // Almacena la observación escrita por el usuario
   idvacante = '';
+  examFiles: File[] = []; // Guardamos los archivos PDF por índice
 
   typeMap: { [key: string]: number } = {
     eps: 7,
@@ -499,15 +501,26 @@ export class SeleccionComponent implements OnInit {
     return this.formGroup3.get('selectedExamsArray') as FormArray;
   }
 
-  // Método para actualizar el FormArray de acuerdo a los exámenes seleccionados
+  // Actualizar lista de exámenes con su estructura en FormArray
   updateSelectedExamsArray(selectedExams: string[]): void {
-    this.selectedExamsArray.clear(); // Limpiar el array antes de agregar los nuevos controles
+    this.selectedExamsArray.clear();
+    this.examFiles = new Array(selectedExams.length); // Reset de archivos
     selectedExams.forEach(() => {
       this.selectedExamsArray.push(this.fb.group({
         aptoStatus: ['', Validators.required]
       }));
     });
   }
+
+    // Guardar el archivo PDF seleccionado para cada examen
+    onFileSelected(event: any, index: number): void {
+      const file = event.target.files[0];
+      if (file && file.type === 'application/pdf') {
+        this.examFiles[index] = file;
+      } else {
+        alert('Por favor, seleccione un archivo PDF válido.');
+      }
+    }
 
   // Método para mostrar el campo de observación
   mostrarCampoObservacion(): void {
@@ -552,24 +565,36 @@ export class SeleccionComponent implements OnInit {
         return of([]); // Retorna un arreglo vacío para manejar el error y continuar
       })
     ).subscribe((response: any) => {
-      if (!response || !response.publicacion) {
+      console.log(response);
+      if (!response) {
         Swal.fire('Error', 'No se encontraron vacantes', 'error');
         return;
       }
 
       // Filtrar las vacantes basadas en la ubicación y la sedeLogin
-      this.vacantes = response.publicacion.filter((vacante: any) => {
-        // Extrae la lista de ubicaciones de la vacante y conviértela a un array
-        const localizacion = vacante.localizacionDeLaPersona?.split(',').map((loc: string) => loc.trim().toLowerCase()) || [];
+      // Filtrar las vacantes basadas en las oficinas que contratan y la sedeLogin
+      this.vacantes = response.filter((vacante: any) => {
+        // Verifica si la vacante tiene oficinas que contratan
+        if (!vacante.oficinasQueContratan || !Array.isArray(vacante.oficinasQueContratan)) {
+          return false;
+        }
 
-        // Verifica si this.sedeLogin está presente en la lista de localizaciones
-        const sedeMatch = localizacion.includes(this.sedeLogin.toLowerCase());
+        // Convertir la sedeLogin a minúsculas para comparación
+        const sedeLoginLower = this.sedeLogin.toLowerCase();
+
+        // Buscar si alguna oficina coincide con la sedeLogin
+        const sedeMatch = vacante.oficinasQueContratan.some((oficina: any) =>
+          oficina.nombre.toLowerCase() === sedeLoginLower
+        );
 
         return sedeMatch;
       }).map((vacante: any) => ({
         ...vacante,
       }));
+      console.log(this.vacantes);
+
     });
+
   }
 
 
@@ -580,18 +605,19 @@ export class SeleccionComponent implements OnInit {
 
     // Si los datos de la vacante existen, actualizar el formulario directamente
     if (vacante) {
+      console.log(vacante);
       this.idvacante = vacante.id;
       // imprimir hora de prueba tecnica
       this.formGroup2.patchValue({
-        centroCosto: vacante.Localizaciondelavacante || '',
-        cargo: vacante.Cargovacante_id || '',
-        areaEntrevista: vacante.empresaQueSolicita_id || '',
+        centroCosto: vacante.finca || '',
+        cargo: vacante.cargo || '',
+        areaEntrevista: vacante.empresaUsuariaSolicita || '',
         fechaPruebaEntrevista: this.formatDate(vacante.fechadePruebatecnica) || '',
         horaPruebaEntrevista: vacante.horadePruebatecnica || '',
-        direccionEmpresa: vacante.lugarPrueba || ''
+        direccionEmpresa: vacante.ubicacionPruebaTecnica || ''
       });
 
-      this.vacantesService.obtenerDetalleLaboral(vacante.Localizaciondelavacante, vacante.finca, vacante.Cargovacante_id).subscribe((response: any) => {
+      this.vacantesService.obtenerDetalleLaboral(vacante.empresaUsuariaSolicita, vacante.finca, vacante.cargo).subscribe((response: any) => {
         if (response) {
           let valorT = 0;
 
@@ -628,15 +654,6 @@ export class SeleccionComponent implements OnInit {
           });
         }
       });
-
-
-
-
-
-
-
-
-
     }
   }
 
@@ -648,19 +665,14 @@ export class SeleccionComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-
-
   filtrarVacantes() {
     if (!this.filtro) return this.vacantes;
-
     const filtroLower = this.filtro.toLowerCase();
     return this.vacantes.filter(vacante =>
       ['Cargovacante_id', 'localizacionDeLaPersona', 'empresaQueSolicita_id']
         .some(key => vacante[key]?.toLowerCase().includes(filtroLower))
     );
-
   }
-
 
   async buscarCedula() {
     forkJoin({
@@ -700,15 +712,16 @@ export class SeleccionComponent implements OnInit {
         this.procesoValido = true;
 
         if (vetado) {
+          console.log(vetado);
           // Filtrar elementos que tengan una categoría no nula
           const vetadoFiltrado = vetado.filter((item: any) => item.categoria !== null);
 
           // Mapear los datos para extraer clasificación y descripción
-          const data = vetadoFiltrado.map((item: any) => ({
+          const data = vetado.map((item: any) => ({
             cedula: item.cedula,
             nombre_completo: item.nombre_completo,
-            clasificacion: item.categoria?.clasificacion || 'N/A',
-            descripcion: item.categoria?.descripcion || 'N/A',
+            clasificacion: item.categoria?.clasificacion || '',
+            descripcion: item.categoria?.descripcion || '',
             observacion: item.observacion,
             estado: item.estado,
             sede: item.sede,
@@ -899,9 +912,11 @@ export class SeleccionComponent implements OnInit {
 
         } else {
           this.codigoContrato = this.seleccion.codigo_contrato;
+          console.log(this.seleccion);
           this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((response: any) => {
-            this.empresa = response.publicacion[0].empresaQueSolicita_id;
-            this.vacante = response.publicacion[0]
+            console.log(response);
+            this.empresa = response.temporal;
+            this.vacante = response
           });
 
 
@@ -1062,21 +1077,33 @@ export class SeleccionComponent implements OnInit {
     }
   }
 
-  // Método que se ejecuta cuando se selecciona un archivo
-  subirArchivo(event: any, campo: string) {
-    const file = event.target.files[0]; // Obtén el archivo seleccionado
-    if (file) {
-      // Verificar si el nombre del archivo tiene más de 100 caracteres
-      if (file.name.length > 100) {
-        Swal.fire('Error', 'El nombre del archivo no debe exceder los 100 caracteres', 'error');
-        return; // Salir de la función si la validación falla
-      }
+// Método que se ejecuta cuando se selecciona un archivo o se genera un PDF en memoria
+subirArchivo(event: any | Blob, campo: string, fileName?: string) {
+  let file: File;
 
-      // Si la validación es exitosa, almacenar el archivo
-      this.uploadedFiles[campo] = { file: file, fileName: file.name }; // Guarda el archivo y el nombre
-      //Swal.fire('Archivo subido', `Archivo ${file.name} subido para ${campo}`, 'success');
-    }
+  if (event instanceof Blob) {
+    // Si es un archivo generado en memoria (como el PDF fusionado)
+    file = new File([event], fileName || 'archivo.pdf', { type: 'application/pdf' });
+  } else {
+    // Si es un evento de input file (archivo seleccionado por el usuario)
+    file = event.target.files[0];
   }
+
+  if (file) {
+    // Verificar si el nombre del archivo tiene más de 100 caracteres
+    if (file.name.length > 100) {
+      Swal.fire('Error', 'El nombre del archivo no debe exceder los 100 caracteres', 'error');
+      return; // Salir de la función si la validación falla
+    }
+
+    // Si la validación es exitosa, almacenar el archivo en uploadedFiles
+    this.uploadedFiles[campo] = { file: file, fileName: file.name };
+
+    // Mensaje opcional de éxito
+    // Swal.fire('Archivo subido', `Archivo ${file.name} subido para ${campo}`, 'success');
+  }
+}
+
 
   // Método para imprimir los datos del formulario y subir todos los archivos
   imprimirVerificacionesAplicacion(): void {
@@ -1246,42 +1273,63 @@ export class SeleccionComponent implements OnInit {
     );
   }
 
-  // Método para imprimir los datos de los formularios
-  imprimirSaludOcupacional(): void {
-    // Clonar el valor del formulario para no modificar el original
-    const formData = { ...this.formGroup3.value };
+  // Método para fusionar PDFs y almacenarlo en uploadedFiles["examenesMedicos"]
+  async imprimirSaludOcupacional(): Promise<void> {
+    if (this.examFiles.length === 0 || this.examFiles.every(file => !file)) {
+      Swal.fire({
+        title: '¡Advertencia!',
+        text: 'Debe subir al menos un archivo PDF.',
+        icon: 'warning',
+        confirmButtonText: 'Ok'
+      });
+      return;
+    }
 
-    // Convertir los arrays a cadenas de texto separadas por comas
-    formData.selectedExams = formData.selectedExams.join(', ');
-
-    // Convertir selectedExamsArray a una cadena, extrayendo los valores de la propiedad que necesites
-    formData.selectedExamsArray = formData.selectedExamsArray
-      .map((item: { aptoStatus: any; }) => item.aptoStatus || 'Sin especificar') // Ajusta a la propiedad que desees
-      .join(', ');
-
-    this.seleccionService.crearSeleccionParteTresCandidato(formData, this.cedula, this.codigoContrato).subscribe(
-      response => {
-        if (response.message === 'success') {
-          Swal.fire({
-            title: '¡Éxito!',
-            text: 'Datos guardados exitosamente',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          });
-        }
-      },
-      error => {
-        Swal.fire({
-          title: '¡Error!',
-          text: 'Error al guardar los datos',
-          icon: 'error',
-          confirmButtonText: 'Ok'
-        });
+    Swal.fire({
+      title: 'Procesando...',
+      icon: 'info',
+      text: 'Generando documento PDF...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
       }
-    );
+    });
+
+    try {
+      // Crear un nuevo documento PDF
+      const mergedPdf = await PDFDocument.create();
+
+      for (const file of this.examFiles) {
+        if (file) {
+          const fileBuffer = await file.arrayBuffer();
+          const pdf = await PDFDocument.load(fileBuffer);
+          const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+          copiedPages.forEach((page) => mergedPdf.addPage(page));
+        }
+      }
+
+      // Generar el PDF fusionado en Blob
+      const mergedPdfBytes = await mergedPdf.save();
+      const pdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+
+      // Guardar el archivo fusionado en uploadedFiles["examenesMedicos"]
+      this.subirArchivo(pdfBlob, "examenesMedicos", "SaludOcupacional_Combinado.pdf");
+
+      Swal.close(); // Cerrar la alerta de carga
+
+      this.imprimirDocumentos();
+
+    } catch (error) {
+      Swal.close();
+      Swal.fire({
+        title: '¡Error!',
+        text: 'Ocurrió un problema al fusionar los archivos PDF.',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
+    }
   }
-
-
 
   // Método para imprimir los datos de los formularios
   imprimirContratacion(): void {
@@ -1350,13 +1398,15 @@ export class SeleccionComponent implements OnInit {
   }
 
   generarRemisionPruebaTecnica() {
+    console.log('Generar remisión para prueba técnica');
     // Determinar la ruta del logo y el NIT
     let logoPath = '';
     let codigo = '';
     let version = '';
     let texto = '';
     let qrPath = '';
-    if (this.empresa === 'APOYO LABORAL TS SAS') {
+    console.log(this.empresa);
+    if (this.empresa === 'APOYO LABORAL SAS') {
       logoPath = '/logos/Logo_AL.png';
       codigo = 'Código: AL SE-RE-4';
       version = 'Versión: 02';

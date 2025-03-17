@@ -265,7 +265,7 @@ export class GenerarDocumentosComponent implements OnInit {
       this.generarAutorizacionDatos();
     }
     else if (documento === 'Entrega de documentos') {
-      if (this.empresa === 'APOYO LABORAL TS SAS') {
+      if (this.empresa === 'APOYO LABORAL SAS') {
         this.generarEntregaDocsApoyo();
       }
       else if (this.empresa === 'TU ALIANZA SAS') {
@@ -339,7 +339,7 @@ export class GenerarDocumentosComponent implements OnInit {
     // Determinar la ruta del logo y el NIT
     let logoPath = '';
     let nit = '';
-    if (this.empresa === 'APOYO LABORAL TS SAS') {
+    if (this.empresa === 'APOYO LABORAL SAS') {
       logoPath = '/logos/Logo_AL.png';
       nit = 'NIT: 900.814.587-1';
     } else if (this.empresa === 'TU ALIANZA SAS') {
@@ -745,7 +745,7 @@ export class GenerarDocumentosComponent implements OnInit {
 
     y = (doc as any).lastAutoTable.finalY + 10; // Obtener la posición final de la tabla
 
-    // texto  Teniendo en cuenta la anterior información, autorizo descuento de casino: N/A  ( X )    
+    // texto  Teniendo en cuenta la anterior información, autorizo descuento de casino: N/A  ( X )
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text('Teniendo en cuenta la anterior información, autorizo descuento de casino:', 10, y - 7);
@@ -1195,7 +1195,7 @@ export class GenerarDocumentosComponent implements OnInit {
 
     y = finalY + 2;
 
-    // texto  Teniendo en cuenta la anterior información, autorizo descuento de casino: N/A  ( X )    
+    // texto  Teniendo en cuenta la anterior información, autorizo descuento de casino: N/A  ( X )
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
     doc.text('Teniendo en cuenta la anterior información, autorizo descuento de casino:', 10, y + 2);
@@ -1486,7 +1486,7 @@ export class GenerarDocumentosComponent implements OnInit {
     let logoPath = '';
     let nit = '';
     let domicilio = '';
-    if (this.empresa === 'APOYO LABORAL TS SAS') {
+    if (this.empresa === 'APOYO LABORAL SAS') {
       logoPath = '/logos/Logo_AL.png';
       nit = '900.814.587-1';
       domicilio = 'CARRERA 2 # 8 - 156 FACATATIVÁ C/MARCA';
@@ -2089,7 +2089,7 @@ export class GenerarDocumentosComponent implements OnInit {
       let personaVerificareferencias = '';
       let firmaVerificareferencias = '';
       let nombreEmpresa = '';
-      if (this.empresa === 'APOYO LABORAL TS SAS') {
+      if (this.empresa === 'APOYO LABORAL SAS') {
         personaVerificareferencias = 'Andrea Sotelo C.C. 1.019.034.641';
         logoPath = '/logos/Logo_AL.png';
         nombreEmpresa = 'APOYO LABORAL TS S.A.S.';

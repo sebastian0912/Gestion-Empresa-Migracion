@@ -5,8 +5,6 @@
   <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
   <div class="dashboard-content">
     <app-navbar-superior></app-navbar-superior>
-
-
     <!---- !-- Tarjeta para búsqueda de cédula
     <mat-accordion *ngIf="procesoValido">
     -->
@@ -32,13 +30,12 @@
                 <div mat-card-avatar class="vacante-icon">
                   <mat-icon>work_outline</mat-icon>
                 </div>
-                <mat-card-title>{{ vacante.Cargovacante_id }}</mat-card-title>
-                <mat-card-subtitle>{{ vacante.Localizaciondelavacante }}</mat-card-subtitle>
+                <mat-card-title>{{ vacante.cargo }}</mat-card-title>
+                <mat-card-subtitle>{{ vacante.finca }}</mat-card-subtitle>
               </mat-card-header>
 
               <mat-card-content>
-                <p><strong>Temporal:</strong> {{ vacante.empresaQueSolicita_id }}</p>
-                <p><strong>Oficina:</strong> {{ vacante.localizacionDeLaPersona }}</p>
+                <p><strong>Temporal:</strong> {{ vacante.empresaUsuariaSolicita }}</p>
                 <p><strong>Experiencia Requerida:</strong> {{ vacante.experiencia }}</p>
               </mat-card-content>
 
@@ -601,7 +598,7 @@
                   <mat-label>Área para la que Aplica</mat-label>
                   <input matInput formControlName="area_aplica" placeholder="Área para la que Aplica">
                 </mat-form-field>
- 
+
 
                 <button mat-flat-button (click)="imprimirVerificacionesAplicacion()"
                   class="example-full-width">Cargar</button>
@@ -701,8 +698,10 @@
 
 
                 <!-- Campos dinámicos para cada examen seleccionado -->
+                <!-- Campos dinámicos para cada examen seleccionado -->
                 <div formArrayName="selectedExamsArray">
                   <div *ngFor="let exam of formGroup3.get('selectedExams')?.value; let i = index" [formGroupName]="i">
+
                     <mat-form-field appearance="fill" class="example-full-width">
                       <mat-label>{{ exam }}</mat-label> <!-- Usa el nombre del examen seleccionado directamente -->
                       <mat-select formControlName="aptoStatus">
@@ -710,15 +709,19 @@
                         <mat-option value="NO APTO">NO APTO</mat-option>
                       </mat-select>
                     </mat-form-field>
+
+                    <!-- Campo para subir PDF -->
+                    <input type="file" accept="application/pdf" (change)="onFileSelected($event, i)" />
+
+                    <p *ngIf="examFiles[i]">Archivo seleccionado: {{ examFiles[i].name }}</p>
+
                   </div>
                 </div>
 
+                <!-- Botón para fusionar e imprimir los PDFs -->
+                <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Imprimir Salud
+                  Ocupacional</button>
 
-
-
-
-
-                <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Cargar</button>
               </div>
             </mat-expansion-panel>
 
