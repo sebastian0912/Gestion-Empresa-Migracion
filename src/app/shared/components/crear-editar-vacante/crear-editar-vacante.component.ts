@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,6 +16,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { VacantesService } from '../../services/vacantes/vacantes.service';
 import { AnyMxRecord } from 'dns';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { AdminService } from '../../services/admin/admin.service';
 
 // Custom date format definition
 export const MY_DATE_FORMATS = {
@@ -59,286 +60,182 @@ export const MY_DATE_FORMATS = {
 
 
 export class CrearEditarVacanteComponent implements OnInit {
-
-  empresas: any = [];
-
-  vacanteForm: FormGroup;
-  oficinas = ['FACATATIVA', 'ROSAL', 'CARTAGENITA', 'MADRID', 'FUNZA', 'SOACHA', 'FONTIBÓN', 'SUBA', 'TOCANCIPÁ', 'BOSA', 'BOGOTÁ', 'OTRA'];
-  empresasFiltradas!: Observable<string[]>;
-  listacargos: any = [];
-  cargosFiltrados!: Observable<any[]>;
-  fincas: string[] = [];
-  fincasFiltradas!: Observable<string[]>;
-  id = null;
+  vacanteForm!: FormGroup;
+  sedes: any[] = [];
+  user: any;
+  cargos: string[] = [];
+  filteredCargos!: Observable<string[]>;
+  centrosCostos: string[] = [];
+  filteredCentrosCostos!: Observable<string[]>;
 
   constructor(
-    private vacantesService: VacantesService,
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CrearEditarVacanteComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dateAdapter: DateAdapter<any>
-  ) {
-    this.dateAdapter.setLocale('en-GB');
+    private adminService: AdminService,
+    private vacantesService: VacantesService
+  ) { }
 
+  async ngOnInit(): Promise<void> {
+    this.user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // ✅ Inicializar el formulario
     this.vacanteForm = this.fb.group({
-      empresa: ['', Validators.required],
-      finca: ['', Validators.required],
-      temporal: ['', Validators.required],
-      oficina: this.fb.control([], Validators.required),
-      cargos: this.fb.array([this.crearCargo()])
-    });
-
-  }
-
-ngOnInit(): void {
-    this.dateAdapter.setLocale('en-GB'); // Format date as dd/MM/yyyy
-    
-    // Cargar sublabores
-    this.vacantesService.obtenerSublabores().subscribe((response: any) => {
-      this.listacargos = response.sublabores;
-      this.cargosFiltrados = of(this.listacargos);  // Inicializa los cargos filtrados con todos los datos al principio
-    });
-
-    // Detectar cambios en el campo de "empresa" para actualizar las fincas
-    this.vacantesService.obtenerCentrosCostos().subscribe((response: any) => {
-      // Almacenar la estructura completa de empresas y fincas
-      this.empresas = response;
-
-      // Extraer los nombres de las empresas
-      const empresasNombres = Object.keys(response);
-
-      // Inicializar el observable para el filtrado de empresas
-      this.empresasFiltradas = this.vacanteForm.get('empresa')!.valueChanges.pipe(
-        startWith(''),
-        map(value => value ? this._filterEmpresas(value, empresasNombres) : empresasNombres.slice())
-      );
-
-      // Si se está editando y ya hay una empresa seleccionada, actualizar las fincas de esa empresa
-      if (this.data) {
-        this.id = this.data.id;
-
-        // Patching company-related fields
-        this.vacanteForm.patchValue({
-          empresa: this.data.Localizaciondelavacante,
-          finca: this.data.finca,
-          temporal: this.data.empresaQueSolicita_id,
-          oficina: this.data.localizacionDeLaPersona.split(', '),
-        });
-
-        // Actualizar las fincas según la empresa seleccionada al cargar los datos
-        const empresaSeleccionada = this.data.Localizaciondelavacante;
-        if (empresaSeleccionada && this.empresas[empresaSeleccionada]) {
-          this.fincas = this.empresas[empresaSeleccionada];
-          this.fincasFiltradas = of(this.fincas); // Inicializar las fincas filtradas
-        }
-
-        const cargosArray = this.vacanteForm.get('cargos') as FormArray;
-        cargosArray.clear(); // Clear previous cargos
-
-        const cargoGroup = this.crearCargo();
-        cargoGroup.patchValue({
-          cargo: this.data.Cargovacante_id,
-          pruebaTecnica: this.capitalizeFirstLetter(this.data.fechadePruebatecnica ? 'Si' : 'No'),
-          fechaPrueba: this.convertirStringADate(this.data.fechadePruebatecnica),
-          horaPrueba: this.data.horadePruebatecnica,
-          lugarPrueba: this.data.lugarPrueba,
-          requiereExperiencia: this.data.experiencia,
-          numeroPersonas: this.data.numeroDeGenteRequerida,
-          observaciones: this.data.observacionVacante,
-          fechaIngreso: this.data.fechadeIngreso ? 'Si' : 'No',
-          fechaIngresoSeleccionada: this.data.fechadeIngreso ? this.convertirStringADate(this.data.fechadeIngreso) : null,
-          descripcion: this.data.descripcion
-        });
-
-        cargosArray.push(cargoGroup); // Add cargo to the form array
-      }
-    });
-
-    // Escuchar cambios en el campo de "empresa" para actualizar las fincas
-    this.vacanteForm.get('empresa')!.valueChanges.subscribe((empresaSeleccionada: string) => {
-      if (empresaSeleccionada && this.empresas[empresaSeleccionada]) {
-        // Actualizar la lista de fincas basada en la empresa seleccionada
-        this.fincas = this.empresas[empresaSeleccionada];
-
-        // Inicializar el observable para el filtrado de fincas
-        this.fincasFiltradas = this.vacanteForm.get('finca')!.valueChanges.pipe(
-          startWith(''),
-          map(value => value ? this._filterFincas(value) : this.fincas.slice())
-        );
-      } else {
-        this.fincas = [];
-        this.fincasFiltradas = of(this.fincas);  // Limpiar las fincas filtradas si no hay empresa seleccionada
-      }
-    });
-  }
-
-
-
-
-  // Convert date from string "dd/MM/yyyy"
-  convertirStringADate(fechaString: string): Date | null {
-    if (!fechaString) {
-      return null;
-    }
-    const [day, month, year] = fechaString.split('/').map(Number);
-    return new Date(year, month - 1, day);
-  }
-
-  // Helper function to capitalize the first letter
-  capitalizeFirstLetter(value: string): string {
-    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-  }
-
-  // Convert 24-hour time to 12-hour format with AM/PM
-  formatHoraTo12(hora24: string): string {
-    if (!hora24) return '';
-    let [hour, minute] = hora24.split(':').map(Number);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 || 12; // Convert 24-hour format to 12-hour format
-    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${ampm}`;
-  }
-
-  // Convert 12-hour time back to 24-hour format before sending to the server
-  convertirHoraAFormato24(hora12: string): string {
-    const [time, modifier] = hora12.split(' ');
-    let [hour, minute] = time.split(':').map(Number);
-
-    if (modifier === 'PM' && hour < 12) {
-      hour += 12;
-    }
-    if (modifier === 'AM' && hour === 12) {
-      hour = 0;
-    }
-    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-  }
-
-
-
-
-
-
-
-
-
-  get cargos() {
-    return this.vacanteForm.get('cargos') as FormArray;
-  }
-
-  crearCargo(): FormGroup {
-    return this.fb.group({
       cargo: ['', Validators.required],
-      pruebaTecnica: ['no'],
-      fechaPrueba: [''],
-      lugarPrueba: [''],
-      fechaIngreso: ['no'],
-      horaPrueba: [''],
-      fechaIngresoSeleccionada: [''],
-      requiereExperiencia: ['no'],
-      numeroPersonas: ['', Validators.required],
+      finca: ['', Validators.required],
+      empresaUsuariaSolicita: ['', Validators.required],
+      temporal: ['', Validators.required],
+      ubicacionPruebaTecnica: [''],
+      experiencia: ['', Validators.required],
+      presentaPruebaTecnica: ['', Validators.required],
+      fechadePruebatecnica: [''],
+      horadePruebatecnica: [''],
+      observacionVacante: [''],
+      tieneFechaIngreso: [''],
+      fechadeIngreso: [''],
       descripcion: ['', Validators.required],
-      observaciones: ['']
+      fechaPublicado: [new Date()],
+      quienpublicolavacante: [`${this.user.primer_nombre} ${this.user.primer_apellido}`],
+      estadovacante: ['Activa'],
+      salario: ['1423500', [Validators.required, Validators.min(0)]],
+      codigoElite: [''],
+      oficinasSeleccionadas: [[]],
+      oficinasQueContratan: this.fb.array([])
+    });
+
+    // ✅ Cargar lista de cargos
+    this.vacantesService.listarCargos().subscribe((cargos: any) => {
+      this.cargos = cargos.sublabores || [];
+      this.filteredCargos = this.vacanteForm.get('cargo')!.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value || '', this.cargos))
+      );
+    });
+
+    // ✅ Cargar lista de centros de costo
+    this.vacantesService.listarCentrosCostos().subscribe((response: any) => {
+      this.centrosCostos = response.data || [];
+      this.filteredCentrosCostos = this.vacanteForm.get('finca')!.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value || '', this.centrosCostos))
+      );
+    });
+
+    // ✅ Cargar sucursales
+    const sucursalesObservable = await this.adminService.traerSucursales();
+    sucursalesObservable.subscribe((sucursales: any) => {
+      this.sedes = sucursales.sucursal || [];
+    });
+
+    // ✅ Escuchar cambios en oficinas seleccionadas
+    this.vacanteForm.get('oficinasSeleccionadas')!.valueChanges.subscribe((seleccionadas: string[]) => {
+      this.actualizarOficinasQueContratan(seleccionadas);
     });
   }
 
-  agregarOtroCargo() {
-    const cargoGroup = this.crearCargo();
-    this.cargos.push(cargoGroup);
+  setupFiltering() {
+    this.filteredCentrosCostos = this.vacanteForm.get('finca')!.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '', this.centrosCostos))
+    );
+  }
 
-    const cargoControl = cargoGroup.get('cargo');
-    if (cargoControl) {
-      cargoControl.valueChanges.pipe(
-        startWith(''),
-        map(value => value && value.length >= 1 ? this._filterCargos(value) : [])
-      ).subscribe(filteredCargos => {
-        this.cargosFiltrados = of(filteredCargos);
-      });
+  private filterCentros(value: string): string[] {
+    const filtro = value.toLowerCase();
+    return this.centrosCostos
+      ? this.centrosCostos.filter(centro => centro.toLowerCase().includes(filtro))
+      : [];
+  }
+
+
+  // ✅ Método genérico para filtrar listas
+  private _filter(value: string, list: string[]): string[] {
+    const filterValue = value.toLowerCase();
+    return list.filter(item => item.toLowerCase().includes(filterValue));
+  }
+
+  get oficinasQueContratan(): FormArray {
+    return this.vacanteForm.get('oficinasQueContratan') as FormArray;
+  }
+
+  onCentroCostoSelected(event: any) {
+    const selectedCentro = event.option.value; // Obtener el valor seleccionado
+    console.log('Centro de Costo seleccionado:', selectedCentro);
+
+    this.vacantesService.filtrarFinca(selectedCentro).subscribe(response => {
+      console.log('Datos filtrados:', response[0]);
+      this.vacanteForm.get('empresaUsuariaSolicita')?.setValue(response[0].empresa_usuaria);
+      const empresaTemporal = response[0].empresa_temporal; // Debe ser empresa_temporal
+
+      // Lista de opciones válidas
+      const opcionesValidas = ["APOYO LABORAL SAS", "TU ALIANZA SAS"];
+
+      // Verificar si el valor recibido está en la lista de opciones permitidas
+      if (opcionesValidas.includes(empresaTemporal)) {
+        this.vacanteForm.get('temporal')?.setValue(empresaTemporal);
+      } else {
+        this.vacanteForm.get('temporal')?.setValue(null); // O deja vacío si el valor no es válido
+      }
+    });
+  }
+
+  actualizarOficinasQueContratan(seleccionadas: any[]) {
+    const formArray = this.oficinasQueContratan;
+    formArray.clear(); // Limpiar antes de agregar nuevas selecciones
+
+    seleccionadas.forEach((sede) => {
+      formArray.push(this.fb.group({
+        nombre: [sede, Validators.required],
+        numeroDeGenteRequerida: [0, Validators.required],
+        ruta: [false]
+      }));
+    });
+  }
+
+  formatSalary(event: any) {
+    let value = event.target.value.replace(/\D/g, ''); // Elimina caracteres no numéricos
+    if (value) {
+      event.target.value = new Intl.NumberFormat('es-CO').format(Number(value)); // Formato con separadores
+      this.vacanteForm.get('salario')?.setValue(event.target.value, { emitEvent: false });
     }
   }
 
-  eliminarCargo(index: number) {
-    this.cargos.removeAt(index);
-  }
-
-  mostrarPruebaTecnica(index: number): boolean {
-    return this.cargos.at(index).get('pruebaTecnica')?.value === 'Si';
-  }
-
-  mostrarFechaIngreso(index: number): boolean {
-    return this.cargos.at(index).get('fechaIngreso')?.value === 'Si';
-  }
-
-  onPruebaTecnicaChange(event: any, index: number): void {
-    const pruebaTecnica = event.value;
-    const control = this.cargos.at(index);
-    if (pruebaTecnica === 'si') {
-      control.get('fechaPrueba')?.setValidators([Validators.required]);
-      control.get('horaPrueba')?.setValidators([Validators.required]);  // Add validation for time
-      control.get('lugarPrueba')?.setValidators([Validators.required]);
-    } else {
-      control.get('fechaPrueba')?.clearValidators();
-      control.get('horaPrueba')?.clearValidators();  // Clear validation for time
-      control.get('lugarPrueba')?.clearValidators();
+  onBlur() {
+    let value = this.vacanteForm.get('salario')?.value;
+    if (value) {
+      this.vacanteForm.get('salario')?.setValue(this.formatNumber(value), { emitEvent: false });
     }
-    control.get('fechaPrueba')?.updateValueAndValidity();
-    control.get('horaPrueba')?.updateValueAndValidity();  // Update validity for time
-    control.get('lugarPrueba')?.updateValueAndValidity();
+  }
+
+  formatNumber(value: string | number): string {
+    return new Intl.NumberFormat('es-CO').format(Number(value));
   }
 
 
-  onFechaIngresoChange(event: any, index: number): void {
-    const fechaIngreso = event.value;
-    if (fechaIngreso === 'si') {
-      this.cargos.at(index).get('fechaIngresoSeleccionada')?.setValidators([Validators.required]);
-    } else {
-      this.cargos.at(index).get('fechaIngresoSeleccionada')?.clearValidators();
-    }
-    this.cargos.at(index).get('fechaIngresoSeleccionada')?.updateValueAndValidity();
+
+  eliminarOficina(index: number) {
+    this.oficinasQueContratan.removeAt(index);
   }
 
-  guardar(): void {
+  guardar() {
     if (this.vacanteForm.valid) {
-      const formValue = this.vacanteForm.value;
-
-      // Formatear fecha de ingreso
-      formValue.cargos.forEach((cargo: any) => {
-        if (cargo.fechaIngresoSeleccionada) {
-          cargo.fechaIngresoSeleccionada = this.formatDate(cargo.fechaIngresoSeleccionada);
+      console.log('Formulario válido:', this.vacanteForm.value);
+      this.dialogRef.close(this.vacanteForm.value);
+    }
+    else {
+      console.log('Formulario inválido:', this.vacanteForm);
+      // que campos faltan por llenar
+      let camposFaltantes = [];
+      for (const control in this.vacanteForm.controls) {
+        if (this.vacanteForm.get(control)?.invalid) {
+          camposFaltantes.push(control);
         }
-        if (cargo.fechaPrueba) {
-          cargo.fechaPrueba = this.formatDate(cargo.fechaPrueba);
-        }
-      });
-
-      this.dialogRef.close(formValue);
+      }
+      console.log('Campos faltantes:', camposFaltantes);
     }
   }
 
-
-  // Método para formatear la fecha en dd/MM/yyyy
-  formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Los meses empiezan desde 0
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
+  cancelar() {
+    this.dialogRef.close();
   }
-
-
-  
-  private _filterCargos(value: string): any[] {
-    const filterValue = value.toLowerCase();
-    return this.listacargos.filter((cargo: any) => cargo.toLowerCase().includes(filterValue));
-  }
-
-  private _filterEmpresas(value: string, empresas: string[]): string[] {
-    const filterValue = value.toLowerCase();
-    return empresas.filter(empresa => empresa.toLowerCase().includes(filterValue));
-  }
-
-  private _filterFincas(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.fincas.filter(finca => finca.toLowerCase().includes(filterValue));
-  }
-
 }
-

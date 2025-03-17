@@ -2,7 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
-import { firstValueFrom, Observable, throwError } from 'rxjs';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -43,17 +43,42 @@ export class VacantesService {
   // Listar los cargos
   public listarCargos(): Observable<any> {
     const headers = this.createAuthorizationHeader();
-    return this.http.get(`${this.apiUrl}/publicacion/cargos`, { headers }).pipe(
+    return this.http.get(`${this.apiUrl}/infoCentrosCosto/sublabores/`, { headers }).pipe(
       map((response: any) => response),
       catchError(this.handleError)
     );
   }
 
+  // Listar centro de costos
+  public listarCentrosCostos(): Observable<any> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get(`${this.apiUrl}/infoCentrosCosto/listar-centros-costo/`, { headers }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
+  // centro-costos/
+  public filtrarFinca(costo: string): Observable<any> {
+    if (!costo) return of([]); // Si el costo está vacío, devolver un array vacío
+    const headers = this.createAuthorizationHeader();
+    const params = new HttpParams().set('centro_costo_carnet', costo.trim()); // Crear parámetros limpios
+
+    return this.http.get(`${this.apiUrl}/infoCentrosCosto/centro-costos/`, { headers, params }).pipe(
+      map((response: any) => response.data || []), // Extraer data de la respuesta
+      catchError(error => {
+        console.error('Error al filtrar finca:', error);
+        return of([]); // En caso de error, devolver un array vacío
+      })
+    );
+  }
+
+
   // Enviar los datos de la vacante
   enviarVacante(vacanteData: any): Observable<any> {
     // agergar el token a vacanteData
-    vacanteData.jwt = this.getToken();
-    return this.http.post(`${this.apiUrl}/publicacion/crearVacante`, vacanteData).pipe(
+    const headers = this.createAuthorizationHeader();
+    return this.http.post(`${this.apiUrl}/publicacion/publicaciones/`, vacanteData, { headers }).pipe(
       map((response: any) => response),
       catchError((error: any) => {
         return throwError(error);
@@ -79,7 +104,7 @@ export class VacantesService {
     );
   }
 
-  // Actualizar vacante por id 
+  // Actualizar vacante por id
   actualizarVacante(id: string, vacanteData: any): Observable<any> {
     vacanteData.jwt = this.getToken();
     return this.http.post(`${this.apiUrl}/publicacion/editarVacante/${id}`, vacanteData).pipe(

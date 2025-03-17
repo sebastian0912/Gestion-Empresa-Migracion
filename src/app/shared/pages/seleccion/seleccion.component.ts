@@ -334,7 +334,9 @@ export class SeleccionComponent implements OnInit {
       sisben: [''],
       ofac: [''],
       medidasCorrectivas: [''],
-      area_aplica: ['']
+      area_aplica: [''],
+      revisionAntecedentes: [''],
+
     });
 
     this.formGroup2 = this.fb.group({
@@ -385,8 +387,6 @@ export class SeleccionComponent implements OnInit {
 
     this.entrevistaForm = this.fb.group({
       presentoEntrevista: [''],
-      eps: [''],
-      revisionAntecedentes: [''],
       laboresRealizadas: [''],
       empresasLaborado: [''],
       tiempoExperiencia: [''],

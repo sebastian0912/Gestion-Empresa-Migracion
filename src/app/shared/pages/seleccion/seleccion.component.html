@@ -8,10 +8,10 @@
 
 
     <!---- !-- Tarjeta para búsqueda de cédula
-    <mat-accordion>
-    -->
-
     <mat-accordion *ngIf="procesoValido">
+    -->
+    <mat-accordion>
+
       <mat-expansion-panel class="opcionesVer">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -63,9 +63,9 @@
     </mat-accordion>
 
     <!-- Acordeón principal que contiene todos los sub-acordeones
-    <mat-accordion>
-    -->
     <mat-accordion *ngIf="procesoValido">
+    -->
+    <mat-accordion>
 
       <!-- Acordeón principal: Información Adicional -->
       <mat-expansion-panel class="opcionesVer">
@@ -179,21 +179,6 @@
                     <mat-option value="si">Sí</mat-option>
                     <mat-option value="no">No</mat-option>
                   </mat-select>
-                </mat-form-field>
-
-                <mat-form-field appearance="fill" class="example-full-width3">
-                  <mat-label>EPS</mat-label>
-                  <mat-select formControlName="eps" placeholder="EPS">
-                    <mat-option *ngFor="let eps of epsList" [value]="eps">{{ eps }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-
-
-                <mat-form-field class="example-full-width3">
-                  <mat-label>Revisión de antecedentes</mat-label>
-                  <input matInput formControlName="revisionAntecedentes"
-                    placeholder="Escribe si pasó la revisión de antecedentes" />
                 </mat-form-field>
 
                 <!-- Labores realizadas -->
@@ -360,9 +345,9 @@
 
 
       <!--
-        <mat-card>
+        <mat-card *ngIf="procesoValido">
         -->
-      <mat-card *ngIf="procesoValido">
+      <mat-card>
 
         <h1 class="titulo" style="margin-right: 10px; width: 100%;">
           Diligencie los campos correspondientes:
@@ -606,16 +591,17 @@
                 </div>
 
 
+                <mat-form-field class="example-full-width">
+                  <mat-label>Revisión de antecedentes</mat-label>
+                  <input matInput formControlName="revisionAntecedentes"
+                    placeholder="Escribe si pasó la revisión de antecedentes" />
+                </mat-form-field>
 
-                <!-- Área para la que Aplica -->
-                <div class="input-container">
-
-                  <mat-form-field appearance="fill" class="example-full-width">
-                    <mat-label>Área para la que Aplica</mat-label>
-                    <input matInput formControlName="area_aplica" placeholder="Área para la que Aplica">
-                  </mat-form-field>
-
-                </div>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Área para la que Aplica</mat-label>
+                  <input matInput formControlName="area_aplica" placeholder="Área para la que Aplica">
+                </mat-form-field>
+ 
 
                 <button mat-flat-button (click)="imprimirVerificacionesAplicacion()"
                   class="example-full-width">Cargar</button>
@@ -626,7 +612,7 @@
             <mat-expansion-panel>
               <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup2))}">
                 <mat-panel-title>
-                  Entrevista o Prueba Técnica ({{ getPercentage(formGroup2) }}% completo)
+                  Formato Prueba Técnica ({{ getPercentage(formGroup2) }}% completo)
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div class="seccion" [formGroup]="formGroup2">

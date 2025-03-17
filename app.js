@@ -100,7 +100,15 @@ app.on('activate', function () {
 
 ipcMain.handle('fingerprint:get', async (event) => {
   return new Promise((resolve, reject) => {
-    const csharpAppPath = path.join(__dirname, 'csharp', 'UareUSampleCSharp_CaptureOnly.exe'); // Ruta a tu ejecutable de C#
+    let csharpAppPath;
+
+    if (process.env.NODE_ENV === 'development') {
+      // En desarrollo, el archivo está en el mismo directorio del código
+      csharpAppPath = path.join(__dirname, 'csharp', 'UareUSampleCSharp_CaptureOnly.exe');
+    } else {
+      // En producción, el ejecutable debe estar en la carpeta "resources"
+      csharpAppPath = path.join(process.resourcesPath, 'csharp', 'UareUSampleCSharp_CaptureOnly.exe');
+    }
 
     execFile(csharpAppPath, (error, stdout, stderr) => {
       if (error) {
@@ -109,7 +117,6 @@ ipcMain.handle('fingerprint:get', async (event) => {
         return;
       }
 
-      // Busca la línea que contiene 'DATA:'
       const match = stdout.match(/DATA:\s*(.+)/);
       if (match) {
         const base64Image = match[1].trim();

@@ -1,6 +1,6 @@
 {
   "name": "gestion-empresa-migracion",
-  "version": "1.1.24",
+  "version": "1.1.29",
   "description": "Programa para gestionar los procesos de la empresa",
   "author": "SebastianGuarnizoCampos",
   "license": "Uso Interno en TuAlianza, Apoyo Laboral, Comercializadora, prohibida su distribucion",
@@ -18,7 +18,23 @@
     "files": [
       "dist/gestion-empresa-migracion/**/*",
       "app.js",
-      "preload.js"
+      "preload.js",
+      {
+        "from": "csharp",
+        "to": "csharp",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "csharp",
+        "to": "csharp",
+        "filter": [
+          "UareUSampleCSharp_CaptureOnly.exe"
+        ]
+      }
     ],
     "win": {
       "target": "nsis",

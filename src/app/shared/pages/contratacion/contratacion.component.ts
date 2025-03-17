@@ -1993,6 +1993,7 @@ export class ContratacionComponent implements OnInit {
           }
         })
         .catch((error: any) => {
+          console.error(error);
           this.message = `Error al capturar huella: ${error.error || 'Error de comunicación con el módulo Electron.'}`;
           console.error(this.message);
         });
