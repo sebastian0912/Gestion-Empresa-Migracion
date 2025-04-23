@@ -16,6 +16,7 @@ import Swal from 'sweetalert2';
 import { AdminService } from '../../services/admin/admin.service';
 import saveAs from 'file-saver';
 import { MatMenuModule } from '@angular/material/menu';
+import JSZip from 'jszip';
 
 
 @Component({
@@ -100,6 +101,7 @@ export class VerReporteComponent implements OnInit {
       // Llamar al servicio para obtener los reportes
       this.contratacionService.obtenerTodosLosReportes(this.userNombre).subscribe(
         async (response) => {
+          console.log(response.reportes);
           // Ocultar el Swal de cargando
           Swal.close();
 
@@ -485,4 +487,53 @@ export class VerReporteComponent implements OnInit {
 
 
 
+
+
+
+
+  descargarCedulasZip() {
+    const zip = new JSZip();
+    const sedesMap = new Map<string, any[]>();
+
+    // Agrupar cédulas por sede
+    this.dataSource.data.forEach((reporte: any) => {
+      const sede = reporte.sede || 'Sin_Sede';
+
+      if (Array.isArray(reporte.cedulas)) {
+        if (!sedesMap.has(sede)) {
+          sedesMap.set(sede, []);
+        }
+        sedesMap.get(sede)?.push(...reporte.cedulas);
+      }
+    });
+
+    // Crear carpetas y archivos
+    sedesMap.forEach((cedulas, sede) => {
+      const carpetaSede = zip.folder(sede);
+      cedulas.forEach((cedula: any, index: number) => {
+        const nombreArchivo = cedula.file_name || `cedula_${index + 1}.pdf`;
+        const base64 = cedula.file_base64;
+
+        if (base64) {
+          const blob = this.base64ToBlob(base64);
+          carpetaSede?.file(nombreArchivo, blob);
+        }
+      });
+    });
+
+    zip.generateAsync({ type: 'blob' }).then((contenidoZip) => {
+      saveAs(contenidoZip, 'cedulas_por_sede.zip');
+    });
+  }
+
+  base64ToBlob(base64: string): Blob {
+    const arr = base64.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'application/octet-stream';
+    const bstr = atob(arr[1]);
+    const u8arr = new Uint8Array(bstr.length);
+    for (let i = 0; i < bstr.length; i++) {
+      u8arr[i] = bstr.charCodeAt(i);
+    }
+    return new Blob([u8arr], { type: mime });
+  }
 }

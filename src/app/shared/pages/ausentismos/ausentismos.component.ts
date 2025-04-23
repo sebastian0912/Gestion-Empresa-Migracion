@@ -40,6 +40,8 @@ export class AusentismosComponent implements OnInit {
   displayedColumns: string[] = [
     'numerodeceduladepersona',
     'nombre_completo',
+    'codigo_ultimo_contrato',
+    'fecha_ultimo_ingreso',
     'primercorreoelectronico',
     'celular',
     'telefono_conyugue',
@@ -268,8 +270,8 @@ export class AusentismosComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: `Los datos se han procesado correctamente. 
-                   Actualizados: ${response.actualizados} 
+            text: `Los datos se han procesado correctamente.
+                   Actualizados: ${response.actualizados}
                    Creados: ${response.creados}
                    Total procesados: ${total}.`
           });
@@ -356,19 +358,19 @@ export class AusentismosComponent implements OnInit {
   }
 
 
-  // 
+  //
 
   eliminarCaracteresEspeciales(event: any): void {
     // Muestra tu loader o cualquier overlay que uses
     this.toggleLoader(true);
     this.toggleOverlay(true);
-  
+
     console.log(event.target.files[0]);
     console.log('Entro');
-  
+
     const file = event.target.files[0];
     const reader = new FileReader();
-  
+
     // Función que:
     //  1) Separa diacríticos (normalize('NFD'))
     //  2) Elimina esas marcas de acentuación (regex /[\u0300-\u036f]/g)
@@ -380,12 +382,12 @@ export class AusentismosComponent implements OnInit {
       output = output.replace(/[\u0300-\u036f]/g, '');
       // 3. (Opcional) Eliminar caracteres extraños que no sean letras, dígitos, puntuación ni espacios:
       //    output = output.replace(/[^\p{L}\p{N}\p{P}\p{Z}]/gu, '');
-      //    ^ Descomentar si quieres también quitar símbolos raros/emoji. 
-  
+      //    ^ Descomentar si quieres también quitar símbolos raros/emoji.
+
       // De esta forma, 'Ñ' -> 'N', 'ñ' -> 'n', 'Á' -> 'A', 'á' -> 'a', etc.
       return output;
     };
-  
+
     reader.onload = (e: any) => {
       // 1) Leemos el archivo Excel como binario
       const data = new Uint8Array(e.target.result);
@@ -395,26 +397,26 @@ export class AusentismosComponent implements OnInit {
         cellNF: false,
         cellText: false
       });
-  
+
       // Tomamos la primera hoja (puedes cambiar si lo deseas)
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-  
+
       // 2) Convertimos la hoja a un array de arrays (AOA) e indicamos a TS que es any[][]
       const jsonAOA = XLSX.utils.sheet_to_json(sheet, {
         header: 1,
         raw: false,
         dateNF: 'dd/mm/yyyy'
       }) as any[][];
-  
+
       // (Opcional) Si quieres quitar la primera fila porque es encabezado:
       // jsonAOA.shift();
-  
+
       // 3) (Opcional) Función para formatear fechas, si lo deseas:
       const formatDate = (date: string): string => {
         const regex_ddmmyyyy = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
         const regex_mmddyy = /^\d{1,2}\/\d{1,2}\/\d{2}$/;
-  
+
         if (regex_ddmmyyyy.test(date)) {
           return date;
         } else if (regex_mmddyy.test(date)) {
@@ -424,40 +426,40 @@ export class AusentismosComponent implements OnInit {
         }
         return date;
       };
-  
+
       // 4) Eliminamos acentos y transformamos Ñ/ñ -> N/n en cada celda
       const cleanedAOA = jsonAOA.map((row: any[]) => {
         return row.map((cell: any) => {
           if (typeof cell === 'string') {
             // Primero quitamos acentos, ñ, etc.
             let sinEspeciales = limpiarTexto(cell);
-  
+
             // Si la celda es una fecha y quieres formatearla, podrías hacer:
             // sinEspeciales = formatDate(sinEspeciales);
-  
+
             return sinEspeciales;
           }
           // Si no es string, lo dejas tal cual
           return cell;
         });
       });
-  
+
       // 5) (Opcional) Reinsertar cabeceras si las removiste:
       // cleanedAOA.unshift(['Col1', 'Col2', 'Col3', ...]);
-  
+
       // 6) Creamos un nuevo sheet con la data limpia
       const newSheet = XLSX.utils.aoa_to_sheet(cleanedAOA);
-  
+
       // 7) Creamos un nuevo workbook y le agregamos la hoja limpia
       const newWorkbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName);
-  
+
       // 8) Generamos el binario en formato XLSX
       const excelBuffer = XLSX.write(newWorkbook, {
         bookType: 'xlsx',
         type: 'array'
       });
-  
+
       // 9) Creamos un Blob y forzamos la descarga
       const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
       const url = window.URL.createObjectURL(blob);
@@ -468,23 +470,23 @@ export class AusentismosComponent implements OnInit {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-  
+
       console.log('Archivo procesado y descargado');
       console.log('jsonAOA Original:', jsonAOA);
       console.log('cleanedAOA:', cleanedAOA);
-  
+
       // Quita el loader/overlay
       this.toggleLoader(false);
       this.toggleOverlay(false);
     };
-  
+
     // Leemos el archivo como array buffer
     reader.readAsArrayBuffer(file);
-  
+
     // Limpia el input type=file, si así lo deseas
     this.resetFileInput();
   }
-  
-  
+
+
 
 }

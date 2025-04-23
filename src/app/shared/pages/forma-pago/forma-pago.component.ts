@@ -244,11 +244,11 @@ export class FormaPagoComponent implements OnInit {
 
       const modifiedRows = this.asignarClaves(rows);
 
-      if (modifiedRows.length > 0 && (Object.keys(modifiedRows[0]).length > 10 || Object.keys(modifiedRows[0]).length < 10)) {
+      if ((Object.keys(modifiedRows[0]).length > 10 || Object.keys(modifiedRows[0]).length < 10)) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'El archivo no tiene el formato corresdfsffsddcto, por favor verifique que tenga 10 columnas y que las primeras 10 sean las correctas'
+          text: 'El archivo no tiene el formato correspondiente, por favor verifique que tenga 10 columnas y que las primeras 10 sean las correctas'
         });
         this.toggleLoader(false);
         this.toggleOverlay(false);

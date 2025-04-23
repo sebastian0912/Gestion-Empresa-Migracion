@@ -27,7 +27,13 @@
             <button mat-flat-button (click)="buscarFormasPago(cedula)" class="boton">Buscar</button>
           </div>
           <app-info-card title="Cargar formas de pago" imageUrl="comun/excel.png" (click)="triggerFileInput()"
-            *ngIf="correo == 'contaduria.rtc@gmail.com' || correo == 'ghumana.rtc@gmail.com' || correo == 'programador.ts@gmail.com' || correo == 'antcontable5.ts@gmail.com'"
+            *ngIf="
+            correo == 'contaduria.rtc@gmail.com' ||
+            correo == 'ghumana.rtc@gmail.com' ||
+            correo == 'programador.ts@gmail.com' ||
+            correo == 'antcontable5.ts@gmail.com' ||
+            correo == 'asistconta.rtc@gmail.com'
+            "
             style="cursor: pointer;">
           </app-info-card>
         </div>
@@ -80,9 +86,9 @@
                     {{ element.valor | number:'1.0-0' }}
                   </ng-container>
                   <ng-template #editMode>
-                    <input 
-                      matInput 
-                      [(ngModel)]="element.valor" 
+                    <input
+                      matInput
+                      [(ngModel)]="element.valor"
                       class="editado"
                       type="text"
                     >

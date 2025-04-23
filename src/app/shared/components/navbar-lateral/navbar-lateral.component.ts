@@ -211,6 +211,7 @@ export class NavbarLateralComponent implements OnInit {
         'contratacionbogota.rtc@gmail.com',
         'contratacionsuba.ts@gmail.com',
         'mercarflorats@gmail.com',
+        'luis@gmail.com',
       ];
 
       const reporteIncapacidadEmails = [

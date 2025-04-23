@@ -778,30 +778,33 @@
                   Subida de Documentos
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <!-- Exámenes Médicos -->
-              <div class="input-container">
-                <button mat-icon-button [matMenuTriggerFor]="pdfMenuExamenes" aria-label="PDF options">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #pdfMenuExamenes="matMenu">
-                  <button mat-menu-item (click)="verArchivo('examenesMedicos')">Ver PDF</button>
-                  <button mat-menu-item>
-                    <label for="fileInputExamenes" style="cursor: pointer;">Subir PDF</label>
+
+
+                <!-- Exámenes Médicos
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuExamenes" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
                   </button>
-                  <input type="file" id="fileInputExamenes" style="display: none;"
+                  <mat-menu #pdfMenuExamenes="matMenu">
+                    <button mat-menu-item (click)="verArchivo('examenesMedicos')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputExamenes" style="cursor: pointer;">Subir PDF</label>
+                    </button>
+                    <input type="file" id="fileInputExamenes" style="display: none;"
                     (change)="subirArchivo($event, 'examenesMedicos')" />
-                </mat-menu>
+                  </mat-menu>
 
-                <!-- Mostrar el nombre del archivo subido en el campo de entrada -->
-                <mat-form-field appearance="fill" class="example-full-width">
-                  <mat-label>Exámenes Médicos</mat-label>
-                  <input matInput [placeholder]="'Cargar Exámenes Médicos'"
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Exámenes Médicos</mat-label>
+                    <input matInput [placeholder]="'Cargar Exámenes Médicos'"
                     [value]="uploadedFiles['examenesMedicos'].fileName || ''" readonly />
-                </mat-form-field>
-              </div>
+                  </mat-form-field>
+                </div>
+              -->
 
-              <!-- Pensión/Semanas Cotizadas -->
-              <div class="input-container">
+
+                <!-- Pensión/Semanas Cotizadas -->
+                <div class="input-container">
                 <button mat-icon-button [matMenuTriggerFor]="pdfMenuPension" aria-label="PDF options">
                   <mat-icon>more_vert</mat-icon>
                 </button>

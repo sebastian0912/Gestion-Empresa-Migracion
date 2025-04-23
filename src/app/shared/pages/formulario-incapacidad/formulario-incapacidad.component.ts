@@ -291,6 +291,7 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
   observaciones: string = '';
   quienpaga: string = '';
+
   observacionesincapacidad: string[] = [
     'TRASLAPADA',
     'PRESCRITA',
@@ -313,12 +314,13 @@ export class FormularioIncapacidadComponent implements OnInit {
     'INCAPACIDAD DE 1 Y 2 DIAS EPS   SI NO ES PROROGA',
     'INCAPACIDAD 1 Y 2 DIAS PRORROGA ',
     'No cumple con el tiempo decreto 780'
-
   ];
+
   private _filterObservaciones(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.observacionesincapacidad.filter(option => option.toLowerCase().includes(filterValue));
   }
+
   private setupFormValidations(): void {
     // Suscripciones a los cambios de valores de los campos del formulario
     this.incapacidadForm.get('fecha_contratacion')?.valueChanges.pipe(
@@ -381,8 +383,6 @@ export class FormularioIncapacidadComponent implements OnInit {
         this.handleServiceError('Recuerda que es una incapacidad Falsa, se va a reportar esto al area correspondiente');
       }
     });
-
-
   }
 
   private setupIPSFilters() {
@@ -1131,6 +1131,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Tocancipa',
     'Bosa',
     'Bogota']
+
   vigentelist: string[] = ['Si', 'No']
   convertToTitleCaseAndRemoveAccents(value: string): string {
     if (value === null || value === undefined) {

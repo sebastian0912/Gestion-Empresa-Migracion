@@ -34,8 +34,8 @@
             <app-info-card title="Cargar Ausentismos" imageUrl="comun/excel.png" (click)="triggerFileInput()"
               style="cursor: pointer;"
               *ngIf="correo == 'tuafiliacion@tsservicios.co' || correo == 'contaduria.rtc@gmail.com' || correo == 'programador.ts@gmail.com'"></app-info-card>
-  
-            <app-info-card title="Eliminar caracteres especiales" imageUrl="comun/excel.png" 
+
+            <app-info-card title="Eliminar caracteres especiales" imageUrl="comun/excel.png"
               style="cursor: pointer;" (click)="triggerFileInput2()"
               *ngIf="correo == 'tuafiliacion@tsservicios.co' || correo == 'contaduria.rtc@gmail.com' || correo == 'programador.ts@gmail.com' || correo == 'a.seguridad.ts@gmail.com'"></app-info-card>
           </div>
@@ -54,6 +54,19 @@
                 <th mat-header-cell *matHeaderCellDef> Número de Cédula </th>
                 <td mat-cell *matCellDef="let element"> {{element.numerodeceduladepersona}} </td>
               </ng-container>
+
+              <!--codigo_ultimo_contrato-->
+              <ng-container matColumnDef="codigo_ultimo_contrato">
+                <th mat-header-cell *matHeaderCellDef> Código Último Contrato </th>
+                <td mat-cell *matCellDef="let element"> {{element.codigo_ultimo_contrato}} </td>
+              </ng-container>
+
+              <!--fecha_ultimo_ingreso-->
+              <ng-container matColumnDef="fecha_ultimo_ingreso">
+                <th mat-header-cell *matHeaderCellDef> Fecha Último Ingreso </th>
+                <td mat-cell *matCellDef="let element"> {{element.fecha_ultimo_ingreso}} </td>
+              </ng-container>
+              
               <ng-container matColumnDef="nombre_completo">
                 <th mat-header-cell *matHeaderCellDef> Nombre Completo </th>
                 <td mat-cell *matCellDef="let element"> {{element.nombre_completo}} </td>

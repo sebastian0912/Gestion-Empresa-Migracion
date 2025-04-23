@@ -1203,132 +1203,117 @@ export class ContratacionComponent implements OnInit {
   async verificarSeleccion() {
     // Si existe un proceso de selección, llenar el formulario con los datos
     if (this.seleccion) {
-      // Mostrar el diálogo de confirmación
       Swal.fire({
         title: '¡Atención!',
-        html: 'Este usuario ya tiene un proceso de selección con el código de contrato <b>' + this.seleccion.codigo_contrato + '</b>. ¿Deseas crear otro o seguir con este?',
+        html: 'Este usuario ya tiene un proceso de selección con el código de contrato <b>' + this.seleccion.codigo_contrato + '</b>.',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Crear otro',
-        cancelButtonText: 'Seguir con este'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.seleccionService.generarCodigoContratacion(this.sede, this.cedula).subscribe((response: any) => {
-            this.codigoContrato = response.codigo_contrato;
-            Swal.fire({
-              title: '¡Código de contrato generado!',
-              text: 'El código de contrato generado es ' + response.codigo_contrato,
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
+        confirmButtonText: 'OK' // Solo un botón "OK"
+      });
+
+      this.codigoContrato = this.seleccion.codigo_contrato;
+      this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((response: any) => {
+        this.nombreEmpresa = response.empresaQueSolicita_id;
+        this.descripcionVacante = response.descripcion;
+        //this.vacante = response.publicacion[0]
+      });
+      this.llenarDocumentos();
+      this.contratacionService.traerDatosContratacion(this.cedula, this.codigoContrato).subscribe((datosContratacion: any) => {
+        if (datosContratacion) {
+          this.pagoTransporteForm.patchValue({
+            semanasCotizadas: datosContratacion.semanas_cotizadas,
+            formaPago: datosContratacion.forma_pago,
+            numeroPagos: datosContratacion.numero_pagos,
+            validacionNumeroCuenta: datosContratacion.validacion_numero_cuenta,
+            seguroFunerario: datosContratacion.seguro_funerario,
+            porcentajeARL: datosContratacion.porcentaje_arl,
+            auxilioTransporte: datosContratacion.auxilio_transporte,
+            salario: datosContratacion.salario_contratacion,
+            Ccostos: datosContratacion.centro_de_costos || '',
+          });
+          this.trasladosForm.patchValue({
+            opcion_traslado_eps: datosContratacion.opcion_traslado_eps,
+            eps_a_trasladar: datosContratacion.eps_a_trasladar,
+            traslado: datosContratacion.traslado,
           });
 
-        } else {
-          this.codigoContrato = this.seleccion.codigo_contrato;
-          this.vacantesService.obtenerVacante(this.seleccion.vacante).subscribe((response: any) => {
-            console.log(response);
-            this.nombreEmpresa = response.publicacion[0].empresaQueSolicita_id;
-            this.descripcionVacante = response.publicacion[0].descripcion;
-            //this.vacante = response.publicacion[0]
-          });
-          this.llenarDocumentos();
-          this.contratacionService.traerDatosContratacion(this.cedula, this.codigoContrato).subscribe((datosContratacion: any) => {
-            if (datosContratacion) {
+          this.contratacionService.detalleLaboralContratacion(this.formGroup2.value.centroCosto, this.formGroup2.value.cargo).subscribe((detalleLaboral: any) => {
+            if (detalleLaboral) {
               this.pagoTransporteForm.patchValue({
-                semanasCotizadas: datosContratacion.semanas_cotizadas,
-                formaPago: datosContratacion.forma_pago,
-                numeroPagos: datosContratacion.numero_pagos,
-                validacionNumeroCuenta: datosContratacion.validacion_numero_cuenta,
-                seguroFunerario: datosContratacion.seguro_funerario,
-                porcentajeARL: datosContratacion.porcentaje_arl,
-                auxilioTransporte: datosContratacion.auxilio_transporte,
-                salario: datosContratacion.salario_contratacion,
-                Ccostos: datosContratacion.centro_de_costos || '',
+                porcentajeARL: detalleLaboral[0].porcentaje_arl,
+                auxilioTransporte: detalleLaboral[0].valor_transporte,
+                salario: detalleLaboral[0].salario,
+                Ccostos: this.seleccion.centro_costo_entrevista || '',
               });
-              this.trasladosForm.patchValue({
-                opcion_traslado_eps: datosContratacion.opcion_traslado_eps,
-                eps_a_trasladar: datosContratacion.eps_a_trasladar,
-                traslado: datosContratacion.traslado,
-              });
-
-              this.contratacionService.detalleLaboralContratacion(this.formGroup2.value.centroCosto, this.formGroup2.value.cargo).subscribe((detalleLaboral: any) => {
-                if (detalleLaboral) {
-                  this.pagoTransporteForm.patchValue({
-                    porcentajeARL: detalleLaboral[0].porcentaje_arl,
-                    auxilioTransporte: detalleLaboral[0].valor_transporte,
-                    salario: detalleLaboral[0].salario,
-                    Ccostos: this.seleccion.centro_costo_entrevista || '',
-                  });
-                } else {
-                  Swal.fire('Error', 'No se encontraron datos de detalle laboral', 'error');
-                }
-              }
-              );
+            } else {
+              Swal.fire('Error', 'No se encontraron datos de detalle laboral', 'error');
             }
-          });
-          // Llenar los campos del formulario de Datos Generales (formGroup1)
-          this.formGroup1.patchValue({
-            eps: this.seleccion.eps || '',
-            afp: this.seleccion.afp || '',
-            policivos: this.seleccion.policivos || '',
-            procuraduria: this.seleccion.procuraduria || '',
-            contraloria: this.seleccion.contraloria || '',
-            ramaJudicial: this.seleccion.rama_judicial || '',
-            medidasCorrectivas: this.seleccion.medidas_correctivas || '',
-            area_aplica: this.seleccion.area_aplica || ''
-          });
-
-
-          // Llenar los campos del formulario con los datos de la selección
-          this.formGroup2.patchValue({
-            centroCosto: this.seleccion.centro_costo_entrevista || '',
-            cargo: this.seleccion.cargo || '',
-            areaEntrevista: this.seleccion.area_entrevista || '',
-            fechaPruebaEntrevista: this.seleccion.fecha_prueba_entrevista || '',
-            horaPruebaEntrevista: this.seleccion.hora_prueba_entrevista || '',
-            direccionEmpresa: this.seleccion.direccion_empresa || ''
-          });
-
-          // Llenar los campos del formulario de Examen de Salud Ocupacional (formGroup3)
-          this.formGroup3.patchValue({
-            ips: this.seleccion.ips || '',
-            ipsLab: this.seleccion.ipslab || '',
-            selectedExams: this.seleccion.examenes ? this.seleccion.examenes.split(', ') : [],
-          });
-
-          // Obtener los valores de los exámenes seleccionados y los estados de aptitud
-          const selectedExamsArray: string[] = this.formGroup3.get('selectedExams')?.value || [];
-          const aptosExamenesArray: string[] = this.seleccion.aptosExamenes ? this.seleccion.aptosExamenes.split(', ') : [];
-
-          // Crear el FormArray para los estados de aptitud
-          const formArray = this.fb.array(
-            selectedExamsArray.map((_, index) =>
-              this.fb.group({
-                aptoStatus: [aptosExamenesArray[index] || '', Validators.required]
-              })
-            )
+          }
           );
-
-          // Establecer el FormArray en el formulario
-          this.formGroup3.setControl('selectedExamsArray', formArray);
-
-          // Llenar los campos del formulario de Contratación (formGroup4)
-          this.formGroup4.patchValue({
-            empresaUsuaria: this.seleccion.empresa_usuario || '',
-            fechaIngreso: this.seleccion.fecha_ingreso_usuario || '',
-            salario: this.seleccion.salario || '',
-            auxTransporte: this.seleccion.aux_transporte || '',
-            rodamiento: this.seleccion.rodamiento || '',
-            auxMovilidad: this.seleccion.aux_movilidad || '',
-            bonificacion: this.seleccion.bonificacion || ''
-          });
-
-
-
-
         }
       });
+      // Llenar los campos del formulario de Datos Generales (formGroup1)
+      this.formGroup1.patchValue({
+        eps: this.seleccion.eps || '',
+        afp: this.seleccion.afp || '',
+        policivos: this.seleccion.policivos || '',
+        procuraduria: this.seleccion.procuraduria || '',
+        contraloria: this.seleccion.contraloria || '',
+        ramaJudicial: this.seleccion.rama_judicial || '',
+        medidasCorrectivas: this.seleccion.medidas_correctivas || '',
+        area_aplica: this.seleccion.area_aplica || ''
+      });
+
+
+      // Llenar los campos del formulario con los datos de la selección
+      this.formGroup2.patchValue({
+        centroCosto: this.seleccion.centro_costo_entrevista || '',
+        cargo: this.seleccion.cargo || '',
+        areaEntrevista: this.seleccion.area_entrevista || '',
+        fechaPruebaEntrevista: this.seleccion.fecha_prueba_entrevista || '',
+        horaPruebaEntrevista: this.seleccion.hora_prueba_entrevista || '',
+        direccionEmpresa: this.seleccion.direccion_empresa || ''
+      });
+
+      // Llenar los campos del formulario de Examen de Salud Ocupacional (formGroup3)
+      this.formGroup3.patchValue({
+        ips: this.seleccion.ips || '',
+        ipsLab: this.seleccion.ipslab || '',
+        selectedExams: this.seleccion.examenes ? this.seleccion.examenes.split(', ') : [],
+      });
+
+      // Obtener los valores de los exámenes seleccionados y los estados de aptitud
+      const selectedExamsArray: string[] = this.formGroup3.get('selectedExams')?.value || [];
+      const aptosExamenesArray: string[] = this.seleccion.aptosExamenes ? this.seleccion.aptosExamenes.split(', ') : [];
+
+      // Crear el FormArray para los estados de aptitud
+      const formArray = this.fb.array(
+        selectedExamsArray.map((_, index) =>
+          this.fb.group({
+            aptoStatus: [aptosExamenesArray[index] || '', Validators.required]
+          })
+        )
+      );
+
+      // Establecer el FormArray en el formulario
+      this.formGroup3.setControl('selectedExamsArray', formArray);
+
+      // Llenar los campos del formulario de Contratación (formGroup4)
+      this.formGroup4.patchValue({
+        empresaUsuaria: this.seleccion.empresa_usuario || '',
+        fechaIngreso: this.seleccion.fecha_ingreso_usuario || '',
+        salario: this.seleccion.salario || '',
+        auxTransporte: this.seleccion.aux_transporte || '',
+        rodamiento: this.seleccion.rodamiento || '',
+        auxMovilidad: this.seleccion.aux_movilidad || '',
+        bonificacion: this.seleccion.bonificacion || ''
+      });
+
+
+
+
     }
+
+
   }
 
 
