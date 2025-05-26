@@ -1,1507 +1,1464 @@
 <div class="dashboard-container">
-    <div class="navbar">
+  <div class="navbar">
 
-    </div>
-    <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
-    <div class="dashboard-content">
-        <app-navbar-superior></app-navbar-superior>
+  </div>
+  <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+  <div class="dashboard-content">
+    <app-navbar-superior></app-navbar-superior>
 
-        <!-- Acordeón principal que contiene todos los sub-acordeones 
+    <!-- Acordeón principal que contiene todos los sub-acordeones
         <mat-accordion *ngIf="procesoValido">
         -->
+    <mat-accordion>
+      <!-- Acordeón principal: Información Adicional -->
+      <mat-expansion-panel class="opcionesVer">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Información del formulario
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
         <mat-accordion>
-            <!-- Acordeón principal: Información Adicional -->
-            <mat-expansion-panel class="opcionesVer">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Información del formulario
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <mat-accordion>
-                    <!-- Acordeón: Info Personal -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Personales
-                            </mat-panel-title>
-                            <button mat-flat-button (click)="validarCampos()">Validar</button>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosPersonales">
-                            <div class="info-personal">
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Tipo de Documento</mat-label>
-                                    <input matInput formControlName="tipodedocumento" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Número de Cédula</mat-label>
-                                    <input matInput formControlName="numerodeceduladepersona" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3 campo-validar">
-                                    <mat-label>Primer Apellido</mat-label>
-                                    <input matInput formControlName="primer_apellido" />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3 campo-validar">
-                                    <mat-label>Segundo Apellido</mat-label>
-                                    <input matInput formControlName="segundo_apellido" />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3 campo-validar">
-                                    <mat-label>Primer Nombre</mat-label>
-                                    <input matInput formControlName="primer_nombre" />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3 campo-validar">
-                                    <mat-label>Segundo Nombre</mat-label>
-                                    <input matInput formControlName="segundo_nombre" />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Género</mat-label>
-                                    <input matInput formControlName="genero" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Correo Electrónico</mat-label>
-                                    <input matInput formControlName="primercorreoelectronico" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Celular</mat-label>
-                                    <input matInput formControlName="celular" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>WhatsApp</mat-label>
-                                    <input matInput formControlName="whatsapp" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Departamento</mat-label>
-                                    <input matInput formControlName="departamento" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Municipio</mat-label>
-                                    <input matInput formControlName="municipio" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Estado Civil</mat-label>
-                                    <input matInput formControlName="estado_civil" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Dirección de Residencia</mat-label>
-                                    <input matInput formControlName="direccion_residencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Barrio</mat-label>
-                                    <input matInput formControlName="barrio" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3 campo-validar">
-                                    <mat-label>Fecha de Nacimiento</mat-label>
-                                    <input matInput [matDatepicker]="pickerNacimiento"
-                                        formControlName="fecha_nacimiento" />
-                                    <mat-datepicker-toggle matSuffix [for]="pickerNacimiento"></mat-datepicker-toggle>
-                                    <mat-datepicker #pickerNacimiento></mat-datepicker>
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Departamento de Expedición de la Cédula</mat-label>
-                                    <input matInput formControlName="departamento_expedicion_cc" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Municipio de Expedición de la Cédula</mat-label>
-                                    <input matInput formControlName="municipio_expedicion_cc" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Lugar de Nacimiento (Municipio)</mat-label>
-                                    <input matInput formControlName="lugar_nacimiento_municipio" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Lugar de Nacimiento (Departamento)</mat-label>
-                                    <input matInput formControlName="lugar_nacimiento_departamento" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>RH</mat-label>
-                                    <input matInput formControlName="rh" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Zurdo/Diestro</mat-label>
-                                    <input matInput formControlName="zurdo_diestro" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Hace Cuánto Vive en la Zona?</mat-label>
-                                    <input matInput formControlName="hacecuantoviveenlazona" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Lugar Anterior de Residencia</mat-label>
-                                    <input matInput formControlName="lugar_anterior_residencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Hace Cuánto se Vino y Por Qué?</mat-label>
-                                    <input matInput formControlName="hace_cuanto_se_vino_y_porque" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Zonas del País que Conoce</mat-label>
-                                    <input matInput formControlName="zonas_del_pais" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Dónde le Gustaría Vivir?</mat-label>
-                                    <input matInput formControlName="donde_le_gustaria_vivir" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3 campo-validar">
-                                    <mat-label>Fecha de Expedición de la Cédula</mat-label>
-                                    <input matInput [matDatepicker]="pickerExpedicion"
-                                        formControlName="fecha_expedicion_cc" />
-                                    <mat-datepicker-toggle matSuffix [for]="pickerExpedicion"></mat-datepicker-toggle>
-                                    <mat-datepicker #pickerExpedicion></mat-datepicker>
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Estudia Actualmente?</mat-label>
-                                    <input matInput formControlName="estudia_actualmente" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Familiar de Emergencia</mat-label>
-                                    <input matInput formControlName="familiar_emergencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Parentesco con el Familiar de Emergencia</mat-label>
-                                    <input matInput formControlName="parentesco_familiar_emergencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Dirección del Familiar de Emergencia</mat-label>
-                                    <input matInput formControlName="direccion_familiar_emergencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Barrio del Familiar de Emergencia</mat-label>
-                                    <input matInput formControlName="barrio_familiar_emergencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono del Familiar de Emergencia</mat-label>
-                                    <input matInput formControlName="telefono_familiar_emergencia" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación del Familiar de Emergencia</mat-label>
-                                    <input matInput formControlName="ocupacion_familiar_emergencia" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Personales Parte 2
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosPersonalesParte2">
-                            <div class="datos-personales-parte-2">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Escolaridad</mat-label>
-                                    <input matInput formControlName="escolaridad" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Estudios Extra</mat-label>
-                                    <input matInput formControlName="estudiosExtra" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre de la Institución</mat-label>
-                                    <input matInput formControlName="nombre_institucion" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Año de Finalización</mat-label>
-                                    <input matInput formControlName="ano_finalizacion" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Título Obtenido</mat-label>
-                                    <input matInput formControlName="titulo_obtenido" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Tallas
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosTallas">
-                            <div class="datos-tallas">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Chaqueta</mat-label>
-                                    <input matInput formControlName="chaqueta" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Pantalón</mat-label>
-                                    <input matInput formControlName="pantalon" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Camisa</mat-label>
-                                    <input matInput formControlName="camisa" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Calzado</mat-label>
-                                    <input matInput formControlName="calzado" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Conyugue
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosConyugue">
-                            <div class="datos-conyugue">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre del Conyugue</mat-label>
-                                    <input matInput formControlName="nombre_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Apellido del Conyugue</mat-label>
-                                    <input matInput formControlName="apellido_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Número de Documento de Identidad del Conyugue</mat-label>
-                                    <input matInput formControlName="num_doc_identidad_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Vive con el Conyugue?</mat-label>
-                                    <input matInput formControlName="vive_con_el_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Dirección del Conyugue</mat-label>
-                                    <input matInput formControlName="direccion_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono del Conyugue</mat-label>
-                                    <input matInput formControlName="telefono_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Barrio/Municipio del Conyugue</mat-label>
-                                    <input matInput formControlName="barrio_municipio_conyugue" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación del Conyugue</mat-label>
-                                    <input matInput formControlName="ocupacion_conyugue" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos del Padre
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosPadre">
-                            <div class="datos-padre">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre del Padre</mat-label>
-                                    <input matInput formControlName="nombre_padre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Vive el Padre?</mat-label>
-                                    <input matInput formControlName="vive_padre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación del Padre</mat-label>
-                                    <input matInput formControlName="ocupacion_padre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Dirección del Padre</mat-label>
-                                    <input matInput formControlName="direccion_padre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono del Padre</mat-label>
-                                    <input matInput formControlName="telefono_padre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Barrio del Padre</mat-label>
-                                    <input matInput formControlName="barrio_padre" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos de la Madre
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosMadre">
-                            <div class="datos-madre">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre de la Madre</mat-label>
-                                    <input matInput formControlName="nombre_madre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>¿Vive la Madre?</mat-label>
-                                    <input matInput formControlName="vive_madre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación de la Madre</mat-label>
-                                    <input matInput formControlName="ocupacion_madre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Dirección de la Madre</mat-label>
-                                    <input matInput formControlName="direccion_madre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono de la Madre</mat-label>
-                                    <input matInput formControlName="telefono_madre" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Barrio de la Madre</mat-label>
-                                    <input matInput formControlName="barrio_madre" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos de las Referencias
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosReferencias">
-                            <div class="datos-referencias">
-                                <!-- Referencia Personal 1 -->
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre Referencia Personal 1</mat-label>
-                                    <input matInput formControlName="nombre_referencia_personal1" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono Referencia Personal 1</mat-label>
-                                    <input matInput formControlName="telefono_referencia_personal1" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación Referencia Personal 1</mat-label>
-                                    <input matInput formControlName="ocupacion_referencia_personal1" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Tiempo que Conoce a Referencia Personal 1</mat-label>
-                                    <input matInput formControlName="tiempo_conoce_referencia_personal1" readonly />
-                                </mat-form-field>
-
-                                <!-- Referencia Personal 2 -->
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre Referencia Personal 2</mat-label>
-                                    <input matInput formControlName="nombre_referencia_personal2" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono Referencia Personal 2</mat-label>
-                                    <input matInput formControlName="telefono_referencia_personal2" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación Referencia Personal 2</mat-label>
-                                    <input matInput formControlName="ocupacion_referencia_personal2" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Tiempo que Conoce a Referencia Personal 2</mat-label>
-                                    <input matInput formControlName="tiempo_conoce_referencia_personal2" readonly />
-                                </mat-form-field>
-
-                                <!-- Referencia Familiar 1 -->
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre Referencia Familiar 1</mat-label>
-                                    <input matInput formControlName="nombre_referencia_familiar1" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono Referencia Familiar 1</mat-label>
-                                    <input matInput formControlName="telefono_referencia_familiar1" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación Referencia Familiar 1</mat-label>
-                                    <input matInput formControlName="ocupacion_referencia_familiar1" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Parentesco Referencia Familiar 1</mat-label>
-                                    <input matInput formControlName="parentesco_referencia_familiar1" readonly />
-                                </mat-form-field>
-
-                                <!-- Referencia Familiar 2 -->
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Nombre Referencia Familiar 2</mat-label>
-                                    <input matInput formControlName="nombre_referencia_familiar2" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Teléfono Referencia Familiar 2</mat-label>
-                                    <input matInput formControlName="telefono_referencia_familiar2" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ocupación Referencia Familiar 2</mat-label>
-                                    <input matInput formControlName="ocupacion_referencia_familiar2" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Parentesco Referencia Familiar 2</mat-label>
-                                    <input matInput formControlName="parentesco_referencia_familiar2" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos de los Hijos
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosHijos">
-                            <div class="datos-hijos">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Número de Hijos que Dependen Económicamente</mat-label>
-                                    <input matInput formControlName="num_hijos_dependen_economicamente" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Quién Cuida a los Hijos</mat-label>
-                                    <input matInput formControlName="quien_los_cuida" readonly />
-                                </mat-form-field>
-                            </div>
-
-                            <!-- Iterar sobre el arreglo de hijos -->
-                            <div formArrayName="hijosArray" *ngFor="let hijo of hijosArray.controls; let i = index">
-                                <div [formGroupName]="i" class="hijo-details">
-                                    <h4 class="titulo">Hijo {{ i + 1 }}</h4>
-                                    <mat-form-field class="example-full-width3">
-                                        <mat-label>Nombre</mat-label>
-                                        <input matInput formControlName="nombre" readonly />
-                                    </mat-form-field>
-                                    <mat-form-field class="example-full-width3">
-                                        <mat-label>Sexo</mat-label>
-                                        <input matInput formControlName="sexo" readonly />
-                                    </mat-form-field>
-                                    <mat-form-field class="example-full-width3">
-                                        <mat-label>Fecha de Nacimiento</mat-label>
-                                        <input matInput formControlName="fecha_nacimiento" readonly />
-                                    </mat-form-field>
-                                    <mat-form-field class="example-full-width3">
-                                        <mat-label>Número de Documento</mat-label>
-                                        <input matInput formControlName="no_documento" readonly />
-                                    </mat-form-field>
-                                    <mat-form-field class="example-full-width3">
-                                        <mat-label>Estudia o Trabaja</mat-label>
-                                        <input matInput formControlName="estudia_o_trabaja" readonly />
-                                    </mat-form-field>
-                                    <mat-form-field class="example-full-width3">
-                                        <mat-label>Curso</mat-label>
-                                        <input matInput formControlName="curso" readonly />
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <!-- Datos Parte 3 - Sección 1 -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Parte 3 - Información Familiar
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosParte3Seccion1">
-                            <div class="datos-parte-3-seccion-1">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Personas con Quien Convive</mat-label>
-                                    <input matInput formControlName="personas_con_quien_convive" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Familia con un Solo Ingreso</mat-label>
-                                    <input matInput formControlName="familia_con_un_solo_ingreso" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Cómo se Enteró de la Vacante</mat-label>
-                                    <input matInput formControlName="como_se_entero" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <!-- Datos Parte 3 - Sección 2 -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Parte 3 - Información de Vivienda
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosParte3Seccion2">
-                            <div class="datos-parte-3-seccion-2">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Tipo de Vivienda</mat-label>
-                                    <input matInput formControlName="tipo_vivienda" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Número de Habitaciones</mat-label>
-                                    <input matInput formControlName="num_habitaciones" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Número de Personas por Habitación</mat-label>
-                                    <input matInput formControlName="num_personas_por_habitacion" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Tipo de Vivienda (2 Personas)</mat-label>
-                                    <input matInput formControlName="tipo_vivienda_2p" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Características de la Vivienda</mat-label>
-                                    <input matInput formControlName="caractteristicas_vivienda" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Servicios</mat-label>
-                                    <input matInput formControlName="servicios" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Expectativas de Vida</mat-label>
-                                    <input matInput formControlName="expectativas_de_vida" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-                    <!-- Datos Parte 4 -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Datos Parte 4 - Información Personal
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <form [formGroup]="datosParte4">
-                            <div class="datos-parte-4">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Actividades Diarias</mat-label>
-                                    <input matInput formControlName="actividadesDi" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Experiencia Significativa</mat-label>
-                                    <input matInput formControlName="experienciaSignificativa" readonly />
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Motivación</mat-label>
-                                    <input matInput formControlName="motivacion" readonly />
-                                </mat-form-field>
-                            </div>
-                        </form>
-                    </mat-expansion-panel>
-
-
-                </mat-accordion>
-            </mat-expansion-panel>
-        </mat-accordion>
-
-        <!-- Accordion Sections -->
-        <mat-accordion>
-
-            <mat-expansion-panel class="opcionesVer">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Selección
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <mat-accordion>
-
-                    <!-- Verificaciones y Área de Aplicación -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header
-                            [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup1))}">
-                            <mat-panel-title>
-                                Verificaciones y Área de Aplicación ({{ getPercentage(formGroup1) }}% completo)
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <div class="seccion" [formGroup]="formGroup1">
-
-                            <!-- EPS -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuEps" aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuEps="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('eps')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputEps" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputEps" style="display: none;"
-                                        (change)="subirArchivo($event, 'eps')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>EPS</mat-label>
-                                    <mat-select formControlName="eps" placeholder="EPS">
-                                        <mat-option *ngFor="let eps of epsList" [value]="eps">{{ eps }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['eps']" class="uploaded-file-name">
-                                    {{ uploadedFiles['eps'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- AFP -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuAfp" aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuAfp="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('afp')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputAfp" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputAfp" style="display: none;"
-                                        (change)="subirArchivo($event, 'afp')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>AFP</mat-label>
-                                    <mat-select formControlName="afp" placeholder="AFP">
-                                        <mat-option *ngFor="let afp of afpList" [value]="afp">{{ afp }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['afp']" class="uploaded-file-name">
-                                    {{ uploadedFiles['afp'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- Policivos -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuPolicivos" aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuPolicivos="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('policivos')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputPolicivos" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputPolicivos" style="display: none;"
-                                        (change)="subirArchivo($event, 'policivos')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>Policivos</mat-label>
-                                    <mat-select formControlName="policivos">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado
-                                            }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['policivos']" class="uploaded-file-name">
-                                    {{ uploadedFiles['policivos'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- Procuraduría -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuProcuraduria"
-                                    aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuProcuraduria="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('procuraduria')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputProcuraduria" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputProcuraduria" style="display: none;"
-                                        (change)="subirArchivo($event, 'procuraduria')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>Procuraduría</mat-label>
-                                    <mat-select formControlName="procuraduria">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado
-                                            }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['procuraduria']" class="uploaded-file-name">
-                                    {{ uploadedFiles['procuraduria'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- Contraloría -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuContraloria"
-                                    aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuContraloria="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('contraloria')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputContraloria" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputContraloria" style="display: none;"
-                                        (change)="subirArchivo($event, 'contraloria')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>Contraloría</mat-label>
-                                    <mat-select formControlName="contraloria">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado
-                                            }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['contraloria']" class="uploaded-file-name">
-                                    {{ uploadedFiles['contraloria'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- Rama Judicial -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuRamaJudicial"
-                                    aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuRamaJudicial="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('ramaJudicial')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputRamaJudicial" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputRamaJudicial" style="display: none;"
-                                        (change)="subirArchivo($event, 'ramaJudicial')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>Rama Judicial</mat-label>
-                                    <mat-select formControlName="ramaJudicial">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado
-                                            }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['ramaJudicial']" class="uploaded-file-name">
-                                    {{ uploadedFiles['ramaJudicial'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- Medidas Correctivas -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuMedidasCorrectivas"
-                                    aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuMedidasCorrectivas="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('medidasCorrectivas')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputMedidasCorrectivas" style="cursor: pointer;">Subir
-                                            PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputMedidasCorrectivas" style="display: none;"
-                                        (change)="subirArchivo($event, 'medidasCorrectivas')">
-                                </mat-menu>
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>Medidas Correctivas</mat-label>
-                                    <mat-select formControlName="medidasCorrectivas">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado
-                                            }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['medidasCorrectivas']" class="uploaded-file-name">
-                                    {{ uploadedFiles['medidasCorrectivas'].fileName }}
-                                </small>
-
-                            </div>
-
-                            <!-- Sisben -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuSisben" aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuSisben="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('sisben')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputSisben" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputSisben" style="display: none;"
-                                        (change)="subirArchivo($event, 'sisben')">
-                                </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
-                                    <mat-label>Sisben</mat-label>
-                                    <mat-select formControlName="sisben">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['sisben']" class="uploaded-file-name">
-                                    {{ uploadedFiles['sisben'].fileName }}
-                                </small>
-                            </div>
-
-                            <!-- OFAC -->
-                            <div class="input-container">
-                                <button mat-icon-button [matMenuTriggerFor]="pdfMenuOfac" aria-label="PDF options">
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #pdfMenuOfac="matMenu">
-                                    <button mat-menu-item (click)="verArchivo('ofac')">Ver PDF</button>
-                                    <button mat-menu-item>
-                                        <label for="fileInputOfac" style="cursor: pointer;">Subir PDF</label>
-                                    </button>
-                                    <input type="file" id="fileInputOfac" style="display: none;"
-                                        (change)="subirArchivo($event, 'ofac')">
-                                </mat-menu>
-                                <mat-form-field appearance="fill" class="example-full-width">
-                                    <mat-label>OFAC</mat-label>
-                                    <mat-select formControlName="ofac">
-                                        <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
-                                            estado }}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <small *ngIf="uploadedFiles['ofac']" class="uploaded-file-name">
-                                    {{ uploadedFiles['ofac'].fileName }}
-                                </small>
-                            </div>
-
-
-                            <!-- Área para la que Aplica -->
-                            <div class="input-container">
-
-                                <mat-form-field class="example-full-width3" class="example-full-width">
-                                    <mat-label>Área para la que Aplica</mat-label>
-                                    <input matInput formControlName="area_aplica" placeholder="Área para la que Aplica">
-                                </mat-form-field>
-
-                            </div>
-
-                            <button mat-flat-button (click)="imprimirVerificacionesAplicacion()"
-                                class="example-full-width">Cargar</button>
-                        </div>
-                    </mat-expansion-panel>
-
-                    <!-- Entrevista o Prueba Técnica -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header
-                            [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup2))}">
-                            <mat-panel-title>
-                                Entrevista o Prueba Técnica ({{ getPercentage(formGroup2) }}% completo)
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <div class="seccion" [formGroup]="formGroup2">
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Centro de Costo</mat-label>
-                                <input matInput formControlName="centroCosto"
-                                    placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
-                            </mat-form-field>
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Cargo</mat-label>
-                                <input matInput formControlName="cargo" placeholder="CARGO">
-                            </mat-form-field>
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Área en la que presentará la entrevista</mat-label>
-                                <input matInput formControlName="areaEntrevista"
-                                    placeholder="ÁREA EN LA QUE PRESENTARA LA ENTREVISTA">
-                            </mat-form-field>
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Fecha de la Prueba o Entrevista</mat-label>
-                                <input matInput [matDatepicker]="picker" formControlName="fechaPruebaEntrevista">
-                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                <mat-datepicker #picker></mat-datepicker>
-                            </mat-form-field>
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Hora de la Prueba o Entrevista</mat-label>
-                                <input matInput type="time" formControlName="horaPruebaEntrevista">
-                            </mat-form-field>
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Dirección o indicación para llegar a la empresa</mat-label>
-                                <input matInput formControlName="direccionEmpresa"
-                                    placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
-                            </mat-form-field>
-                            <button mat-flat-button (click)="imprimirEntrevistaPrueba()"
-                                class="example-full-width">Cargar</button>
-                        </div>
-                    </mat-expansion-panel>
-
-                    <!-- Examen de Salud Ocupacional -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header
-                            [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup3))}">
-                            <mat-panel-title>
-                                Examen de Salud Ocupacional ({{ getPercentage(formGroup3) }}% completo)
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-
-                        <div class="seccion" [formGroup]="formGroup3">
-
-
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>IPS</mat-label>
-                                <mat-select formControlName="ips" placeholder="IPS">
-                                    <mat-option value="JAVAP">JAVAP</mat-option>
-                                    <mat-option value="ESTRATEGO">ESTRATEGO</mat-option>
-                                    <mat-option value="HELSEN">HELSEN</mat-option>
-                                    <mat-option value="ASISTIR">ASISTIR</mat-option>
-                                    <mat-option value="SIGMEDICAL">SIGMEDICAL</mat-option>
-                                    <mat-option value="PORSALUD">PORSALUD</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>IPSLAB</mat-label>
-                                <mat-select formControlName="ipsLab" placeholder="IPSLAB">
-                                    <mat-option value="JAVAP">JAVAP</mat-option>
-                                    <mat-option value="ESTRATEGO">ESTRATEGO</mat-option>
-                                    <mat-option value="HELSEN">HELSEN</mat-option>
-                                    <mat-option value="ASISTIR">ASISTIR</mat-option>
-                                    <mat-option value="SIGMEDICAL">SIGMEDICAL</mat-option>
-                                    <mat-option value="PORSALUD">PORSALUD</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-
-
-                            <!-- Select múltiple para elegir exámenes -->
-                            <mat-form-field appearance="fill" class="example-full-width">
-                                <mat-label>Seleccione los exámenes</mat-label>
-                                <mat-select formControlName="selectedExams" multiple>
-                                    <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">
-                                        {{ exam }}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-
-
-                            <!-- Campos dinámicos para cada examen seleccionado -->
-                            <div formArrayName="selectedExamsArray">
-                                <div *ngFor="let exam of formGroup3.get('selectedExams')?.value; let i = index"
-                                    [formGroupName]="i">
-                                    <mat-form-field appearance="fill" class="example-full-width">
-                                        <mat-label>{{ exam }}</mat-label>
-                                        <!-- Usa el nombre del examen seleccionado directamente -->
-                                        <mat-select formControlName="aptoStatus">
-                                            <mat-option value="APTO">APTO</mat-option>
-                                            <mat-option value="NO APTO">NO APTO</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-
-
-
-
-
-                            <button mat-flat-button (click)="imprimirSaludOcupacional()"
-                                class="example-full-width">Cargar</button>
-                        </div>
-                    </mat-expansion-panel>
-
-                    <!-- Contratación -->
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header
-                            [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup4))}">
-                            <mat-panel-title>
-                                Contratación ({{ getPercentage(formGroup4) }}% completo)
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <div class="seccion" [formGroup]="formGroup4">
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Empresa Usuaria</mat-label>
-                                <input matInput formControlName="empresaUsuaria" placeholder="EMPRESA USUARIA">
-                            </mat-form-field>
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Fecha de Ingreso</mat-label>
-                                <input matInput [matDatepicker]="pickerFechaIngreso" formControlName="fechaIngreso">
-                                <mat-datepicker-toggle matSuffix [for]="pickerFechaIngreso"></mat-datepicker-toggle>
-                                <mat-datepicker #pickerFechaIngreso></mat-datepicker>
-                            </mat-form-field>
-
-
-
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Salario</mat-label>
-                                <input matInput formControlName="salario" placeholder="SALARIO">
-                            </mat-form-field>
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Auxilio de Transporte</mat-label>
-                                <input matInput formControlName="auxTransporte" placeholder="AUXTRANSPORTE">
-                            </mat-form-field>
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Rodamiento</mat-label>
-                                <input matInput formControlName="rodamiento" placeholder="RODAMIENTO">
-                            </mat-form-field>
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Auxilio de Movilidad</mat-label>
-                                <input matInput formControlName="auxMovilidad" placeholder="AUX MOVILIDAD">
-                            </mat-form-field>
-                            <mat-form-field class="example-full-width3" class="example-full-width">
-                                <mat-label>Bonificación</mat-label>
-                                <input matInput formControlName="bonificacion" placeholder="BONIFICACION">
-                            </mat-form-field>
-                            <button mat-flat-button (click)="imprimirContratacion()"
-                                class="example-full-width">Cargar</button>
-                        </div>
-                    </mat-expansion-panel>
-
-                </mat-accordion>
-            </mat-expansion-panel>
+          <!-- Acordeón: Info Personal -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Personales
+              </mat-panel-title>
+
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosPersonales">
+              <div class="info-personal">
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Tipo de Documento</mat-label>
+                  <input matInput formControlName="tipodedocumento" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Número de Cédula</mat-label>
+                  <input matInput formControlName="numerodeceduladepersona" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3 campo-validar">
+                  <mat-label>Primer Apellido</mat-label>
+                  <input matInput formControlName="primer_apellido" />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3 campo-validar">
+                  <mat-label>Segundo Apellido</mat-label>
+                  <input matInput formControlName="segundo_apellido" />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3 campo-validar">
+                  <mat-label>Primer Nombre</mat-label>
+                  <input matInput formControlName="primer_nombre" />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3 campo-validar">
+                  <mat-label>Segundo Nombre</mat-label>
+                  <input matInput formControlName="segundo_nombre" />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Género</mat-label>
+                  <input matInput formControlName="genero" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Correo Electrónico</mat-label>
+                  <input matInput formControlName="primercorreoelectronico" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Celular</mat-label>
+                  <input matInput formControlName="celular" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>WhatsApp</mat-label>
+                  <input matInput formControlName="whatsapp" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Departamento</mat-label>
+                  <input matInput formControlName="departamento" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Municipio</mat-label>
+                  <input matInput formControlName="municipio" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Estado Civil</mat-label>
+                  <input matInput formControlName="estado_civil" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Dirección de Residencia</mat-label>
+                  <input matInput formControlName="direccion_residencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Barrio</mat-label>
+                  <input matInput formControlName="barrio" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3 campo-validar">
+                  <mat-label>Fecha de Nacimiento</mat-label>
+                  <input matInput [matDatepicker]="pickerNacimiento" formControlName="fecha_nacimiento" />
+                  <mat-datepicker-toggle matSuffix [for]="pickerNacimiento"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerNacimiento></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Departamento de Expedición de la Cédula</mat-label>
+                  <input matInput formControlName="departamento_expedicion_cc" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Municipio de Expedición de la Cédula</mat-label>
+                  <input matInput formControlName="municipio_expedicion_cc" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Lugar de Nacimiento (Municipio)</mat-label>
+                  <input matInput formControlName="lugar_nacimiento_municipio" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Lugar de Nacimiento (Departamento)</mat-label>
+                  <input matInput formControlName="lugar_nacimiento_departamento" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>RH</mat-label>
+                  <input matInput formControlName="rh" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Zurdo/Diestro</mat-label>
+                  <input matInput formControlName="zurdo_diestro" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Hace Cuánto Vive en la Zona?</mat-label>
+                  <input matInput formControlName="hacecuantoviveenlazona" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Lugar Anterior de Residencia</mat-label>
+                  <input matInput formControlName="lugar_anterior_residencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Hace Cuánto se Vino y Por Qué?</mat-label>
+                  <input matInput formControlName="hace_cuanto_se_vino_y_porque" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Zonas del País que Conoce</mat-label>
+                  <input matInput formControlName="zonas_del_pais" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Dónde le Gustaría Vivir?</mat-label>
+                  <input matInput formControlName="donde_le_gustaria_vivir" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3 campo-validar">
+                  <mat-label>Fecha de Expedición de la Cédula</mat-label>
+                  <input matInput [matDatepicker]="pickerExpedicion" formControlName="fecha_expedicion_cc" />
+                  <mat-datepicker-toggle matSuffix [for]="pickerExpedicion"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerExpedicion></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Estudia Actualmente?</mat-label>
+                  <input matInput formControlName="estudia_actualmente" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Familiar de Emergencia</mat-label>
+                  <input matInput formControlName="familiar_emergencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Parentesco con el Familiar de Emergencia</mat-label>
+                  <input matInput formControlName="parentesco_familiar_emergencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Dirección del Familiar de Emergencia</mat-label>
+                  <input matInput formControlName="direccion_familiar_emergencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Barrio del Familiar de Emergencia</mat-label>
+                  <input matInput formControlName="barrio_familiar_emergencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono del Familiar de Emergencia</mat-label>
+                  <input matInput formControlName="telefono_familiar_emergencia" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación del Familiar de Emergencia</mat-label>
+                  <input matInput formControlName="ocupacion_familiar_emergencia" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Personales Parte 2
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosPersonalesParte2">
+              <div class="datos-personales-parte-2">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Escolaridad</mat-label>
+                  <input matInput formControlName="escolaridad" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Estudios Extra</mat-label>
+                  <input matInput formControlName="estudiosExtra" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre de la Institución</mat-label>
+                  <input matInput formControlName="nombre_institucion" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Año de Finalización</mat-label>
+                  <input matInput formControlName="ano_finalizacion" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Título Obtenido</mat-label>
+                  <input matInput formControlName="titulo_obtenido" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Tallas
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosTallas">
+              <div class="datos-tallas">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Chaqueta</mat-label>
+                  <input matInput formControlName="chaqueta" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Pantalón</mat-label>
+                  <input matInput formControlName="pantalon" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Camisa</mat-label>
+                  <input matInput formControlName="camisa" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Calzado</mat-label>
+                  <input matInput formControlName="calzado" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Conyugue
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosConyugue">
+              <div class="datos-conyugue">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre del Conyugue</mat-label>
+                  <input matInput formControlName="nombre_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Apellido del Conyugue</mat-label>
+                  <input matInput formControlName="apellido_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Número de Documento de Identidad del Conyugue</mat-label>
+                  <input matInput formControlName="num_doc_identidad_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Vive con el Conyugue?</mat-label>
+                  <input matInput formControlName="vive_con_el_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Dirección del Conyugue</mat-label>
+                  <input matInput formControlName="direccion_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono del Conyugue</mat-label>
+                  <input matInput formControlName="telefono_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Barrio/Municipio del Conyugue</mat-label>
+                  <input matInput formControlName="barrio_municipio_conyugue" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación del Conyugue</mat-label>
+                  <input matInput formControlName="ocupacion_conyugue" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos del Padre
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosPadre">
+              <div class="datos-padre">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre del Padre</mat-label>
+                  <input matInput formControlName="nombre_padre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Vive el Padre?</mat-label>
+                  <input matInput formControlName="vive_padre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación del Padre</mat-label>
+                  <input matInput formControlName="ocupacion_padre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Dirección del Padre</mat-label>
+                  <input matInput formControlName="direccion_padre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono del Padre</mat-label>
+                  <input matInput formControlName="telefono_padre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Barrio del Padre</mat-label>
+                  <input matInput formControlName="barrio_padre" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos de la Madre
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosMadre">
+              <div class="datos-madre">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre de la Madre</mat-label>
+                  <input matInput formControlName="nombre_madre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>¿Vive la Madre?</mat-label>
+                  <input matInput formControlName="vive_madre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación de la Madre</mat-label>
+                  <input matInput formControlName="ocupacion_madre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Dirección de la Madre</mat-label>
+                  <input matInput formControlName="direccion_madre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono de la Madre</mat-label>
+                  <input matInput formControlName="telefono_madre" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Barrio de la Madre</mat-label>
+                  <input matInput formControlName="barrio_madre" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos de las Referencias
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosReferencias">
+              <div class="datos-referencias">
+                <!-- Referencia Personal 1 -->
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre Referencia Personal 1</mat-label>
+                  <input matInput formControlName="nombre_referencia_personal1" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono Referencia Personal 1</mat-label>
+                  <input matInput formControlName="telefono_referencia_personal1" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación Referencia Personal 1</mat-label>
+                  <input matInput formControlName="ocupacion_referencia_personal1" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Tiempo que Conoce a Referencia Personal 1</mat-label>
+                  <input matInput formControlName="tiempo_conoce_referencia_personal1" readonly />
+                </mat-form-field>
+
+                <!-- Referencia Personal 2 -->
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre Referencia Personal 2</mat-label>
+                  <input matInput formControlName="nombre_referencia_personal2" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono Referencia Personal 2</mat-label>
+                  <input matInput formControlName="telefono_referencia_personal2" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación Referencia Personal 2</mat-label>
+                  <input matInput formControlName="ocupacion_referencia_personal2" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Tiempo que Conoce a Referencia Personal 2</mat-label>
+                  <input matInput formControlName="tiempo_conoce_referencia_personal2" readonly />
+                </mat-form-field>
+
+                <!-- Referencia Familiar 1 -->
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre Referencia Familiar 1</mat-label>
+                  <input matInput formControlName="nombre_referencia_familiar1" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono Referencia Familiar 1</mat-label>
+                  <input matInput formControlName="telefono_referencia_familiar1" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación Referencia Familiar 1</mat-label>
+                  <input matInput formControlName="ocupacion_referencia_familiar1" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Parentesco Referencia Familiar 1</mat-label>
+                  <input matInput formControlName="parentesco_referencia_familiar1" readonly />
+                </mat-form-field>
+
+                <!-- Referencia Familiar 2 -->
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Nombre Referencia Familiar 2</mat-label>
+                  <input matInput formControlName="nombre_referencia_familiar2" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Teléfono Referencia Familiar 2</mat-label>
+                  <input matInput formControlName="telefono_referencia_familiar2" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ocupación Referencia Familiar 2</mat-label>
+                  <input matInput formControlName="ocupacion_referencia_familiar2" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Parentesco Referencia Familiar 2</mat-label>
+                  <input matInput formControlName="parentesco_referencia_familiar2" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos de los Hijos
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosHijos">
+              <div class="datos-hijos">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Número de Hijos que Dependen Económicamente</mat-label>
+                  <input matInput formControlName="num_hijos_dependen_economicamente" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Quién Cuida a los Hijos</mat-label>
+                  <input matInput formControlName="quien_los_cuida" readonly />
+                </mat-form-field>
+              </div>
+
+              <!-- Iterar sobre el arreglo de hijos -->
+              <div formArrayName="hijosArray" *ngFor="let hijo of hijosArray.controls; let i = index">
+                <div [formGroupName]="i" class="hijo-details">
+                  <h4 class="titulo">Hijo {{ i + 1 }}</h4>
+                  <mat-form-field class="example-full-width3">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput formControlName="nombre" readonly />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width3">
+                    <mat-label>Sexo</mat-label>
+                    <input matInput formControlName="sexo" readonly />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width3">
+                    <mat-label>Fecha de Nacimiento</mat-label>
+                    <input matInput formControlName="fecha_nacimiento" readonly />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width3">
+                    <mat-label>Número de Documento</mat-label>
+                    <input matInput formControlName="no_documento" readonly />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width3">
+                    <mat-label>Estudia o Trabaja</mat-label>
+                    <input matInput formControlName="estudia_o_trabaja" readonly />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width3">
+                    <mat-label>Curso</mat-label>
+                    <input matInput formControlName="curso" readonly />
+                  </mat-form-field>
+                </div>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <!-- Datos Parte 3 - Sección 1 -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Parte 3 - Información Familiar
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosParte3Seccion1">
+              <div class="datos-parte-3-seccion-1">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Personas con Quien Convive</mat-label>
+                  <input matInput formControlName="personas_con_quien_convive" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Familia con un Solo Ingreso</mat-label>
+                  <input matInput formControlName="familia_con_un_solo_ingreso" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Cómo se Enteró de la Vacante</mat-label>
+                  <input matInput formControlName="como_se_entero" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <!-- Datos Parte 3 - Sección 2 -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Parte 3 - Información de Vivienda
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosParte3Seccion2">
+              <div class="datos-parte-3-seccion-2">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Tipo de Vivienda</mat-label>
+                  <input matInput formControlName="tipo_vivienda" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Número de Habitaciones</mat-label>
+                  <input matInput formControlName="num_habitaciones" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Número de Personas por Habitación</mat-label>
+                  <input matInput formControlName="num_personas_por_habitacion" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Tipo de Vivienda (2 Personas)</mat-label>
+                  <input matInput formControlName="tipo_vivienda_2p" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Características de la Vivienda</mat-label>
+                  <input matInput formControlName="caractteristicas_vivienda" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Servicios</mat-label>
+                  <input matInput formControlName="servicios" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Expectativas de Vida</mat-label>
+                  <input matInput formControlName="expectativas_de_vida" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <!-- Datos Parte 4 -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos Parte 4 - Información Personal
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <form [formGroup]="datosParte4">
+              <div class="datos-parte-4">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Actividades Diarias</mat-label>
+                  <input matInput formControlName="actividadesDi" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Experiencia Significativa</mat-label>
+                  <input matInput formControlName="experienciaSignificativa" readonly />
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Motivación</mat-label>
+                  <input matInput formControlName="motivacion" readonly />
+                </mat-form-field>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
 
         </mat-accordion>
+      </mat-expansion-panel>
+    </mat-accordion>
 
-        <!-- Tarjeta para búsqueda de cédula -->
-        <div class="seleccion">
-            <mat-card class="campoCedula">
-                <mat-card-content>
-                    <h1 class="titulo" style="margin-right: 10px; width: 100%;">
-                        Ingrese la cédula del usuario a buscar:
-                    </h1>
-                    <!-- Campo de texto para cédula -->
-                    <mat-form-field class="example-full-width3" class="example-full-width2" style="margin-left: 0;">
-                        <mat-label>Cédula</mat-label>
-                        <input matInput type="text" [(ngModel)]="cedula" placeholder="Cédula">
-                    </mat-form-field>
-                    <!-- Botón de búsqueda -->
-                    <button mat-flat-button (click)="buscarCedula()" class="example-full-width"
-                        style="margin-top: -5px;">
-                        Buscar
+    <!-- Accordion Sections -->
+    <mat-accordion>
+
+      <mat-expansion-panel class="opcionesVer">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Selección
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-accordion>
+
+          <!-- Verificaciones y Área de Aplicación -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup1))}">
+              <mat-panel-title>
+                Verificaciones y Área de Aplicación ({{ getPercentage(formGroup1) }}% completo)
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="seccion" [formGroup]="formGroup1">
+
+              <!-- EPS -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuEps" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuEps="matMenu">
+                  <button mat-menu-item (click)="verArchivo('eps')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputEps" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputEps" style="display: none;" (change)="subirArchivo($event, 'eps')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>EPS</mat-label>
+                  <mat-select formControlName="eps" placeholder="EPS">
+                    <mat-option *ngFor="let eps of epsList" [value]="eps">{{ eps }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['eps']" class="uploaded-file-name">
+                  {{ uploadedFiles['eps'].fileName }}
+                </small>
+              </div>
+
+              <!-- AFP -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuAfp" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuAfp="matMenu">
+                  <button mat-menu-item (click)="verArchivo('afp')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputAfp" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputAfp" style="display: none;" (change)="subirArchivo($event, 'afp')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>AFP</mat-label>
+                  <mat-select formControlName="afp" placeholder="AFP">
+                    <mat-option *ngFor="let afp of afpList" [value]="afp">{{ afp }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['afp']" class="uploaded-file-name">
+                  {{ uploadedFiles['afp'].fileName }}
+                </small>
+              </div>
+
+              <!-- Policivos -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuPolicivos" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuPolicivos="matMenu">
+                  <button mat-menu-item (click)="verArchivo('policivos')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputPolicivos" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputPolicivos" style="display: none;"
+                    (change)="subirArchivo($event, 'policivos')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>Policivos</mat-label>
+                  <mat-select formControlName="policivos">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado
+                      }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['policivos']" class="uploaded-file-name">
+                  {{ uploadedFiles['policivos'].fileName }}
+                </small>
+              </div>
+
+              <!-- Procuraduría -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuProcuraduria" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuProcuraduria="matMenu">
+                  <button mat-menu-item (click)="verArchivo('procuraduria')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputProcuraduria" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputProcuraduria" style="display: none;"
+                    (change)="subirArchivo($event, 'procuraduria')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>Procuraduría</mat-label>
+                  <mat-select formControlName="procuraduria">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado
+                      }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['procuraduria']" class="uploaded-file-name">
+                  {{ uploadedFiles['procuraduria'].fileName }}
+                </small>
+              </div>
+
+              <!-- Contraloría -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuContraloria" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuContraloria="matMenu">
+                  <button mat-menu-item (click)="verArchivo('contraloria')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputContraloria" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputContraloria" style="display: none;"
+                    (change)="subirArchivo($event, 'contraloria')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>Contraloría</mat-label>
+                  <mat-select formControlName="contraloria">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado
+                      }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['contraloria']" class="uploaded-file-name">
+                  {{ uploadedFiles['contraloria'].fileName }}
+                </small>
+              </div>
+
+              <!-- Rama Judicial -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuRamaJudicial" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuRamaJudicial="matMenu">
+                  <button mat-menu-item (click)="verArchivo('ramaJudicial')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputRamaJudicial" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputRamaJudicial" style="display: none;"
+                    (change)="subirArchivo($event, 'ramaJudicial')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>Rama Judicial</mat-label>
+                  <mat-select formControlName="ramaJudicial">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado
+                      }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['ramaJudicial']" class="uploaded-file-name">
+                  {{ uploadedFiles['ramaJudicial'].fileName }}
+                </small>
+              </div>
+
+              <!-- Medidas Correctivas -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuMedidasCorrectivas" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuMedidasCorrectivas="matMenu">
+                  <button mat-menu-item (click)="verArchivo('medidasCorrectivas')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputMedidasCorrectivas" style="cursor: pointer;">Subir
+                      PDF</label>
+                  </button>
+                  <input type="file" id="fileInputMedidasCorrectivas" style="display: none;"
+                    (change)="subirArchivo($event, 'medidasCorrectivas')">
+                </mat-menu>
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>Medidas Correctivas</mat-label>
+                  <mat-select formControlName="medidasCorrectivas">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado
+                      }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['medidasCorrectivas']" class="uploaded-file-name">
+                  {{ uploadedFiles['medidasCorrectivas'].fileName }}
+                </small>
+
+              </div>
+
+              <!-- Sisben -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuSisben" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuSisben="matMenu">
+                  <button mat-menu-item (click)="verArchivo('sisben')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputSisben" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputSisben" style="display: none;"
+                    (change)="subirArchivo($event, 'sisben')">
+                </mat-menu>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Sisben</mat-label>
+                  <mat-select formControlName="sisben">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['sisben']" class="uploaded-file-name">
+                  {{ uploadedFiles['sisben'].fileName }}
+                </small>
+              </div>
+
+              <!-- OFAC -->
+              <div class="input-container">
+                <button mat-icon-button [matMenuTriggerFor]="pdfMenuOfac" aria-label="PDF options">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #pdfMenuOfac="matMenu">
+                  <button mat-menu-item (click)="verArchivo('ofac')">Ver PDF</button>
+                  <button mat-menu-item>
+                    <label for="fileInputOfac" style="cursor: pointer;">Subir PDF</label>
+                  </button>
+                  <input type="file" id="fileInputOfac" style="display: none;" (change)="subirArchivo($event, 'ofac')">
+                </mat-menu>
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>OFAC</mat-label>
+                  <mat-select formControlName="ofac">
+                    <mat-option *ngFor="let estado of antecedentesEstados" [value]="estado">{{
+                      estado }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <small *ngIf="uploadedFiles['ofac']" class="uploaded-file-name">
+                  {{ uploadedFiles['ofac'].fileName }}
+                </small>
+              </div>
+
+
+              <!-- Área para la que Aplica -->
+              <div class="input-container">
+
+                <mat-form-field class="example-full-width3" class="example-full-width">
+                  <mat-label>Área para la que Aplica</mat-label>
+                  <input matInput formControlName="area_aplica" placeholder="Área para la que Aplica">
+                </mat-form-field>
+
+              </div>
+
+              <button mat-flat-button (click)="imprimirVerificacionesAplicacion()"
+                class="example-full-width">Cargar</button>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Entrevista o Prueba Técnica -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup2))}">
+              <mat-panel-title>
+                Entrevista o Prueba Técnica ({{ getPercentage(formGroup2) }}% completo)
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="seccion" [formGroup]="formGroup2">
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Centro de Costo</mat-label>
+                <input matInput formControlName="centroCosto" placeholder="CENTRO DE COSTO ENTREVISTA O PRUEBA TECNICA">
+              </mat-form-field>
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Cargo</mat-label>
+                <input matInput formControlName="cargo" placeholder="CARGO">
+              </mat-form-field>
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Área en la que presentará la entrevista</mat-label>
+                <input matInput formControlName="areaEntrevista" placeholder="ÁREA EN LA QUE PRESENTARA LA ENTREVISTA">
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Fecha de la Prueba o Entrevista</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="fechaPruebaEntrevista">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Hora de la Prueba o Entrevista</mat-label>
+                <input matInput type="time" formControlName="horaPruebaEntrevista">
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Dirección o indicación para llegar a la empresa</mat-label>
+                <input matInput formControlName="direccionEmpresa"
+                  placeholder="DIRECCION O INDICACION PARA LLEGAR A LA EMPRESA">
+              </mat-form-field>
+              <button mat-flat-button (click)="imprimirEntrevistaPrueba()" class="example-full-width">Cargar</button>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Examen de Salud Ocupacional -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup3))}">
+              <mat-panel-title>
+                Examen de Salud Ocupacional ({{ getPercentage(formGroup3) }}% completo)
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="seccion" [formGroup]="formGroup3">
+
+
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>IPS</mat-label>
+                <mat-select formControlName="ips" placeholder="IPS">
+                  <mat-option value="JAVAP">JAVAP</mat-option>
+                  <mat-option value="ESTRATEGO">ESTRATEGO</mat-option>
+                  <mat-option value="HELSEN">HELSEN</mat-option>
+                  <mat-option value="ASISTIR">ASISTIR</mat-option>
+                  <mat-option value="SIGMEDICAL">SIGMEDICAL</mat-option>
+                  <mat-option value="PORSALUD">PORSALUD</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>IPSLAB</mat-label>
+                <mat-select formControlName="ipsLab" placeholder="IPSLAB">
+                  <mat-option value="JAVAP">JAVAP</mat-option>
+                  <mat-option value="ESTRATEGO">ESTRATEGO</mat-option>
+                  <mat-option value="HELSEN">HELSEN</mat-option>
+                  <mat-option value="ASISTIR">ASISTIR</mat-option>
+                  <mat-option value="SIGMEDICAL">SIGMEDICAL</mat-option>
+                  <mat-option value="PORSALUD">PORSALUD</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+
+              <!-- Select múltiple para elegir exámenes -->
+              <mat-form-field appearance="fill" class="example-full-width">
+                <mat-label>Seleccione los exámenes</mat-label>
+                <mat-select formControlName="selectedExams" multiple>
+                  <mat-option *ngFor="let exam of filteredExamOptions" [value]="exam">
+                    {{ exam }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+
+              <!-- Campos dinámicos para cada examen seleccionado -->
+              <div formArrayName="selectedExamsArray">
+                <div *ngFor="let exam of formGroup3.get('selectedExams')?.value; let i = index" [formGroupName]="i">
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>{{ exam }}</mat-label>
+                    <!-- Usa el nombre del examen seleccionado directamente -->
+                    <mat-select formControlName="aptoStatus">
+                      <mat-option value="APTO">APTO</mat-option>
+                      <mat-option value="NO APTO">NO APTO</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <button mat-flat-button (click)="imprimirSaludOcupacional()" class="example-full-width">Cargar</button>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Contratación -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(formGroup4))}">
+              <mat-panel-title>
+                Contratación ({{ getPercentage(formGroup4) }}% completo)
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="seccion" [formGroup]="formGroup4">
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Empresa Usuaria</mat-label>
+                <input matInput formControlName="empresaUsuaria" placeholder="EMPRESA USUARIA">
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Fecha de Ingreso</mat-label>
+                <input matInput [matDatepicker]="pickerFechaIngreso" formControlName="fechaIngreso">
+                <mat-datepicker-toggle matSuffix [for]="pickerFechaIngreso"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFechaIngreso></mat-datepicker>
+              </mat-form-field>
+
+
+
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Salario</mat-label>
+                <input matInput formControlName="salario" placeholder="SALARIO">
+              </mat-form-field>
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Auxilio de Transporte</mat-label>
+                <input matInput formControlName="auxTransporte" placeholder="AUXTRANSPORTE">
+              </mat-form-field>
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Rodamiento</mat-label>
+                <input matInput formControlName="rodamiento" placeholder="RODAMIENTO">
+              </mat-form-field>
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Auxilio de Movilidad</mat-label>
+                <input matInput formControlName="auxMovilidad" placeholder="AUX MOVILIDAD">
+              </mat-form-field>
+              <mat-form-field class="example-full-width3" class="example-full-width">
+                <mat-label>Bonificación</mat-label>
+                <input matInput formControlName="bonificacion" placeholder="BONIFICACION">
+              </mat-form-field>
+              <button mat-flat-button (click)="imprimirContratacion()" class="example-full-width">Cargar</button>
+            </div>
+          </mat-expansion-panel>
+
+        </mat-accordion>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+    <!-- Tarjeta para búsqueda de cédula -->
+    <div class="seleccion">
+      <mat-card class="campoCedula">
+        <mat-card-content>
+          <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+            Ingrese la cédula del usuario a buscar:
+          </h1>
+          <!-- Campo de texto para cédula -->
+          <mat-form-field class="example-full-width3" class="example-full-width2" style="margin-left: 0;">
+            <mat-label>Cédula</mat-label>
+            <input matInput type="text" [(ngModel)]="cedula" placeholder="Cédula">
+          </mat-form-field>
+          <!-- Botón de búsqueda -->
+          <button mat-flat-button (click)="buscarCedula()" class="example-full-width" style="margin-top: -5px;">
+            Buscar
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="camposInfo">
+        <mat-card-content>
+          <h1 class="titulo" style="margin-right: 10px; width: 100%;">
+            Complete la información de contratación
+          </h1>
+          <mat-accordion>
+            <!-- Acordeón 1: Información de Pago y Transporte -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header
+                [ngStyle]="{'background-color': getPanelColor(getPercentage(pagoTransporteForm))}">
+                <mat-panel-title>Información de Pago y Transporte ({{ getPercentage(pagoTransporteForm)
+                  }}% completo) </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div [formGroup]="pagoTransporteForm">
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Semanas Cotizadas </mat-label>
+                  <input matInput formControlName="semanasCotizadas" type="number">
+                </mat-form-field>
+
+                <!--Daviplata, Davivienda cta ahorros, Colpatria cta ahorros, Bancolombia,  Otra -->
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Forma de Pago</mat-label>
+                  <mat-select formControlName="formaPago">
+                    <mat-option value="Daviplata">Daviplata</mat-option>
+                    <mat-option value="Davivienda cta ahorros">Davivienda cta ahorros</mat-option>
+                    <mat-option value="Colpatria cta ahorros">Colpatria cta ahorros</mat-option>
+                    <mat-option value="Bancolombia">Bancolombia</mat-option>
+                    <mat-option value="Otra">Otra</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!--si es Otra habilitar campo-->
+                <mat-form-field class="example-full-width3"
+                  *ngIf="pagoTransporteForm.get('formaPago')?.value === 'Otra'">
+                  <mat-label>Otra Forma de Pago</mat-label>
+                  <input matInput formControlName="otraFormaPago">
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Número para Pagos</mat-label>
+                  <input matInput formControlName="numeroPagos" />
+                  <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('required')">
+                    El número para pagos es obligatorio.
+                  </mat-error>
+                  <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('pattern')">
+                    Debe contener exactamente 10 dígitos.
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Validación Número de Cuenta</mat-label>
+                  <input matInput formControlName="validacionNumeroCuenta" />
+                  <mat-error *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('required')">
+                    La validación del número de cuenta es obligatoria.
+                  </mat-error>
+                  <mat-error *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('pattern')">
+                    Debe contener exactamente 10 dígitos.
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Error del validador del grupo -->
+                <mat-error *ngIf="pagoTransporteForm.hasError('numbersNotMatch')" class="error">
+                  El número para pagos y la validación del número de cuenta deben coincidir.
+                </mat-error>
+
+                <!--seguro funerario SI O NO -->
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Seguro Funerario</mat-label>
+                  <mat-select formControlName="seguroFunerario">
+                    <mat-option value="SI">SI</mat-option>
+                    <mat-option value="NO">NO</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Ccostos</mat-label>
+                  <input matInput formControlName="Ccostos">
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Salario</mat-label>
+                  <input matInput formControlName="salario" type="number">
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Auxilio de Transporte</mat-label>
+                  <input matInput formControlName="auxilioTransporte" type="number">
+                </mat-form-field>
+
+                <mat-form-field class="example-full-width3">
+                  <mat-label>Porcentaje ARL</mat-label>
+                  <input matInput formControlName="porcentajeARL" type="number" step="0.01">
+                </mat-form-field>
+
+                <button mat-flat-button (click)="cargarPagoTransporte()">Cargar</button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Referencias Personales -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header
+                [ngStyle]="{'background-color': getPanelColor(getPercentage(referenciasForm))}">
+                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(referenciasForm)
+                  }}% completo </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div [formGroup]="referenciasForm">
+
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar1" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuFamiliar1="matMenu">
+                    <button mat-menu-item (click)="verArchivo('familiar1')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputFamiliar1" style="cursor: pointer;">Subir PDF</label>
                     </button>
-                </mat-card-content>
-            </mat-card>
+                    <input type="file" id="fileInputFamiliar1" style="display: none;"
+                      (change)="subirArchivo($event, 'familiar1')" />
+                  </mat-menu>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Familiar 1</mat-label>
+                    <input matInput formControlName="familiar1"
+                      [value]="uploadedFiles['familiar1'] ? uploadedFiles['familiar1'].fileName : ''" readonly />
+                  </mat-form-field>
+                </div>
 
-            <mat-card class="camposInfo">
-                <mat-card-content>
-                    <h1 class="titulo" style="margin-right: 10px; width: 100%;">
-                        Complete la información de contratación
-                    </h1>
-                    <mat-accordion>
-                        <!-- Acordeón 1: Información de Pago y Transporte -->
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header
-                                [ngStyle]="{'background-color': getPanelColor(getPercentage(pagoTransporteForm))}">
-                                <mat-panel-title>Información de Pago y Transporte ({{ getPercentage(pagoTransporteForm)
-                                    }}% completo) </mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <div [formGroup]="pagoTransporteForm">
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Semanas Cotizadas </mat-label>
-                                    <input matInput formControlName="semanasCotizadas" type="number">
-                                </mat-form-field>
-
-                                <!--Daviplata, Davivienda cta ahorros, Colpatria cta ahorros, Bancolombia,  Otra -->
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Forma de Pago</mat-label>
-                                    <mat-select formControlName="formaPago">
-                                        <mat-option value="Daviplata">Daviplata</mat-option>
-                                        <mat-option value="Davivienda cta ahorros">Davivienda cta ahorros</mat-option>
-                                        <mat-option value="Colpatria cta ahorros">Colpatria cta ahorros</mat-option>
-                                        <mat-option value="Bancolombia">Bancolombia</mat-option>
-                                        <mat-option value="Otra">Otra</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-
-                                <!--si es Otra habilitar campo-->
-                                <mat-form-field class="example-full-width3"
-                                    *ngIf="pagoTransporteForm.get('formaPago')?.value === 'Otra'">
-                                    <mat-label>Otra Forma de Pago</mat-label>
-                                    <input matInput formControlName="otraFormaPago">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Número para Pagos</mat-label>
-                                    <input matInput formControlName="numeroPagos" />
-                                    <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('required')">
-                                        El número para pagos es obligatorio.
-                                    </mat-error>
-                                    <mat-error *ngIf="pagoTransporteForm.get('numeroPagos')?.hasError('pattern')">
-                                        Debe contener exactamente 10 dígitos.
-                                    </mat-error>
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Validación Número de Cuenta</mat-label>
-                                    <input matInput formControlName="validacionNumeroCuenta" />
-                                    <mat-error
-                                        *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('required')">
-                                        La validación del número de cuenta es obligatoria.
-                                    </mat-error>
-                                    <mat-error
-                                        *ngIf="pagoTransporteForm.get('validacionNumeroCuenta')?.hasError('pattern')">
-                                        Debe contener exactamente 10 dígitos.
-                                    </mat-error>
-                                </mat-form-field>
-
-                                <!-- Error del validador del grupo -->
-                                <mat-error *ngIf="pagoTransporteForm.hasError('numbersNotMatch')" class="error">
-                                    El número para pagos y la validación del número de cuenta deben coincidir.
-                                </mat-error>
-
-                                <!--seguro funerario SI O NO -->
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Seguro Funerario</mat-label>
-                                    <mat-select formControlName="seguroFunerario">
-                                        <mat-option value="SI">SI</mat-option>
-                                        <mat-option value="NO">NO</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Ccostos</mat-label>
-                                    <input matInput formControlName="Ccostos">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Salario</mat-label>
-                                    <input matInput formControlName="salario" type="number">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Auxilio de Transporte</mat-label>
-                                    <input matInput formControlName="auxilioTransporte" type="number">
-                                </mat-form-field>
-
-                                <mat-form-field class="example-full-width3">
-                                    <mat-label>Porcentaje ARL</mat-label>
-                                    <input matInput formControlName="porcentajeARL" type="number" step="0.01">
-                                </mat-form-field>
-
-                                <button mat-flat-button (click)="cargarPagoTransporte()">Cargar</button>
-                            </div>
-                        </mat-expansion-panel>
-
-                        <!-- Referencias Personales -->
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header
-                                [ngStyle]="{'background-color': getPanelColor(getPercentage(referenciasForm))}">
-                                <mat-panel-title>Referencias Familiares y Personales ({{ getPercentage(referenciasForm)
-                                    }}% completo </mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <div [formGroup]="referenciasForm">
-
-                                <div class="input-container">
-                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar1"
-                                        aria-label="PDF options">
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #pdfMenuFamiliar1="matMenu">
-                                        <button mat-menu-item (click)="verArchivo('familiar1')">Ver PDF</button>
-                                        <button mat-menu-item>
-                                            <label for="fileInputFamiliar1" style="cursor: pointer;">Subir PDF</label>
-                                        </button>
-                                        <input type="file" id="fileInputFamiliar1" style="display: none;"
-                                            (change)="subirArchivo($event, 'familiar1')" />
-                                    </mat-menu>
-                                    <mat-form-field appearance="fill" class="example-full-width">
-                                        <mat-label>Familiar 1</mat-label>
-                                        <input matInput formControlName="familiar1"
-                                            [value]="uploadedFiles['familiar1'] ? uploadedFiles['familiar1'].fileName : ''"
-                                            readonly />
-                                    </mat-form-field>
-                                </div>
-
-                                <!-- Referencia Familiar 2 -->
-                                <div class="input-container">
-                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar2"
-                                        aria-label="PDF options">
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #pdfMenuFamiliar2="matMenu">
-                                        <button mat-menu-item (click)="verArchivo('familiar2')">Ver PDF</button>
-                                        <button mat-menu-item>
-                                            <label for="fileInputFamiliar2" style="cursor: pointer;">Subir PDF</label>
-                                        </button>
-                                        <input type="file" id="fileInputFamiliar2" style="display: none;"
-                                            (change)="subirArchivo($event, 'familiar2')" />
-                                    </mat-menu>
-                                    <mat-form-field appearance="fill" class="example-full-width">
-                                        <mat-label>Familiar 2</mat-label>
-                                        <input matInput formControlName="familiar1"
-                                            [value]="uploadedFiles['familiar2'] ? uploadedFiles['familiar2'].fileName : ''"
-                                            readonly />
-                                    </mat-form-field>
-                                </div>
-
-                                <!-- Referencia Personal 1 -->
-                                <div class="input-container">
-                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuPersonal1"
-                                        aria-label="PDF options">
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #pdfMenuPersonal1="matMenu">
-                                        <button mat-menu-item (click)="verArchivo('personal1')">Ver PDF</button>
-                                        <button mat-menu-item>
-                                            <label for="fileInputPersonal1" style="cursor: pointer;">Subir PDF</label>
-                                        </button>
-                                        <input type="file" id="fileInputPersonal1" style="display: none;"
-                                            (change)="subirArchivo($event, 'personal1')" />
-                                    </mat-menu>
-                                    <mat-form-field appearance="fill" class="example-full-width">
-                                        <mat-label>Personal 1</mat-label>
-                                        <input matInput formControlName="familiar1"
-                                            [value]="uploadedFiles['personal1'] ? uploadedFiles['personal1'].fileName : ''"
-                                            readonly />
-                                    </mat-form-field>
-                                </div>
-
-                                <!-- Referencia Personal 2 -->
-                                <div class="input-container">
-                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuPersonal2"
-                                        aria-label="PDF options">
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #pdfMenuPersonal2="matMenu">
-                                        <button mat-menu-item (click)="verArchivo('personal2')">Ver PDF</button>
-                                        <button mat-menu-item>
-                                            <label for="fileInputPersonal2" style="cursor: pointer;">Subir PDF</label>
-                                        </button>
-                                        <input type="file" id="fileInputPersonal2" style="display: none;"
-                                            (change)="subirArchivo($event, 'personal2')" />
-                                    </mat-menu>
-                                    <mat-form-field appearance="fill" class="example-full-width">
-                                        <mat-label>Personal 2</mat-label>
-                                        <input matInput formControlName="familiar1"
-                                            [value]="uploadedFiles['personal2'] ? uploadedFiles['personal2'].fileName : ''"
-                                            readonly />
-                                    </mat-form-field>
-                                </div>
-
-
-                                <button mat-flat-button (click)="cargarReferencias()">Cargar</button>
-                            </div>
-                        </mat-expansion-panel>
-
-                        <!-- Acordeón 4: Traslados -->
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header
-                                [ngStyle]="{'background-color': getPanelColor(getPercentage(trasladosForm))}">
-                                <mat-panel-title>Traslados ({{ getPercentage(trasladosForm) }}% completo)
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <div [formGroup]="trasladosForm">
-                                <!-- Grupo para Desea Trasladarse -->
-                                <div class="form-group">
-                                    <mat-form-field class="example-full-width4">
-                                        <mat-label>¿Desea Trasladarse?</mat-label>
-                                        <mat-select formControlName="opcion_traslado_eps"
-                                            (selectionChange)="onTrasladoChange($event)">
-                                            <mat-option value="NO" selected>No</mat-option>
-                                            <mat-option value="SI">Sí</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                    <!-- Campo EPS visible solo si la respuesta es "Sí" -->
-                                    <mat-form-field class="example-full-width4"
-                                        *ngIf="trasladosForm.get('opcion_traslado_eps')?.value === 'SI'">
-                                        <mat-label>Seleccione EPS</mat-label>
-                                        <mat-select formControlName="eps_a_trasladar">
-                                            <mat-option value="FAMISANAR">Famisanar</mat-option>
-                                            <mat-option value="SALUD_TOTAL">Salud Total</mat-option>
-                                            <mat-option value="NUEVA_EPS">Nueva EPS</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-
-
-                                <!-- Campo Traslado -->
-                                <div class="input-container"
-                                    *ngIf="trasladosForm.get('opcion_traslado_eps')?.value === 'SI'">
-                                    <button mat-icon-button [matMenuTriggerFor]="pdfMenuTraslado"
-                                        aria-label="PDF options">
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #pdfMenuTraslado="matMenu">
-                                        <button mat-menu-item (click)="verArchivo('traslado')">Ver PDF</button>
-                                        <button mat-menu-item>
-                                            <label for="fileInputTraslado" style="cursor: pointer;">Subir PDF</label>
-                                        </button>
-                                        <input type="file" id="fileInputTraslado" style="display: none;"
-                                            (change)="subirArchivo($event, 'traslado')" />
-                                        <button mat-menu-item (click)="descargarArchivo()">Descargar</button>
-                                    </mat-menu>
-
-                                    <mat-form-field appearance="fill" class="example-full-width">
-                                        <mat-label>Archivo Traslado</mat-label>
-                                        <input matInput formControlName="traslado"
-                                            [value]="uploadedFiles['traslado'] ? uploadedFiles['traslado'].fileName : ''"
-                                            readonly />
-                                    </mat-form-field>
-
-                                </div>
-
-                                <!-- Botón para cargar los traslados -->
-                                <button mat-flat-button (click)="cargarTraslados()">Cargar</button>
-                            </div>
-
-                        </mat-expansion-panel>
-
-
-                        <!-- Acordeón 5: Número de cédula y firma adminitrativo -->
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title> Número de Cédula </mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <div [formGroup]="huellaForm">
-                                <!-- Campo de entrada para la cédula -->
-                                <div class="form-group">
-                                    <mat-form-field class="example-full-width4">
-                                        <mat-label>Número de Cédula</mat-label>
-                                        <input matInput formControlName="cedula"
-                                            placeholder="Ingrese el número de cédula">
-                                    </mat-form-field>
-                                    <!-- arregloDeCentroDeCostos -->
-                                    <mat-form-field appearance="fill" class="example-full-width4">
-                                        <mat-label>Centro de Costo</mat-label>
-                                        <!-- Campo de texto con autocompletado -->
-                                        <input matInput [matAutocomplete]="auto" formControlName="centroCosto"
-                                            placeholder="Selecciona o busca un centro de costo" />
-                                        <mat-autocomplete #auto="matAutocomplete">
-                                            <!-- Opciones filtradas dinámicamente -->
-                                            <mat-option *ngFor="let centro of filteredCentros$ | async"
-                                                [value]="centro">
-                                                {{ centro }}
-                                            </mat-option>
-                                        </mat-autocomplete>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-
-                            <!-- Campo de Huella Dactilar -->
-                            <!-- Sección para la huella del índice derecho -->
-                            <mat-card class="fingerprint-card">
-                                <mat-card-content>
-                                    <!-- Contenedor para alinear los elementos principales -->
-                                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px"
-                                        class="main-container">
-                                        <!-- Contenedor de la acción y mensaje -->
-                                        <div fxLayout="column" fxLayoutGap="8px" class="left-section">
-                                            <h1 class="titulo">Huella Digital: Índice Derecho</h1>
-                                            <!-- Botón para capturar huella -->
-                                            <button mat-raised-button color="primary" (click)="captureFingerprintID()">
-                                                <mat-icon>camera</mat-icon> Capturar Huella
-                                            </button>
-
-                                            <!-- Mensaje de estado -->
-                                            <div *ngIf="message" class="status-message">
-                                                <mat-icon>check_circle</mat-icon> {{ message }}
-                                            </div>
-                                        </div>
-
-                                        <!-- Imagen de la huella -->
-                                        <div *ngIf="fingerprintImageID" class="fingerprint-image-container">
-                                            <img [src]="fingerprintImageID" alt="Imagen de la huella digital" />
-                                        </div>
-                                    </div>
-                                </mat-card-content>
-                            </mat-card>
-
-                            <mat-card class="fingerprint-card card2">
-                                <mat-card-content>
-                                    <!-- Contenedor principal alineado horizontalmente -->
-                                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px"
-                                        class="main-container">
-                                        <!-- Sección izquierda: Botón y mensaje -->
-                                        <div fxLayout="column" fxLayoutGap="8px" class="left-section">
-                                            <h1 class="titulo">Huella Digital: Pulgar Derecho</h1>
-                                            <!-- Botón para capturar huella -->
-                                            <button mat-raised-button color="primary" (click)="captureFingerprintPD()">
-                                                <mat-icon>camera</mat-icon> Capturar Huella
-                                            </button>
-
-                                            <!-- Mensaje de estado -->
-                                            <div *ngIf="message2" class="status-message">
-                                                <mat-icon>check_circle</mat-icon> {{ message2 }}
-                                            </div>
-                                        </div>
-
-                                        <!-- Imagen de la huella -->
-                                        <div *ngIf="fingerprintImagePD" class="fingerprint-image-container">
-                                            <img [src]="fingerprintImagePD" alt="Imagen de la huella digital" />
-                                        </div>
-                                    </div>
-                                </mat-card-content>
-                            </mat-card>
-
-
-                        </mat-expansion-panel>
-
-
-                    </mat-accordion>
-                    <button mat-flat-button class="btn-with-arrow" (click)="generacionDocumentos()">
-                        <span class="text">Generar o subir documentación </span>
-                        <mat-icon class="arrow">arrow_forward</mat-icon>
+                <!-- Referencia Familiar 2 -->
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuFamiliar2" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuFamiliar2="matMenu">
+                    <button mat-menu-item (click)="verArchivo('familiar2')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputFamiliar2" style="cursor: pointer;">Subir PDF</label>
                     </button>
+                    <input type="file" id="fileInputFamiliar2" style="display: none;"
+                      (change)="subirArchivo($event, 'familiar2')" />
+                  </mat-menu>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Familiar 2</mat-label>
+                    <input matInput formControlName="familiar1"
+                      [value]="uploadedFiles['familiar2'] ? uploadedFiles['familiar2'].fileName : ''" readonly />
+                  </mat-form-field>
+                </div>
+
+                <!-- Referencia Personal 1 -->
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuPersonal1" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuPersonal1="matMenu">
+                    <button mat-menu-item (click)="verArchivo('personal1')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputPersonal1" style="cursor: pointer;">Subir PDF</label>
+                    </button>
+                    <input type="file" id="fileInputPersonal1" style="display: none;"
+                      (change)="subirArchivo($event, 'personal1')" />
+                  </mat-menu>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Personal 1</mat-label>
+                    <input matInput formControlName="familiar1"
+                      [value]="uploadedFiles['personal1'] ? uploadedFiles['personal1'].fileName : ''" readonly />
+                  </mat-form-field>
+                </div>
+
+                <!-- Referencia Personal 2 -->
+                <div class="input-container">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuPersonal2" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuPersonal2="matMenu">
+                    <button mat-menu-item (click)="verArchivo('personal2')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputPersonal2" style="cursor: pointer;">Subir PDF</label>
+                    </button>
+                    <input type="file" id="fileInputPersonal2" style="display: none;"
+                      (change)="subirArchivo($event, 'personal2')" />
+                  </mat-menu>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Personal 2</mat-label>
+                    <input matInput formControlName="familiar1"
+                      [value]="uploadedFiles['personal2'] ? uploadedFiles['personal2'].fileName : ''" readonly />
+                  </mat-form-field>
+                </div>
+
+
+                <button mat-flat-button (click)="cargarReferencias()">Cargar</button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Acordeón 4: Traslados -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header [ngStyle]="{'background-color': getPanelColor(getPercentage(trasladosForm))}">
+                <mat-panel-title>Traslados ({{ getPercentage(trasladosForm) }}% completo)
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div [formGroup]="trasladosForm">
+                <!-- Grupo para Desea Trasladarse -->
+                <div class="form-group">
+                  <mat-form-field class="example-full-width4">
+                    <mat-label>¿Desea Trasladarse?</mat-label>
+                    <mat-select formControlName="opcion_traslado_eps" (selectionChange)="onTrasladoChange($event)">
+                      <mat-option value="NO" selected>No</mat-option>
+                      <mat-option value="SI">Sí</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <!-- Campo EPS visible solo si la respuesta es "Sí" -->
+                  <mat-form-field class="example-full-width4"
+                    *ngIf="trasladosForm.get('opcion_traslado_eps')?.value === 'SI'">
+                    <mat-label>Seleccione EPS</mat-label>
+                    <mat-select formControlName="eps_a_trasladar">
+                      <mat-option value="FAMISANAR">Famisanar</mat-option>
+                      <mat-option value="SALUD_TOTAL">Salud Total</mat-option>
+                      <mat-option value="NUEVA_EPS">Nueva EPS</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+
+                <!-- Campo Traslado -->
+                <div class="input-container" *ngIf="trasladosForm.get('opcion_traslado_eps')?.value === 'SI'">
+                  <button mat-icon-button [matMenuTriggerFor]="pdfMenuTraslado" aria-label="PDF options">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #pdfMenuTraslado="matMenu">
+                    <button mat-menu-item (click)="verArchivo('traslado')">Ver PDF</button>
+                    <button mat-menu-item>
+                      <label for="fileInputTraslado" style="cursor: pointer;">Subir PDF</label>
+                    </button>
+                    <input type="file" id="fileInputTraslado" style="display: none;"
+                      (change)="subirArchivo($event, 'traslado')" />
+                    <button mat-menu-item (click)="descargarArchivo()">Descargar</button>
+                  </mat-menu>
+
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Archivo Traslado</mat-label>
+                    <input matInput formControlName="traslado"
+                      [value]="uploadedFiles['traslado'] ? uploadedFiles['traslado'].fileName : ''" readonly />
+                  </mat-form-field>
+
+                </div>
+
+                <!-- Botón para cargar los traslados -->
+                <button mat-flat-button (click)="cargarTraslados()">Cargar</button>
+              </div>
+
+            </mat-expansion-panel>
+
+
+            <!-- Acordeón 5: Número de cédula y firma adminitrativo -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Número de Cédula </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div [formGroup]="huellaForm">
+                <!-- Campo de entrada para la cédula -->
+                <div class="form-group">
+                  <mat-form-field class="example-full-width4">
+                    <mat-label>Número de Cédula</mat-label>
+                    <input matInput formControlName="cedula" placeholder="Ingrese el número de cédula">
+                  </mat-form-field>
+                  <!-- arregloDeCentroDeCostos -->
+                  <mat-form-field appearance="fill" class="example-full-width4">
+                    <mat-label>Centro de Costo</mat-label>
+                    <!-- Campo de texto con autocompletado -->
+                    <input matInput [matAutocomplete]="auto" formControlName="centroCosto"
+                      placeholder="Selecciona o busca un centro de costo" />
+                    <mat-autocomplete #auto="matAutocomplete">
+                      <!-- Opciones filtradas dinámicamente -->
+                      <mat-option *ngFor="let centro of filteredCentros$ | async" [value]="centro">
+                        {{ centro }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Campo de Huella Dactilar -->
+              <!-- Sección para la huella del índice derecho -->
+              <mat-card class="fingerprint-card">
+                <mat-card-content>
+                  <!-- Contenedor para alinear los elementos principales -->
+                  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" class="main-container">
+                    <!-- Contenedor de la acción y mensaje -->
+                    <div fxLayout="column" fxLayoutGap="8px" class="left-section">
+                      <h1 class="titulo">Huella Digital: Índice Derecho</h1>
+                      <!-- Botón para capturar huella -->
+                      <button mat-raised-button color="primary" (click)="captureFingerprintID()">
+                        <mat-icon>camera</mat-icon> Capturar Huella
+                      </button>
+
+                      <!-- Mensaje de estado -->
+                      <div *ngIf="message" class="status-message">
+                        <mat-icon>check_circle</mat-icon> {{ message }}
+                      </div>
+                    </div>
+
+                    <!-- Imagen de la huella -->
+                    <div *ngIf="fingerprintImageID" class="fingerprint-image-container">
+                      <img [src]="fingerprintImageID" alt="Imagen de la huella digital" />
+                    </div>
+                  </div>
                 </mat-card-content>
-            </mat-card>
+              </mat-card>
+
+              <mat-card class="fingerprint-card card2">
+                <mat-card-content>
+                  <!-- Contenedor principal alineado horizontalmente -->
+                  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" class="main-container">
+                    <!-- Sección izquierda: Botón y mensaje -->
+                    <div fxLayout="column" fxLayoutGap="8px" class="left-section">
+                      <h1 class="titulo">Huella Digital: Pulgar Derecho</h1>
+                      <!-- Botón para capturar huella -->
+                      <button mat-raised-button color="primary" (click)="captureFingerprintPD()">
+                        <mat-icon>camera</mat-icon> Capturar Huella
+                      </button>
+
+                      <!-- Mensaje de estado -->
+                      <div *ngIf="message2" class="status-message">
+                        <mat-icon>check_circle</mat-icon> {{ message2 }}
+                      </div>
+                    </div>
+
+                    <!-- Imagen de la huella -->
+                    <div *ngIf="fingerprintImagePD" class="fingerprint-image-container">
+                      <img [src]="fingerprintImagePD" alt="Imagen de la huella digital" />
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+
+            </mat-expansion-panel>
+
+
+          </mat-accordion>
+          <button mat-flat-button class="btn-with-arrow" (click)="generacionDocumentos()">
+            <span class="text">Generar o subir documentación </span>
+            <mat-icon class="arrow">arrow_forward</mat-icon>
+          </button>
+        </mat-card-content>
+      </mat-card>
 
 
 
-
-        </div>
 
     </div>
+
+  </div>
 </div>

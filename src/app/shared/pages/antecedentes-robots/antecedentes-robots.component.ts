@@ -56,7 +56,7 @@ export class AntecedentesRobotsComponent implements OnInit {
 
   /** ---------- OTROS ---------- */
   isSidebarHidden = false;
-  private readonly claves = ['cedula', 'tipo_documento'];
+  private readonly claves = ['cedula', 'tipo_documento', 'paquete'];
 
   constructor(
     private robotsService: RobotsService,

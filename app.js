@@ -26,7 +26,7 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:4500');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.removeMenu();
+    //mainWindow.removeMenu();
     mainWindow.loadURL(`file://${path.join(__dirname, 'dist/gestion-empresa-migracion/browser/index.html')}`);
   }
 

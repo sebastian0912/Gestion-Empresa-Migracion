@@ -58,10 +58,12 @@ export const routes: Routes = [
   { path: 'solicitar-turno', component: SolicitarTurnoComponent },
   { path: 'vacantes', component: VacantesComponent },
   { path: 'visualizar-turnos', component: VisualizarTurnosComponent },
+
   { path: 'crear-estructura-documental', component: CrearEstructuraDocumentalComponent },
   { path: 'buscar-documentacion', component: BuscarDocumentacionComponent },
   { path: 'auditoria', component: AuditoriaComponent },
   { path: 'subir-documentacion', component: SubirDocumentacionComponent },
+  
   { path: 'envio-paquete-documentacion', component: EnvioPaqueteDocumentacionComponent },
   { path: 'recibir-paquete-documentacion', component: RecibirPaqueteDocumentacionComponent },
 

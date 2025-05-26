@@ -322,7 +322,6 @@ export class ContratacionComponent implements OnInit {
 
   uploadedFiles: { [key: string]: { file: File, fileName: string } } = {}; // Almacenar tanto el archivo como el nombre
 
-
   // Lógica de filtro
   filtrarCentros(valor: string): string[] {
     const filtro = valor.toLowerCase();
@@ -340,7 +339,6 @@ export class ContratacionComponent implements OnInit {
         this.cedula = cedula;
         // Llamar a la función buscarCedula con el valor de la cédula
         this.buscarCedula();
-
         // Limpiar la cédula del local storage
         localStorage.removeItem('cedula');
       }
@@ -416,10 +414,7 @@ export class ContratacionComponent implements OnInit {
     if (cargoInicial) {
       this.updateExamOptions(cargoInicial);
     }
-
   }
-
-
 
   // Agrega los controles necesarios si la opción es "Sí"
   private agregarControlesTraslado(): void {
@@ -832,7 +827,6 @@ export class ContratacionComponent implements OnInit {
     forkJoin({
       seleccion: this.contratacionService.traerDatosSeleccion(this.cedula),
       infoGeneral: this.contratacionService.buscarEncontratacion(this.cedula),
-
     }).subscribe(
       async ({ seleccion, infoGeneral }) => {
         Swal.close(); // Cierra el Swal de carga al completar
@@ -1946,6 +1940,7 @@ export class ContratacionComponent implements OnInit {
       datosParte3Seccion1: this.datosParte3Seccion1.value,
       datosParte3Seccion2: this.datosParte3Seccion2.value,
       datosParte4: this.datosParte4.value,
+
       selecionparte1: this.formGroup1.value,
       selecionparte2: this.formGroup2.value,
       selecionparte3: this.formGroup3.value,

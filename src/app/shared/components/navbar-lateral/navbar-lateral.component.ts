@@ -133,7 +133,7 @@ export class NavbarLateralComponent implements OnInit {
     INCAPACIDADSUBIDA: [
       'formulario-incapacicades', 'forma-pago', 'desprendibles-pago',
       'ausentismos', 'consulta-formulario', 'incapacidades-totales', 'subida-archivos-incapacidades', 'buscar-incapacicades',
-      'formulario-incapacicades', 'reporte-contratacion', 'ver-reporte'
+      'formulario-incapacicades', 'reporte-contratacion', 'ver-reporte','vacantes'
     ],
     AUX_CONTRATACION: [
       'reporte-contratacion',
@@ -163,6 +163,8 @@ export class NavbarLateralComponent implements OnInit {
   public isMenuVisible = true;
   // Crear un Output Event para emitir el cambio de estado
   @Output() menuToggle = new EventEmitter<boolean>();
+  extraPermissions: string[] = [];
+  permisosActuales: string[] = [];
 
 
 
@@ -211,6 +213,7 @@ export class NavbarLateralComponent implements OnInit {
         'contratacionbogota.rtc@gmail.com',
         'contratacionsuba.ts@gmail.com',
         'mercarflorats@gmail.com',
+        "mercarflora2.ts@gmail.com",
         'luis@gmail.com',
       ];
 
@@ -230,8 +233,19 @@ export class NavbarLateralComponent implements OnInit {
       } else {
         this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
       }
+      if (user.correo_electronico.toLowerCase() === 'seleccionsuba.ts@gmail.com') {
+        this.extraPermissions = ['vacantes'];
 
-      if (user.correo_electronico === 'archivotualianza@gmail.com' || user.correo_electronico === 'programador.ts@gmail.com' || user.rol === 'Gerencia') {
+      }
+
+      this.permisosActuales = [
+        ...(this.rolePermissions[this.currentRole] || []),
+        ...(this.extraPermissions || [])
+      ];
+
+      //
+
+      if (['archivotualianza@gmail.com', 'programador.ts@gmail.com'].includes(user.correo_electronico) || user.rol === 'Gerencia') {
         this.angelaVisible = true;
       }
     }

@@ -225,15 +225,11 @@ mat-card-subtitle {
     display: block;
     width: 100%;
     margin-top: -8px;
-    /* Ajusta el espacio para una mejor alineación */
     font-size: 0.85rem;
     color: #666;
     word-wrap: break-word;
     font-style: italic;
 }
-
-
-
 
 /* Media Query para pantallas pequeñas */
 @media (max-width: 768px) {
