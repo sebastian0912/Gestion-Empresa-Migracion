@@ -86,7 +86,7 @@ export class VetadosGerenciaComponent implements OnInit {
       minWidth: '850px',
       data: { element }
     });
-  
+
     dialogRef.afterClosed().subscribe(async result => {
       if (result) {
         (await this.vetadosService.actualizarReporte(element, result)).subscribe((data: any) => {

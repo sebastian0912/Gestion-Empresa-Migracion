@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.pagosService.getUser().then(user => {
       // si es ADMIN O GERENCIA ES ROBOT
-      if (user.rol === 'ADMIN' || user.rol === 'GERENCIA' || user.correo_electronico === 'arhivotualianza@gmail.com') {
+      if (user.rol === 'ADMIN' || user.rol === 'GERENCIA' || user.correo_electronico === 'arhivotualianza@gmail.com' || user.correo_electronico === 'archivotualianza2@gmail.com') {
                 this.robotsHome = true;
       } else {
         this.robotsHome = false;
@@ -231,4 +231,5 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+
 }

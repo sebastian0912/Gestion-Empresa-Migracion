@@ -1,40 +1,43 @@
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, NgIf, isPlatformBrowser } from '@angular/common';
+
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
+
 import { MatButtonModule } from '@angular/material/button';
-import { CommonModule, NgIf, NgIfContext } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { ContratacionService } from '../../services/contratacion/contratacion.service';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table'; // Import MatTableDataSource
-import { VerPdfsComponent } from '../../components/ver-pdfs/ver-pdfs.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date-rang-dialog.component';
-import Swal from 'sweetalert2';
-import { AdminService } from '../../services/admin/admin.service';
-import saveAs from 'file-saver';
 import { MatMenuModule } from '@angular/material/menu';
-import JSZip from 'jszip';
+import { MatDialog } from '@angular/material/dialog';
 
+import { ContratacionService } from '../../services/contratacion/contratacion.service';
+import { AdminService } from '../../services/admin/admin.service';
+
+import { VerPdfsComponent } from '../../components/ver-pdfs/ver-pdfs.component';
+import { DateRangeDialogComponent } from '../../components/date-rang-dialog/date-rang-dialog.component';
+
+import Swal from 'sweetalert2';
+import saveAs from 'file-saver';
+import JSZip from 'jszip';
 
 @Component({
   selector: 'app-ver-reporte',
   standalone: true,
   imports: [
+    CommonModule,
+    NgIf,
     NavbarSuperiorComponent,
     NavbarLateralComponent,
     MatButtonModule,
-    CommonModule,
     MatCardModule,
     MatTableModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatMenuModule,
-    NgIf
-
+    MatMenuModule
   ],
   templateUrl: './ver-reporte.component.html',
   styleUrl: './ver-reporte.component.css'
@@ -150,7 +153,11 @@ export class VerReporteComponent implements OnInit {
         this.reportes = response.reportes;
         this.dataSource.data = this.reportes;
 
-        if (this.userCorreo === 'tuafiliacion@tsservicios.co' || this.userCorreo === 'programador.ts@gmail.com' || this.userCorreo === 'a.seguridad.ts@gmail.com') {
+        if (
+          this.userCorreo === 'tuafiliacion@tsservicios.co' ||
+          this.userCorreo === 'programador.ts@gmail.com' ||
+          this.userCorreo === 'a.seguridad.ts@gmail.com'
+        ) {
           this.consolidadoDataSource.data = await this.generateConsolidatedData(this.reportes);
         }
       },
@@ -281,7 +288,13 @@ export class VerReporteComponent implements OnInit {
   openDateRangeDialog2(): void {
     if (!this.isBrowser) return;
     this.launchDateDialog(({ start, end }) => {
-      Swal.fire({ icon: 'info', title: 'Cargando', text: 'Descargando archivo...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      Swal.fire({
+        icon: 'info',
+        title: 'Cargando',
+        text: 'Descargando archivo...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
       this.contratacionService.obtenerBaseContratacionPorFechas(start, end).subscribe({
         next: (blob) => {
           Swal.close();
@@ -359,14 +372,15 @@ export class VerReporteComponent implements OnInit {
   async descargarCedulasZip(): Promise<void> {
     if (!this.isBrowser) return;
 
-    const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
     const sedesMap = new Map<string, any[]>();
 
     this.dataSource.data.forEach((reporte: any) => {
       const sede = reporte.sede || 'Sin_Sede';
       if (Array.isArray(reporte.cedulas)) {
-        sedesMap.has(sede) ? sedesMap.get(sede)!.push(...reporte.cedulas) : sedesMap.set(sede, [...reporte.cedulas]);
+        sedesMap.has(sede)
+          ? sedesMap.get(sede)!.push(...reporte.cedulas)
+          : sedesMap.set(sede, [...reporte.cedulas]);
       }
     });
 
@@ -392,7 +406,3 @@ export class VerReporteComponent implements OnInit {
     return new Blob([byteNumbers], { type: mime });
   }
 }
-function isPlatformBrowser(platformId: object): boolean {
-  throw new Error('Function not implemented.');
-}
-

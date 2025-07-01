@@ -88,7 +88,7 @@ export class NavbarLateralComponent implements OnInit {
 
   rolePermissions: any = {
     GERENCIA: [
-      'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria', 'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo', 'consulta-formulario'],
+      'forma-pago', 'desprendibles-pago', 'arl', 'ausentismos', 'reporte-contratacion', 'seguimiento-auditoria', 'estadisticas-auditoria', 'envio-paquete-documentacion', 'recibir-paquete-documentacion', 'personal-activo', 'consulta-formulario', 'vacantes'],
     RECEPCION: [
       'forma-pago', 'desprendibles-pago', 'ausentismos'
     ],
@@ -245,7 +245,7 @@ export class NavbarLateralComponent implements OnInit {
 
       //
 
-      if (['archivotualianza@gmail.com', 'programador.ts@gmail.com'].includes(user.correo_electronico) || user.rol === 'Gerencia') {
+      if (['archivotualianza@gmail.com', 'programador.ts@gmail.com', 'archivotualianza2@gmail.com'].includes(user.correo_electronico) || user.rol === 'Gerencia') {
         this.angelaVisible = true;
       }
     }

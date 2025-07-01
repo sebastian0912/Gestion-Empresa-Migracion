@@ -16,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './orden-union-dialog.component.html',
   styleUrl: './orden-union-dialog.component.css'
 })
+
 export class OrdenUnionDialogComponent {
   antecedentes: { id: number, name: string }[] = [];
 
