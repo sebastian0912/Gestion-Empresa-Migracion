@@ -230,6 +230,13 @@ export class FormularioIncapacidadComponent implements OnInit {
 
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.enable());
   }
+
+  mostrarBotonSaludTotal(): boolean {
+  // Normaliza a minúsculas y quita espacios para evitar errores de comparación
+  const epsSeleccionada = (this.incapacidadForm.get('nombre_eps')?.value || '').toLowerCase().trim();
+  return epsSeleccionada === 'salud total';
+}
+
   private loadDataForForm(): void {
     this.cargarInformacion(true);
     this.incapacidadService.traerDatosListas().subscribe(
