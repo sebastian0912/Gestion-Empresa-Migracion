@@ -496,7 +496,7 @@
 
             <mat-card-title class="titulo">Subida de archivos</mat-card-title>
             <mat-card-content>
-
+            <div class="form-row">
                   <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
                     <button mat-flat-button color="secondary" class="form-field"
                       *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
@@ -511,10 +511,13 @@
                     </button>
                   </ng-container>
 
-                  <button mat-flat-button color="secondary"
-                    *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL')">
-                    FURAT
-                  </button>
+                  <ng-container *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL') || mostrarBotonPorTipo('ACCIDENTE DE TRABAJO')">
+                    <button mat-flat-button color="secondary" class="form-field"
+                      *ngFor="let field of ['FURAT']">
+                      {{ field }}
+                    </button>
+                  </ng-container>
+            </div>
 
               <div class="form-row">
                 <div
