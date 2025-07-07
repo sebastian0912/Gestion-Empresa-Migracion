@@ -498,25 +498,131 @@
             <mat-card-content>
             <div class="form-row">
                   <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
-                    <button mat-flat-button color="secondary" class="form-field"
+                    <button class="form-field"
                       *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
                       {{ field }}
+                        <!-- Botón que abre el diálogo de subida de archivos -->
+                  <button
+                    mat-flat-button
+                    class="aumentar"
+                    (click)="onUploadClick(field)"
+                  >
+                    Subir {{ field }}
+                  </button>
+
+                  <!-- Lista de archivos subidos -->
+                  <div class="file-list">
+                    <mat-list>
+                      <mat-list-item
+                        *ngFor="let file of getFiles(field)"
+                        class="file-item"
+                      >
+                        <!-- Nombre del archivo -->
+                        <span mat-line>Archivo de {{ field }} </span>
+                        <span mat-line>{{ file.name }}</span>
+
+                        <!-- Botón para eliminar el archivo -->
+                        <button
+                          mat-icon-button
+                          (click)="removeFile(field, file)"
+                          color="warn"
+                          matTooltip="Eliminar archivo"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+
+                        <!-- Separador entre archivos -->
+                        <mat-divider></mat-divider>
+                      </mat-list-item>
+                    </mat-list>
+                  </div>
                     </button>
                   </ng-container>
 
                   <ng-container *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
-                    <button mat-flat-button color="secondary" class="form-field"
+                    <button class="form-field"
                       *ngFor="let field of ['SOAT', 'FURIPS']">
                       {{ field }}
+                        <!-- Botón que abre el diálogo de subida de archivos -->
+                  <button
+                    mat-flat-button
+                    class="aumentar"
+                    (click)="onUploadClick(field)"
+                  >
+                    Subir {{ field }}
+                  </button>
+
+                  <!-- Lista de archivos subidos -->
+                  <div class="file-list">
+                    <mat-list>
+                      <mat-list-item
+                        *ngFor="let file of getFiles(field)"
+                        class="file-item"
+                      >
+                        <!-- Nombre del archivo -->
+                        <span mat-line>Archivo de {{ field }} </span>
+                        <span mat-line>{{ file.name }}</span>
+
+                        <!-- Botón para eliminar el archivo -->
+                        <button
+                          mat-icon-button
+                          (click)="removeFile(field, file)"
+                          color="warn"
+                          matTooltip="Eliminar archivo"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+
+                        <!-- Separador entre archivos -->
+                        <mat-divider></mat-divider>
+                      </mat-list-item>
+                    </mat-list>
+                  </div>
                     </button>
                   </ng-container>
 
                   <ng-container *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL') || mostrarBotonPorTipo('ACCIDENTE DE TRABAJO')">
-                    <button mat-flat-button color="secondary" class="form-field"
+                    <button class="form-field"
                       *ngFor="let field of ['FURAT']">
                       {{ field }}
+                        <!-- Botón que abre el diálogo de subida de archivos -->
+                  <button
+                    mat-flat-button
+                    class="aumentar"
+                    (click)="onUploadClick(field)"
+                  >
+                    Subir {{ field }}
+                  </button>
+
+                  <!-- Lista de archivos subidos -->
+                  <div class="file-list">
+                    <mat-list>
+                      <mat-list-item
+                        *ngFor="let file of getFiles(field)"
+                        class="file-item"
+                      >
+                        <!-- Nombre del archivo -->
+                        <span mat-line>Archivo de {{ field }} </span>
+                        <span mat-line>{{ file.name }}</span>
+
+                        <!-- Botón para eliminar el archivo -->
+                        <button
+                          mat-icon-button
+                          (click)="removeFile(field, file)"
+                          color="warn"
+                          matTooltip="Eliminar archivo"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+
+                        <!-- Separador entre archivos -->
+                        <mat-divider></mat-divider>
+                      </mat-list-item>
+                    </mat-list>
+                  </div>
                     </button>
                   </ng-container>
+
             </div>
 
               <div class="form-row">
