@@ -496,6 +496,26 @@
 
             <mat-card-title class="titulo">Subida de archivos</mat-card-title>
             <mat-card-content>
+
+                  <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
+                    <button mat-flat-button color="secondary" class="form-field"
+                      *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
+                      {{ field }}
+                    </button>
+                  </ng-container>
+
+                  <ng-container *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
+                    <button mat-flat-button color="secondary" class="form-field"
+                      *ngFor="let field of ['SOAT', 'FURIPS']">
+                      {{ field }}
+                    </button>
+                  </ng-container>
+
+                  <button mat-flat-button color="secondary"
+                    *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL')">
+                    FURAT
+                  </button>
+
               <div class="form-row">
                 <div
                   *ngFor="
@@ -503,21 +523,6 @@
                   "
                   class="form-field"
                 >
-                  <button mat-flat-button color="secondary"
-                    *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD')">
-                    Acción para Licencia de maternidad
-                  </button>
-
-                  <button mat-flat-button color="secondary"
-                    *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
-                    Acción para SOAT/Accidente de tránsito
-                  </button>
-
-                  <button mat-flat-button color="secondary"
-                    *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL')">
-                    Acción para Enfermedad laboral
-                  </button>
-
                   <!-- Botón que abre el diálogo de subida de archivos -->
                   <button
                     mat-flat-button
