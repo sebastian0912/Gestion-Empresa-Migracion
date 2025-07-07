@@ -1114,6 +1114,31 @@ export class FormularioIncapacidadComponent implements OnInit {
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
 
+// ...dentro de tu clase FormularioIncapacidadComponent
+
+get tipoIncapacidadSeleccionado(): string {
+  return this.incapacidadForm.get('tipo_incapacidad')?.value;
+}
+
+// Ejemplo de función para saber si mostrar un botón
+mostrarBotonAccidenteTrabajo(): boolean {
+  return this.tipoIncapacidadSeleccionado === 'ENFERMEDAD LABORAL' || this.tipoIncapacidadSeleccionado === 'ACCIDENTE DE TRABAJO';
+}
+
+// Ejemplo de función para saber si mostrar un botón
+mostrarBotonAccidenteTrancito(): boolean {
+  return this.tipoIncapacidadSeleccionado === 'SOAT / ACCIDENTE DE TRANCITO';
+}
+
+mostrarBotonMATERNIDAD(): boolean {
+  return this.tipoIncapacidadSeleccionado === 'LICENCIA DE MATERNIDAD' || this.tipoIncapacidadSeleccionado === 'LICENCIA PATERNIDAD';
+}
+
+// Puedes hacer una genérica si tienes muchos tipos:
+mostrarBotonPorTipo(tipo: string): boolean {
+  return this.tipoIncapacidadSeleccionado === tipo;
+}
+
   estadoincapacidad: string[] = ['Original', 'Falsa', 'Copia']
   centrodecosto: string[] = [
     'Andes',

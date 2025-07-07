@@ -503,6 +503,21 @@
                   "
                   class="form-field"
                 >
+                  <button mat-flat-button color="secondary"
+                    *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD')">
+                    Acción para Licencia de maternidad
+                  </button>
+
+                  <button mat-flat-button color="secondary"
+                    *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
+                    Acción para SOAT/Accidente de tránsito
+                  </button>
+
+                  <button mat-flat-button color="secondary"
+                    *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL')">
+                    Acción para Enfermedad laboral
+                  </button>
+
                   <!-- Botón que abre el diálogo de subida de archivos -->
                   <button
                     mat-flat-button
@@ -514,7 +529,6 @@
 
                   <!-- Lista de archivos subidos -->
                   <div class="file-list">
-                    <!-- Lista de archivos subidos -->
                     <mat-list>
                       <mat-list-item
                         *ngFor="let file of getFiles(field)"
@@ -540,7 +554,7 @@
                     </mat-list>
                   </div>
                 </div>
-              </div>
+               </div>
             </mat-card-content>
         </form>
         <button
