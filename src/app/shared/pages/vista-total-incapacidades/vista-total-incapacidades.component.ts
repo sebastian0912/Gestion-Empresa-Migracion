@@ -613,14 +613,16 @@ downloadExcel(): void {
   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
 }
 
- // 2. Modifica tu método combineDataForExcel así:
+
 private combineDataForExcel(): any[] {
-  const reporteMap = this.createReportMap();
+    const reporteMap = this.createReportMap();
   return this.dataSourceTable1.data.map((item: any) => {
+    console.log('Registro:', item); // <-- Esto imprime el objeto tal como llega
     const row = this.combineItemData(item, reporteMap);
 
-    // Añadir columnas de documentos para SI/NO
     this.documentos.forEach(doc => {
+      // También imprime lo que ve
+      console.log(`Campo ${doc.key}:`, item[doc.key]);
       row[doc.label] = item[doc.key] && item[doc.key] !== '' && item[doc.key] !== null ? 'SI' : 'NO';
     });
 
