@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { isPlatformBrowser } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
 import { NavbarLateralComponent } from '../../components/navbar-lateral/navbar-lateral.component';
 import { NavbarSuperiorComponent } from '../../components/navbar-superior/navbar-superior.component';
@@ -56,13 +57,14 @@ interface ColumnTitle {
 })
 export class VistaTotalIncapacidadesComponent implements OnInit {
   query: string = '';
+  username: string = '';
 
   isSidebarHidden = false;
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
   }
-  
+
   [key: string]: any;
   columnTitlesTable1excel: Record<string, string> = {
     marcaTemporal: 'Marca Temporal',
@@ -311,6 +313,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   isFilterCollapsed = true;
   isloadeddata = false;
   constructor(
+   @Inject(PLATFORM_ID) private platformId: Object,
     private incapacidadService: IncapacidadService,
     private router: Router,
     private fb: FormBuilder,
@@ -324,11 +327,16 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.setupFormListeners();
     this.loadData();
+    const user = await this.getUser();
 
+    if (user) {
+      this.username = `${user.primer_nombre} ${user.primer_apellido}`;
+    }
   }
+
   mostrarCargando(estado: boolean) {
     if (estado) {
       // Mostrar la alerta de carga con spinner
@@ -555,16 +563,45 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
   }
 
-  downloadExcel(): void {
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    const combinedData = this.combineDataForExcel();
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(combinedData);
+    async getUser(): Promise<any> {
+      if (isPlatformBrowser(this.platformId)) {
+        const user = localStorage.getItem('user');
+        if (user) {
+          return JSON.parse(user);
+        }
+      }
+      return null;
+    }
 
-    XLSX.utils.book_append_sheet(wb, ws, 'Incapacidades y Reporte');
-    const formattedDate = new Date().toISOString().split('T')[0];
-    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
-  }
+downloadExcel(): void {
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  const combinedData = this.combineDataForExcel();
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(combinedData);
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Incapacidades y Reporte');
+
+  // AGREGAR HOJA DE METADATOS con el nombre del usuario
+  const nombreUsuario = this.username || "Usuario desconocido";
+  const fechaActual = new Date().toLocaleString();
+
+  const filtros = [
+    `Documento: ${this.filterCriteria.numeroDeDocumento || 'Todos'}`,
+    `Fecha Inicio: ${this.filterCriteria.fechaInicio || 'Todos'}`,
+    `Temporal: ${this.filterCriteria.temporal || 'Todos'}`,
+    `Tipo Incapacidad: ${this.filterCriteria.tipoIncapacidad || 'Todos'}`
+  ];
+  const wsMeta = XLSX.utils.aoa_to_sheet([
+    ['Reporte generado por', nombreUsuario],
+    ['Fecha de generación', fechaActual],
+    ['Filtros aplicados', ''],
+    ...filtros.map(f => [f])
+  ]);
+  XLSX.utils.book_append_sheet(wb, wsMeta, 'Metadatos');
+
+  const formattedDate = new Date().toISOString().split('T')[0];
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
+}
 
   private combineDataForExcel(): any[] {
     const reporteMap = this.createReportMap();
