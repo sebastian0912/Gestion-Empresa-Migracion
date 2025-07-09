@@ -152,10 +152,23 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Fecha de Envio Incapacidad Fisica': 'Fecha_de_Envio_Incapacidad_Fisica',
     'A quien corresponde el pago': 'correspondeelpago',
     'Estado del documento Incapacidad': 'estado_documento_incapacidad',
+    'FURAT': 'furat',
+    'SOAT': 'soat',
+    'FURIPS': 'furips',
+    'Registro Civil': 'registro_civil',
+    'Registro de Nacido Vivo': 'registro_de_nacido_vivo',
+    'Formulario de Salud Total': 'formulario_salud_total'
   };
+  
   files: Record<string, File[]> = {
     'Historial clinico': [],
-    'Archivo Incapacidad': []
+    'Archivo Incapacidad': [],
+    'FURAT': [],
+    'SOAT': [],
+    'FURIPS': [],
+    'Registro Civil': [],
+    'Registro de Nacido Vivo': [],
+    'Formulario de Salud Total': []
   };
   codigoDiagnosticoControl = new FormControl();
   epsControlForm = new FormControl();
@@ -886,7 +899,13 @@ export class FormularioIncapacidadComponent implements OnInit {
               }
               this.files = {
                 'Historial clinico': [],
-                'Archivo Incapacidad': []
+                'Archivo Incapacidad': [],
+                'FURAT': [],
+                'SOAT': [],
+                'FURIPS': [],
+                'Registro Civil': [],
+                'Registro de Nacido Vivo': [],
+                'Formulario de Salud Total': [],
               };
               this.validationErrors = [];
               this.isSubmitButtonDisabled = false;

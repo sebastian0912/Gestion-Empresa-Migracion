@@ -292,6 +292,16 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'SOAT / ACCIDENTE DE TRANCITO',
     'ENFERMEDAD LABORAL'
   ];
+  documentos = [
+  { key: 'historial_clinico', label: 'Historial clínico' },
+  { key: 'archivo_incapacidad', label: 'Archivo Incapacidad' },
+  { key: 'furat', label: 'FURAT' },
+  { key: 'soat', label: 'SOAT' },
+  { key: 'furips', label: 'FURIPS' },
+  { key: 'registro_civil', label: 'Registro Civil' },
+  { key: 'registro_de_nacido_vivo', label: 'Registro de Nacido Vivo' },
+  { key: 'formulario_salud_total', label: 'Formulario de Salud Total' }
+];
   resultsincapacidades: any[] = [];
   resultsarl: any[] = [];
   resultssst: any[] = [];
@@ -603,10 +613,20 @@ downloadExcel(): void {
   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
 }
 
-  private combineDataForExcel(): any[] {
-    const reporteMap = this.createReportMap();
-    return this.dataSourceTable1.data.map((item: any) => this.combineItemData(item, reporteMap));
-  }
+ // 2. Modifica tu método combineDataForExcel así:
+private combineDataForExcel(): any[] {
+  const reporteMap = this.createReportMap();
+  return this.dataSourceTable1.data.map((item: any) => {
+    const row = this.combineItemData(item, reporteMap);
+
+    // Añadir columnas de documentos para SI/NO
+    this.documentos.forEach(doc => {
+      row[doc.label] = item[doc.key] && item[doc.key] !== '' && item[doc.key] !== null ? 'SI' : 'NO';
+    });
+
+    return row;
+  });
+}
 
   private createReportMap(): Map<string, any> {
     const map = new Map<string, any>();
