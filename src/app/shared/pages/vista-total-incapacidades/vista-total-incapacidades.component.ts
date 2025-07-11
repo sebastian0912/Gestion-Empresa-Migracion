@@ -410,29 +410,22 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     this.counterVisible = showCounter;
   }
 
-  private loadData(): void {
-    this.cargarInformacion(true);
-    // Utiliza mergeMap para manejar las solicitudes de manera más eficiente
-    this.incapacidadService.traerTodosDatosIncapacidad().pipe(
-      mergeMap(incapacidadesResponse =>
-        this.incapacidadService.traerTodosDatosReporte().pipe(
-          mergeMap(reporteResponse => {
-            // Procesa ambos conjuntos de datos aquí
-            this.handleDataSuccess(incapacidadesResponse || [], reporteResponse.data || []);
-            this.cargarInformacion(false);
-            return []; // Retorna vacío o un Observable según sea necesario
-          })
-        )
-      )
-    ).subscribe({
-      next: () => {
-        // Se completó la carga de datos
+ private loadData(): void {
+  console.time('Total Load');
+  this.cargarInformacion(true);
+  forkJoin({
+    incapacidades: this.incapacidadService.traerTodosDatosIncapacidad(),
+    reporte: this.incapacidadService.traerTodosDatosReporte()
+  }).subscribe({
+    next: ({ incapacidades, reporte }) => {
+      this.handleDataSuccess(incapacidades || [], reporte.data || []);
+      this.cargarInformacion(false);
+      console.timeEnd('Total Load');
+    },
+    error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
+  });
+}
 
-
-      },
-      error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
-    });
-  }
 
   private handleDataSuccess(incapacidades: any[], reporte: any[]): void {
     this.dataSourceTable1.data = incapacidades;

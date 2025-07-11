@@ -159,7 +159,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'Registro de Nacido Vivo': 'registro_de_nacido_vivo',
     'Formulario de Salud Total': 'formulario_salud_total'
   };
-  
+
   files: Record<string, File[]> = {
     'Historial clinico': [],
     'Archivo Incapacidad': [],
@@ -403,6 +403,23 @@ export class FormularioIncapacidadComponent implements OnInit {
         this.handleServiceError('Recuerda que es una incapacidad Falsa, se va a reportar esto al area correspondiente');
       }
     });
+  this.incapacidadForm.get('prorroga')?.valueChanges.pipe(
+  distinctUntilChanged(),
+  takeUntil(this.unsubscribe$)
+    ).subscribe((value) => {
+    this.calcularprorroga();
+    this.applyValidation();
+
+    // Si el valor es "SI", muestra el mensaje
+    if (value === "SI") {
+      Swal.fire({
+        icon: 'info',
+        title: 'Prórroga seleccionada',
+        text: 'Se escogió prórroga.'
+      });
+    }
+    });
+
   }
 
   private setupIPSFilters() {
