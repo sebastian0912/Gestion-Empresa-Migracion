@@ -15,6 +15,7 @@ import * as XLSX from 'xlsx';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { OrdenUnionDialogComponent } from '../../components/orden-union-dialog/orden-union-dialog.component';
+import { RobotTableComponent } from '../../components/robot-table/robot-table.component';
 
 @Component({
   selector: 'app-antecedentes-robots',
@@ -33,7 +34,8 @@ import { OrdenUnionDialogComponent } from '../../components/orden-union-dialog/o
     MatIconModule,
     MatTableModule,
     CommonModule,
-    MatDialogModule
+    MatDialogModule,
+    RobotTableComponent
   ]
 })
 export class AntecedentesRobotsComponent implements OnInit {

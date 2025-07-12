@@ -1,0 +1,154 @@
+.filter-icon-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px; /* separa el icono del texto */
+  font-size: 18px;
+}
+
+.filter-icon-btn mat-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.filter-icon-btn:hover {
+  background: white;
+}
+
+.filter-icon-btn.active-filter,
+.filter-icon-btn.active-filter:focus {
+  background: transparent ;
+  color: #1976d2 !important;
+}
+
+.filter-icon-btn.active-filter:hover{
+  background: white;
+}
+
+/* Paginator row and clear filters button */
+.paginator-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+}
+.clear-filters-btn {
+  height: 36px;
+  min-width: 0;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+}
+.clear-filters-btn mat-icon {
+  font-size: 18px;
+  margin-right: 4px;
+}
+.robot-table-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 0 0 0;
+}
+
+.robot-table-title {
+  font-size: 20pt;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #2a2a2a;
+  letter-spacing: -1px;
+  text-align: left;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 18px 18px 8px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.filter-row {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.filter-card {
+  margin-bottom: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: #fff;
+  padding-bottom: 8px;
+}
+
+.filter-card mat-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.filter-card mat-form-field,
+.filter-card mat-selection-list {
+  width: 100%;
+}
+
+.robot-table-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+  padding: 0 0 16px 0;
+  margin-bottom: 18px;
+}
+
+mat-table {
+  background: transparent;
+  border-radius: 12px;
+}
+
+mat-header-cell, mat-cell {
+  padding: 14px 10px;
+  font-size: 1.04rem;
+}
+
+/* Column widths for better fit */
+mat-header-cell[colspan], mat-cell[colspan] {
+  /* fallback for colspan, not used here but for future-proofing */
+}
+mat-header-cell:nth-child(1), mat-cell:nth-child(1) { min-width: 48px; max-width: 64px; width: 60px; } /* Cola */
+mat-header-cell:nth-child(2), mat-cell:nth-child(2) { min-width: 120px; max-width: 180px; width: 200px; } /* Nombre */
+mat-header-cell:nth-child(3), mat-cell:nth-child(3) { min-width: 90px; max-width: 120px; width: 150px; } /* Estado */
+mat-header-cell:nth-child(4), mat-cell:nth-child(4) { min-width: 120px; max-width: 180px; width: 150px; } /* Robot */
+mat-header-cell:nth-child(5), mat-cell:nth-child(5) { min-width: 110px; max-width: 160px; width: 150px; } /* Página */
+mat-header-cell:nth-child(6), mat-cell:nth-child(6) { min-width: 110px; max-width: 160px; width: 150px; } /* Fecha */
+mat-header-cell:nth-child(7), mat-cell:nth-child(7) { min-width: 80px; max-width: 100px; width: 90px; } /* Hora */
+mat-header-cell:nth-child(8), mat-cell:nth-child(8) { min-width: 80px; max-width: 120px; width: 60px; } /* ID */
+
+mat-header-row {
+  background: #f1f5f9;
+  font-weight: 600;
+  font-size: 1.08rem;
+}
+
+mat-row:hover {
+  background-color: #e3e8ef;
+  transition: background 0.2s;
+}
+
+.result-count {
+  margin-top: 10px;
+  font-style: italic;
+  color: #666;
+}
+
+button[mat-stroked-button], button[mat-button] {
+  border-radius: 8px !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
