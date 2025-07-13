@@ -672,5 +672,3 @@ private combineDataForExcel(): any[] {
       .join(' ');
   }
 }
-
-

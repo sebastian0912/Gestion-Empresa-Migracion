@@ -336,6 +336,53 @@ export class FormularioIncapacidadComponent implements OnInit {
     'No cumple con el tiempo decreto 780'
   ];
 
+ColumnsTable1 = [
+  'Tipo_de_documento',
+  'Numero_de_documento',
+  'numero_de_contrato',
+  'nombre',
+  'apellido',
+  'celular_o_telefono_01',
+  'celular_o_telefono_02',
+  'Oficina',
+  'Temporal',
+  'edad',
+  'observaciones',
+  'Dias_temporal',
+  'F_inicio',
+  'F_final',
+  'Fecha_de_Envio_Incapacidad_Fisica',
+  'Incapacidad_transcrita',
+  'centrodecosto',
+  'codigo_diagnostico',
+  'consecutivoSistema',
+  'correoElectronico',
+  'descripcion_diagnostico',
+  'dias_de_diferencia',
+  'dias_eps',
+  'dias_incapacidad',
+  'empresa',
+  'estado_incapacidad',
+  'estado_robot_doctor',
+  'fecha_de_ingreso_temporal',
+  'fondo_de_pensiones',
+  'ips_punto_de_atencion',
+  'marcaTemporal',
+  'nit_de_la_IPS',
+  'nombre_de_quien_recibio',
+  'nombre_doctor',
+  'nombre_eps',
+  'numero_de_documento_doctor',
+  'numero_de_incapacidad',
+  'prorroga',
+  'responsable_de_envio',
+  'sexo',
+  'tipo_de_documento_doctor_atendido',
+  'tipo_incapacidad',
+  'quiencorrespondepago',
+  'estado_documento_incapacidad'
+];
+
   private _filterObservaciones(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.observacionesincapacidad.filter(option => option.toLowerCase().includes(filterValue));
@@ -457,31 +504,38 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
   applyValidation() {
 
-    const formData = this.incapacidadForm.getRawValue(); // Obtener todos los valores actuales del formulario
-    if (this.isIncapacidadSectionActive(formData)) {
-      const normalizedStartDate = format(new Date(this.incapacidadForm.get('fecha_inicio_incapacidad')?.value), 'dd/MM/yyyy');
-      formData.fecha_inicio_incapacidad = normalizedStartDate;
-
-      // Desestructuración del objeto devuelto por validateConditions
-
-      const { errors, quienpaga, observaciones } = IncapacidadValidator.validateConditions(formData);
-
-      this.validationErrors = errors;
-      this.quienpaga = quienpaga;
-      if (observaciones === "No cumple con el tiempo decreto 780 de 2016" || observaciones === "OK") {
-        this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
+  const formData = this.incapacidadForm.getRawValue();
+  if (this.isIncapacidadSectionActive(formData)) {
+    // Validar y formatear fecha de inicio incapacidad
+    const rawFechaInicio = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
+    let normalizedStartDate = '';
+    if (rawFechaInicio) {
+      const dateObj = new Date(rawFechaInicio);
+      if (!isNaN(dateObj.getTime())) {
+        normalizedStartDate = format(dateObj, 'dd/MM/yyyy');
       }
-
-      // Actualizar el campo de "observaciones" en el formulario
-      this.incapacidadForm.get('correspondeelpago')?.setValue(quienpaga, { emitEvent: false });
-
-      // Deshabilitar el botón de envío si hay errores de validaciónf
-      this.isSubmitButtonDisabled = this.validationErrors.length > 0;
-
-
-    } else {
-      this.isSubmitButtonDisabled = false; // Habilitar el botón si la sección no está activa
     }
+    formData.fecha_inicio_incapacidad = normalizedStartDate;
+
+    // Validar y formatear otras fechas si lo necesitas aquí...
+
+    // Desestructuración del objeto devuelto por validateConditions
+    const { errors, quienpaga, observaciones } = IncapacidadValidator.validateConditions(formData);
+
+    this.validationErrors = errors;
+    this.quienpaga = quienpaga;
+    if (observaciones === "No cumple con el tiempo decreto 780 de 2016" || observaciones === "OK") {
+      this.incapacidadForm.get('observaciones')?.setValue(observaciones, { emitEvent: false });
+    }
+
+    // Actualizar el campo de "correspondeelpago" en el formulario
+    this.incapacidadForm.get('correspondeelpago')?.setValue(quienpaga, { emitEvent: false });
+
+    // Deshabilitar el botón de envío si hay errores de validación
+    this.isSubmitButtonDisabled = this.validationErrors.length > 0;
+  } else {
+    this.isSubmitButtonDisabled = false; // Habilitar el botón si la sección no está activa
+  }
   }
 
   private setupCodigoFilters() {
@@ -821,138 +875,144 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // Evitar múltiples envíos
-    let fieldEmpty = this.areRelevantFieldsFilled(this.incapacidadForm.getRawValue());
-    if (fieldEmpty !== null) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Por favor llena los campos obligatorios, el campo ' + fieldEmpty + ' está vacío'
-      });
-      return;
-    } else {
-      this.unsubscribe$.next();
-      this.cargarInformacion(true);
+  // Evitar múltiples envíos
+  let fieldEmpty = this.areRelevantFieldsFilled(this.incapacidadForm.getRawValue());
+  if (fieldEmpty !== null) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Por favor llena los campos obligatorios, el campo ' + fieldEmpty + ' está vacío'
+    });
+    return;
+  } else {
+    this.unsubscribe$.next();
+    this.cargarInformacion(true);
 
+    // Habilita todos los controles antes de enviar
+    Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
+      this.incapacidadForm.get(controlName)?.enable();
+    });
 
-      // Asegúrate de habilitar todos los controles antes de enviar
-      Object.keys(this.incapacidadForm.controls).forEach((controlName) => {
-        this.incapacidadForm.get(controlName)?.enable();
-      });
+    // Normalización de tipo de documento
+    const tipoDoc = this.incapacidadForm.get('tipodedocumento')?.value;
+    if (tipoDoc == 'Cedula de ciudadania') {
+      this.incapacidadForm.get('tipodedocumento')?.setValue('CC');
+    }
+    if (tipoDoc == 'Cedula de extranjeria') {
+      this.incapacidadForm.get('tipodedocumento')?.setValue('CE');
+    }
+    if (tipoDoc == 'Pasaporte') {
+      this.incapacidadForm.get('tipodedocumento')?.setValue('PA');
+    }
 
-      if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de ciudadania') {
-        this.incapacidadForm.get('tipodedocumento')?.setValue('CC');
+    // Normalización de tipo de documento doctor
+    const tipoDocDoctor = this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value;
+    if (tipoDocDoctor == 'Cedula de ciudadania') {
+      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CC');
+    }
+    if (tipoDocDoctor == 'Cedula de extranjeria') {
+      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CE');
+    }
+    if (tipoDocDoctor == 'Pasaporte') {
+      this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('PA');
+    }
+
+    // Fechas seguras y formateadas
+    const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
+    const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
+    const fechaEnvioStr = this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.value;
+
+    let normalizedStartDate = '';
+    let normalizedEndDate = '';
+    let normalizedFechaEnvio = '';
+
+    if (fechaInicioStr) {
+      const fechaInicioDate = new Date(fechaInicioStr);
+      if (!isNaN(fechaInicioDate.getTime())) {
+        normalizedStartDate = format(fechaInicioDate, 'dd-MM-yyyy');
       }
-      if (this.incapacidadForm.get('tipodedocumento')?.value == 'Cedula de extranjeria') {
-        this.incapacidadForm.get('tipodedocumento')?.setValue('CE');
+    }
+    if (fechaFinStr) {
+      const fechaFinDate = new Date(fechaFinStr);
+      if (!isNaN(fechaFinDate.getTime())) {
+        normalizedEndDate = format(fechaFinDate, 'dd-MM-yyyy');
       }
-      if (this.incapacidadForm.get('tipodedocumento')?.value == 'Pasaporte') {
-        this.incapacidadForm.get('tipodedocumento')?.setValue('PA');
+    }
+    if (fechaEnvioStr) {
+      const fechaEnvioDate = new Date(fechaEnvioStr);
+      if (!isNaN(fechaEnvioDate.getTime())) {
+        normalizedFechaEnvio = format(fechaEnvioDate, 'dd-MM-yyyy');
       }
+    }
 
+    // Actualizar las fechas normalizadas en el formulario
+    this.incapacidadForm.patchValue({
+      fecha_inicio_incapacidad: normalizedStartDate,
+      fecha_fin_incapacidad: normalizedEndDate,
+      Fecha_de_Envio_Incapacidad_Fisica: normalizedFechaEnvio,
+    });
 
-      if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de ciudadania') {
-        this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CC');
-      }
-      if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Cedula de extranjeria') {
-        this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('CE');
-      }
-      if (this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value == 'Pasaporte') {
-        this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.setValue('PA');
-      }
-      const fechaInicioStr = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
-      const fechaFinStr = this.incapacidadForm.get('fecha_fin_incapacidad')?.value;
-      const fechaEnvioStr = this.incapacidadForm.get('Fecha_de_Envio_Incapacidad_Fisica')?.value;
+    const nuevaIncapacidad: Incapacidad = this.incapacidadForm.value;
 
-      if (fechaInicioStr && fechaFinStr) {
-        // Normalizar las fechas al formato 'dd-MM-yyyy'
-        const normalizedStartDate = format(new Date(fechaInicioStr), 'dd-MM-yyyy');
-        const normalizedEndDate = format(new Date(fechaFinStr), 'dd-MM-yyyy');
-        const normalizedFechaEnvio = format(new Date(fechaEnvioStr), 'dd-MM-yyyy');
+    if (isNaN(nuevaIncapacidad.dias_incapacidad) || nuevaIncapacidad.dias_incapacidad === undefined) {
+      const fechaInicio = fechaInicioStr ? new Date(fechaInicioStr) : null;
+      const fechaFin = fechaFinStr ? new Date(fechaFinStr) : null;
 
-        // Actualizar las fechas normalizadas en el formulario
-        this.incapacidadForm.patchValue({
-          fecha_inicio_incapacidad: normalizedStartDate,
-          fecha_fin_incapacidad: normalizedEndDate,
-          Fecha_de_Envio_Incapacidad_Fisica: normalizedFechaEnvio,
-        });
-
-        const nuevaIncapacidad: Incapacidad = this.incapacidadForm.value;
-
-        if (isNaN(nuevaIncapacidad.dias_incapacidad) || nuevaIncapacidad.dias_incapacidad === undefined) {
-          const fechaInicio = new Date(fechaInicioStr);
-          const fechaFin = new Date(fechaFinStr);
-
-          if (!isNaN(fechaInicio.getTime()) && !isNaN(fechaFin.getTime())) {
-            const diferenciaEnTiempo = fechaFin.getTime() - fechaInicio.getTime();
-            const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24)) + 1; // Incluye ambos días
-            nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
-            });
-            this.cargarInformacion(false);
-            return;
-          }
-        }
-
-
-        // Envía la incapacidad al servicio
-        this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
-          response => {
-            this.cargarInformacion(false);
-            Swal.fire({
-              icon: 'success',
-              title: 'Incapacidad creada',
-              text: 'La incapacidad ha sido creada exitosamente, puedes verla en la lista de incapacidades'
-
-            }).then(() => {
-
-              this.incapacidadForm.reset();
-              for (const key in this.fieldMap) {
-                this.incapacidadForm.get(key)?.setValue('');
-              }
-              this.files = {
-                'Historial clinico': [],
-                'Archivo Incapacidad': [],
-                'FURAT': [],
-                'SOAT': [],
-                'FURIPS': [],
-                'Registro Civil': [],
-                'Registro de Nacido Vivo': [],
-                'Formulario de Salud Total': [],
-              };
-              this.validationErrors = [];
-              this.isSubmitButtonDisabled = false;
-              this.resetPage();
-            });
-
-          },
-          error => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ha ocurrido un error al crear la incapacidad'
-            });
-            this.loaderVisible = false;
-            this.disableCertainFields();
-            this.cargarInformacion(false);
-          }
-        );
-
+      if (fechaInicio && fechaFin && !isNaN(fechaInicio.getTime()) && !isNaN(fechaFin.getTime())) {
+        const diferenciaEnTiempo = fechaFin.getTime() - fechaInicio.getTime();
+        const diasIncapacidad = Math.ceil(diferenciaEnTiempo / (1000 * 3600 * 24)) + 1;
+        nuevaIncapacidad.dias_incapacidad = diasIncapacidad;
       } else {
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: 'Ha ocurrido un error con las fechas que ingresaste, por favor verifica que estén bien'
         });
+        this.cargarInformacion(false);
+        return;
+      }
+    }
+
+    // Envía la incapacidad al servicio
+    this.incapacidadService.createIncapacidad(nuevaIncapacidad).pipe(first()).subscribe(
+      response => {
+        this.cargarInformacion(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Incapacidad creada',
+          text: 'La incapacidad ha sido creada exitosamente, puedes verla en la lista de incapacidades'
+        }).then(() => {
+          this.incapacidadForm.reset();
+          for (const key in this.fieldMap) {
+            this.incapacidadForm.get(key)?.setValue('');
+          }
+          this.files = {
+            'Historial clinico': [],
+            'Archivo Incapacidad': [],
+            'FURAT': [],
+            'SOAT': [],
+            'FURIPS': [],
+            'Registro Civil': [],
+            'Registro de Nacido Vivo': [],
+            'Formulario de Salud Total': [],
+          };
+          this.validationErrors = [];
+          this.isSubmitButtonDisabled = false;
+          this.resetPage();
+        });
+      },
+      error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al crear la incapacidad'
+        });
         this.loaderVisible = false;
         this.disableCertainFields();
         this.cargarInformacion(false);
       }
-    }
+    );
+  }
   }
   resetPage(): void {
     this.incapacidadForm.reset();
@@ -1001,98 +1061,171 @@ export class FormularioIncapacidadComponent implements OnInit {
   sucursalde = ''
   nombredequienrecibio = ''
   empresa = ''
-  buscarCedula(cedula: string): void {
 
-    this.cedula = cedula;
-    this.cargarInformacion(true);
+buscarCedula(cedula: string): void {
+  this.cedula = cedula;
+  this.cargarInformacion(true);
 
-    const storedData = localStorage.getItem('user');
+  const storedData = localStorage.getItem('user');
 
-    if (storedData) {
-      // Parsea el JSON a un objeto JavaScript
-      const dataObject = JSON.parse(storedData);
+  if (storedData) {
+    const dataObject = JSON.parse(storedData);
+    this.sucursalde = dataObject.sucursalde;
+    this.nombredequienrecibio = dataObject.primer_apellido + ' ' + dataObject.primer_nombre;
+    this.empresa = dataObject.sitio_contratacion;
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ha ocurrido un error al buscar tus datos, cierra la sesion y vuelve a ingresar'
+    });
+  }
 
-      // Extrae el valor de `sucursalde`
-      this.sucursalde = dataObject.sucursalde;
-      this.nombredequienrecibio = dataObject.primer_apellido + ' ' + dataObject.primer_nombre;
-      this.empresa = dataObject.sitio_contratacion;
-    } else {
+  this.contratacionService.traerDatosEncontratacion(cedula).subscribe(
+    response => {
+      this.cargarInformacion(false);
+      const contratacion = response.contratacion || {};
+      const datosBasicos = response.datos_basicos || {};
+      const afp = response.afp;
+
+      for (const key in this.fieldMap) {
+        let value;
+        if (contratacion[key]) {
+          value = contratacion[key];
+        } else if (datosBasicos[key]) {
+          value = datosBasicos[key];
+        }
+
+        // Normalizar valores para el formulario
+        if (datosBasicos.tipodedocumento == 'CC' || datosBasicos.tipodedocumento == 'C.C') {
+          datosBasicos.tipodedocumento = 'Cedula de ciudadania';
+        } else if (datosBasicos.tipodedocumento == 'CE' || datosBasicos.tipodedocumento == 'C.E') {
+          datosBasicos.tipodedocumento = 'Cedula de extranjeria';
+        } else if (datosBasicos.tipodedocumento == 'PA' || datosBasicos.tipodedocumento == 'P.A') {
+          datosBasicos.tipodedocumento = 'Pasaporte';
+        }
+
+        if (datosBasicos.genero == 'M') {
+          datosBasicos.genero = 'Masculino';
+        }
+        if (datosBasicos.genero == 'F') {
+          datosBasicos.genero = 'Femenino';
+        }
+
+        this.incapacidadForm.get('nombre_eps')?.setValue(afp.eps);
+        this.incapacidadForm.get('temporal_contrato')?.setValue(contratacion.temporal);
+        this.incapacidadForm.get('numero_de_contrato')?.setValue(contratacion.codigo_contrato);
+        this.incapacidadForm.get('Oficina')?.setValue(this.convertToTitleCaseAndRemoveAccents(this.sucursalde));
+        this.incapacidadForm.get('nombre_de_quien_recibio')?.setValue(this.nombredequienrecibio);
+        this.incapacidadForm.get('empresa')?.setValue(contratacion.empresaUsuaraYCCentrodeCosto);
+        this.incapacidadForm.get('celular')?.setValue(datosBasicos.celular);
+        this.incapacidadForm.get('tipodedocumento')?.setValue(datosBasicos.tipodedocumento);
+        this.incapacidadForm.get('numerodeceduladepersona')?.setValue(cedula);
+        this.nombreepspersona = afp.eps;
+        this.incapacidadForm.get('primer_nombre')?.setValue(datosBasicos.primer_nombre + ' ' + datosBasicos.segundo_nombre);
+        this.incapacidadForm.get('primer_apellido')?.setValue(datosBasicos.primer_apellido + ' ' + datosBasicos.segundo_apellido);
+        this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
+        this.incapacidadForm.get('primercorreoelectronico')?.setValue(datosBasicos.primercorreoelectronico);
+        this.incapacidadForm.get('genero')?.setValue(datosBasicos.genero);
+        this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_costo_carnet);
+        this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_de_costos);
+        this.incapacidadForm.get('fecha_contratacion')?.setValue(contratacion.fecha_contratacion);
+        this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
+      }
+
+      // *** AQUÍ LLAMAS LA FUNCIÓN DE BUSCAR INCAPACIDADES ***
+      this.buscarIncapacidadesPorCedula();
+
+    },
+    error => {
+      this.cargarInformacion(false);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Ha ocurrido un error al buscar tus datos, cierra la sesion y vuelve a ingresar'
+        text: 'La cedula que buscas no se encuentra en la base de datos, por favor verifica que sea correcta, si el problema persiste reportalo a contratacion'
       });
     }
-    this.contratacionService.traerDatosEncontratacion(cedula).subscribe(
-      response => {
+  );
+}
 
-        this.cargarInformacion(false);
-        // Acceder a los sub-objetos dentro de la respuesta
-        const contratacion = response.contratacion || {};
-        const datosBasicos = response.datos_basicos || {};
-        const afp = response.afp
+  historialIncapacidades: Incapacidad[] = [];
 
+  dataSourceTable1 = new MatTableDataSource<any>();
 
-        // Iterar sobre el fieldMap y asignar los valores en los controles del formulario
-        for (const key in this.fieldMap) {
-          let value;
+// Nueva función: Filtrar incapacidades por número de documento (localmente)
+filtrarIncapacidadesPorDocumento(documento: string) {
+  // Suponiendo que dataSourceTable1.data tiene todas las incapacidades
+  const todas = this.dataSourceTable1.data as Incapacidad[];
 
-          // Verificar si la clave existe en contratacion o datos_basicos
-          if (contratacion[key]) {
-            value = contratacion[key];
-          } else if (datosBasicos[key]) {
-            value = datosBasicos[key];
-          }
+  // Filtra por el campo del modelo correspondiente
+  const resultado = todas.filter(inc => inc.Numero_de_documento === documento);
 
-          if (datosBasicos.tipodedocumento == 'CC' || datosBasicos.tipodedocumento == 'C.C') {
-            datosBasicos.tipodedocumento = 'Cedula de ciudadania';
-          } else {
-            if (datosBasicos.tipodedocumento == 'CE' || datosBasicos.tipodedocumento == 'C.E') {
-              datosBasicos.tipodedocumento = 'Cedula de extranjeria';
-            } else {
-              if (datosBasicos.tipodedocumento == 'PA' || datosBasicos.tipodedocumento == 'P.A') {
-                datosBasicos.tipodedocumento = 'Pasaporte';
-              }
-            }
-          }
-          if (datosBasicos.genero == 'M') {
-            datosBasicos.genero = 'Masculino';
-          }
-          if (datosBasicos.genero == 'F') {
-            datosBasicos.genero = 'Femenino';
-          }
-          this.incapacidadForm.get('nombre_eps')?.setValue(afp.eps);
-          this.incapacidadForm.get('temporal_contrato')?.setValue(contratacion.temporal);
-          this.incapacidadForm.get('numero_de_contrato')?.setValue(contratacion.codigo_contrato);
-          this.incapacidadForm.get('Oficina')?.setValue(this.convertToTitleCaseAndRemoveAccents(this.sucursalde));
-          this.incapacidadForm.get('nombre_de_quien_recibio')?.setValue(this.nombredequienrecibio);
-          this.incapacidadForm.get('empresa')?.setValue(contratacion.empresaUsuaraYCCentrodeCosto);
-          this.incapacidadForm.get('celular')?.setValue(datosBasicos.celular);
-          this.incapacidadForm.get('tipodedocumento')?.setValue(datosBasicos.tipodedocumento);
-          this.incapacidadForm.get('numerodeceduladepersona')?.setValue(cedula);
-          this.nombreepspersona = afp.eps;
-          this.incapacidadForm.get('primer_nombre')?.setValue(datosBasicos.primer_nombre + ' ' + datosBasicos.segundo_nombre);
-          this.incapacidadForm.get('primer_apellido')?.setValue(datosBasicos.primer_apellido + ' ' + datosBasicos.segundo_apellido);
-          this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
-          this.incapacidadForm.get('primercorreoelectronico')?.setValue(datosBasicos.primercorreoelectronico);
-          this.incapacidadForm.get('genero')?.setValue(datosBasicos.genero);
-          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_costo_carnet);
-          this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_de_costos);
-          this.incapacidadForm.get('fecha_contratacion')?.setValue(contratacion.fecha_contratacion);
-          this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
+  // Muestra el resultado en la tabla
+  this.dataSourceTable1.data = resultado;
 
+  // Opcional: muestra alerta con el número de resultados
+  Swal.fire({
+    icon: 'info',
+    title: 'Filtrado',
+    text: `Se encontraron ${resultado.length} incapacidades para la cédula ${documento}`
+  });
+}
+
+// Nueva función: Evento para el botón de búsqueda
+onBuscarDocumento() {
+  const documento = this.incapacidadForm.get('numerodeceduladepersona')?.value;
+  if (!documento) {
+    Swal.fire({ icon: 'warning', title: 'Cédula faltante', text: 'Por favor ingresa la cédula.' });
+    return;
+  }
+  this.filtrarIncapacidadesPorDocumento(documento);
+}
+
+// Ya corregida: Buscar incapacidades llamando al backend
+buscarIncapacidadesPorCedula() {
+  const cedula = this.incapacidadForm.get('numerodeceduladepersona')?.value;
+  if (!cedula) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Cédula faltante',
+      text: 'Por favor ingresa la cédula en el formulario.'
+    });
+    return;
+  }
+  this.cargarInformacion(true);
+  this.incapacidadService.traerDatosIncapacidad(cedula)
+    .subscribe({
+      next: (incapacidades) => {
+        let cantidad = Array.isArray(incapacidades) ? incapacidades.length : 0;
+        if (cantidad === 0) {
+          // Si no hay resultados, crea un objeto con "VACÍO" en todas las columnas
+          const columnas = ['numero_de_incapacidad', 'fecha_inicio_incapacidad', 'fecha_fin_incapacidad', 'tipo_incapacidad', 'estado_incapacidad'];
+          const filaVacia: any = {};
+          columnas.forEach(col => filaVacia[col] = 'VACÍO');
+          this.dataSourceTable1.data = [filaVacia];
+        } else {
+          this.dataSourceTable1.data = incapacidades;
         }
+        this.cargarInformacion(false);
+        Swal.fire({
+          icon: cantidad === 0 ? 'info' : 'success',
+          title: cantidad === 0 ? 'Sin resultados' : 'Historial encontrado',
+          text: cantidad === 0
+            ? `No se encontraron incapacidades para la cédula ${cedula}.`
+            : `Se encontraron ${cantidad} incapacidades para la cédula ${cedula}`
+        });
       },
-      error => {
+      error: () => {
         this.cargarInformacion(false);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'La cedula que buscas no se encuentra en la base de datos, por favor verifica que sea correcta, si el problema persiste reportalo a contratacion'
+          text: 'No se pudo obtener el historial de incapacidades.'
         });
       }
-    );
-  }
+    });
+}
+
   onUploadClick(field: string) {
     // Crear un input de tipo file programáticamente
     const fileInput = document.createElement('input');

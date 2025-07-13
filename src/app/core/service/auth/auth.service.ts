@@ -2,6 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,14 @@ export class AuthService {
 
     return this.http.get(`${this.apiUrl}/usuarios/usuario`, { headers }).toPromise();
 
+  }
+
+  //Trar informacion del usuario
+    getIncapacidadesByCedula(cedula: string): Observable<any[]> {
+    const token = this.getToken();
+    const headers = new HttpHeaders().set('Authorization', token ? `${token}` : '');
+    return this.http.get<any[]>(`${this.apiUrl}/cedula/${cedula}`);
+    
   }
 
 
