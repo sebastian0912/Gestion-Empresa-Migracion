@@ -442,7 +442,7 @@
            <br>
            <br>
 <div *ngIf="dataSourceTable1?.data && dataSourceTable1.data.length > 0">
-  <h3>Historial de Incapacidades</h3>
+  Historial de Incapacidades
   <table mat-table [dataSource]="dataSourceTable1" class="mat-elevation-z8">
 
     <!-- Número de Incapacidad -->
@@ -479,6 +479,10 @@
     <tr mat-row *matRowDef="let row; columns: ['numero_de_incapacidad', 'fecha_inicio_incapacidad', 'fecha_fin_incapacidad', 'tipo_incapacidad', 'estado_incapacidad'];"></tr>
   </table>
 </div>
+<br>
+<br>
+<br>
+<br>
           <!-- Módulo 6: Información del Doctor -->
             <mat-card-title class="titulo"
               >Información del Doctor</mat-card-title
@@ -765,14 +769,7 @@
           Subir incapacidad
         </button>
       </mat-card-content>
-      <!-- Botón flotante -->
-      <button mat-fab [matMenuTriggerFor]="menu" class="notification-button">
-        <mat-icon class="notification-icon">notifications</mat-icon>
-        <span *ngIf="validationErrors.length > 0" class="notification-badge">{{
-          validationErrors.length
-        }}</span>
-      </button>
-
+      
       <!-- Menú desplegable -->
       <mat-menu #menu="matMenu">
         <ng-container *ngIf="validationErrors.length > 0; else noErrors">
