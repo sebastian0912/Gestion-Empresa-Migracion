@@ -442,9 +442,11 @@
            <br>
            <br>
 <div *ngIf="dataSourceTable1?.data && dataSourceTable1.data.length > 0">
-  Historial de Incapacidades
+  <mat-card-title class="titulo"
+              >Información del Doctor</mat-card-title>
   <table mat-table [dataSource]="dataSourceTable1" class="mat-elevation-z8">
-
+<br>
+<br>
     <!-- Número de Incapacidad -->
     <ng-container matColumnDef="numero_de_incapacidad">
       <th mat-header-cell *matHeaderCellDef> Número </th>
@@ -769,7 +771,7 @@
           Subir incapacidad
         </button>
       </mat-card-content>
-      
+
       <!-- Menú desplegable -->
       <mat-menu #menu="matMenu">
         <ng-container *ngIf="validationErrors.length > 0; else noErrors">
