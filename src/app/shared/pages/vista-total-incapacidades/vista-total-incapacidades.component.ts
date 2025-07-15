@@ -109,8 +109,6 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     estado_documento_incapacidad: 'Estado Documento Incapacidad',
     estado_robot_doctor: 'Estado Robot Doctor',
 
-
-
     tipo_de_documento_doctor_atendido: 'Tipo de Documento Doctor Atendido',
     numero_de_documento_doctor: 'Número de Documento Doctor',
     nombre_doctor: 'Nombre Doctor',
@@ -232,7 +230,6 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'quiencorrespondepago': 'Quién Corresponde el Pago',
     'estado_documento_incapacidad': 'Estado Documento Incapacidad'
   };
-
 
   displayedColumnsTable4 = [
     'Numero_de_documento',

@@ -37,6 +37,8 @@ import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/m
 import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { MatListModule } from '@angular/material/list';
+import { forkJoin, mergeMap } from 'rxjs';
+
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY', // Formato de entrada del usuario
@@ -48,6 +50,11 @@ export const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY', // Formato para accesibilidad en el selector de mes
   },
 };
+
+interface ColumnTitle {
+  [key: string]: string;
+}
+
 @Component({
   selector: 'app-formulario-incapacidad',
   standalone: true,
@@ -189,6 +196,9 @@ export class FormularioIncapacidadComponent implements OnInit {
   filteredObservaciones: Observable<string[]> = of([]);
   filteredQuiencorrespondepago: Observable<string[]> = of([]);
   nombredelarchvio = ''
+    filterCriteria: any = {
+    numeroDeDocumento: ''
+  };
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private incapacidadService: IncapacidadService, private contratacionService: ContratacionService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
@@ -382,6 +392,52 @@ ColumnsTable1 = [
   'quiencorrespondepago',
   'estado_documento_incapacidad'
 ];
+
+  columnTitlesTable1 = {
+    'dias_temporal': 'Días Temporal',
+    'f_inicio': 'Fecha de Inicio',
+    'fecha_de_envio_incapacidad_fisica': 'Fecha de Envío Incapacidad Física',
+    'incapacidad_transcrita': 'Incapacidad Transitada',
+    'numero_de_documento': 'Número de Documento',
+    'oficina': 'Oficina',
+    'temporal': 'Temporal',
+    'tipo_de_documento': 'Tipo de Documento',
+    'apellido': 'Apellido',
+    'celular_o_telefono_01': 'Celular o Teléfono 01',
+    'celular_o_telefono_02': 'Celular o Teléfono 02',
+    'centrodecosto': 'Centro de Costo',
+    'codigo_diagnostico': 'Código Diagnóstico',
+    'consecutivoSistema': 'Consecutivo Sistema',
+    'correoElectronico': 'Correo Electrónico',
+    'descripcion_diagnostico': 'Descripción Diagnóstico',
+    'dias_de_diferencia': 'Días de Diferencia',
+    'dias_eps': 'Días EPS',
+    'dias_incapacidad': 'Días Incapacidad',
+    'edad': 'Edad',
+    'empresa': 'Empresa',
+    'estado_incapacidad': 'Estado Incapacidad',
+    'estado_robot_doctor': 'Estado Robot Doctor',
+    'fecha_de_ingreso_temporal': 'Fecha de Ingreso Temporal',
+    'fondo_de_pensiones': 'Fondo de Pensiones',
+    'ips_punto_de_atencion': 'IPS Punto de Atención',
+    'marcaTemporal': 'Marca Temporal',
+    'nit_de_la_IPS': 'NIT de la IPS',
+    'nombre': 'Nombre',
+    'nombre_de_quien_recibio': 'Nombre de Quien Recibió',
+    'nombre_doctor': 'Nombre Doctor',
+    'nombre_eps': 'Nombre EPS',
+    'numero_de_contrato': 'Número de Contrato',
+    'numero_de_documento_doctor': 'Número de Documento Doctor',
+    'numero_de_incapacidad': 'Número de Incapacidad',
+    'observaciones': 'Observaciones',
+    'prorroga': 'Prórroga',
+    'responsable_de_envio': 'Responsable de Envío',
+    'sexo': 'Sexo',
+    'tipo_de_documento_doctor_atendido': 'Tipo de Documento Doctor Atendido',
+    'tipo_incapacidad': 'Tipo Incapacidad',
+    'quiencorrespondepago': 'Quién Corresponde el Pago',
+    'estado_documento_incapacidad': 'Estado Documento Incapacidad'
+  };
 
   private _filterObservaciones(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -715,8 +771,10 @@ ColumnsTable1 = [
   descripcionControl = new FormControl({ value: '', disabled: true });
   nombreControl = new FormControl({ value: '', disabled: true });
   validationErrors: string[] = [];
+
   async ngOnInit(): Promise<void> {
 
+    this.loadData();
     const user = await this.getUser();
     if (!user) {
       return;
@@ -1133,8 +1191,7 @@ buscarCedula(cedula: string): void {
         this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
       }
 
-      // *** AQUÍ LLAMAS LA FUNCIÓN DE BUSCAR INCAPACIDADES ***
-      this.buscarIncapacidadesPorCedula();
+      this.applyCedulaFilter(cedula)
 
     },
     error => {
@@ -1149,82 +1206,74 @@ buscarCedula(cedula: string): void {
 }
 
   historialIncapacidades: Incapacidad[] = [];
-
+  mostrarHistorial = false;
   dataSourceTable1 = new MatTableDataSource<any>();
 
-// Nueva función: Filtrar incapacidades por número de documento (localmente)
-filtrarIncapacidadesPorDocumento(documento: string) {
-  // Suponiendo que dataSourceTable1.data tiene todas las incapacidades
-  const todas = this.dataSourceTable1.data as Incapacidad[];
+  // Función principal para aplicar el filtro por cédula
+applyCedulaFilter(cedula: string): void {
+  // Asegúrate de tener el valor de la cédula a buscar
+  if (!cedula) {
+    this.showInfo('Por favor ingresa una cédula para filtrar.');
+    return;
+  }
+  // Filtra usando la función filterByCedula
+  const filteredData = this.filterByCedula(this.dataSourceTable1.data, cedula);
+  if (filteredData.length === 0) {
+    this.showInfo('No se encontraron registros para la cédula ingresada.');
+  } else {
+    this.dataSourceTable1.data = filteredData;
+    this.dataSourceTable1._updateChangeSubscription();
+  }
+}
 
-  // Filtra por el campo del modelo correspondiente
-  const resultado = todas.filter(inc => inc.Numero_de_documento === documento);
+// Función auxiliar para filtrar por cédula (número de documento)
+private filterByCedula(data: any[], cedula: string): any[] {
+  return data.filter(item => this.cedulaMatch(item.Numero_de_documento, cedula));
+}
 
-  // Muestra el resultado en la tabla
-  this.dataSourceTable1.data = resultado;
+// Función que compara exactamente la cédula ingresada con la del registro
+private cedulaMatch(value: string, cedula: string): boolean {
+  return value?.toLowerCase().trim() === cedula;
+}
 
-  // Opcional: muestra alerta con el número de resultados
+// Opcional: función para mostrar mensajes informativos
+private showInfo(message: string): void {
   Swal.fire({
     icon: 'info',
-    title: 'Filtrado',
-    text: `Se encontraron ${resultado.length} incapacidades para la cédula ${documento}`
+    title: 'Información',
+    text: message,
+    confirmButtonText: 'Aceptar'
   });
 }
 
-// Nueva función: Evento para el botón de búsqueda
-onBuscarDocumento() {
-  const documento = this.incapacidadForm.get('numerodeceduladepersona')?.value;
-  if (!documento) {
-    Swal.fire({ icon: 'warning', title: 'Cédula faltante', text: 'Por favor ingresa la cédula.' });
-    return;
-  }
-  this.filtrarIncapacidadesPorDocumento(documento);
+ private loadData(): void {
+  console.time('Total Load');
+  this.cargarInformacion(true);
+  forkJoin({
+    incapacidades: this.incapacidadService.traerTodosDatosIncapacidad(),
+    reporte: this.incapacidadService.traerTodosDatosReporte()
+  }).subscribe({
+    next: ({ incapacidades, reporte }) => {
+      this.handleDataSuccess(incapacidades || [], reporte.data || []);
+      this.cargarInformacion(false);
+      console.timeEnd('Total Load');
+    },
+    error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
+  });
 }
 
-// Ya corregida: Buscar incapacidades llamando al backend
-buscarIncapacidadesPorCedula() {
-  const cedula = this.incapacidadForm.get('numerodeceduladepersona')?.value;
-  if (!cedula) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Cédula faltante',
-      text: 'Por favor ingresa la cédula en el formulario.'
-    });
-    return;
+  private handleDataSuccess(incapacidades: any[], reporte: any[]): void {
+    this.dataSourceTable1.data = incapacidades;
   }
-  this.cargarInformacion(true);
-  this.incapacidadService.traerDatosIncapacidad(cedula)
-    .subscribe({
-      next: (incapacidades) => {
-        let cantidad = Array.isArray(incapacidades) ? incapacidades.length : 0;
-        if (cantidad === 0) {
-          // Si no hay resultados, crea un objeto con "VACÍO" en todas las columnas
-          const columnas = ['numero_de_incapacidad', 'fecha_inicio_incapacidad', 'fecha_fin_incapacidad', 'tipo_incapacidad', 'estado_incapacidad'];
-          const filaVacia: any = {};
-          columnas.forEach(col => filaVacia[col] = 'VACÍO');
-          this.dataSourceTable1.data = [filaVacia];
-        } else {
-          this.dataSourceTable1.data = incapacidades;
-        }
-        this.cargarInformacion(false);
-        Swal.fire({
-          icon: cantidad === 0 ? 'info' : 'success',
-          title: cantidad === 0 ? 'Sin resultados' : 'Historial encontrado',
-          text: cantidad === 0
-            ? `No se encontraron incapacidades para la cédula ${cedula}.`
-            : `Se encontraron ${cantidad} incapacidades para la cédula ${cedula}`
-        });
-      },
-      error: () => {
-        this.cargarInformacion(false);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo obtener el historial de incapacidades.'
-        });
-      }
-    });
-}
+
+   private handleError(errorMessage: string): void {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage,
+        confirmButtonText: 'Aceptar'
+      });
+    }
 
   onUploadClick(field: string) {
     // Crear un input de tipo file programáticamente
@@ -1295,6 +1344,14 @@ buscarIncapacidadesPorCedula() {
 get tipoIncapacidadSeleccionado(): string {
   return this.incapacidadForm.get('tipo_incapacidad')?.value;
 }
+
+  toTitleCase(text: string, columnTitles: ColumnTitle): string {
+    return columnTitles[text] || text
+      .toLowerCase()
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
 
 // Ejemplo de función para saber si mostrar un botón
 mostrarBotonAccidenteTrabajo(): boolean {

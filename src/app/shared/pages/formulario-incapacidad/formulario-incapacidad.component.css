@@ -111,4 +111,152 @@ mat-card {
   .example-full-width2 {
     flex: 1 1 100%;
   }
+
+  /* Tabla: estilos para mejorar visibilidad, scroll y responsividad */
+.table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: #fff;
+  padding: 12px;
+}
+
+/* Angular Material Table Header */
+.mat-table {
+  width: 100%;
+  min-width: 900px;
+  background: #fff;
+  border-radius: 8px;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.mat-header-row {
+  background-color: #1976d2;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.mat-header-cell {
+  padding: 10px;
+  background: #1976d2;
+  color: #fff;
+  border-bottom: 2px solid #1565c0;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.mat-row {
+  background: #fafbfc;
+  transition: background 0.2s;
+}
+.mat-row:nth-child(even) {
+  background: #f1f4f8;
+}
+.mat-cell {
+  padding: 10px;
+  border-bottom: 1px solid #e0e3e8;
+  font-size: 0.95em;
+}
+
+/* Hover en la fila */
+.mat-row:hover {
+  background-color: #e3f2fd !important;
+}
+
+/* Sin datos */
+.mat-no-data-row .mat-cell {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  font-size: 1em;
+}
+
+/* Responsive para tabla */
+@media (max-width: 900px) {
+  .mat-table {
+    min-width: 650px;
+  }
+  .table-container {
+    padding: 4px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+  }
+  .mat-form-field {
+    margin: 10px 0;
+    min-width: 100%;
+  }
+  button.mat-button,
+  button.mat-flat-button,
+  button.mat-stroked-button {
+    margin-top: 20px;
+    width: 100%;
+  }
+  .mat-table {
+    min-width: 400px;
+  }
+}
+
+/* Layout global */
+.app-layout {
+  display: flex;
+  flex-direction: row;
+}
+.contenedor {
+  flex-grow: 1;
+  padding: 16px;
+}
+.main-card {
+  margin: 16px;
+}
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.filter-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.filter-container {
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}
+.filter-container.collapsed {
+  max-height: 0;
+}
+.filter-container.expanded {
+  max-height: 500px;
+}
+
+.download-button {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .filter-header {
+    flex-direction: column;
+  }
+  .filter-form {
+    flex-direction: column;
+  }
+  .download-button {
+    margin-top: 20px;
+    margin-left: 0;
+  }
+}
+
 }
