@@ -44,6 +44,25 @@ import { MatListModule } from '@angular/material/list';
 ]
 })
 export class RobotTableComponent implements OnInit {
+  // Propiedades para mostrar el filtro activo (verde)
+  get isNombreFiltrando(): boolean {
+    return !!this.nombreFilter.value;
+  }
+  get isEstadoFiltrando(): boolean {
+    return Array.isArray(this.estadoFilter.value) && this.estadoFilter.value.length > 0;
+  }
+  get isRobotFiltrando(): boolean {
+    return !!this.robotFilter.value;
+  }
+  get isPaginaFiltrando(): boolean {
+    return Array.isArray(this.paginaFilter.value) && this.paginaFilter.value.length > 0;
+  }
+  get isFechaFiltrando(): boolean {
+    return !!this.fechaDesde.value || !!this.fechaHasta.value;
+  }
+  get isIdFiltrando(): boolean {
+    return !!this.idFilter.value;
+  }
   displayedColumns: string[] = ['cola', 'nombre', 'estado', 'nombreRobot', 'pagina', 'fecha', 'hora', 'id'];
   dataSource = new MatTableDataSource<RobotRecord>();
 

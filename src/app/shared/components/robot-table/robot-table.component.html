@@ -1,17 +1,20 @@
 <div class="robot-table-container">
-  <h2 class="robot-table-title">Seguimiento de robots</h2>
-  <div class="filters">
-    <!-- Nombre Filter Card -->
-    <mat-card *ngIf="showNombreFilterCard" class="filter-card">
+  <h3 class="robot-table-title">Seguimiento de robots</h3>
+
+  <!-- Pop-up Filtros -->
+  <div *ngIf="showNombreFilterCard" class="filter-popup">
+    <div class="filter-popup-backdrop" (click)="toggleNombreFilterCard()"></div>
+    <mat-card class="filter-popup-card">
       <mat-card-title>Filtrar por Nombre</mat-card-title>
       <mat-form-field>
         <input matInput placeholder="Nombre" [formControl]="nombreFilter" />
       </mat-form-field>
       <button mat-button (click)="toggleNombreFilterCard()">Cerrar</button>
     </mat-card>
-
-    <!-- Estado Filter Card -->
-    <mat-card *ngIf="showEstadoFilterCard" class="filter-card">
+  </div>
+  <div *ngIf="showEstadoFilterCard" class="filter-popup">
+    <div class="filter-popup-backdrop" (click)="toggleEstadoFilterCard()"></div>
+    <mat-card class="filter-popup-card">
       <mat-card-title>Filtrar por Estado</mat-card-title>
       <mat-selection-list [formControl]="estadoFilter" multiple>
         <mat-list-option value="Activo">Activo</mat-list-option>
@@ -20,18 +23,20 @@
       </mat-selection-list>
       <button mat-button (click)="toggleEstadoFilterCard()">Cerrar</button>
     </mat-card>
-
-    <!-- Robot Filter Card -->
-    <mat-card *ngIf="showRobotFilterCard" class="filter-card">
+  </div>
+  <div *ngIf="showRobotFilterCard" class="filter-popup">
+    <div class="filter-popup-backdrop" (click)="toggleRobotFilterCard()"></div>
+    <mat-card class="filter-popup-card">
       <mat-card-title>Filtrar por Robot</mat-card-title>
       <mat-form-field>
         <input matInput placeholder="Robot" [formControl]="robotFilter" />
       </mat-form-field>
       <button mat-button (click)="toggleRobotFilterCard()">Cerrar</button>
     </mat-card>
-
-    <!-- Página Filter Card -->
-    <mat-card *ngIf="showPaginaFilterCard" class="filter-card">
+  </div>
+  <div *ngIf="showPaginaFilterCard" class="filter-popup">
+    <div class="filter-popup-backdrop" (click)="togglePaginaFilterCard()"></div>
+    <mat-card class="filter-popup-card">
       <mat-card-title>Filtrar por Página</mat-card-title>
       <mat-selection-list [formControl]="paginaFilter" multiple>
         <mat-list-option value="Policivo">Policivo</mat-list-option>
@@ -45,9 +50,10 @@
       </mat-selection-list>
       <button mat-button (click)="togglePaginaFilterCard()">Cerrar</button>
     </mat-card>
-
-    <!-- Fecha Filter Card -->
-    <mat-card *ngIf="showFechaFilterCard" class="filter-card">
+  </div>
+  <div *ngIf="showFechaFilterCard" class="filter-popup">
+    <div class="filter-popup-backdrop" (click)="toggleFechaFilterCard()"></div>
+    <mat-card class="filter-popup-card">
       <mat-card-title>Filtrar por Fecha</mat-card-title>
       <mat-form-field>
         <input
@@ -77,9 +83,10 @@
       </mat-form-field>
       <button mat-button (click)="toggleFechaFilterCard()">Cerrar</button>
     </mat-card>
-
-    <!-- ID Filter Card -->
-    <mat-card *ngIf="showIdFilterCard" class="filter-card">
+  </div>
+  <div *ngIf="showIdFilterCard" class="filter-popup">
+    <div class="filter-popup-backdrop" (click)="toggleIdFilterCard()"></div>
+    <mat-card class="filter-popup-card">
       <mat-card-title>Filtrar por ID</mat-card-title>
       <mat-form-field>
         <input matInput placeholder="ID" [formControl]="idFilter" />
@@ -102,12 +109,12 @@
           <button
             mat-icon-button
             class="filter-icon-btn"
-            [ngClass]="{ 'active-filter': showNombreFilterCard }"
+            [ngClass]="{ 'active-filter': isNombreFiltrando }"
             (click)="$event.stopPropagation(); toggleNombreFilterCard()"
             aria-label="Filtrar Nombre"
             tabindex="-1"
           >
-            <mat-icon fontIcon="settings">settings</mat-icon>
+            <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
           </button>
         </mat-header-cell>
         <mat-cell *matCellDef="let row"> {{ row.nombre }} </mat-cell>
@@ -118,15 +125,21 @@
           <button
             mat-icon-button
             class="filter-icon-btn"
-            [ngClass]="{ 'active-filter': showEstadoFilterCard }"
+            [ngClass]="{ 'active-filter': isEstadoFiltrando }"
             (click)="$event.stopPropagation(); toggleEstadoFilterCard()"
             aria-label="Filtrar Estado"
             tabindex="-1"
           >
-            <mat-icon fontIcon="settings">settings</mat-icon>
+            <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
           </button>
         </mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{ row.estado }} </mat-cell>
+        <mat-cell *matCellDef="let row">
+          <span [ngClass]="{
+            'estado-activo': row.estado === 'Activo',
+            'estado-inactivo': row.estado === 'Inactivo',
+            'estado-pendiente': row.estado === 'Pendiente'
+          }">{{ row.estado }}</span>
+        </mat-cell>
       </ng-container>
       <ng-container matColumnDef="nombreRobot">
         <mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -134,12 +147,12 @@
           <button
             mat-icon-button
             class="filter-icon-btn"
-            [ngClass]="{ 'active-filter': showRobotFilterCard }"
+            [ngClass]="{ 'active-filter': isRobotFiltrando }"
             (click)="$event.stopPropagation(); toggleRobotFilterCard()"
             aria-label="Filtrar Robot"
             tabindex="-1"
           >
-            <mat-icon fontIcon="settings">settings</mat-icon>
+            <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
           </button>
         </mat-header-cell>
         <mat-cell *matCellDef="let row"> {{ row.nombreRobot }} </mat-cell>
@@ -150,15 +163,26 @@
           <button
             mat-icon-button
             class="filter-icon-btn"
-            [ngClass]="{ 'active-filter': showPaginaFilterCard }"
+            [ngClass]="{ 'active-filter': isPaginaFiltrando }"
             (click)="$event.stopPropagation(); togglePaginaFilterCard()"
             aria-label="Filtrar Página"
             tabindex="-1"
           >
-            <mat-icon fontIcon="settings">settings</mat-icon>
+            <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
           </button>
         </mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{ row.pagina }} </mat-cell>
+        <mat-cell *matCellDef="let row">
+          <span [ngClass]="{
+            'pagina-policivo': row.pagina === 'Policivo',
+            'pagina-contraloria': row.pagina === 'Contraloria',
+            'pagina-procuraduria': row.pagina === 'Procuraduria',
+            'pagina-union': row.pagina === 'Union',
+            'pagina-adres': row.pagina === 'Adres',
+            'pagina-ofac': row.pagina === 'OFAC',
+            'pagina-sisben': row.pagina === 'Sisben',
+            'pagina-pension': row.pagina === 'Pension'
+          }">{{ row.pagina }}</span>
+        </mat-cell>
       </ng-container>
       <ng-container matColumnDef="fecha">
         <mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -166,12 +190,12 @@
           <button
             mat-icon-button
             class="filter-icon-btn"
-            [ngClass]="{ 'active-filter': showFechaFilterCard }"
+            [ngClass]="{ 'active-filter': isFechaFiltrando }"
             (click)="$event.stopPropagation(); toggleFechaFilterCard()"
             aria-label="Filtrar Fecha"
             tabindex="-1"
           >
-            <mat-icon fontIcon="settings">settings</mat-icon>
+            <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
           </button>
         </mat-header-cell>
         <mat-cell *matCellDef="let row"> {{ row.fecha | date }} </mat-cell>
@@ -188,12 +212,12 @@
           <button
             mat-icon-button
             class="filter-icon-btn"
-            [ngClass]="{ 'active-filter': showIdFilterCard }"
+            [ngClass]="{ 'active-filter': isIdFiltrando }"
             (click)="$event.stopPropagation(); toggleIdFilterCard()"
             aria-label="Filtrar ID"
             tabindex="-1"
           >
-            <mat-icon fontIcon="settings">settings</mat-icon>
+            <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
           </button>
         </mat-header-cell>
         <mat-cell *matCellDef="let row"> {{ row.id }} </mat-cell>
