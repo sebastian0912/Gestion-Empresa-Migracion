@@ -254,10 +254,20 @@ export class FormularioIncapacidadComponent implements OnInit {
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.enable());
   }
 
+  mostrarBotonSubirDocumentacion(): boolean {
+  const eps = (this.incapacidadForm.get('nombre_eps')?.value || '').toLowerCase().trim();
+  return eps && eps !== 'salud total' && eps !== 'mutual ser';
+}
+
   mostrarBotonSaludTotal(): boolean {
   // Normaliza a minúsculas y quita espacios para evitar errores de comparación
   const epsSeleccionada = (this.incapacidadForm.get('nombre_eps')?.value || '').toLowerCase().trim();
   return epsSeleccionada === 'salud total';
+}
+
+mostrarBotonesEspeciales(): boolean {
+  const eps = (this.incapacidadForm.get('nombre_eps')?.value || '').toLowerCase().trim();
+  return eps === 'salud total' || eps === 'mutual ser';
 }
 
   private loadDataForForm(): void {

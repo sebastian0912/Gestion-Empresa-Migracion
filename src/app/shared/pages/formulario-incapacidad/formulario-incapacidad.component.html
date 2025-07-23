@@ -532,254 +532,238 @@
             </mat-card-content>
 
             <mat-card-title class="titulo">Subida de archivos</mat-card-title>
-            <mat-card-content>
-            <div class="form-row">
+<mat-card-content>
+  <div class="form-row">
 
-       <ng-container *ngIf="mostrarBotonSaludTotal()">
-                    <button class="form-field"
-                      *ngFor="let field of ['Formulario EPS Salud Total']">
-                      {{ field }}
-                        <!-- Botón que abre el diálogo de subida de archivos -->
-                  <button
-                    mat-flat-button
-                    class="aumentar"
-                    (click)="onUploadClick(field)"
-                  >
-                    Subir {{ field }}
-                  </button>
-
-                  <!-- Lista de archivos subidos -->
-                  <div class="file-list">
-                    <mat-list>
-                      <mat-list-item
-                        *ngFor="let file of getFiles(field)"
-                        class="file-item"
-                      >
-                        <!-- Nombre del archivo -->
-                        <span mat-line>Archivo de {{ field }} </span>
-                        <span mat-line>{{ file.name }}</span>
-
-                        <!-- Botón para eliminar el archivo -->
-                        <button
-                          mat-icon-button
-                          (click)="removeFile(field, file)"
-                          color="warn"
-                          matTooltip="Eliminar archivo"
-                        >
-                          <mat-icon>delete</mat-icon>
-                        </button>
-
-                        <!-- Separador entre archivos -->
-                        <mat-divider></mat-divider>
-                      </mat-list-item>
-                    </mat-list>
-                  </div>
-                    </button>
-                  </ng-container>
-
-                  <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
-                    <button class="form-field"
-                      *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
-                      {{ field }}
-                        <!-- Botón que abre el diálogo de subida de archivos -->
-                  <button
-                    mat-flat-button
-                    class="aumentar"
-                    (click)="onUploadClick(field)"
-                  >
-                    Subir {{ field }}
-                  </button>
-
-                  <!-- Lista de archivos subidos -->
-                  <div class="file-list">
-                    <mat-list>
-                      <mat-list-item
-                        *ngFor="let file of getFiles(field)"
-                        class="file-item"
-                      >
-                        <!-- Nombre del archivo -->
-                        <span mat-line>Archivo de {{ field }} </span>
-                        <span mat-line>{{ file.name }}</span>
-
-                        <!-- Botón para eliminar el archivo -->
-                        <button
-                          mat-icon-button
-                          (click)="removeFile(field, file)"
-                          color="warn"
-                          matTooltip="Eliminar archivo"
-                        >
-                          <mat-icon>delete</mat-icon>
-                        </button>
-
-                        <!-- Separador entre archivos -->
-                        <mat-divider></mat-divider>
-                      </mat-list-item>
-                    </mat-list>
-                  </div>
-                    </button>
-                  </ng-container>
-
-                  <ng-container *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
-                    <button class="form-field"
-                      *ngFor="let field of ['SOAT', 'FURIPS']">
-                      {{ field }}
-                        <!-- Botón que abre el diálogo de subida de archivos -->
-                  <button
-                    mat-flat-button
-                    class="aumentar"
-                    (click)="onUploadClick(field)"
-                  >
-                    Subir {{ field }}
-                  </button>
-
-                  <!-- Lista de archivos subidos -->
-                  <div class="file-list">
-                    <mat-list>
-                      <mat-list-item
-                        *ngFor="let file of getFiles(field)"
-                        class="file-item"
-                      >
-                        <!-- Nombre del archivo -->
-                        <span mat-line>Archivo de {{ field }} </span>
-                        <span mat-line>{{ file.name }}</span>
-
-                        <!-- Botón para eliminar el archivo -->
-                        <button
-                          mat-icon-button
-                          (click)="removeFile(field, file)"
-                          color="warn"
-                          matTooltip="Eliminar archivo"
-                        >
-                          <mat-icon>delete</mat-icon>
-                        </button>
-
-                        <!-- Separador entre archivos -->
-                        <mat-divider></mat-divider>
-                      </mat-list-item>
-                    </mat-list>
-                  </div>
-                    </button>
-                  </ng-container>
-
-                  <ng-container *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL') || mostrarBotonPorTipo('ACCIDENTE DE TRABAJO')">
-                    <button class="form-field"
-                      *ngFor="let field of ['FURAT']">
-                      {{ field }}
-                        <!-- Botón que abre el diálogo de subida de archivos -->
-                  <button
-                    mat-flat-button
-                    class="aumentar"
-                    (click)="onUploadClick(field)"
-                  >
-                    Subir {{ field }}
-                  </button>
-
-                  <!-- Lista de archivos subidos -->
-                  <div class="file-list">
-                    <mat-list>
-                      <mat-list-item
-                        *ngFor="let file of getFiles(field)"
-                        class="file-item"
-                      >
-                        <!-- Nombre del archivo -->
-                        <span mat-line>Archivo de {{ field }} </span>
-                        <span mat-line>{{ file.name }}</span>
-
-                        <!-- Botón para eliminar el archivo -->
-                        <button
-                          mat-icon-button
-                          (click)="removeFile(field, file)"
-                          color="warn"
-                          matTooltip="Eliminar archivo"
-                        >
-                          <mat-icon>delete</mat-icon>
-                        </button>
-
-                        <!-- Separador entre archivos -->
-                        <mat-divider></mat-divider>
-                      </mat-list-item>
-                    </mat-list>
-                  </div>
-                    </button>
-                  </ng-container>
-
-            </div>
-
-              <div class="form-row">
-                <div
-                  *ngFor="
-                    let field of ['Historial clinico', 'Archivo Incapacidad']
-                  "
-                  class="form-field"
-                >
-                  <!-- Botón que abre el diálogo de subida de archivos -->
-                  <button
-                    mat-flat-button
-                    class="aumentar"
-                    (click)="onUploadClick(field)"
-                  >
-                    Subir {{ field }}
-                  </button>
-
-                  <!-- Lista de archivos subidos -->
-                  <div class="file-list">
-                    <mat-list>
-                      <mat-list-item
-                        *ngFor="let file of getFiles(field)"
-                        class="file-item"
-                      >
-                        <!-- Nombre del archivo -->
-                        <span mat-line>Archivo de {{ field }} </span>
-                        <span mat-line>{{ file.name }}</span>
-
-                        <!-- Botón para eliminar el archivo -->
-                        <button
-                          mat-icon-button
-                          (click)="removeFile(field, file)"
-                          color="warn"
-                          matTooltip="Eliminar archivo"
-                        >
-                          <mat-icon>delete</mat-icon>
-                        </button>
-
-                        <!-- Separador entre archivos -->
-                        <mat-divider></mat-divider>
-                      </mat-list-item>
-                    </mat-list>
-                  </div>
-                </div>
-               </div>
-            </mat-card-content>
-        </form>
+    <!-- Botón genérico para EPS distintas de Salud Total y Mutual ser -->
+    <ng-container *ngIf="mostrarBotonSubirDocumentacion()">
+      <div class="form-field">
+        <!-- Botón que abre el diálogo de subida de archivos -->
         <button
           mat-flat-button
           class="aumentar"
-          color="primary"
-          (click)="onSubmit()"
+          (click)="onUploadClick('documentación')"
         >
-          Subir incapacidad
+          Subir documentación
         </button>
-      </mat-card-content>
 
-      <!-- Menú desplegable -->
-      <mat-menu #menu="matMenu">
-        <ng-container *ngIf="validationErrors.length > 0; else noErrors">
-          <button mat-menu-item *ngFor="let error of validationErrors">
-            <mat-icon color="warn">error</mat-icon>
-            <span>{{ error }}</span>
+        <!-- Lista de archivos subidos -->
+        <div class="file-list">
+          <mat-list>
+            <mat-list-item
+              *ngFor="let file of getFiles('documentación')"
+              class="file-item"
+            >
+              <span mat-line>Archivo de documentación</span>
+              <span mat-line>{{ file.name }}</span>
+              <button
+                mat-icon-button
+                (click)="removeFile('documentación', file)"
+                color="warn"
+                matTooltip="Eliminar archivo"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-divider></mat-divider>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Botones especiales SOLO para Salud Total o Mutual ser -->
+    <ng-container *ngIf="mostrarBotonesEspeciales()">
+
+      <!-- Formulario Salud Total -->
+      <div class="form-field">
+        <button
+          mat-flat-button
+          class="aumentar"
+          (click)="onUploadClick('Formulario EPS Salud Total')"
+        >
+          Subir Formulario EPS Salud Total
+        </button>
+        <div class="file-list">
+          <mat-list>
+            <mat-list-item
+              *ngFor="let file of getFiles('Formulario EPS Salud Total')"
+              class="file-item"
+            >
+              <span mat-line>Archivo de Formulario EPS Salud Total</span>
+              <span mat-line>{{ file.name }}</span>
+              <button
+                mat-icon-button
+                (click)="removeFile('Formulario EPS Salud Total', file)"
+                color="warn"
+                matTooltip="Eliminar archivo"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-divider></mat-divider>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+
+      <!-- Licencia de maternidad/paternidad -->
+      <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
+        <div class="form-field" *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
+          <button
+            mat-flat-button
+            class="aumentar"
+            (click)="onUploadClick(field)"
+          >
+            Subir {{ field }}
           </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="clearErrors()">
-            <mat-icon>clear</mat-icon>
-            <span>Clear Notifications</span>
+          <div class="file-list">
+            <mat-list>
+              <mat-list-item
+                *ngFor="let file of getFiles(field)"
+                class="file-item"
+              >
+                <span mat-line>Archivo de {{ field }}</span>
+                <span mat-line>{{ file.name }}</span>
+                <button
+                  mat-icon-button
+                  (click)="removeFile(field, file)"
+                  color="warn"
+                  matTooltip="Eliminar archivo"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <mat-divider></mat-divider>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- SOAT / ACCIDENTE DE TRANCITO -->
+      <ng-container *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
+        <div class="form-field" *ngFor="let field of ['SOAT', 'FURIPS']">
+          <button
+            mat-flat-button
+            class="aumentar"
+            (click)="onUploadClick(field)"
+          >
+            Subir {{ field }}
           </button>
-        </ng-container>
-        <ng-template #noErrors>
-          <button mat-menu-item disabled>
-            <span>No notifications</span>
+          <div class="file-list">
+            <mat-list>
+              <mat-list-item
+                *ngFor="let file of getFiles(field)"
+                class="file-item"
+              >
+                <span mat-line>Archivo de {{ field }}</span>
+                <span mat-line>{{ file.name }}</span>
+                <button
+                  mat-icon-button
+                  (click)="removeFile(field, file)"
+                  color="warn"
+                  matTooltip="Eliminar archivo"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <mat-divider></mat-divider>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Enfermedad laboral / Accidente de trabajo -->
+      <ng-container *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL') || mostrarBotonPorTipo('ACCIDENTE DE TRABAJO')">
+        <div class="form-field">
+          <button
+            mat-flat-button
+            class="aumentar"
+            (click)="onUploadClick('FURAT')"
+          >
+            Subir FURAT
           </button>
-        </ng-template>
-      </mat-menu>
-    </mat-card>
+          <div class="file-list">
+            <mat-list>
+              <mat-list-item
+                *ngFor="let file of getFiles('FURAT')"
+                class="file-item"
+              >
+                <span mat-line>Archivo de FURAT</span>
+                <span mat-line>{{ file.name }}</span>
+                <button
+                  mat-icon-button
+                  (click)="removeFile('FURAT', file)"
+                  color="warn"
+                  matTooltip="Eliminar archivo"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <mat-divider></mat-divider>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Historial clínico y Archivo Incapacidad (siempre para Salud Total/Mutual ser) -->
+      <div class="form-field" *ngFor="let field of ['Historial clinico', 'Archivo Incapacidad']">
+        <button
+          mat-flat-button
+          class="aumentar"
+          (click)="onUploadClick(field)"
+        >
+          Subir {{ field }}
+        </button>
+        <div class="file-list">
+          <mat-list>
+            <mat-list-item
+              *ngFor="let file of getFiles(field)"
+              class="file-item"
+            >
+              <span mat-line>Archivo de {{ field }}</span>
+              <span mat-line>{{ file.name }}</span>
+              <button
+                mat-icon-button
+                (click)="removeFile(field, file)"
+                color="warn"
+                matTooltip="Eliminar archivo"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-divider></mat-divider>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+    </ng-container>
+
   </div>
-</div>
+
+  <button
+    mat-flat-button
+    class="aumentar"
+    color="primary"
+    (click)="onSubmit()"
+  >
+    Subir incapacidad
+  </button>
+
+  <!-- Menú desplegable -->
+  <mat-menu #menu="matMenu">
+    <ng-container *ngIf="validationErrors.length > 0; else noErrors">
+      <button mat-menu-item *ngFor="let error of validationErrors">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="clearErrors()">
+        <mat-icon>clear</mat-icon>
+        <span>Clear Notifications</span>
+      </button>
+    </ng-container>
+    <ng-template #noErrors>
+      <button mat-menu-item disabled>
+        <span>No notifications</span>
+      </button>
+    </ng-template>
+  </mat-menu>
+</mat-card-content>
