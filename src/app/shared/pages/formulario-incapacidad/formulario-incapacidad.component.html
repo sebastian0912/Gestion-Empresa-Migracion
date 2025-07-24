@@ -531,8 +531,7 @@
               </div>
             </mat-card-content>
 
-            <mat-card-title class="titulo">Subida de archivos</mat-card-title>
-<mat-card-content>
+ <mat-card-content>
   <div class="form-row">
 
     <!-- Botón genérico para EPS distintas de Salud Total y Mutual ser -->
@@ -571,10 +570,8 @@
       </div>
     </ng-container>
 
-    <!-- Botones especiales SOLO para Salud Total o Mutual ser -->
-    <ng-container *ngIf="mostrarBotonesEspeciales()">
-
-      <!-- Formulario Salud Total -->
+    <!-- Botón Formulario Salud Total SOLO para EPS Salud Total -->
+    <ng-container *ngIf="mostrarBotonSaludTotal()">
       <div class="form-field">
         <button
           mat-flat-button
@@ -604,6 +601,10 @@
           </mat-list>
         </div>
       </div>
+    </ng-container>
+
+    <!-- Botones especiales SOLO para Salud Total o Mutual ser -->
+    <ng-container *ngIf="mostrarBotonesEspeciales()">
 
       <!-- Licencia de maternidad/paternidad -->
       <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
