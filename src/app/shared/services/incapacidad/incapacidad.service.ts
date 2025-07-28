@@ -8,6 +8,8 @@ import { firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
+import JSZip from 'jszip';
+import saveAs from 'file-saver';
 
 @Injectable({
   providedIn: 'root',
@@ -344,4 +346,45 @@ export class IncapacidadService {
       throw error;
     }
   }
+
+  traerTodosDocumentos(): Observable<any[]> {
+    const headers = this.createAuthorizationHeader();
+    return this.http.get<any[]>(`${this.apiUrl}/Incapacidades/descargarIncapacidades`, { headers });
+  }
+
+  // Utiliza el método anterior para descargar y crear el ZIP desde base64
+  async descargarTodoComoZip(fecha: string): Promise<void> {
+    const zip = new JSZip();
+    const documentos = await firstValueFrom(this.traerTodosDocumentos());
+
+    const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
+
+    const promesas = documentos.map(async (doc, idx) => {
+      if (!carpetaPrincipal) {
+        throw new Error('No se pudo crear la carpeta principal en el ZIP.');
+      }
+      const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
+      // El nombre del archivo puede venir de la BD o lo generas tú
+      const nombreArchivo = doc.nombreDocumento || `documento_${idx + 1}.pdf`;
+
+      // Procesa el campo base64 (link_incapacidad)
+      // Si tu backend envía 'data:application/pdf;base64,...'
+      let base64Data = doc.link_incapacidad;
+      if (base64Data.startsWith('data:')) {
+        base64Data = base64Data.split(',')[1]; // quita el prefijo mime
+      }
+      const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+      if (epsFolder) {
+        epsFolder.file(nombreArchivo, byteArray);
+      } else {
+        throw new Error('No se pudo crear la carpeta EPS en el ZIP.');
+      }
+    });
+
+    await Promise.all(promesas);
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, `incapacidades_${fecha}.zip`);
+  }
+
+
 }

@@ -50,11 +50,9 @@ export const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY', // Formato para accesibilidad en el selector de mes
   },
 };
-
 interface ColumnTitle {
   [key: string]: string;
 }
-
 @Component({
   selector: 'app-formulario-incapacidad',
   standalone: true,
@@ -714,7 +712,6 @@ ColumnsTable1 = [
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
       this.incapacidadForm.get('nombre_eps')?.setValue('ARL SURA');
     }
-
     if (this.incapacidadForm.get('prorroga')?.value == 'NO' && this.incapacidadForm.get('tipo_incapacidad')?.value == 'ENFERMEDAD GENERAL') {
       this.calcularDiasIncapacidad();
       this.incapacidadForm.get('nombre_eps')?.setValue(this.nombreepspersona);
@@ -732,7 +729,6 @@ ColumnsTable1 = [
       this.incapacidadForm.get('Dias_temporal')?.setValue(0);
       this.incapacidadForm.get('dias_incapacidad')?.setValue(diasincapacidad);
     }
-
 
   }
   calcularDiasIncapacidad() {
@@ -798,7 +794,6 @@ ColumnsTable1 = [
       this.ipsMapByNombre.set(item.nombre, item.nit);
     });
 
-
     this.allCodigosDiagnostico.forEach(item => {
       this.codigoControl.setValue(item.codigo);
       this.descripcionControl.setValue(item.descripcion);
@@ -836,7 +831,6 @@ ColumnsTable1 = [
       const selected = this.epsnombres.find(item => item.nombre === value);
       this.incapacidadForm.get('nombre_eps')?.setValue(selected ? selected.nombre : '');
     });
-
 
     this.ipsControlNit.valueChanges.pipe(debounceTime(300)).subscribe(value => {
       const selectedNombre = this.ipsMapByNit.get(value);
@@ -1291,8 +1285,6 @@ private showInfo(message: string): void {
     fileInput.type = 'file';
     fileInput.style.display = 'none';
 
-
-
     // Agregar evento para manejar la selección de archivo
     fileInput.onchange = (event: any) => {
       const file: File = event.target.files[0];
@@ -1341,7 +1333,6 @@ private showInfo(message: string): void {
       return 'text';
     }
   }
-
 
   sexos: string[] = ['Masculino', 'Femenino'];
   Prorroga: string[] = ['SI', 'NO'];
@@ -1417,13 +1408,11 @@ mostrarBotonPorTipo(tipo: string): boolean {
       }
       const valueWithoutAccents = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-
       const valueWithSpaces = valueWithoutAccents.replace(/_/g, ' ');
 
       return valueWithSpaces.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
     }
   }
-
 
   getOptions(field: string): string[] {
     switch (field) {

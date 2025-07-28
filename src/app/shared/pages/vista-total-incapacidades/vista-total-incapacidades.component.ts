@@ -382,15 +382,15 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
   private setupFormListeners(): void {
     this.myForm.get('confirmacion_fecha_de_radicacion_inicio')?.valueChanges.subscribe(value => {
-      this.filterCriteria.fechaInicio = this.formatDate(value);
+      this.filterCriteria.fechaInicio = this.formatDate(value, 'dd-MM-YYYY', 'es-CO');
     });
 
     this.myForm.get('confirmacion_fecha_de_radicacion_fin')?.valueChanges.subscribe(value => {
-      this.filterCriteria.fechaFin = this.formatDate(value);
+      this.filterCriteria.fechaFin = this.formatDate(value, 'dd-MM-YYYY', 'es-CO');
     });
   }
 
-  private formatDate(date: any): string {
+  private formatDate(date: any, p0: string, p1: string): string {
     return this.datePipe.transform(date, 'dd-MM-YYYY') || '';
   }
 
@@ -445,7 +445,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   }
 
   applyDateFilter(): void {
-    const fechaInicio = this.formatDate(this.myForm.get('confirmacion_fecha_de_radicacion_inicio')?.value);
+    const fechaInicio = this.formatDate(this.myForm.get('confirmacion_fecha_de_radicacion_inicio')?.value, 'dd-MM-YYYY', 'es-CO');
     // Verifica que la fecha de inicio esté presente
     if (!fechaInicio) {
       this.showWarning('Por favor, selecciona una fecha para filtrar.');
@@ -603,6 +603,19 @@ downloadExcel(): void {
   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
 }
 
+  downloadDocs() {
+    const fecha = this.formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+    this.incapacidadService.descargarTodoComoZip(fecha)
+      .then(() => {
+        // Mensaje de éxito
+        alert('¡Descarga completada!');
+      })
+      .catch((error) => {
+        // Mensaje de error
+        alert('Ocurrió un error al descargar los documentos.');
+        console.error(error);
+      });
+  }
 
 private combineDataForExcel(): any[] {
     const reporteMap = this.createReportMap();
