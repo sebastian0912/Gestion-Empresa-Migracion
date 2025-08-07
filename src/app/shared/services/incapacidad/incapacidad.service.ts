@@ -347,10 +347,15 @@ export class IncapacidadService {
     }
   }
 
-  traerTodosDocumentos(): Observable<any[]> {
-    const headers = this.createAuthorizationHeader();
-    return this.http.get<any[]>(`${this.apiUrl}/Incapacidades/descargarIncapacidades`, { headers });
+traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
+  const headers = this.createAuthorizationHeader();
+  let url = `${this.apiUrl}/Incapacidades/descargarIncapacidades`;
+
+  if (fechaInicio) {
+    url += `?fecha_inicio=${fechaInicio}`;
   }
+  return this.http.get<any[]>(url, { headers });
+}
 
   // Utiliza el método anterior para descargar y crear el ZIP desde base64
   async descargarTodoComoZip(fecha: string): Promise<void> {

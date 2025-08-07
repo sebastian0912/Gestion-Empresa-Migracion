@@ -603,19 +603,31 @@ downloadExcel(): void {
   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
 }
 
-  downloadDocs() {
-    const fecha = this.formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
-    this.incapacidadService.descargarTodoComoZip(fecha)
-      .then(() => {
-        // Mensaje de éxito
-        alert('¡Descarga completada!');
-      })
-      .catch((error) => {
-        // Mensaje de error
-        alert('Ocurrió un error al descargar los documentos.');
-        console.error(error);
-      });
+fechaSeleccionada: string = ''; // YYYY-MM-DD
+
+downloadDocs() {
+  let fechaBase: Date;
+  if (this.fechaSeleccionada) {
+    fechaBase = new Date(this.fechaSeleccionada);
+  } else {
+    fechaBase = new Date(); // por defecto hoy
   }
+
+  // Calcular el lunes de la semana de la fecha elegida
+  const day = fechaBase.getDay();
+  const diff = fechaBase.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(fechaBase.setDate(diff));
+  const fecha = monday.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
+  this.incapacidadService.descargarTodoComoZip(fecha)
+    .then(() => {
+      alert('¡Descarga completada!');
+    })
+    .catch((error) => {
+      alert('Ocurrió un error al descargar los documentos.');
+      console.error(error);
+    });
+}
 
 private combineDataForExcel(): any[] {
     const reporteMap = this.createReportMap();

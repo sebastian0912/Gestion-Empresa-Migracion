@@ -138,10 +138,18 @@
           </div>
         </div>
         <br>
-          <!-- Botón para descargar el reporte -->
-          <app-info-card title="Descargar Documentos" imageUrl="navbar/contrato.png" (click)="downloadDocs()"
-            class="download-button">
-          </app-info-card>
+        <!-- Input para elegir una fecha -->
+<input
+  type="date"
+  [(ngModel)]="fechaSeleccionada"
+  class="form-control"
+  placeholder="Selecciona una fecha para descargar la semana"
+/>
+
+<!-- Botón para descargar el reporte -->
+<app-info-card title="Descargar Documentos" imageUrl="navbar/contrato.png"
+  (click)="downloadDocs()" class="download-button">
+</app-info-card>
       </mat-card-content>
     </mat-card>
   </div>
