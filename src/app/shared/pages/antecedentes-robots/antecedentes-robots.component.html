@@ -1,8 +1,16 @@
-<input type="file" id="fileInput" (change)="cargarExcel($event)" accept=".xlsx, .xls" style="display:none" />
+<input
+  type="file"
+  id="fileInput"
+  (change)="cargarExcel($event)"
+  accept=".xlsx, .xls"
+  style="display: none"
+/>
 
 <div class="dashboard-container">
   <div class="navbar"></div>
-  <app-navbar-lateral [class.sidebar-hidden]="isSidebarHidden"></app-navbar-lateral>
+  <app-navbar-lateral
+    [class.sidebar-hidden]="isSidebarHidden"
+  ></app-navbar-lateral>
 
   <div class="dashboard-content">
     <app-navbar-superior></app-navbar-superior>
@@ -12,15 +20,23 @@
       <mat-card-content>
         <mat-form-field class="example-full-width">
           <mat-label>Buscar por Cédula</mat-label>
-          <input matInput [formControl]="cedulaControl" placeholder="Ingrese número de cédula" />
+          <input
+            matInput
+            [formControl]="cedulaControl"
+            placeholder="Ingrese número de cédula"
+          />
         </mat-form-field>
 
         <button mat-raised-button color="primary" (click)="buscarPorCedula()">
           Buscar
         </button>
 
-        <app-info-card title="Cargar solicitudes robots paquete" imageUrl="comun/excel.png" (click)="triggerFileInput()"
-          style="cursor:pointer"></app-info-card>
+        <app-info-card
+          title="Cargar solicitudes robots paquete"
+          imageUrl="comun/excel.png"
+          (click)="triggerFileInput()"
+          style="cursor: pointer"
+        ></app-info-card>
       </mat-card-content>
     </mat-card>
 
@@ -33,18 +49,27 @@
           <!-- FILTRO -->
           <mat-form-field class="filtro">
             <mat-label>Filtrar</mat-label>
-            <input matInput #input placeholder="Filtrar en tabla" (keyup)="applyFilters($event)" />
+            <input
+              matInput
+              #input
+              placeholder="Filtrar en tabla"
+              (keyup)="applyFilters($event)"
+            />
           </mat-form-field>
 
           <!-- TABLA -->
-          <div class="table-container" tabindex="0" (paste)="onTablePaste($event)">
+          <div
+            class="table-container"
+            tabindex="0"
+            (paste)="onTablePaste($event)"
+          >
             <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
               <!-- ÍCONO ✔ / ❌ -->
               <ng-container matColumnDef="encontrado">
                 <th mat-header-cell *matHeaderCellDef>Estado</th>
                 <td mat-cell *matCellDef="let e">
                   <mat-icon [color]="e.encontrado ? 'primary' : 'warn'">
-                    {{ e.encontrado ? 'check_circle' : 'cancel' }}
+                    {{ e.encontrado ? "check_circle" : "cancel" }}
                   </mat-icon>
                 </td>
               </ng-container>
@@ -58,7 +83,9 @@
               <!-- HORA REGISTRO -->
               <ng-container matColumnDef="hora_registro">
                 <th mat-header-cell *matHeaderCellDef>Hora Registro</th>
-                <td mat-cell *matCellDef="let e">{{ e.hora_registro | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.hora_registro | date : "yyyy-MM-dd HH:mm:ss" }}
+                </td>
               </ng-container>
 
               <!-- OFICINA -->
@@ -73,11 +100,14 @@
                 <td mat-cell *matCellDef="let e">{{ e.tipo_documento }}</td>
               </ng-container>
 
-
               <!-- ESTADO ADRESS -->
               <ng-container matColumnDef="estado_adress">
-                <th mat-header-cell *matHeaderCellDef class="section-start">Estado Adress</th>
-                <td mat-cell *matCellDef="let e" class="section-start">{{ e.estado_adress }}</td>
+                <th mat-header-cell *matHeaderCellDef class="section-start">
+                  Estado Adress
+                </th>
+                <td mat-cell *matCellDef="let e" class="section-start">
+                  {{ e.estado_adress }}
+                </td>
               </ng-container>
 
               <!-- APELLIDO ADRESS -->
@@ -100,11 +130,17 @@
 
               <!-- FECHA ADRESS -->
               <!-- FECHA ADRESS -->
-              <ng-container matColumnDef="fecha_adress" style="background-color: red !important;">
-                <th mat-header-cell *matHeaderCellDef class="espacio-bloque">Fecha Adress</th>
-                <td mat-cell *matCellDef="let e" class="espacio-bloque">{{ e.fecha_adress }}</td>
+              <ng-container
+                matColumnDef="fecha_adress"
+                style="background-color: red !important"
+              >
+                <th mat-header-cell *matHeaderCellDef class="espacio-bloque">
+                  Fecha Adress
+                </th>
+                <td mat-cell *matCellDef="let e" class="espacio-bloque">
+                  {{ e.fecha_adress }}
+                </td>
               </ng-container>
-
 
               <!-- ESTADO POLICIVO -->
               <ng-container matColumnDef="estado_policivo">
@@ -151,7 +187,9 @@
               <!-- ANOTACIÓN CONTRALORÍA -->
               <ng-container matColumnDef="anotacion_contraloria">
                 <th mat-header-cell *matHeaderCellDef>Anotación Contraloría</th>
-                <td mat-cell *matCellDef="let e">{{ e.anotacion_contraloria }}</td>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.anotacion_contraloria }}
+                </td>
               </ng-container>
 
               <!-- PDF CONTRALORÍA -->
@@ -187,13 +225,19 @@
               <!-- ESTADO PROCURADURÍA -->
               <ng-container matColumnDef="estado_procuraduria">
                 <th mat-header-cell *matHeaderCellDef>Estado Procuraduría</th>
-                <td mat-cell *matCellDef="let e">{{ e.estado_procuraduria }}</td>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.estado_procuraduria }}
+                </td>
               </ng-container>
 
               <!-- ANOTACIÓN PROCURADURÍA -->
               <ng-container matColumnDef="anotacion_procuraduria">
-                <th mat-header-cell *matHeaderCellDef>Anotación Procuraduría</th>
-                <td mat-cell *matCellDef="let e">{{ e.anotacion_procuraduria }}</td>
+                <th mat-header-cell *matHeaderCellDef>
+                  Anotación Procuraduría
+                </th>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.anotacion_procuraduria }}
+                </td>
               </ng-container>
 
               <!-- PDF PROCURADURÍA -->
@@ -205,13 +249,17 @@
               <!-- ESTADO FONDO PENSIÓN -->
               <ng-container matColumnDef="estado_fondo_pension">
                 <th mat-header-cell *matHeaderCellDef>Estado Fondo Pensión</th>
-                <td mat-cell *matCellDef="let e">{{ e.estado_fondo_pension }}</td>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.estado_fondo_pension }}
+                </td>
               </ng-container>
 
               <!-- ENTIDAD FONDO PENSIÓN -->
               <ng-container matColumnDef="entidad_fondo_pension">
                 <th mat-header-cell *matHeaderCellDef>Entidad Fondo Pensión</th>
-                <td mat-cell *matCellDef="let e">{{ e.entidad_fondo_pension }}</td>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.entidad_fondo_pension }}
+                </td>
               </ng-container>
 
               <!-- PDF FONDO PENSIÓN -->
@@ -223,7 +271,9 @@
               <!-- FECHA FONDO PENSIÓN -->
               <ng-container matColumnDef="fecha_fondo_pension">
                 <th mat-header-cell *matHeaderCellDef>Fecha Fondo Pensión</th>
-                <td mat-cell *matCellDef="let e">{{ e.fecha_fondo_pension }}</td>
+                <td mat-cell *matCellDef="let e">
+                  {{ e.fecha_fondo_pension }}
+                </td>
               </ng-container>
 
               <!-- ESTADO UNIÓN -->
@@ -246,7 +296,7 @@
 
               <!-- FILAS -->
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
               <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" colspan="35">
                   No hay datos "{{ input.value }}"
@@ -258,11 +308,13 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Robot Table Component -->
+    <!-- Robot Table Component reemplazado -->
     <mat-card>
-      <mat-card-content>
-        <app-robot-table></app-robot-table>
-      </mat-card-content>
+      <app-standard-filter-table
+        [data]="robotTableData"
+        [columnDefinitions]="robotColumnDefs"
+        tableTitle="Robots"
+      ></app-standard-filter-table>
     </mat-card>
   </div>
 </div>

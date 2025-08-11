@@ -1,0 +1,227 @@
+<div class="table-container">
+  <!-- Información de filtros activos SIEMPRE visible -->
+  <div class="filter-info-row">
+    <ng-container *ngIf="activeFilters.length > 0; else noFilters">
+      <span class="filter-title">
+        <mat-icon fontIcon="filter_alt">filter_alt</mat-icon> Filtros activos:
+      </span>
+      <ng-container
+        *ngFor="let filter of activeFilters; trackBy: trackByFilter"
+      >
+        <span class="filter-tag">
+          {{ filter.header }}:
+          <ng-container *ngIf="filter.type === 'date'">
+            <ng-container *ngIf="filter.value.from"
+              >Desde {{ filter.value.from | date:'shortDate' }}</ng-container
+            >
+            <ng-container *ngIf="filter.value.to">
+              Hasta {{ filter.value.to | date:'shortDate' }}</ng-container
+            >
+          </ng-container>
+          <ng-container *ngIf="filter.type !== 'date'">
+            <ng-container *ngIf="isArray(filter.value)">
+              <ng-container *ngFor="let v of filter.value; let last = last"
+                >{{ v }}<span *ngIf="!last">, </span></ng-container
+              >
+            </ng-container>
+            <ng-container *ngIf="!isArray(filter.value)"
+              >{{ filter.value }}</ng-container
+            >
+          </ng-container>
+          <button
+            mat-icon-button
+            class="tag-clear-btn"
+            (click)="clearSingleFilter(filter)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      </ng-container>
+    </ng-container>
+    <ng-template #noFilters>
+      <span class="filter-title">
+        <mat-icon fontIcon="filter_alt">filter_alt</mat-icon>
+        Aplique un filtro bajo el nombre de la columna
+      </span>
+    </ng-template>
+  </div>
+
+  <!-- Nueva fila de filtros bajo el header de cada columna -->
+  <div class="paginator-row">
+    <button
+      mat-stroked-button
+      color="primary"
+      class="clear-filters-btn"
+      (click)="clearFilters()"
+    >
+      <mat-icon fontIcon="filter_alt_off">filter_alt_off</mat-icon>
+      Limpiar filtros
+    </button>
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="exportMenu"
+      aria-label="Opciones de exportación"
+      class="export-menu-btn"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportTable('pdf')">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>Exportar PDF</span>
+      </button>
+      <button mat-menu-item (click)="exportTable('xml')">
+        <mat-icon>code</mat-icon>
+        <span>Exportar XML</span>
+      </button>
+      <button mat-menu-item (click)="exportTable('excel')">
+        <mat-icon>table_view</mat-icon>
+        <span>Exportar Excel</span>
+      </button>
+    </mat-menu>
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 50]"
+      [pageSize]="10"
+      showFirstLastButtons
+      aria-label="Paginador de tabla"
+      class="table-paginator"
+      style="background-color: transparent"
+    >
+    </mat-paginator>
+  </div>
+
+  <mat-table [dataSource]="dataSource" matSort>
+    <!-- Columnas de datos -->
+    <ng-container
+      *ngFor="let col of columnDefinitions; trackBy: trackByCol"
+      [matColumnDef]="col.name"
+    >
+      <mat-header-cell
+        *matHeaderCellDef
+        mat-sort-header
+        [ngStyle]="{ width: col.width || 'auto', minWidth: col.width || 'auto' }"
+      >
+        {{ col.header }}
+      </mat-header-cell>
+      <mat-cell
+        *matCellDef="let row"
+        [ngStyle]="{ width: col.width || 'auto', minWidth: col.width || 'auto' }"
+      >
+        <ng-container *ngIf="col.name === 'actions' && actionsTemplate">
+          <ng-container
+            *ngTemplateOutlet="actionsTemplate; context: {$implicit: row}"
+          ></ng-container>
+        </ng-container>
+        <ng-container *ngIf="col.name === 'attachment' && attachmentTemplate">
+          <ng-container
+            *ngTemplateOutlet="attachmentTemplate; context: {$implicit: row}"
+          ></ng-container>
+        </ng-container>
+        <ng-container
+          *ngIf="col.name !== 'actions' && col.name !== 'attachment'"
+        >
+          <ng-container [ngSwitch]="col.type">
+            <!-- Default text display -->
+            <span *ngSwitchDefault>{{ row[col.name] }}</span>
+            <!-- Date display -->
+            <span *ngSwitchCase="'date'">{{ row[col.name] | date }}</span>
+            <!-- Status with colored badge -->
+            <span
+              *ngSwitchCase="'status'"
+              [ngStyle]="{
+                    'color': getStatusConfig(col.name)[row[col.name]]?.color,
+                    'background-color': getStatusConfig(col.name)[row[col.name]]?.background
+                  }"
+              class="status-badge"
+            >
+              {{ row[col.name] }}
+            </span>
+            <!-- Custom with colored badge -->
+            <span
+              *ngSwitchCase="'custom'"
+              [ngStyle]="{
+                    'color': getCustomClassConfig(col.name)[row[col.name]]?.color,
+                    'background-color': getCustomClassConfig(col.name)[row[col.name]]?.background
+                  }"
+              class="custom-badge"
+            >
+              {{ row[col.name] }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Fila de filtros -->
+    <ng-container
+      *ngFor="let col of columnDefinitions; trackBy: trackByCol"
+      [matColumnDef]="col.name + '_filter'"
+    >
+      <mat-header-cell
+        *matHeaderCellDef
+        class="filter-cell"
+        [ngStyle]="{ width: col.width || 'auto', minWidth: col.width || 'auto' }"
+      >
+        <!-- Filtro de texto/number -->
+        <mat-form-field
+          *ngIf="(col.type === 'text' || col.type === 'number') && filterControls[col.name]"
+          appearance="outline"
+          class="w-100"
+        >
+          <input
+            matInput
+            [type]="col.type"
+            [placeholder]="'' + col.header"
+            [formControl]="filterControls[col.name]"
+          />
+        </mat-form-field>
+        <!-- Filtro select múltiple -->
+        <mat-form-field
+          *ngIf="col.type === 'select' && filterControls[col.name]"
+          appearance="outline"
+          class="w-100"
+        >
+          <mat-select
+            [placeholder]="'Opción'"
+            [formControl]="filterControls[col.name]"
+            multiple
+          >
+            <mat-option *ngFor="let option of col.options" [value]="option"
+              >{{ option }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <!-- Filtro de rango de fechas con mat-date-range-input -->
+        <mat-form-field
+          *ngIf="col.type === 'date'"
+          appearance="outline"
+          class="date-range-filter-row"
+        >
+          <mat-date-range-input
+            [formGroup]="dateRange"
+            [rangePicker]="pickerRange"
+            class="date-range-input"
+          >
+            <input matStartDate formControlName="start" placeholder="Desde" />
+            <input matEndDate formControlName="end" placeholder="Hasta" />
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickerRange"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #pickerRange></mat-date-range-picker>
+        </mat-form-field>
+      </mat-header-cell>
+    </ng-container>
+
+    <!-- Header principal -->
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <!-- Fila de filtros -->
+    <mat-header-row
+      class="filter-row"
+      *matHeaderRowDef="displayedFilterColumns; sticky: true"
+    ></mat-header-row>
+    <!-- Filas de datos -->
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>
