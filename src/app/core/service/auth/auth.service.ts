@@ -2,6 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { isPlatformBrowser } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +26,11 @@ export class AuthService {
   }
 
   // Login
-  login(email: string, password: string): Promise<any> {
-    return this.http.post(`${this.apiUrl}/usuarios/ingresar`, { email, password }).toPromise();
+  // Login (correo o documento)
+  async login(login: string, password: string): Promise<{ token: string; user: any }> {
+    return firstValueFrom(
+      this.http.post<{ token: string; user: any }>(`${this.apiUrl}/login/`, { login, password })
+    );
   }
 
   // Traer usuario
