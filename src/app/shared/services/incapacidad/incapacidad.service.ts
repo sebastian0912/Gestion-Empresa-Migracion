@@ -352,9 +352,15 @@ traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
   let url = `${this.apiUrl}/Incapacidades/descargarIncapacidades`;
 
   if (fechaInicio) {
-    url += `?fecha_inicio=${fechaInicio}`;
+    url += `?inicio=${fechaInicio}`;
     console.log('URL con fechaInicio:', url);
   }
+  return this.http.get<any[]>(url, { headers });
+}
+
+traerTodosDocumentosPorRango(inicio: string, fin: string): Observable<any[]> {
+  const headers = this.createAuthorizationHeader();
+  const url = `${this.apiUrl}/Incapacidades/descargarIncapacidades?inicio=${inicio}&fin=${fin}`;
   return this.http.get<any[]>(url, { headers });
 }
 
@@ -367,9 +373,18 @@ async descargarTodoComoZip(fecha: string): Promise<void> {
 
   const promesas = documentos.map(async (doc) => {
     if (!carpetaPrincipal) throw new Error('No se pudo crear la carpeta principal en el ZIP.');
+    if (!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
 
-    if(!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
+    // --- Verificar si hay al menos un archivo ---
+    const tieneIncapacidad = !!doc.link_incapacidad;
+    const tieneHC         = !!doc.historial_clinico;
 
+    if (!tieneIncapacidad && !tieneHC) {
+      // No crear carpeta, no guardar nada
+      return;
+    }
+
+    // --- Solo aquí se crea la carpeta EPS ---
     const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
 
     // -------------------------------------
@@ -386,18 +401,20 @@ async descargarTodoComoZip(fecha: string): Promise<void> {
     // ---------------------
     // 1. INCAPACIDAD
     // ---------------------
-    let base64Data = doc.link_incapacidad;
-    if (base64Data?.startsWith('data:')) {
-      base64Data = base64Data.split(',')[1];
-    }
+    if (tieneIncapacidad) {
+      let base64Data = doc.link_incapacidad;
+      if (base64Data.startsWith('data:')) {
+        base64Data = base64Data.split(',')[1];
+      }
 
-    const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-    epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
+      const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+      epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
+    }
 
     // ---------------------
     // 2. HISTORIAL CLÍNICO
     // ---------------------
-    if (doc.historial_clinico) {
+    if (tieneHC) {
       let base64HC = doc.historial_clinico;
       if (base64HC.startsWith('data:')) base64HC = base64HC.split(',')[1];
 
@@ -411,25 +428,37 @@ async descargarTodoComoZip(fecha: string): Promise<void> {
   saveAs(content, `incapacidades_${fecha}.zip`);
 }
 
+
 async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void> {
   const zip = new JSZip();
-  const documentos = await firstValueFrom(this.traerTodosDocumentos(rango.inicio));
+  const documentos = await firstValueFrom(
+    this.traerTodosDocumentosPorRango(rango.inicio, rango.fin)
+  );
 
   const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
 
   const promesas = documentos.map(async (doc) => {
     if (!carpetaPrincipal) throw new Error('No se pudo crear la carpeta principal en el ZIP.');
+    if (!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
 
-    if(!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
+    // --- Verificar si hay al menos un archivo que guardar ---
+    const tieneIncapacidad = !!doc.link_incapacidad;
+    const tieneHC = !!doc.historial_clinico;
 
+    if (!tieneIncapacidad && !tieneHC) {
+      // Nada para guardar → NO crear carpeta EPS
+      return;
+    }
+
+    // --- Solo aquí se crea la carpeta EPS ---
     const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
 
     // -------------------------------------
     // FORMAR NOMBRE: NumeroDocumento_Fecha
     // -------------------------------------
     const fechaObj = new Date(doc.marcaTemporal);
-    const dia  = String(fechaObj.getDate()).padStart(2, '0');
-    const mes  = String(fechaObj.getMonth() + 1).padStart(2, '0');
+    const dia = String(fechaObj.getDate()).padStart(2, '0');
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
     const anio = fechaObj.getFullYear();
     const fechaFinal = `${dia}${mes}${anio}`;
 
@@ -438,18 +467,20 @@ async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void
     // ---------------------
     // 1. INCAPACIDAD
     // ---------------------
-    let base64Data = doc.link_incapacidad;
-    if (base64Data.startsWith('data:')) {
-      base64Data = base64Data.split(',')[1];
-    }
+    if (tieneIncapacidad) {
+      let base64Data = doc.link_incapacidad;
+      if (base64Data.startsWith('data:')) {
+        base64Data = base64Data.split(',')[1];
+      }
 
-    const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-    epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
+      const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+      epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
+    }
 
     // ---------------------
     // 2. HISTORIAL CLÍNICO
     // ---------------------
-    if (doc.historial_clinico) {
+    if (tieneHC) {
       let base64HC = doc.historial_clinico;
       if (base64HC.startsWith('data:')) base64HC = base64HC.split(',')[1];
 
@@ -459,8 +490,10 @@ async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void
   });
 
   await Promise.all(promesas);
+
   const content = await zip.generateAsync({ type: 'blob' });
   saveAs(content, `incapacidades_${rango.inicio}_a_${rango.fin}.zip`);
 }
+
 
 }
