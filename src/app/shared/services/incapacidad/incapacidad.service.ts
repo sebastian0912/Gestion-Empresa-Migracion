@@ -50,7 +50,7 @@ export class IncapacidadService {
       'Content-Type',
       'application/json'
     );
-
+    console.log('Incapacidad a crear:', incapacidad);
     return this.http.post<Incapacidad>(urlcompleta, incapacidad, { headers });
   }
   createReporte(reporte: Reporte): Observable<Incapacidad> {
@@ -360,9 +360,43 @@ traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
   // Utiliza el método anterior para descargar y crear el ZIP desde base64
   async descargarTodoComoZip(fecha: string): Promise<void> {
     const zip = new JSZip();
-    const documentos = await firstValueFrom(this.traerTodosDocumentos());
+    const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
 
     const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
+
+    const promesas = documentos.map(async (doc, idx) => {
+      if (!carpetaPrincipal) {
+        throw new Error('No se pudo crear la carpeta principal en el ZIP.');
+      }
+      const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
+      // El nombre del archivo puede venir de la BD o lo generas tú
+      console.log(doc);
+      const nombreArchivo = doc.nombreDocumento || `documento_${idx + 1}.pdf`;
+
+      // Procesa el campo base64 (link_incapacidad)
+      // Si tu backend envía 'data:application/pdf;base64,...'
+      let base64Data = doc.link_incapacidad;
+      if (base64Data.startsWith('data:')) {
+        base64Data = base64Data.split(',')[1]; // quita el prefijo mime
+      }
+      const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+      if (epsFolder) {
+        epsFolder.file(nombreArchivo, byteArray);
+      } else {
+        throw new Error('No se pudo crear la carpeta EPS en el ZIP.');
+      }
+    });
+
+    await Promise.all(promesas);
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, `incapacidades_${fecha}.zip`);
+  }
+
+  async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void> {
+    const zip = new JSZip();
+    const documentos = await firstValueFrom(this.traerTodosDocumentos(rango.inicio));
+
+    const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
 
     const promesas = documentos.map(async (doc, idx) => {
       if (!carpetaPrincipal) {
@@ -388,7 +422,7 @@ traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
 
     await Promise.all(promesas);
     const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, `incapacidades_${fecha}.zip`);
+    saveAs(content, `incapacidades_${rango.inicio}_a_${rango.fin}.zip`);
   }
 
 

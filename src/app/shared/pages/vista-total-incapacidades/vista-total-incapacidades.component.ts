@@ -50,7 +50,8 @@ interface ColumnTitle {
     MatCardModule,
     NgClass,
     NgIf,
-    NgFor],
+    NgFor,
+    DatePipe],
   templateUrl: './vista-total-incapacidades.component.html',
   styleUrl: './vista-total-incapacidades.component.css',
   providers: [DatePipe]
@@ -60,6 +61,11 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   username: string = '';
 
   isSidebarHidden = false;
+
+  hoy: string = new Date().toISOString().split('T')[0];
+  fechaInicio!: string;
+  fechaFin!: string;
+  fechaSeleccionada!: string;
 
   toggleSidebar() {
     this.isSidebarHidden = !this.isSidebarHidden;
@@ -603,29 +609,39 @@ downloadExcel(): void {
   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
 }
 
-fechaSeleccionada: string = ''; // YYYY-MM-DD
 
-downloadDocs() {
-  let fechaBase: Date;
-  if (this.fechaSeleccionada) {
-    fechaBase = new Date(this.fechaSeleccionada);
-  } else {
-    fechaBase = new Date(); // por defecto hoy
-  }
-
-  // Calcular el lunes de la semana de la fecha elegida
-  const day = fechaBase.getDay();
-  const diff = fechaBase.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(fechaBase.setDate(diff));
-  const fecha = monday.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+downloadDocsHoy() {
+  const fecha = this.hoy;
 
   this.incapacidadService.descargarTodoComoZip(fecha)
-    .then(() => {
-      alert('¡Descarga completada!');
-    })
-    .catch((error) => {
-      alert('Ocurrió un error al descargar los documentos.');
-      console.error(error);
+    .then(() => alert('¡Descarga completada!'))
+    .catch(err => {
+      alert('Error al descargar los documentos (HOY)');
+      console.error(err);
+    });
+}
+
+downloadDocsRango() {
+  if (!this.fechaInicio || !this.fechaFin) {
+    alert('Debes seleccionar ambas fechas: inicio y fin.');
+    return;
+  }
+
+  if (new Date(this.fechaInicio) > new Date(this.fechaFin)) {
+    alert('La fecha de inicio no puede ser mayor que la fecha fin.');
+    return;
+  }
+
+  const rango = {
+    inicio: this.fechaInicio,
+    fin: this.fechaFin
+  };
+
+  this.incapacidadService.descargarZipPorRango(rango)
+    .then(() => alert('¡Descarga completada!'))
+    .catch(err => {
+      alert('Error al descargar el rango de documentos.');
+      console.error(err);
     });
 }
 

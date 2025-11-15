@@ -681,14 +681,18 @@ ColumnsTable1 = [
       'codigo_diagnostico',
       'prorroga',
       'estado_incapacidad',
-      'Incapacidad_transcrita'
+      'Incapacidad_transcrita',
+      'edad'
     ];
 
     // Recorre los campos y verifica si deben ser validados
     // Recorre los campos y verifica si están vacíos o deshabilitados
     for (const field of fieldsToValidate) {
-      // Si el campo no está deshabilitado y está vacío, devolver el nombre del campo
-      if (!isFieldDisabled(field) && isFieldEmpty(formData[field])) {
+      const empty = isFieldEmpty(formData[field]);
+      const disabled = isFieldDisabled(field);
+
+      // ✅ Excepción: 'edad' se valida aunque esté deshabilitado
+      if ((field === 'edad' && empty) || (!disabled && empty)) {
         return field;
       }
     }
@@ -1064,6 +1068,7 @@ ColumnsTable1 = [
         });
       },
       error => {
+        console.error('Error al crear la incapacidad:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',

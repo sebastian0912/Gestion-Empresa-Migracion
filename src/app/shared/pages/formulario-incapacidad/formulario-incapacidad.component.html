@@ -532,43 +532,9 @@
             </mat-card-content>
 
  <mat-card-content>
-  <div class="form-row">
+  <div class="button-row">
 
-    <!-- Botón genérico para EPS distintas de Salud Total y Mutual ser -->
-    <ng-container *ngIf="mostrarBotonSubirDocumentacion()">
-      <div class="form-field">
-        <!-- Botón que abre el diálogo de subida de archivos -->
-        <button
-          mat-flat-button
-          class="aumentar"
-          (click)="onUploadClick('documentación')"
-        >
-          Subir documentación
-        </button>
 
-        <!-- Lista de archivos subidos -->
-        <div class="file-list">
-          <mat-list>
-            <mat-list-item
-              *ngFor="let file of getFiles('documentación')"
-              class="file-item"
-            >
-              <span mat-line>Archivo de documentación</span>
-              <span mat-line>{{ file.name }}</span>
-              <button
-                mat-icon-button
-                (click)="removeFile('documentación', file)"
-                color="warn"
-                matTooltip="Eliminar archivo"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-              <mat-divider></mat-divider>
-            </mat-list-item>
-          </mat-list>
-        </div>
-      </div>
-    </ng-container>
 
     <!-- Botón Formulario Salud Total SOLO para EPS Salud Total -->
     <ng-container *ngIf="mostrarBotonSaludTotal()">
@@ -604,7 +570,7 @@
     </ng-container>
 
     <!-- Botones especiales SOLO para Salud Total o Mutual ser -->
-    <ng-container *ngIf="mostrarBotonesEspeciales()">
+    <ng-container>
 
       <!-- Licencia de maternidad/paternidad -->
       <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
@@ -742,7 +708,7 @@
   <button
     mat-flat-button
     class="aumentar"
-    color="primary"
+    color="accent"
     (click)="onSubmit()"
   >
     Subir incapacidad

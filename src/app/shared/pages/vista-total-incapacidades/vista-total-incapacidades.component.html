@@ -138,19 +138,59 @@
           </div>
         </div>
         <br>
-        <!-- Input para elegir una fecha -->
-<input
-  type="date"
-  [(ngModel)]="fechaSeleccionada"
-  class="form-control"
-  placeholder="Selecciona una fecha para descargar la semana"
-/>
+<div>
+  <h1 class="title">Descargar documentos</h1>
 
-<!-- Botón para descargar el reporte -->
-<app-info-card title="Descargar Documentos" imageUrl="navbar/contrato.png"
-  (click)="downloadDocs()" class="download-button">
-</app-info-card>
-      </mat-card-content>
-    </mat-card>
+  <!-- DESCARGA POR FECHA INDIVIDUAL -->
+  <div class="form-field fila">
+
+    <div class="card-disabled-wrapper" [class.disabled]="!fechaSeleccionada">
+      <app-info-card
+        title="Descargar documentos por día"
+        imageUrl="navbar/contrato.png"
+        (click)="fechaSeleccionada && downloadDocsHoy()"
+        class="download-button"
+      ></app-info-card>
+    </div>
+
+    <div class="campo">
+      <input
+        type="date"
+        [(ngModel)]="fechaSeleccionada"
+        class="form-control"
+        placeholder="Selecciona una fecha para descargar"
+      />
+    </div>
+
+  </div>
+
+  <hr />
+
+  <!-- DESCARGA POR RANGO -->
+  <div class="form-field fila">
+
+    <div class="card-disabled-wrapper" [class.disabled]="!fechaInicio || !fechaFin">
+      <app-info-card
+        title="Descargar documentos por rango de fechas"
+        imageUrl="navbar/contrato.png"
+        (click)="(fechaInicio && fechaFin) && downloadDocsRango()"
+        class="download-button"
+      ></app-info-card>
+    </div>
+
+    <div class="campo">
+      <label>Desde:</label>
+      <input type="date" [(ngModel)]="fechaInicio" class="form-control" />
+    </div>
+
+    <div class="campo">
+      <label>Hasta:</label>
+      <input type="date" [(ngModel)]="fechaFin" class="form-control" />
+    </div>
+
   </div>
 </div>
+
+<hr />
+
+

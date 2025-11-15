@@ -68,6 +68,54 @@ button.mat-button:focus {
   box-shadow: 0px 0px 8px rgba(33, 150, 243, 0.5);
 }
 
+/* Distribuye en fila, alineado y con espacio */
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Cada campo "Desde" y "Hasta" aparece ordenado */
+.campo {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+/* Botones grandes */
+.btn-full {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Deshabilitar visiblemente un card */
+.card-disabled-wrapper.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+/* Botón deshabilitado */
+button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* Cuando el card está habilitado */
+.card-disabled-wrapper:not(.disabled) {
+  cursor: pointer;
+}
+
+/* Cuando está deshabilitado */
+.card-disabled-wrapper.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .filter-container {

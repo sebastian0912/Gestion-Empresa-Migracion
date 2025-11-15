@@ -18,6 +18,15 @@ mat-card {
   padding: 10px;
 }
 
+.button-row {
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between; /* Distribuye los elementos */
+  width: 100%;
+  padding: 10px;
+}
+
 /* Campos individuales del formulario */
 .form-field {
   flex: 1 1 calc(30% - 20px); /* Ajuste flexible de 3 columnas con espacio entre ellas */
