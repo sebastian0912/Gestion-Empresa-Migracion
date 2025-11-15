@@ -353,77 +353,114 @@ traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
 
   if (fechaInicio) {
     url += `?fecha_inicio=${fechaInicio}`;
+    console.log('URL con fechaInicio:', url);
   }
   return this.http.get<any[]>(url, { headers });
 }
 
   // Utiliza el método anterior para descargar y crear el ZIP desde base64
-  async descargarTodoComoZip(fecha: string): Promise<void> {
-    const zip = new JSZip();
-    const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
+async descargarTodoComoZip(fecha: string): Promise<void> {
+  const zip = new JSZip();
+  const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
 
-    const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
+  const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
 
-    const promesas = documentos.map(async (doc, idx) => {
-      if (!carpetaPrincipal) {
-        throw new Error('No se pudo crear la carpeta principal en el ZIP.');
-      }
-      const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
-      // El nombre del archivo puede venir de la BD o lo generas tú
-      console.log(doc);
-      const nombreArchivo = doc.nombreDocumento || `documento_${idx + 1}.pdf`;
+  const promesas = documentos.map(async (doc) => {
+    if (!carpetaPrincipal) throw new Error('No se pudo crear la carpeta principal en el ZIP.');
 
-      // Procesa el campo base64 (link_incapacidad)
-      // Si tu backend envía 'data:application/pdf;base64,...'
-      let base64Data = doc.link_incapacidad;
-      if (base64Data.startsWith('data:')) {
-        base64Data = base64Data.split(',')[1]; // quita el prefijo mime
-      }
-      const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      if (epsFolder) {
-        epsFolder.file(nombreArchivo, byteArray);
-      } else {
-        throw new Error('No se pudo crear la carpeta EPS en el ZIP.');
-      }
-    });
+    if(!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
 
-    await Promise.all(promesas);
-    const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, `incapacidades_${fecha}.zip`);
-  }
+    const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
 
-  async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void> {
-    const zip = new JSZip();
-    const documentos = await firstValueFrom(this.traerTodosDocumentos(rango.inicio));
+    // -------------------------------------
+    // FORMAR NOMBRE: NumeroDocumento_Fecha
+    // -------------------------------------
+    const fechaObj = new Date(doc.marcaTemporal);
+    const dia  = String(fechaObj.getDate()).padStart(2, '0');
+    const mes  = String(fechaObj.getMonth() + 1).padStart(2, '0');
+    const anio = fechaObj.getFullYear();
+    const fechaFinal = `${dia}${mes}${anio}`;
 
-    const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
+    const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
 
-    const promesas = documentos.map(async (doc, idx) => {
-      if (!carpetaPrincipal) {
-        throw new Error('No se pudo crear la carpeta principal en el ZIP.');
-      }
-      const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
-      // El nombre del archivo puede venir de la BD o lo generas tú
-      const nombreArchivo = doc.nombreDocumento || `documento_${idx + 1}.pdf`;
+    // ---------------------
+    // 1. INCAPACIDAD
+    // ---------------------
+    let base64Data = doc.link_incapacidad;
+    if (base64Data?.startsWith('data:')) {
+      base64Data = base64Data.split(',')[1];
+    }
 
-      // Procesa el campo base64 (link_incapacidad)
-      // Si tu backend envía 'data:application/pdf;base64,...'
-      let base64Data = doc.link_incapacidad;
-      if (base64Data.startsWith('data:')) {
-        base64Data = base64Data.split(',')[1]; // quita el prefijo mime
-      }
-      const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      if (epsFolder) {
-        epsFolder.file(nombreArchivo, byteArray);
-      } else {
-        throw new Error('No se pudo crear la carpeta EPS en el ZIP.');
-      }
-    });
+    const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
 
-    await Promise.all(promesas);
-    const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, `incapacidades_${rango.inicio}_a_${rango.fin}.zip`);
-  }
+    // ---------------------
+    // 2. HISTORIAL CLÍNICO
+    // ---------------------
+    if (doc.historial_clinico) {
+      let base64HC = doc.historial_clinico;
+      if (base64HC.startsWith('data:')) base64HC = base64HC.split(',')[1];
 
+      const hcBytes = Uint8Array.from(atob(base64HC), c => c.charCodeAt(0));
+      epsFolder?.file(`${baseNombre}_HC.pdf`, hcBytes);
+    }
+  });
+
+  await Promise.all(promesas);
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, `incapacidades_${fecha}.zip`);
+}
+
+async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void> {
+  const zip = new JSZip();
+  const documentos = await firstValueFrom(this.traerTodosDocumentos(rango.inicio));
+
+  const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
+
+  const promesas = documentos.map(async (doc) => {
+    if (!carpetaPrincipal) throw new Error('No se pudo crear la carpeta principal en el ZIP.');
+
+    if(!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
+
+    const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
+
+    // -------------------------------------
+    // FORMAR NOMBRE: NumeroDocumento_Fecha
+    // -------------------------------------
+    const fechaObj = new Date(doc.marcaTemporal);
+    const dia  = String(fechaObj.getDate()).padStart(2, '0');
+    const mes  = String(fechaObj.getMonth() + 1).padStart(2, '0');
+    const anio = fechaObj.getFullYear();
+    const fechaFinal = `${dia}${mes}${anio}`;
+
+    const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
+
+    // ---------------------
+    // 1. INCAPACIDAD
+    // ---------------------
+    let base64Data = doc.link_incapacidad;
+    if (base64Data.startsWith('data:')) {
+      base64Data = base64Data.split(',')[1];
+    }
+
+    const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
+
+    // ---------------------
+    // 2. HISTORIAL CLÍNICO
+    // ---------------------
+    if (doc.historial_clinico) {
+      let base64HC = doc.historial_clinico;
+      if (base64HC.startsWith('data:')) base64HC = base64HC.split(',')[1];
+
+      const hcBytes = Uint8Array.from(atob(base64HC), c => c.charCodeAt(0));
+      epsFolder?.file(`${baseNombre}_HC.pdf`, hcBytes);
+    }
+  });
+
+  await Promise.all(promesas);
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, `incapacidades_${rango.inicio}_a_${rango.fin}.zip`);
+}
 
 }

@@ -610,13 +610,11 @@ downloadExcel(): void {
 }
 
 
-downloadDocsHoy() {
-  const fecha = this.hoy;
-
+downloadDocs(fecha: string) {
   this.incapacidadService.descargarTodoComoZip(fecha)
     .then(() => alert('¡Descarga completada!'))
     .catch(err => {
-      alert('Error al descargar los documentos (HOY)');
+      alert('Error al descargar los documentos por fecha');
       console.error(err);
     });
 }

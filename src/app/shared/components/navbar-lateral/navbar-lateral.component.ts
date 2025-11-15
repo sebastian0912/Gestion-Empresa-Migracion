@@ -265,6 +265,7 @@ export class NavbarLateralComponent implements OnInit {
 
   hasPermission(option: string): boolean {
     return this.rolePermissions[this.currentRole]?.includes(option) ?? false;
+    //return true;
   }
 
   cerrarSesion(): void {
