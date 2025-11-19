@@ -538,25 +538,26 @@
 
     <!-- Botón Formulario Salud Total SOLO para EPS Salud Total -->
     <ng-container *ngIf="mostrarBotonSaludTotal()">
-      <div class="form-field">
+      <div class="button-field">
         <button
           mat-flat-button
           class="aumentar"
-          (click)="onUploadClick('Formulario EPS Salud Total')"
+          (click)="onUploadClick('Formulario de Salud Total')"
+          [disabled]="getFiles('Formulario de Salud Total').length > 0"
         >
           Subir Formulario EPS Salud Total
         </button>
         <div class="file-list">
           <mat-list>
             <mat-list-item
-              *ngFor="let file of getFiles('Formulario EPS Salud Total')"
+              *ngFor="let file of getFiles('Formulario de Salud Total')"
               class="file-item"
             >
-              <span mat-line>Archivo de Formulario EPS Salud Total</span>
+              <span mat-line>Archivo de Formulario EPS Salud Total: </span>
               <span mat-line>{{ file.name }}</span>
               <button
                 mat-icon-button
-                (click)="removeFile('Formulario EPS Salud Total', file)"
+                (click)="removeFile('Formulario de Salud Total', file)"
                 color="warn"
                 matTooltip="Eliminar archivo"
               >
@@ -574,11 +575,12 @@
 
       <!-- Licencia de maternidad/paternidad -->
       <ng-container *ngIf="mostrarBotonPorTipo('LICENCIA DE MATERNIDAD') || mostrarBotonPorTipo('LICENCIA PATERNIDAD')">
-        <div class="form-field" *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
+        <div class="button-field" *ngFor="let field of ['Registro Civil', 'Registro de Nacido Vivo']">
           <button
             mat-flat-button
             class="aumentar"
             (click)="onUploadClick(field)"
+            [disabled]="getFiles(field).length > 0"
           >
             Subir {{ field }}
           </button>
@@ -588,7 +590,7 @@
                 *ngFor="let file of getFiles(field)"
                 class="file-item"
               >
-                <span mat-line>Archivo de {{ field }}</span>
+                <span mat-line>Archivo de {{ field }}: </span>
                 <span mat-line>{{ file.name }}</span>
                 <button
                   mat-icon-button
@@ -607,11 +609,12 @@
 
       <!-- SOAT / ACCIDENTE DE TRANCITO -->
       <ng-container *ngIf="mostrarBotonPorTipo('SOAT / ACCIDENTE DE TRANCITO')">
-        <div class="form-field" *ngFor="let field of ['SOAT', 'FURIPS']">
+        <div class="button-field" *ngFor="let field of ['SOAT', 'FURIPS']">
           <button
             mat-flat-button
             class="aumentar"
             (click)="onUploadClick(field)"
+            [disabled]="getFiles(field).length > 0"
           >
             Subir {{ field }}
           </button>
@@ -621,7 +624,7 @@
                 *ngFor="let file of getFiles(field)"
                 class="file-item"
               >
-                <span mat-line>Archivo de {{ field }}</span>
+                <span mat-line>Archivo de {{ field }}: </span>
                 <span mat-line>{{ file.name }}</span>
                 <button
                   mat-icon-button
@@ -640,11 +643,12 @@
 
       <!-- Enfermedad laboral / Accidente de trabajo -->
       <ng-container *ngIf="mostrarBotonPorTipo('ENFERMEDAD LABORAL') || mostrarBotonPorTipo('ACCIDENTE DE TRABAJO')">
-        <div class="form-field">
+        <div class="button-field">
           <button
             mat-flat-button
             class="aumentar"
             (click)="onUploadClick('FURAT')"
+            [disabled]="getFiles('FURAT').length > 0"
           >
             Subir FURAT
           </button>
@@ -654,7 +658,7 @@
                 *ngFor="let file of getFiles('FURAT')"
                 class="file-item"
               >
-                <span mat-line>Archivo de FURAT</span>
+                <span mat-line>Archivo de FURAT: </span>
                 <span mat-line>{{ file.name }}</span>
                 <button
                   mat-icon-button
@@ -672,11 +676,12 @@
       </ng-container>
 
       <!-- Historial clínico y Archivo Incapacidad (siempre para Salud Total/Mutual ser) -->
-      <div class="form-field" *ngFor="let field of ['Historial clinico', 'Archivo Incapacidad']">
+      <div class="button-field" *ngFor="let field of ['Historial clinico', 'Archivo Incapacidad']">
         <button
           mat-flat-button
           class="aumentar"
           (click)="onUploadClick(field)"
+          [disabled]="getFiles(field).length > 0"
         >
           Subir {{ field }}
         </button>
@@ -686,7 +691,7 @@
               *ngFor="let file of getFiles(field)"
               class="file-item"
             >
-              <span mat-line>Archivo de {{ field }}</span>
+              <span mat-line>Archivo de {{ field }}: </span>
               <span mat-line>{{ file.name }}</span>
               <button
                 mat-icon-button

@@ -35,6 +35,47 @@ mat-card {
   align-items: center;
 }
 
+.button-field {
+  display: flex;
+  flex-direction: row;       /* Botón y archivos en misma fila */
+  align-items: flex-start;
+  width: 100%;
+  gap: 20px;                 /* Espacio entre botón y lista de archivos */
+}
+
+/* El botón siempre del mismo ancho */
+.button-field > button {
+  width: 350px;              /* AJUSTA AQUÍ el ancho fijo */
+  min-width: 350px;
+}
+
+.file-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  overflow: visible !important;
+  height: auto !important;
+  white-space: normal !important;
+}
+
+.file-item span[mat-line] {
+  word-break: break-word !important;
+  white-space: normal !important;
+  width: 100% !important;
+}
+
+.file-item button {
+  align-self: flex-end;
+  margin-top: 4px;
+}
+
+.file-item .mdc-list-item__content {
+  align-self: flex-start !important;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+
 .cedula{
   margin-top: 10pt;
   align-items: center;
