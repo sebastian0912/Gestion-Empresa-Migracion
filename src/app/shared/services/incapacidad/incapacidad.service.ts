@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import JSZip from 'jszip';
 import saveAs from 'file-saver';
+import { PDFDocument } from "pdf-lib";
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,7 @@ export class IncapacidadService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
   private handleError(error: any): Observable<never> {
     throw error;
   }
@@ -347,153 +348,141 @@ export class IncapacidadService {
     }
   }
 
-traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
-  const headers = this.createAuthorizationHeader();
-  let url = `${this.apiUrl}/Incapacidades/descargarIncapacidades`;
+  traerTodosDocumentos(fechaInicio?: string): Observable<any[]> {
+    const headers = this.createAuthorizationHeader();
+    let url = `${this.apiUrl}/Incapacidades/descargarIncapacidades`;
 
-  if (fechaInicio) {
-    url += `?inicio=${fechaInicio}`;
-    console.log('URL con fechaInicio:', url);
+    if (fechaInicio) {
+      url += `?inicio=${fechaInicio}`;
+      console.log('URL con fechaInicio:', url);
+    }
+    return this.http.get<any[]>(url, { headers });
   }
-  return this.http.get<any[]>(url, { headers });
-}
 
-traerTodosDocumentosPorRango(inicio: string, fin: string): Observable<any[]> {
-  const headers = this.createAuthorizationHeader();
-  const url = `${this.apiUrl}/Incapacidades/descargarIncapacidades?inicio=${inicio}&fin=${fin}`;
-  return this.http.get<any[]>(url, { headers });
-}
+  traerTodosDocumentosPorRango(inicio: string, fin: string): Observable<any[]> {
+    const headers = this.createAuthorizationHeader();
+    const url = `${this.apiUrl}/Incapacidades/descargarIncapacidades?inicio=${inicio}&fin=${fin}`;
+    return this.http.get<any[]>(url, { headers });
+  }
 
   // Utiliza el método anterior para descargar y crear el ZIP desde base64
-async descargarTodoComoZip(fecha: string): Promise<void> {
-  const zip = new JSZip();
-  const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
+  async descargarTodoComoZip(fecha: string) {
+    const zip = new JSZip();
+    const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
 
-  const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
+    const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
+    const epsEspeciales = ['salud total', 'matual ser', 'eps sura', 'cajacopi', 'coosalud'];
 
-  const promesas = documentos.map(async (doc) => {
-    if (!carpetaPrincipal) throw new Error('No se pudo crear la carpeta principal en el ZIP.');
-    if (!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
+    await Promise.all(
+      documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales))
+    );
 
-    // --- Verificar si hay al menos un archivo ---
-    const tieneIncapacidad = !!doc.link_incapacidad;
-    const tieneHC         = !!doc.historial_clinico;
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, `incapacidades_${fecha}.zip`);
+  }
 
-    if (!tieneIncapacidad && !tieneHC) {
-      // No crear carpeta, no guardar nada
-      return;
+
+  async descargarZipPorRango(rango: { inicio: string; fin: string }) {
+    const zip = new JSZip();
+    const documentos = await firstValueFrom(
+      this.traerTodosDocumentosPorRango(rango.inicio, rango.fin)
+    );
+
+    const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
+    const epsEspeciales = ['salud total', 'matual ser', 'eps sura', 'cajacopi', 'coosalud'];
+
+    await Promise.all(
+      documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales))
+    );
+
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, `incapacidades_${rango.inicio}_a_${rango.fin}.zip`);
+  }
+
+
+  private async procesarDocumentoEnZip(
+  doc: any,
+  carpetaPrincipal: JSZip,
+  epsEspeciales: string[]
+) {
+  if (!doc.Numero_de_documento) return;
+
+  const tiene = {
+    incapacidad: !!doc.link_incapacidad,
+    hc: !!doc.historial_clinico,
+    soat: !!doc.soat,
+    furat: !!doc.furat,
+    furips: !!doc.furips,
+    registroCivil: !!doc.registro_civil,
+    registroNacido: !!doc.registro_de_nacido_vivo,
+    formSaludTotal: !!doc.formulario_salud_total
+  };
+
+  if (!Object.values(tiene).some(Boolean)) return;
+
+  const epsName = (doc.nombre_eps || "Desconocida").trim();
+  const epsNormalizada = epsName.toLowerCase();
+  const esEpsEspecial = epsEspeciales.includes(epsNormalizada);
+
+  const epsFolder = carpetaPrincipal.folder(epsName);
+  if (!epsFolder) return;
+
+  const cedulaFolder = epsFolder.folder(doc.Numero_de_documento);
+  if (!cedulaFolder) return;
+
+  const fechaObj = new Date(doc.marcaTemporal);
+  const fechaFinal = `${String(fechaObj.getDate()).padStart(2, "0")}${
+    String(fechaObj.getMonth() + 1).padStart(2, "0")
+  }${fechaObj.getFullYear()}`;
+
+  const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
+
+  const toPdfBytes = (base64: string) => {
+    if (base64.startsWith("data:")) base64 = base64.split(",")[1];
+    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  };
+
+  // EPS especiales → PDFs separados
+  if (esEpsEspecial) {
+    if (tiene.incapacidad) cedulaFolder.file(`${baseNombre}.pdf`, toPdfBytes(doc.link_incapacidad));
+    if (tiene.hc) cedulaFolder.file(`${baseNombre}_HC.pdf`, toPdfBytes(doc.historial_clinico));
+    if (tiene.soat) cedulaFolder.file(`${baseNombre}_SOAT.pdf`, toPdfBytes(doc.soat));
+    if (tiene.furat) cedulaFolder.file(`${baseNombre}_FURAT.pdf`, toPdfBytes(doc.furat));
+    if (tiene.furips) cedulaFolder.file(`${baseNombre}_FURIPS.pdf`, toPdfBytes(doc.furips));
+    if (tiene.registroCivil) cedulaFolder.file(`${baseNombre}_REGISTRO_CIVIL.pdf`, toPdfBytes(doc.registro_civil));
+    if (tiene.registroNacido) cedulaFolder.file(`${baseNombre}_REGISTRO_NACIDO_VIVO.pdf`, toPdfBytes(doc.registro_de_nacido_vivo));
+    if (tiene.formSaludTotal) cedulaFolder.file(`${baseNombre}_FORMULARIO_SALUD_TOTAL.pdf`, toPdfBytes(doc.formulario_salud_total));
+    return;
+  }
+
+  // Otras EPS → PDF combinado
+  const mergedPdf = await PDFDocument.create();
+
+  const agregarPagina = async (base64: string) => {
+    if (!base64) return;
+    try {
+      const pdfBytes = toPdfBytes(base64);
+      const pdf = await PDFDocument.load(pdfBytes);
+      const paginas = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      paginas.forEach((p) => mergedPdf.addPage(p));
+    } catch (error) {
+      console.error("Error al fusionar PDF:", error);
     }
+  };
 
-    // --- Solo aquí se crea la carpeta EPS ---
-    const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
+  if (tiene.incapacidad) await agregarPagina(doc.link_incapacidad);
+  if (tiene.hc) await agregarPagina(doc.historial_clinico);
+  if (tiene.soat) await agregarPagina(doc.soat);
+  if (tiene.furat) await agregarPagina(doc.furat);
+  if (tiene.furips) await agregarPagina(doc.furips);
+  if (tiene.registroCivil) await agregarPagina(doc.registro_civil);
+  if (tiene.registroNacido) await agregarPagina(doc.registro_de_nacido_vivo);
+  if (tiene.formSaludTotal) await agregarPagina(doc.formulario_salud_total);
 
-    // -------------------------------------
-    // FORMAR NOMBRE: NumeroDocumento_Fecha
-    // -------------------------------------
-    const fechaObj = new Date(doc.marcaTemporal);
-    const dia  = String(fechaObj.getDate()).padStart(2, '0');
-    const mes  = String(fechaObj.getMonth() + 1).padStart(2, '0');
-    const anio = fechaObj.getFullYear();
-    const fechaFinal = `${dia}${mes}${anio}`;
-
-    const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
-
-    // ---------------------
-    // 1. INCAPACIDAD
-    // ---------------------
-    if (tieneIncapacidad) {
-      let base64Data = doc.link_incapacidad;
-      if (base64Data.startsWith('data:')) {
-        base64Data = base64Data.split(',')[1];
-      }
-
-      const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
-    }
-
-    // ---------------------
-    // 2. HISTORIAL CLÍNICO
-    // ---------------------
-    if (tieneHC) {
-      let base64HC = doc.historial_clinico;
-      if (base64HC.startsWith('data:')) base64HC = base64HC.split(',')[1];
-
-      const hcBytes = Uint8Array.from(atob(base64HC), c => c.charCodeAt(0));
-      epsFolder?.file(`${baseNombre}_HC.pdf`, hcBytes);
-    }
-  });
-
-  await Promise.all(promesas);
-  const content = await zip.generateAsync({ type: 'blob' });
-  saveAs(content, `incapacidades_${fecha}.zip`);
+  const mergedPdfBytes = await mergedPdf.save();
+  cedulaFolder.file(`${baseNombre}_COMPLETO.pdf`, mergedPdfBytes);
 }
 
-
-async descargarZipPorRango(rango: { inicio: string; fin: string }): Promise<void> {
-  const zip = new JSZip();
-  const documentos = await firstValueFrom(
-    this.traerTodosDocumentosPorRango(rango.inicio, rango.fin)
-  );
-
-  const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
-
-  const promesas = documentos.map(async (doc) => {
-    if (!carpetaPrincipal) throw new Error('No se pudo crear la carpeta principal en el ZIP.');
-    if (!doc.Numero_de_documento) throw new Error('Documento sin número de documento.');
-
-    // --- Verificar si hay al menos un archivo que guardar ---
-    const tieneIncapacidad = !!doc.link_incapacidad;
-    const tieneHC = !!doc.historial_clinico;
-
-    if (!tieneIncapacidad && !tieneHC) {
-      // Nada para guardar → NO crear carpeta EPS
-      return;
-    }
-
-    // --- Solo aquí se crea la carpeta EPS ---
-    const epsFolder = carpetaPrincipal.folder(doc.nombre_eps || 'Desconocida');
-
-    // -------------------------------------
-    // FORMAR NOMBRE: NumeroDocumento_Fecha
-    // -------------------------------------
-    const fechaObj = new Date(doc.marcaTemporal);
-    const dia = String(fechaObj.getDate()).padStart(2, '0');
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
-    const anio = fechaObj.getFullYear();
-    const fechaFinal = `${dia}${mes}${anio}`;
-
-    const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
-
-    // ---------------------
-    // 1. INCAPACIDAD
-    // ---------------------
-    if (tieneIncapacidad) {
-      let base64Data = doc.link_incapacidad;
-      if (base64Data.startsWith('data:')) {
-        base64Data = base64Data.split(',')[1];
-      }
-
-      const incapacidadBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      epsFolder?.file(`${baseNombre}.pdf`, incapacidadBytes);
-    }
-
-    // ---------------------
-    // 2. HISTORIAL CLÍNICO
-    // ---------------------
-    if (tieneHC) {
-      let base64HC = doc.historial_clinico;
-      if (base64HC.startsWith('data:')) base64HC = base64HC.split(',')[1];
-
-      const hcBytes = Uint8Array.from(atob(base64HC), c => c.charCodeAt(0));
-      epsFolder?.file(`${baseNombre}_HC.pdf`, hcBytes);
-    }
-  });
-
-  await Promise.all(promesas);
-
-  const content = await zip.generateAsync({ type: 'blob' });
-  saveAs(content, `incapacidades_${rango.inicio}_a_${rango.fin}.zip`);
-}
 
 
 }
