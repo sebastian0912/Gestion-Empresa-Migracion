@@ -610,8 +610,8 @@ downloadExcel(): void {
 }
 
 
-downloadDocs(fecha: string) {
-  this.incapacidadService.descargarTodoComoZip(fecha)
+downloadDocs(fecha: string, sevenet: boolean) {
+  this.incapacidadService.descargarTodoComoZip(fecha, sevenet)
     .then(() => alert('¡Descarga completada!'))
     .catch(err => {
       alert('Error al descargar los documentos por fecha');
@@ -619,7 +619,7 @@ downloadDocs(fecha: string) {
     });
 }
 
-downloadDocsRango() {
+downloadDocsRango(sevenet: boolean) {
   if (!this.fechaInicio || !this.fechaFin) {
     alert('Debes seleccionar ambas fechas: inicio y fin.');
     return;
@@ -635,13 +635,14 @@ downloadDocsRango() {
     fin: this.fechaFin
   };
 
-  this.incapacidadService.descargarZipPorRango(rango)
+  this.incapacidadService.descargarZipPorRango(rango, sevenet)
     .then(() => alert('¡Descarga completada!'))
     .catch(err => {
       alert('Error al descargar el rango de documentos.');
       console.error(err);
     });
 }
+
 
 private combineDataForExcel(): any[] {
     const reporteMap = this.createReportMap();

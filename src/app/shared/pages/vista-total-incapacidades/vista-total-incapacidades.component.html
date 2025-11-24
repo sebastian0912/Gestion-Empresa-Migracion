@@ -148,7 +148,7 @@
       <app-info-card
         title="Descargar documentos por día"
         imageUrl="navbar/contrato.png"
-        (click)="fechaSeleccionada && downloadDocs(fechaSeleccionada)"
+        (click)="fechaSeleccionada && downloadDocs(fechaSeleccionada, false)"
         class="download-button"
       ></app-info-card>
     </div>
@@ -173,7 +173,62 @@
       <app-info-card
         title="Descargar documentos por rango de fechas"
         imageUrl="navbar/contrato.png"
-        (click)="(fechaInicio && fechaFin) && downloadDocsRango()"
+        (click)="(fechaInicio && fechaFin) && downloadDocsRango(false)"
+        class="download-button"
+      ></app-info-card>
+    </div>
+
+    <div class="campo">
+      <label>Desde:</label>
+      <input type="date" [(ngModel)]="fechaInicio" class="form-control" />
+    </div>
+
+    <div class="campo">
+      <label>Hasta:</label>
+      <input type="date" [(ngModel)]="fechaFin" class="form-control" />
+    </div>
+
+  </div>
+</div>
+
+<hr />
+
+<div>
+  <h1 class="title">Descargar documentos - SEVENET</h1>
+
+  <!-- DESCARGA POR FECHA INDIVIDUAL -->
+  <div class="form-field fila">
+
+    <div class="card-disabled-wrapper" [class.disabled]="!fechaSeleccionada">
+      <app-info-card
+        title="SEVENET: Descargar documentos por día"
+        imageUrl="navbar/ai.png"
+        (click)="fechaSeleccionada && downloadDocs(fechaSeleccionada, true)"
+        class="download-button"
+      ></app-info-card>
+    </div>
+
+    <div class="campo">
+      <input
+        type="date"
+        [(ngModel)]="fechaSeleccionada"
+        class="form-control"
+        placeholder="Selecciona una fecha para descargar"
+      />
+    </div>
+
+  </div>
+
+  <hr />
+
+  <!-- DESCARGA POR RANGO -->
+  <div class="form-field fila">
+
+    <div class="card-disabled-wrapper" [class.disabled]="!fechaInicio || !fechaFin">
+      <app-info-card
+        title="SEVENET: Descargar documentos por rango de fechas"
+        imageUrl="navbar/ai.png"
+        (click)="(fechaInicio && fechaFin) && downloadDocsRango(true)"
         class="download-button"
       ></app-info-card>
     </div>

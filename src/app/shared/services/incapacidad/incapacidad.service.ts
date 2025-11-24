@@ -366,7 +366,7 @@ export class IncapacidadService {
   }
 
   // Utiliza el método anterior para descargar y crear el ZIP desde base64
-  async descargarTodoComoZip(fecha: string) {
+  async descargarTodoComoZip(fecha: string, sevenet: boolean) {
     const zip = new JSZip();
     const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
 
@@ -374,7 +374,7 @@ export class IncapacidadService {
     const epsEspeciales = ['salud total', 'matual ser', 'eps sura', 'cajacopi', 'coosalud'];
 
     await Promise.all(
-      documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales))
+      documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales, sevenet))
     );
 
     const content = await zip.generateAsync({ type: "blob" });
@@ -382,7 +382,7 @@ export class IncapacidadService {
   }
 
 
-  async descargarZipPorRango(rango: { inicio: string; fin: string }) {
+  async descargarZipPorRango(rango: { inicio: string; fin: string }, sevenet: boolean) {
     const zip = new JSZip();
     const documentos = await firstValueFrom(
       this.traerTodosDocumentosPorRango(rango.inicio, rango.fin)
@@ -392,7 +392,7 @@ export class IncapacidadService {
     const epsEspeciales = ['salud total', 'matual ser', 'eps sura', 'cajacopi', 'coosalud'];
 
     await Promise.all(
-      documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales))
+      documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales, sevenet))
     );
 
     const content = await zip.generateAsync({ type: "blob" });
@@ -403,7 +403,8 @@ export class IncapacidadService {
   private async procesarDocumentoEnZip(
   doc: any,
   carpetaPrincipal: JSZip,
-  epsEspeciales: string[]
+  epsEspeciales: string[],
+  sevenet: boolean = false
 ) {
   if (!doc.Numero_de_documento) return;
 
@@ -419,6 +420,35 @@ export class IncapacidadService {
   };
 
   if (!Object.values(tiene).some(Boolean)) return;
+
+    const toPdfBytes = (base64: string) => {
+    if (base64.startsWith("data:")) base64 = base64.split(",")[1];
+    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  };
+
+
+  // Si sevenet es true → SOLO generar incapacidad, ignorar todo lo demás
+  if (sevenet) {
+    const epsName = (doc.nombre_eps || "Desconocida").trim();
+    const epsFolder = carpetaPrincipal.folder(epsName);
+    if (!epsFolder) return;
+
+    const cedulaFolder = epsFolder.folder(doc.Numero_de_documento);
+    if (!cedulaFolder) return;
+
+    const fechaObj = new Date(doc.marcaTemporal);
+    const fechaFinal = `${String(fechaObj.getDate()).padStart(2, "0")}${
+      String(fechaObj.getMonth() + 1).padStart(2, "0")
+    }${fechaObj.getFullYear()}`;
+
+    const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
+
+    if (tiene.incapacidad) {
+      cedulaFolder.file(`${baseNombre}.pdf`, toPdfBytes(doc.link_incapacidad));
+    }
+
+    return; 
+  }
 
   const epsName = (doc.nombre_eps || "Desconocida").trim();
   const epsNormalizada = epsName.toLowerCase();
@@ -437,12 +467,7 @@ export class IncapacidadService {
 
   const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
 
-  const toPdfBytes = (base64: string) => {
-    if (base64.startsWith("data:")) base64 = base64.split(",")[1];
-    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-  };
-
-  // EPS especiales → PDFs separados
+  // EPS especiales - PDFs separados
   if (esEpsEspecial) {
     if (tiene.incapacidad) cedulaFolder.file(`${baseNombre}.pdf`, toPdfBytes(doc.link_incapacidad));
     if (tiene.hc) cedulaFolder.file(`${baseNombre}_HC.pdf`, toPdfBytes(doc.historial_clinico));
@@ -455,7 +480,7 @@ export class IncapacidadService {
     return;
   }
 
-  // Otras EPS → PDF combinado
+  // Otras EPS - PDF combinado
   const mergedPdf = await PDFDocument.create();
 
   const agregarPagina = async (base64: string) => {
@@ -482,7 +507,4 @@ export class IncapacidadService {
   const mergedPdfBytes = await mergedPdf.save();
   cedulaFolder.file(`${baseNombre}_COMPLETO.pdf`, mergedPdfBytes);
 }
-
-
-
 }
