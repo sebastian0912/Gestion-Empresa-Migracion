@@ -507,4 +507,12 @@ export class IncapacidadService {
   const mergedPdfBytes = await mergedPdf.save();
   cedulaFolder.file(`${baseNombre}_COMPLETO.pdf`, mergedPdfBytes);
 }
+  verificarIncapacidadPrevia(cedula : string, fechaInicio: string, codigo: string): Observable<boolean> {
+    const headers = this.createAuthorizationHeader();
+    const url = `${this.apiUrl}/Incapacidades/verificarIncapacidadPrevia?cedula=${cedula}&fechaInicio=${fechaInicio}&codigo=${codigo}`;
+    return this.http.get<{ existe: boolean }>(url, { headers }).pipe(
+      map(response => response.existe),
+      catchError(this.handleError)
+    );
+  }
 }

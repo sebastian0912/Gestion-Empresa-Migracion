@@ -242,18 +242,6 @@
                     ></mat-datepicker-toggle>
                     <mat-datepicker #finDatePicker></mat-datepicker>
                   </mat-form-field>
-                  <!-- Select para Prorroga -->
-                  <mat-form-field class="example-full-width2" appearance="fill">
-                    <mat-label>Prorroga</mat-label>
-                    <mat-select [formControlName]="fieldMap['Prorroga']">
-                      <mat-option
-                        *ngFor="let option of Prorroga"
-                        [value]="option"
-                      >
-                        {{ option }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
 
                   <!-- Fecha de Envio Incapacidad Fisica -->
                   <mat-form-field class="example-full-width2" appearance="fill">
@@ -288,7 +276,30 @@
                     </mat-autocomplete>
                   </mat-form-field>
 
-                  <mat-form-field class="example-full-width2" appearance="fill">
+
+                  <mat-form-field
+                    class="example-full-width2"
+                    appearance="fill"
+                    *ngFor="
+                      let field of [
+                        'Descripcion diagnostico',
+                        'Dias incapacidad',
+                        'Dias temporal',
+                        'Dias eps',
+                        'Dias de diferencia',
+                        'Numero de incapacidad'
+                      ]
+                    "
+                  >
+                    <mat-label>{{ field }}</mat-label>
+                    <input
+                      matInput
+                      [formControlName]="fieldMap[field]"
+                      [type]="getFieldType(field)"
+                    />
+                  </mat-form-field>
+
+                    <mat-form-field class="example-full-width2" appearance="fill">
                     <mat-label>Incapacidad Transcrita</mat-label>
                     <mat-select
                       [formControlName]="fieldMap['Incapacidad Transcrita']"
@@ -302,27 +313,19 @@
                     </mat-select>
                   </mat-form-field>
                   <!-- Otros campos de texto -->
-                  <mat-form-field
-                    class="example-full-width2"
-                    appearance="fill"
-                    *ngFor="
-                      let field of [
-                        'Descripcion diagnostico',
-                        'Dias incapacidad',
-                        'Dias temporal',
-                        'Dias eps',
-                        'Numero de incapacidad',
-                        'Dias de diferencia'
-                      ]
-                    "
-                  >
-                    <mat-label>{{ field }}</mat-label>
-                    <input
-                      matInput
-                      [formControlName]="fieldMap[field]"
-                      [type]="getFieldType(field)"
-                    />
+                                    <!-- Select para Prorroga -->
+                  <mat-form-field class="example-full-width2" appearance="fill">
+                    <mat-label>Prorroga</mat-label>
+                    <mat-select [formControlName]="fieldMap['Prorroga']">
+                      <mat-option
+                        *ngFor="let option of Prorroga"
+                        [value]="option"
+                      >
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
                   </mat-form-field>
+
                   <mat-form-field class="example-full-width2" appearance="fill">
                     <mat-label>Observaciones</mat-label>
                     <!-- Usa formControlName para enlazar con el FormGroup -->

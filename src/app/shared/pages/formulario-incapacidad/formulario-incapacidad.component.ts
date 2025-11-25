@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { FormControl } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { map, startWith, debounceTime, first } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -241,7 +241,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       'primer_apellido', 'primer_nombre', 'tipodedocumento', 'numerodeceduladepersona',
       'temporal_contrato', 'numero_de_contrato', 'edad', 'empresa', 'Centro_de_costo',
       'fecha_contratacion', 'fondo_de_pension', 'dias_eps', 'dias_incapacidad',
-      'Dias_temporal', 'descripcion_diagnostico', 'dias_de_diferencia'
+      'Dias_temporal', 'descripcion_diagnostico', 'dias_de_diferencia', 'prorroga'
     ];
 
     fieldsToDisable.forEach(field => this.incapacidadForm.get(field)?.disable());
@@ -470,12 +470,14 @@ export class FormularioIncapacidadComponent implements OnInit {
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.calcularDiasIncapacidad();
+      this.determinarProrroga();
       this.calcularprorroga();
       this.applyValidation()
     });
     this.incapacidadForm.get('tipo_incapacidad')?.valueChanges.pipe(distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
+      this.determinarProrroga();
       this.calcularprorroga();
       this.applyValidation();
     });
@@ -485,6 +487,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.calcularDiasIncapacidad();
+      this.determinarProrroga();
       this.calcularprorroga();
       this.applyValidation();
     });
@@ -500,6 +503,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
+      this.determinarProrroga();
       this.calcularprorroga();
       this.applyValidation();
     });
@@ -523,6 +527,7 @@ export class FormularioIncapacidadComponent implements OnInit {
       distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     ).subscribe((value) => {
+      this.determinarProrroga();
       this.calcularprorroga();
       this.applyValidation();
 
@@ -696,7 +701,6 @@ export class FormularioIncapacidadComponent implements OnInit {
       const empty = isFieldEmpty(formData[field]);
       const disabled = isFieldDisabled(field);
 
-      // ✅ Excepción: 'edad' se valida aunque esté deshabilitado
       if ((field === 'edad' && empty) || (!disabled && empty)) {
         return field;
       }
@@ -781,19 +785,21 @@ export class FormularioIncapacidadComponent implements OnInit {
   private isUpdating = false;
 
   codigoControl = new FormControl();
+  fechaInicioControl = new FormControl();
   private ipsMapByNit = new Map<string, string>();
   private ipsMapByNombre = new Map<string, string>();
   descripcionControl = new FormControl({ value: '', disabled: true });
   nombreControl = new FormControl({ value: '', disabled: true });
   validationErrors: string[] = [];
 
-  async ngOnInit(): Promise<void> {
 
+  async ngOnInit(): Promise<void> {
     this.loadData();
     const user = await this.getUser();
     if (!user) {
       return;
     }
+
     this.currentRole = (user.rol || 'user').toUpperCase().replace(/-/g, '_');
     if (this.currentRole === 'INCAPACIDADADMIN') {
       this.undisableInitialFields();
@@ -835,6 +841,8 @@ export class FormularioIncapacidadComponent implements OnInit {
       const textoSinDescripcion = descripcion.replace(/^descripcion:\s*/i, '');
       this.incapacidadForm.get('descripcion_diagnostico')?.setValue(textoSinDescripcion);
       this.incapacidadForm.get('codigo_diagnostico')?.setValue(codigo)
+      this.determinarProrroga();
+      this.calcularprorroga();
     });
     this.epsControlForm.valueChanges.pipe(debounceTime(300)).subscribe(value => {
       const selected = this.epsnombres.find(item => item.nombre === value);
@@ -850,6 +858,13 @@ export class FormularioIncapacidadComponent implements OnInit {
       }
     });
 
+    this.fechaInicioControl.valueChanges.pipe(
+      debounceTime(300)
+    ).subscribe(() => {
+      this.determinarProrroga();
+      this.calcularprorroga();
+    });
+
     // Actualizar NIT cuando se selecciona un Nombre
     this.ipsControlNombre.valueChanges.pipe(debounceTime(300)).subscribe(value => {
       const selectedNit = this.ipsMapByNombre.get(value);
@@ -859,6 +874,11 @@ export class FormularioIncapacidadComponent implements OnInit {
         this.incapacidadForm.get('nit_de_la_IPS')?.setValue(selectedNit);
       }
     });
+
+
+    this.
+
+
   }
   private _filterEps(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -1475,4 +1495,35 @@ export class FormularioIncapacidadComponent implements OnInit {
   clearErrors() {
     this.validationErrors = [];
   }
+
+  private determinarProrroga(): void {
+  const fechaInicio = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
+  const codigo = this.incapacidadForm.get('codigo_diagnostico')?.value;
+  const cedula = this.incapacidadForm.get('numerodeceduladepersona')?.value;
+  let valor = 'NO';
+
+  //si la cedula existe
+  if (cedula && fechaInicio && codigo) {
+    //convertimos fechaInicio a string de tipo dd-MM-yyyy
+    const fecha = new Date(fechaInicio);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    const fechaInicioStr = `${dia}-${mes}-${anio}`;
+    this.incapacidadService.verificarIncapacidadPrevia(cedula, fechaInicioStr, codigo).subscribe(
+      (tieneIncapacidadPrevia: boolean) => {
+        if (tieneIncapacidadPrevia) {
+          valor = 'SI';
+        } else {
+          valor = 'NO';
+        }
+        this.incapacidadForm.get('prorroga')?.setValue(valor);
+      },
+      (error: any) => {
+        console.error('Error al verificar incapacidad previa:', error);
+        this.incapacidadForm.get('prorroga')?.setValue('NO');
+      }
+    );
+  }
+}
 }
