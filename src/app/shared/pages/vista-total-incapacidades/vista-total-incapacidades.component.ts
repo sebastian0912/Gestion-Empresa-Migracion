@@ -25,6 +25,7 @@ import { saveAs } from 'file-saver';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DatePipe } from '@angular/common'; // Importa DatePipe
 import { forkJoin, mergeMap } from 'rxjs';
+import * as ExcelJS from 'exceljs';
 
 interface ColumnTitle {
   [key: string]: string;
@@ -579,34 +580,96 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
       return null;
     }
 
-downloadExcel(): void {
-  const wb: XLSX.WorkBook = XLSX.utils.book_new();
-  const combinedData = this.combineDataForExcel();
-  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(combinedData);
+async downloadExcel(): Promise<void> {
+  const combinedData = this.combineDataForExcel(); // tu función existente que devuelve array de objetos
 
-  XLSX.utils.book_append_sheet(wb, ws, 'Incapacidades y Reporte');
+  // Si no hay datos, generar hoja vacía con mensaje
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Incapacidades y Reporte');
 
-  // AGREGAR HOJA DE METADATOS con el nombre del usuario
-  const nombreUsuario = this.username || "Usuario desconocido";
+  if (!combinedData || combinedData.length === 0) {
+    worksheet.addRow(['No hay datos disponibles']);
+  } else {
+    // 1) Encabezados: tomar keys del primer objeto
+    const headers = Object.keys(combinedData[0]);
+
+    // Agregar fila de encabezados
+    worksheet.addRow(headers);
+
+    // Agregar las filas de datos
+    combinedData.forEach(item => {
+      const row = headers.map(h => item[h]);
+      worksheet.addRow(row);
+    });
+
+    // 2) Estilar la primera fila (encabezados)
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell((cell, colNumber) => {
+      // Fuente en negrita y blanca
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+
+      // Relleno azul oscuro (ARGB -> FF + rgb)
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1F4E78' } // azul oscuro (agrega 'FF' al inicio para alpha)
+      };
+
+      // Bordes gruesos en todos los lados
+      cell.border = {
+        top: { style: 'thick', color: { argb: 'FF000000' } },
+        left: { style: 'thick', color: { argb: 'FF000000' } },
+        bottom: { style: 'thick', color: { argb: 'FF000000' } },
+        right: { style: 'thick', color: { argb: 'FF000000' } }
+      };
+
+      // Centrar texto vertical y horizontalmente (opcional)
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    // 3) Hacer que la fila de encabezados tenga altura mayor (opcional)
+    headerRow.height = 22;
+
+    // 4) Ajustar ancho de columnas automáticamente (simple heurística)
+    headers.forEach((h, i) => {
+      const maxLength = Math.max(
+        h.length,
+        ...combinedData.map(r => {
+          const v = r[h];
+          return v === null || v === undefined ? 0 : String(v).length;
+        })
+      );
+      // ajustar ancho (valores experimentales)
+      worksheet.getColumn(i + 1).width = Math.min(50, Math.max(10, Math.ceil(maxLength * 1.2)));
+    });
+
+    // 5) Opcional: poner borde exterior grueso al rango completo de encabezados (ya lo tienen las celdas individuales)
+    // No es necesario, ya lo cubren las celdas.
+  }
+
+  // AGREGAR HOJA DE METADATOS
+  const wsMeta = workbook.addWorksheet('Metadatos');
+  const nombreUsuario = this.username || 'Usuario desconocido';
   const fechaActual = new Date().toLocaleString();
-
   const filtros = [
-    `Documento: ${this.filterCriteria.numeroDeDocumento || 'Todos'}`,
-    `Fecha Inicio: ${this.filterCriteria.fechaInicio || 'Todos'}`,
-    `Temporal: ${this.filterCriteria.temporal || 'Todos'}`,
-    `Tipo Incapacidad: ${this.filterCriteria.tipoIncapacidad || 'Todos'}`
+    `Documento: ${this.filterCriteria?.numeroDeDocumento || 'Todos'}`,
+    `Fecha Inicio: ${this.filterCriteria?.fechaInicio || 'Todos'}`,
+    `Temporal: ${this.filterCriteria?.temporal || 'Todos'}`,
+    `Tipo Incapacidad: ${this.filterCriteria?.tipoIncapacidad || 'Todos'}`
   ];
-  const wsMeta = XLSX.utils.aoa_to_sheet([
-    ['Reporte generado por', nombreUsuario],
-    ['Fecha de generación', fechaActual],
-    ['Filtros aplicados', ''],
-    ...filtros.map(f => [f])
-  ]);
-  XLSX.utils.book_append_sheet(wb, wsMeta, 'Metadatos');
+
+  wsMeta.addRow(['Reporte generado por', nombreUsuario]);
+  wsMeta.addRow(['Fecha de generación', fechaActual]);
+  wsMeta.addRow([]);
+  wsMeta.addRow(['Filtros aplicados']);
+  filtros.forEach(f => wsMeta.addRow([f]));
+
+  // Generar buffer y descargar
+  const buf = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/octet-stream' });
 
   const formattedDate = new Date().toISOString().split('T')[0];
-  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `Reporte_${formattedDate}.xlsx`);
+  saveAs(blob, `Reporte_${formattedDate}.xlsx`);
 }
 
 
@@ -691,6 +754,8 @@ private combineDataForExcel(): any[] {
       return mappedItem;
     });
   }
+
+
 
   playSound(success: boolean): void {
     const audio = new Audio(success ? 'Sounds/positivo.mp3' : 'Sounds/negativo.mp3');
