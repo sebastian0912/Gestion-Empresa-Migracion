@@ -371,7 +371,7 @@ export class IncapacidadService {
     const documentos = await firstValueFrom(this.traerTodosDocumentos(fecha));
 
     const carpetaPrincipal = zip.folder(`Incapacidad con la fecha ${fecha}`);
-    const epsEspeciales = ['salud total', 'matual ser', 'eps sura', 'cajacopi', 'coosalud'];
+    const epsEspeciales = ['salud total', 'matual ser', 'mutual ser', 'eps sura', 'cajacopi', 'coosalud'];
 
     await Promise.all(
       documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales, sevenet))
@@ -389,7 +389,7 @@ export class IncapacidadService {
     );
 
     const carpetaPrincipal = zip.folder(`Incapacidad desde ${rango.inicio} hasta ${rango.fin}`);
-    const epsEspeciales = ['salud total', 'matual ser', 'eps sura', 'cajacopi', 'coosalud'];
+    const epsEspeciales = ['salud total', 'matual ser', 'mutual ser', 'eps sura', 'cajacopi', 'coosalud'];
 
     await Promise.all(
       documentos.map(doc => this.procesarDocumentoEnZip(doc, carpetaPrincipal!, epsEspeciales, sevenet))
@@ -433,9 +433,6 @@ export class IncapacidadService {
     const epsFolder = carpetaPrincipal.folder(epsName);
     if (!epsFolder) return;
 
-    const cedulaFolder = epsFolder.folder(doc.Numero_de_documento);
-    if (!cedulaFolder) return;
-
     const fechaObj = new Date(doc.marcaTemporal);
     const fechaFinal = `${String(fechaObj.getDate()).padStart(2, "0")}${
       String(fechaObj.getMonth() + 1).padStart(2, "0")
@@ -444,7 +441,7 @@ export class IncapacidadService {
     const baseNombre = `${doc.Numero_de_documento}_${fechaFinal}`;
 
     if (tiene.incapacidad) {
-      cedulaFolder.file(`${baseNombre}.pdf`, toPdfBytes(doc.link_incapacidad));
+      epsFolder.file(`${baseNombre}.pdf`, toPdfBytes(doc.link_incapacidad));
     }
 
     return; 
@@ -457,8 +454,7 @@ export class IncapacidadService {
   const epsFolder = carpetaPrincipal.folder(epsName);
   if (!epsFolder) return;
 
-  const cedulaFolder = epsFolder.folder(doc.Numero_de_documento);
-  if (!cedulaFolder) return;
+
 
   const fechaObj = new Date(doc.marcaTemporal);
   const fechaFinal = `${String(fechaObj.getDate()).padStart(2, "0")}${
@@ -469,6 +465,8 @@ export class IncapacidadService {
 
   // EPS especiales - PDFs separados
   if (esEpsEspecial) {
+    const cedulaFolder = epsFolder.folder(doc.Numero_de_documento);
+    if (!cedulaFolder) return;
     if (tiene.incapacidad) cedulaFolder.file(`${baseNombre}.pdf`, toPdfBytes(doc.link_incapacidad));
     if (tiene.hc) cedulaFolder.file(`${baseNombre}_HC.pdf`, toPdfBytes(doc.historial_clinico));
     if (tiene.soat) cedulaFolder.file(`${baseNombre}_SOAT.pdf`, toPdfBytes(doc.soat));
@@ -505,7 +503,7 @@ export class IncapacidadService {
   if (tiene.formSaludTotal) await agregarPagina(doc.formulario_salud_total);
 
   const mergedPdfBytes = await mergedPdf.save();
-  cedulaFolder.file(`${baseNombre}_COMPLETO.pdf`, mergedPdfBytes);
+  epsFolder.file(`${baseNombre}_COMPLETO.pdf`, mergedPdfBytes);
 }
   verificarIncapacidadPrevia(cedula : string, fechaInicio: string, codigo: string): Observable<boolean> {
     const headers = this.createAuthorizationHeader();

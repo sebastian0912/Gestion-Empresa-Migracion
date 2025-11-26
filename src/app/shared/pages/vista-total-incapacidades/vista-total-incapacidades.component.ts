@@ -85,7 +85,6 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
 
     nombre: 'Nombre',
     apellido: 'Apellido',
-    empresa: 'Empresa',
     centrodecosto: 'Centro de Costo',
     tipo_incapacidad: 'Tipo Incapacidad',
     codigo_diagnostico: 'Código Diagnóstico',
@@ -104,7 +103,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     nombre_eps: 'Nombre EPS',
     estado_incapacidad: 'Estado Incapacidad',
     prorroga: 'Prórroga',
-    Incapacidad_transcrita: 'Incapacidad Transitada',
+    Incapacidad_transcrita: 'Incapacidad Transcrita',
     numero_de_incapacidad: 'Número de Incapacidad',
     nit_de_la_IPS: 'NIT de la IPS',
     ips_punto_de_atencion: 'IPS Punto de Atención',
@@ -123,7 +122,6 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
   };
 
   columnTitlesTable4excel: Record<string, string> = {
-    consecutivoSistema_id: 'Número de consecutivo del sistema',
     fecha_de_recepcion_de_la_incapacidad: 'Fecha de recepción de la incapacidad',
     fecha_de_radicado_eps: 'Fecha de radicado EPS',
     confirmacion_fecha_de_radicacion: 'Fecha de confirmación de radicación',
@@ -196,7 +194,7 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     'dias_temporal': 'Días Temporal',
     'f_inicio': 'Fecha de Inicio',
     'fecha_de_envio_incapacidad_fisica': 'Fecha de Envío Incapacidad Física',
-    'incapacidad_transcrita': 'Incapacidad Transitada',
+    'incapacidad_transcrita': 'Incapacidad Transcrita',
     'numero_de_documento': 'Número de Documento',
     'oficina': 'Oficina',
     'temporal': 'Temporal',
@@ -351,34 +349,22 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     }
   }
 
-  mostrarCargando(estado: boolean) {
+  mostrarCargando(estado: boolean) { 
     if (estado) {
-      // Mostrar la alerta de carga con spinner
       Swal.fire({
         title: 'Cargando...',
         html: 'Por favor espera mientras se carga la información',
-        allowOutsideClick: false, // Evitar que se cierre al hacer click fuera
-        didOpen: () => {
-          Swal.showLoading(); // Mostrar el spinner
-        }
+        allowOutsideClick: false,
+        allowEscapeKey: false,   
+        didOpen: () => Swal.showLoading()
       });
     } else {
-      // Cerrar la alerta de carga
       Swal.close();
     }
   }
 
-  // Método que se llama con el estado
   cargarInformacion(estado: boolean) {
-    this.mostrarCargando(estado); // Mostrar o cerrar la alerta dependiendo del estado
-
-    if (estado) {
-      // Simulación de una operación de carga (reemplazar con lógica real)
-      setTimeout(() => {
-        // Aquí se cierra el Swal después de la simulación (simulación de 5 segundos)
-        this.mostrarCargando(false);
-      }, 5000);
-    }
+    this.mostrarCargando(estado);
   }
 
   private initializeLoader(): void {
@@ -414,21 +400,32 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     this.counterVisible = showCounter;
   }
 
- private loadData(): void {
+private loadData(): void {
   console.time('Total Load');
+
+  // Mostrar cargando antes de iniciar las llamadas HTTP
   this.cargarInformacion(true);
+
   forkJoin({
     incapacidades: this.incapacidadService.traerTodosDatosIncapacidad(),
     reporte: this.incapacidadService.traerTodosDatosReporte()
   }).subscribe({
     next: ({ incapacidades, reporte }) => {
       this.handleDataSuccess(incapacidades || [], reporte.data || []);
+      
       this.cargarInformacion(false);
+
       console.timeEnd('Total Load');
     },
-    error: () => this.handleError('Error al cargar los datos, por favor intenta de nuevo.')
+    error: () => {
+      this.handleError('Error al cargar los datos, por favor intenta de nuevo.');
+
+      // Asegurar que cierre cargando aun en error
+      this.cargarInformacion(false);
+    }
   });
 }
+
 
 
   private handleDataSuccess(incapacidades: any[], reporte: any[]): void {
@@ -581,7 +578,8 @@ export class VistaTotalIncapacidadesComponent implements OnInit {
     }
 
 async downloadExcel(): Promise<void> {
-  const combinedData = this.combineDataForExcel(); // tu función existente que devuelve array de objetos
+  const combinedData = this.combineDataForExcel(); 
+  console.log('Datos combinados para Excel:', combinedData);
 
   // Si no hay datos, generar hoja vacía con mensaje
   const workbook = new ExcelJS.Workbook();
@@ -608,11 +606,11 @@ async downloadExcel(): Promise<void> {
       // Fuente en negrita y blanca
       cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
 
-      // Relleno azul oscuro (ARGB -> FF + rgb)
+      // Relleno azul oscuro
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF1F4E78' } // azul oscuro (agrega 'FF' al inicio para alpha)
+        fgColor: { argb: 'FF1F4E78' } // azul oscuro 
       };
 
       // Bordes gruesos en todos los lados
@@ -623,14 +621,14 @@ async downloadExcel(): Promise<void> {
         right: { style: 'thick', color: { argb: 'FF000000' } }
       };
 
-      // Centrar texto vertical y horizontalmente (opcional)
+      // Centrar texto vertical y horizontalmente
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
-    // 3) Hacer que la fila de encabezados tenga altura mayor (opcional)
+    // 3) Hacer que la fila de encabezados tenga altura mayor 
     headerRow.height = 22;
 
-    // 4) Ajustar ancho de columnas automáticamente (simple heurística)
+    // 4) Ajustar ancho de columnas automáticamente 
     headers.forEach((h, i) => {
       const maxLength = Math.max(
         h.length,
@@ -639,12 +637,9 @@ async downloadExcel(): Promise<void> {
           return v === null || v === undefined ? 0 : String(v).length;
         })
       );
-      // ajustar ancho (valores experimentales)
+      // ajustar ancho
       worksheet.getColumn(i + 1).width = Math.min(50, Math.max(10, Math.ceil(maxLength * 1.2)));
     });
-
-    // 5) Opcional: poner borde exterior grueso al rango completo de encabezados (ya lo tienen las celdas individuales)
-    // No es necesario, ya lo cubren las celdas.
   }
 
   // AGREGAR HOJA DE METADATOS
@@ -674,13 +669,20 @@ async downloadExcel(): Promise<void> {
 
 
 downloadDocs(fecha: string, sevenet: boolean) {
+  this.cargarInformacion(true);  // ⬅ Mostrar cargando
+
   this.incapacidadService.descargarTodoComoZip(fecha, sevenet)
-    .then(() => alert('¡Descarga completada!'))
+    .then(() => {
+      this.cargarInformacion(false); // ⬅ Ocultar cargando
+      alert('¡Descarga completada!');
+    })
     .catch(err => {
+      this.cargarInformacion(false); // ⬅ Ocultar cargando incluso en error
       alert('Error al descargar los documentos por fecha');
       console.error(err);
     });
 }
+
 
 downloadDocsRango(sevenet: boolean) {
   if (!this.fechaInicio || !this.fechaFin) {
@@ -698,27 +700,28 @@ downloadDocsRango(sevenet: boolean) {
     fin: this.fechaFin
   };
 
+  this.cargarInformacion(true);  // ⬅ Mostrar cargando
+
   this.incapacidadService.descargarZipPorRango(rango, sevenet)
-    .then(() => alert('¡Descarga completada!'))
+    .then(() => {
+      this.cargarInformacion(false); // ⬅ Ocultar cargando
+      alert('¡Descarga completada!');
+    })
     .catch(err => {
+      this.cargarInformacion(false); // ⬅ Ocultar cargando incluso en error
       alert('Error al descargar el rango de documentos.');
       console.error(err);
     });
 }
 
 
+
 private combineDataForExcel(): any[] {
     const reporteMap = this.createReportMap();
+    console.log('Mapa de Reporte:', reporteMap); // <-- Esto imprime el mapa completo
   return this.dataSourceTable1.data.map((item: any) => {
     console.log('Registro:', item); // <-- Esto imprime el objeto tal como llega
     const row = this.combineItemData(item, reporteMap);
-
-    this.documentos.forEach(doc => {
-      // También imprime lo que ve
-      console.log(`Campo ${doc.key}:`, item[doc.key]);
-      row[doc.label] = item[doc.key] && item[doc.key] !== '' && item[doc.key] !== null ? 'SI' : 'NO';
-    });
-
     return row;
   });
 }

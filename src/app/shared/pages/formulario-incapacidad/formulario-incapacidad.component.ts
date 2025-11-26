@@ -347,8 +347,6 @@ export class FormularioIncapacidadComponent implements OnInit {
     'INCONSISTENTE -, MAS DE 180 DIAS',
     'MAS DE 540 DIAS',
     'FECHAS INCONSISTENTES',
-    'LICENCIA DE MATERNIDAD',
-    'LICENCIA DE PATERNIDAD',
     'INCAPACIDAD DE 1 DIA ARL',
     'FALTA ORIGINAL',
     'FALTA FURAT',
@@ -1230,8 +1228,8 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('edad')?.setValue(datosBasicos.edadTrabajador);
           this.incapacidadForm.get('primercorreoelectronico')?.setValue(datosBasicos.primercorreoelectronico);
           this.incapacidadForm.get('genero')?.setValue(datosBasicos.genero);
-          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_costo_carnet);
-          this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_de_costos);
+          this.incapacidadForm.get('Centro_de_costos')?.setValue(contratacion.centro_de_costos);
+          this.incapacidadForm.get('Centro_de_costo')?.setValue(contratacion.centro_costo_carnet);
           this.incapacidadForm.get('fecha_contratacion')?.setValue(contratacion.fecha_contratacion);
           this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
         }
@@ -1320,31 +1318,42 @@ export class FormularioIncapacidadComponent implements OnInit {
     });
   }
 
-  onUploadClick(field: string) {
-    // Crear un input de tipo file programáticamente
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.style.display = 'none';
+onUploadClick(field: string) {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.style.display = 'none';
 
-    // Agregar evento para manejar la selección de archivo
-    fileInput.onchange = (event: any) => {
-      const file: File = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+  fileInput.onchange = (event: any) => {
+    const file: File = event.target.files[0];
 
-        reader.onload = () => {
-          this.addFile(field, file);
-          const base64 = reader.result as string;
-          this.nombredelarchvio = file.name;
-          this.incapacidadForm.get(this.fieldMap[field])?.setValue(base64);
-        };
-        reader.readAsDataURL(file);
+    if (file) {
+      const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+
+      if (file.size > MAX_SIZE) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `El archivo "${file.name}" supera el límite de 2 MB.`
+      });
+        return; 
       }
-    };
 
-    // Simular clic para abrir el diálogo de archivos
-    fileInput.click();
-  }
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        this.addFile(field, file);
+        const base64 = reader.result as string;
+        this.nombredelarchvio = file.name;
+        this.incapacidadForm.get(this.fieldMap[field])?.setValue(base64);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  fileInput.click();
+}
+
 
   removeFile(field: string, file: File): void {
     const index = this.files[field].indexOf(file);
