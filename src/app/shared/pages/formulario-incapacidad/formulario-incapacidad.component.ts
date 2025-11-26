@@ -410,7 +410,7 @@ export class FormularioIncapacidadComponent implements OnInit {
     'dias_temporal': 'Días Temporal',
     'f_inicio': 'Fecha de Inicio',
     'fecha_de_envio_incapacidad_fisica': 'Fecha de Envío Incapacidad Física',
-    'incapacidad_transcrita': 'Incapacidad Transitada',
+    'incapacidad_transcrita': 'Incapacidad Transcrita',
     'numero_de_documento': 'Número de Documento',
     'oficina': 'Oficina',
     'temporal': 'Temporal',
@@ -874,11 +874,6 @@ export class FormularioIncapacidadComponent implements OnInit {
         this.incapacidadForm.get('nit_de_la_IPS')?.setValue(selectedNit);
       }
     });
-
-
-    this.
-
-
   }
   private _filterEps(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -995,6 +990,13 @@ export class FormularioIncapacidadComponent implements OnInit {
       if (tipoDoc == 'Pasaporte') {
         this.incapacidadForm.get('tipodedocumento')?.setValue('PA');
       }
+      else if (tipoDoc == 'Tarjeta de identidad') {
+        this.incapacidadForm.get('tipodedocumento')?.setValue('TI');
+      }
+      else if (tipoDoc == 'Permiso de proteccion temporal') {
+        this.incapacidadForm.get('tipodedocumento')?.setValue('PPT');
+      }
+
 
       // Normalización de tipo de documento doctor
       const tipoDocDoctor = this.incapacidadForm.get('tipo_de_documento_doctor_atendido')?.value;
@@ -1188,13 +1190,22 @@ export class FormularioIncapacidadComponent implements OnInit {
             value = datosBasicos[key];
           }
 
-          // Normalizar valores para el formulario
-          if (datosBasicos.tipodedocumento == 'CC' || datosBasicos.tipodedocumento == 'C.C') {
+          let tipo = (datosBasicos.tipodedocumento || '')
+            .toUpperCase()
+            .replace(/\./g, '')  
+            .replace(/\s+/g, '') 
+            .trim();
+
+          if (tipo === 'CC') {
             datosBasicos.tipodedocumento = 'Cedula de ciudadania';
-          } else if (datosBasicos.tipodedocumento == 'CE' || datosBasicos.tipodedocumento == 'C.E') {
+          } else if (tipo === 'CE') {
             datosBasicos.tipodedocumento = 'Cedula de extranjeria';
-          } else if (datosBasicos.tipodedocumento == 'PA' || datosBasicos.tipodedocumento == 'P.A') {
+          } else if (tipo === 'PA') {
             datosBasicos.tipodedocumento = 'Pasaporte';
+          } else if (tipo === 'TI') {
+            datosBasicos.tipodedocumento = 'Tarjeta de identidad';
+          } else if (tipo === 'PPT') {
+            datosBasicos.tipodedocumento = 'Permiso de proteccion temporal';
           }
 
           if (datosBasicos.genero == 'M') {
@@ -1225,7 +1236,7 @@ export class FormularioIncapacidadComponent implements OnInit {
           this.incapacidadForm.get('fondo_de_pension')?.setValue(afp.afc);
         }
 
-        this.applyCedulaFilter(cedula)
+        //this.applyCedulaFilter(cedula)
 
       },
       error => {
@@ -1366,7 +1377,7 @@ export class FormularioIncapacidadComponent implements OnInit {
 
   sexos: string[] = ['Masculino', 'Femenino'];
   Prorroga: string[] = ['SI', 'NO'];
-  tiposDocumento: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte'];
+  tiposDocumento: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad', 'Permiso de proteccion temporal'];
   tiposDocumentoDoctor: string[] = ['Cedula de ciudadania', 'Cedula de extranjeria', 'Pasaporte', 'Tarjeta de identidad'];
   tiposincapacidad: string[] = ['ENFERMEDAD GENERAL', 'LICENCIA DE MATERNIDAD', 'LICENCIA PATERNIDAD', 'ACCIDENTE DE TRABAJO', 'SOAT / ACCIDENTE DE TRANCITO', 'ENFERMEDAD LABORAL']
 
@@ -1497,33 +1508,33 @@ export class FormularioIncapacidadComponent implements OnInit {
   }
 
   private determinarProrroga(): void {
-  const fechaInicio = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
-  const codigo = this.incapacidadForm.get('codigo_diagnostico')?.value;
-  const cedula = this.incapacidadForm.get('numerodeceduladepersona')?.value;
-  let valor = 'NO';
+    const fechaInicio = this.incapacidadForm.get('fecha_inicio_incapacidad')?.value;
+    const codigo = this.incapacidadForm.get('codigo_diagnostico')?.value;
+    const cedula = this.incapacidadForm.get('numerodeceduladepersona')?.value;
+    let valor = 'NO';
 
-  //si la cedula existe
-  if (cedula && fechaInicio && codigo) {
-    //convertimos fechaInicio a string de tipo dd-MM-yyyy
-    const fecha = new Date(fechaInicio);
-    const dia = String(fecha.getDate()).padStart(2, '0');
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-    const anio = fecha.getFullYear();
-    const fechaInicioStr = `${dia}-${mes}-${anio}`;
-    this.incapacidadService.verificarIncapacidadPrevia(cedula, fechaInicioStr, codigo).subscribe(
-      (tieneIncapacidadPrevia: boolean) => {
-        if (tieneIncapacidadPrevia) {
-          valor = 'SI';
-        } else {
-          valor = 'NO';
+    //si la cedula existe
+    if (cedula && fechaInicio && codigo) {
+      //convertimos fechaInicio a string de tipo dd-MM-yyyy
+      const fecha = new Date(fechaInicio);
+      const dia = String(fecha.getDate()).padStart(2, '0');
+      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+      const anio = fecha.getFullYear();
+      const fechaInicioStr = `${dia}-${mes}-${anio}`;
+      this.incapacidadService.verificarIncapacidadPrevia(cedula, fechaInicioStr, codigo).subscribe(
+        (tieneIncapacidadPrevia: boolean) => {
+          if (tieneIncapacidadPrevia) {
+            valor = 'SI';
+          } else {
+            valor = 'NO';
+          }
+          this.incapacidadForm.get('prorroga')?.setValue(valor);
+        },
+        (error: any) => {
+          console.error('Error al verificar incapacidad previa:', error);
+          this.incapacidadForm.get('prorroga')?.setValue('NO');
         }
-        this.incapacidadForm.get('prorroga')?.setValue(valor);
-      },
-      (error: any) => {
-        console.error('Error al verificar incapacidad previa:', error);
-        this.incapacidadForm.get('prorroga')?.setValue('NO');
-      }
-    );
+      );
+    }
   }
-}
 }
